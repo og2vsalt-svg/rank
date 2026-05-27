@@ -11,7 +11,7 @@ import Cart from './components/Cart';
 import LoginPage from './components/LoginPage';
 import SignupPage from './components/SignupPage';
 
-const DISCORD = 'https://discord.gg/jfDBYWq6Ax';
+const DISCORD = 'https://discord.gg/vfhMrPW2Qu';
 
 function HomePage() {
   return (

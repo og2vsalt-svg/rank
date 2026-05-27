@@ -1,4 +1,4 @@
-const DISCORD = 'https://discord.gg/jfDBYWq6Ax';
+const DISCORD = 'https://discord.gg/vfhMrPW2Qu';
 
 export default function Footer() {
   return (

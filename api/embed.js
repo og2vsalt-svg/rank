@@ -68,6 +68,44 @@ async function loadShare(id) {
   }
 }
 
+const PAGE_TITLES = {
+  vault: 'vault — rankvault',
+  drop: 'drop — rankvault',
+  transfer: 'transfer — rankvault',
+  notes: 'notes — rankvault',
+  paste: 'paste — rankvault',
+  json: 'json desk — rankvault',
+  board: 'board — rankvault',
+  stash: 'stash — rankvault',
+  snapshot: 'snapshot — rankvault',
+  sketch: 'sketch — rankvault',
+  echo: 'echo — rankvault',
+  loom: 'loom — rankvault',
+  split: 'split — rankvault',
+  beacon: 'beacon — rankvault',
+  weave: 'weave — rankvault',
+  aura: 'aura — rankvault',
+  convert: 'convert — rankvault',
+  qr: 'qr — rankvault',
+  clip: 'clip — rankvault',
+  hash: 'hash — rankvault',
+  palette: 'palette — rankvault',
+  pulse: 'pulse — rankvault',
+  diff: 'diff — rankvault',
+  timer: 'timer — rankvault',
+  inspect: 'inspect — rankvault',
+  zip: 'zip — rankvault',
+  links: 'links — rankvault',
+  markdown: 'markdown — rankvault',
+  gallery: 'gallery — rankvault',
+  record: 'record — rankvault',
+  count: 'count — rankvault',
+  units: 'units — rankvault',
+  status: 'status — rankvault',
+  login: 'log in — rankvault',
+  signup: 'sign up — rankvault',
+};
+
 export default async function handler(req, res) {
   const id = (req.query.id || '').toString().trim();
   const page = (req.query.page || '').toString().trim();
@@ -76,22 +114,7 @@ export default async function handler(req, res) {
 
   if (page && !id) {
     const dest = `${proto}://${host}/#${encodeURIComponent(page)}`;
-    const titles = {
-      vault: 'vault — rankvault',
-      drop: 'drop — rankvault',
-      transfer: 'transfer — rankvault',
-      notes: 'notes — rankvault',
-      paste: 'paste — rankvault',
-      json: 'json desk — rankvault',
-      board: 'board — rankvault',
-      stash: 'stash — rankvault',
-      snapshot: 'snapshot — rankvault',
-      sketch: 'sketch — rankvault',
-      echo: 'echo — rankvault',
-      loom: 'loom — rankvault',
-      split: 'split — rankvault',
-    };
-    const title = titles[page] || `${page} — rankvault`;
+    const title = PAGE_TITLES[page] || `${page} — rankvault`;
     const desc = 'quiet file hosting and side desks. share only if you want.';
     if (!isBot(req.headers['user-agent']) && req.query.embed !== '1') {
       res.status(302).setHeader('Location', dest);

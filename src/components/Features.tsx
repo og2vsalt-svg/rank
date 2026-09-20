@@ -5,7 +5,7 @@ const items = [
   { title: 'folders + favorites + pins', body: 'inbox by default. make folders, star keepers, pin the ones that should float to the top.' },
   { title: 'quiet share links', body: 'mark a file public and copy a hash link. optional expiry and a passcode so the drop dies or stays locked.' },
   { title: 'cloud share db', body: 'public drops land in supabase, with vercel blob when a token is set, so the link works on another device.' },
-  { title: 'discord embeds', body: '/s/id pages serve og tags so discord, slack, and x preview the filename and image like a real product.' },
+  { title: 'discord embeds', body: '/s/id and /p/page serve og tags so discord, slack, and x preview the filename like a real product.' },
   { title: 'snapshot desk', body: 'paste a screenshot straight into the vault and flip it public if you want.' },
   { title: 'sketch pad', body: 'scribble locally and download a png. not a vault clone, just a quiet pad.' },
   { title: 'echo', body: 'poke a host and see how long the tab waits. different lane from files.' },
@@ -21,6 +21,9 @@ const items = [
   { title: 'clipboard stash', body: 'park snippets you keep losing. separate from the file vault.' },
   { title: 'loom player', body: 'drop audio and listen in-tab. no account, no vault dump.' },
   { title: 'split desk', body: 'carve a local file into chunks when a host is being picky. warning only if it is huge.' },
+  { title: 'beacon', body: 'publish a tiny presence card to the share db. discord unfurls /s/ like a product link.' },
+  { title: 'weave', body: 'stitch local files into one download. not a vault, just glue.' },
+  { title: 'aura', body: 'a quiet sine in the tab. zero hosting, zero files.' },
 ];
 
 export default function Features() {

@@ -23,21 +23,29 @@ function iconFor(type: string) {
 export default function VaultPage() {
   const { isLoggedIn, user } = useAuth();
   const { navigate } = useRouter();
-  const { files, usedBytes, addFiles, removeFile, togglePublic, renameFile } = useVault();
+  const { files, folders, usedBytes, addFiles, removeFile, togglePublic, toggleStar, renameFile, moveFile, addFolder } = useVault();
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
   const [query, setQuery] = useState('');
+  const [folder, setFolder] = useState('inbox');
+  const [view, setView] = useState<'grid' | 'list'>('grid');
+  const [onlyStarred, setOnlyStarred] = useState(false);
   const [busy, setBusy] = useState(false);
   const [toast, setToast] = useState('');
   const [preview, setPreview] = useState<VaultFile | null>(null);
+  const [newFolder, setNewFolder] = useState('');
   const cap = 8 * 1024 * 1024;
   const pct = Math.min(100, (usedBytes / cap) * 100);
 
   const shown = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return files;
-    return files.filter((f) => f.name.toLowerCase().includes(q));
-  }, [files, query]);
+    return files.filter((f) => {
+      if (onlyStarred && !f.starred) return false;
+      if (folder !== 'all' && f.folder !== folder) return false;
+      const q = query.trim().toLowerCase();
+      if (q && !f.name.toLowerCase().includes(q)) return false;
+      return true;
+    });
+  }, [files, query, folder, onlyStarred]);
 
   const ping = (msg: string) => {
     setToast(msg);
@@ -47,13 +55,13 @@ export default function VaultPage() {
   const onDrop = async (list: FileList | File[] | null) => {
     if (!list || !('length' in list) || !list.length) return;
     setBusy(true);
-    const res = await addFiles(list);
+    const res = await addFiles(list, folder === 'all' ? 'inbox' : folder);
     setBusy(false);
     ping(res.ok ? 'uploaded' : res.error || 'failed');
   };
 
   const copyLink = async (id: string) => {
-    const url = `${window.location.origin}${window.location.pathname}#vault?f=${id}`;
+    const url = `${window.location.origin}${window.location.pathname}#share?f=${id}`;
     try {
       await navigator.clipboard.writeText(url);
       ping('link copied');
@@ -70,7 +78,7 @@ export default function VaultPage() {
           <p className="text-[#0a84ff] text-sm font-medium mb-2 tracking-wide">vault</p>
           <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-white mb-3">your files, locally hosted.</h1>
           <p className="text-neutral-400 max-w-xl mb-8">
-            drop anything in. preview, rename, share a public link. this demo lives in your browser so it stays snappy and private to this device.
+            drop anything in. preview, rename, favorite, sort into folders, share a public link. this demo lives in your browser so it stays snappy and private to this device.
           </p>
         </motion.div>
 
@@ -95,6 +103,25 @@ export default function VaultPage() {
               <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="search files" className="sm:w-56 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm outline-none focus:border-[#0a84ff]/50" />
             </div>
 
+            <div className="flex flex-wrap items-center gap-2 mb-5">
+              <button onClick={() => setFolder('all')} className={`text-xs px-3 py-1.5 rounded-full transition ${folder === 'all' ? 'bg-white text-black' : 'bg-white/5 hover:bg-white/10'}`}>all</button>
+              {folders.map((f) => (
+                <button key={f} onClick={() => setFolder(f)} className={`text-xs px-3 py-1.5 rounded-full transition ${folder === f ? 'bg-white text-black' : 'bg-white/5 hover:bg-white/10'}`}>{f}</button>
+              ))}
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  addFolder(newFolder);
+                  setNewFolder('');
+                }}
+                className="flex gap-2"
+              >
+                <input value={newFolder} onChange={(e) => setNewFolder(e.target.value)} placeholder="new folder" className="w-28 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs outline-none" />
+              </form>
+              <button onClick={() => setOnlyStarred((v) => !v)} className={`text-xs px-3 py-1.5 rounded-full ${onlyStarred ? 'bg-[#0a84ff] text-white' : 'bg-white/5'}`}>favorites</button>
+              <button onClick={() => setView(view === 'grid' ? 'list' : 'grid')} className="text-xs px-3 py-1.5 rounded-full bg-white/5">{view}</button>
+            </div>
+
             <motion.div
               onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
               onDragLeave={() => setDragOver(false)}
@@ -107,7 +134,7 @@ export default function VaultPage() {
               <p className="text-sm text-neutral-500 mt-1">or click to browse. images, clips, docs, whatever.</p>
             </motion.div>
 
-            <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className={view === 'grid' ? 'mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-4' : 'mt-8 space-y-3'}>
               <AnimatePresence>
                 {shown.map((file) => (
                   <motion.article
@@ -131,12 +158,20 @@ export default function VaultPage() {
                       onBlur={(e) => renameFile(file.id, e.target.value)}
                       className="bg-transparent text-sm text-white outline-none truncate"
                     />
-                    <p className="text-xs text-neutral-500">{formatBytes(file.size)}</p>
+                    <p className="text-xs text-neutral-500">{formatBytes(file.size)} · {file.folder}</p>
                     <div className="flex flex-wrap gap-2">
+                      <button onClick={() => toggleStar(file.id)} className="text-xs px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 transition">{file.starred ? 'starred' : 'star'}</button>
                       <button onClick={() => togglePublic(file.id)} className="text-xs px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 transition">
                         {file.public ? 'public' : 'private'}
                       </button>
                       <button onClick={() => copyLink(file.id)} className="text-xs px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 transition">copy link</button>
+                      <select
+                        value={file.folder}
+                        onChange={(e) => moveFile(file.id, e.target.value)}
+                        className="text-xs px-2 py-1.5 rounded-full bg-white/5 border-0 outline-none"
+                      >
+                        {folders.map((f) => <option key={f} value={f}>{f}</option>)}
+                      </select>
                       <a href={file.dataUrl} download={file.name} className="text-xs px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 transition">download</a>
                       <button onClick={() => removeFile(file.id)} className="text-xs px-3 py-1.5 rounded-full text-red-400 hover:bg-red-500/10 transition">delete</button>
                     </div>

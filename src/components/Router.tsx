@@ -1,10 +1,11 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 
-export type Route = 'home' | 'login' | 'signup' | 'vault';
+export type Route = 'home' | 'login' | 'signup' | 'vault' | 'share';
 
 interface RouterContextType {
   route: Route;
-  navigate: (to: Route) => void;
+  shareId: string | null;
+  navigate: (to: Route, extra?: string) => void;
 }
 
 const RouterContext = createContext<RouterContextType | null>(null);
@@ -15,34 +16,42 @@ export function useRouter() {
   return ctx;
 }
 
-function getRouteFromHash(): Route {
-  const hash = window.location.hash.replace('#', '').split('?')[0];
-  if (hash === 'login') return 'login';
-  if (hash === 'signup') return 'signup';
-  if (hash === 'vault' || hash.startsWith('file/')) return 'vault';
-  return 'home';
+function parseHash() {
+  const raw = window.location.hash.replace('#', '');
+  const [path, qs] = raw.split('?');
+  const params = new URLSearchParams(qs || '');
+  if (path === 'login') return { route: 'login' as Route, shareId: null };
+  if (path === 'signup') return { route: 'signup' as Route, shareId: null };
+  if (path === 'vault') return { route: 'vault' as Route, shareId: params.get('f') };
+  if (path === 'share' || path.startsWith('file/')) {
+    return { route: 'share' as Route, shareId: params.get('f') || path.replace('file/', '') };
+  }
+  if (params.get('f')) return { route: 'share' as Route, shareId: params.get('f') };
+  return { route: 'home' as Route, shareId: null };
 }
 
 export function RouterProvider({ children }: { children: ReactNode }) {
-  const [route, setRoute] = useState<Route>(() => getRouteFromHash());
+  const [state, setState] = useState(() => parseHash());
 
   useEffect(() => {
-    const handler = () => setRoute(getRouteFromHash());
+    const handler = () => setState(parseHash());
     window.addEventListener('hashchange', handler);
     return () => window.removeEventListener('hashchange', handler);
   }, []);
 
-  const navigate = useCallback((to: Route) => {
+  const navigate = useCallback((to: Route, extra?: string) => {
     if (to === 'home') {
       history.pushState(null, '', window.location.pathname);
-      setRoute('home');
+      setState({ route: 'home', shareId: null });
+    } else if (to === 'share' && extra) {
+      window.location.hash = `share?f=${extra}`;
     } else {
       window.location.hash = to;
     }
   }, []);
 
   return (
-    <RouterContext.Provider value={{ route, navigate }}>
+    <RouterContext.Provider value={{ route: state.route, shareId: state.shareId, navigate }}>
       {children}
     </RouterContext.Provider>
   );

@@ -12,6 +12,7 @@ import Cart from './components/Cart';
 import LoginPage from './components/LoginPage';
 import SignupPage from './components/SignupPage';
 import VaultPage from './components/VaultPage';
+import SharePage from './components/SharePage';
 
 function Shell() {
   const { route } = useRouter();
@@ -19,6 +20,7 @@ function Shell() {
   if (route === 'login') return <LoginPage />;
   if (route === 'signup') return <SignupPage />;
   if (route === 'vault') return <VaultPage />;
+  if (route === 'share') return <SharePage />;
 
   return (
     <div className="mesh min-h-screen">

@@ -10,15 +10,24 @@ export interface VaultFile {
   createdAt: string;
   ownerId: string;
   public: boolean;
+  folder: string;
+  starred: boolean;
+  downloads: number;
 }
 
 interface VaultContextType {
   files: VaultFile[];
+  folders: string[];
   usedBytes: number;
-  addFiles: (fileList: FileList | File[]) => Promise<{ ok: boolean; error?: string }>;
+  addFiles: (fileList: FileList | File[], folder?: string) => Promise<{ ok: boolean; error?: string }>;
   removeFile: (id: string) => void;
   togglePublic: (id: string) => void;
+  toggleStar: (id: string) => void;
   renameFile: (id: string, name: string) => void;
+  moveFile: (id: string, folder: string) => void;
+  addFolder: (name: string) => void;
+  bumpDownload: (id: string) => void;
+  getFile: (id: string) => VaultFile | undefined;
   getPublicFile: (id: string) => VaultFile | undefined;
 }
 
@@ -34,7 +43,13 @@ export function useVault() {
 function loadAll(): VaultFile[] {
   try {
     const raw = localStorage.getItem('rb_vault');
-    return raw ? JSON.parse(raw) : [];
+    const parsed = raw ? JSON.parse(raw) : [];
+    return parsed.map((f: VaultFile) => ({
+      ...f,
+      folder: f.folder || 'inbox',
+      starred: !!f.starred,
+      downloads: f.downloads || 0,
+    }));
   } catch {
     return [];
   }
@@ -56,15 +71,27 @@ function readAsDataUrl(file: File): Promise<string> {
 export function VaultProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const [all, setAll] = useState<VaultFile[]>(() => loadAll());
+  const [extraFolders, setExtraFolders] = useState<string[]>(() => {
+    try {
+      return JSON.parse(localStorage.getItem('rb_folders') || '[]');
+    } catch {
+      return [];
+    }
+  });
 
   useEffect(() => {
     saveAll(all);
   }, [all]);
 
+  useEffect(() => {
+    localStorage.setItem('rb_folders', JSON.stringify(extraFolders));
+  }, [extraFolders]);
+
   const files = all.filter((f) => user && f.ownerId === user.id);
   const usedBytes = files.reduce((n, f) => n + f.size, 0);
+  const folders = Array.from(new Set(['inbox', ...extraFolders, ...files.map((f) => f.folder)]));
 
-  const addFiles = useCallback(async (fileList: FileList | File[]) => {
+  const addFiles = useCallback(async (fileList: FileList | File[], folder = 'inbox') => {
     if (!user) return { ok: false, error: 'log in first' };
     const incoming = Array.from(fileList);
     if (!incoming.length) return { ok: false, error: 'no files' };
@@ -84,6 +111,9 @@ export function VaultProvider({ children }: { children: ReactNode }) {
         createdAt: new Date().toISOString(),
         ownerId: user.id,
         public: false,
+        folder,
+        starred: false,
+        downloads: 0,
       });
     }
     setAll((prev) => [...next, ...prev]);
@@ -98,18 +128,35 @@ export function VaultProvider({ children }: { children: ReactNode }) {
     setAll((prev) => prev.map((f) => (f.id === id ? { ...f, public: !f.public } : f)));
   }, []);
 
+  const toggleStar = useCallback((id: string) => {
+    setAll((prev) => prev.map((f) => (f.id === id ? { ...f, starred: !f.starred } : f)));
+  }, []);
+
   const renameFile = useCallback((id: string, name: string) => {
     const clean = name.trim();
     if (!clean) return;
     setAll((prev) => prev.map((f) => (f.id === id ? { ...f, name: clean } : f)));
   }, []);
 
-  const getPublicFile = useCallback((id: string) => {
-    return all.find((f) => f.id === id && f.public);
-  }, [all]);
+  const moveFile = useCallback((id: string, folder: string) => {
+    setAll((prev) => prev.map((f) => (f.id === id ? { ...f, folder } : f)));
+  }, []);
+
+  const addFolder = useCallback((name: string) => {
+    const clean = name.trim().toLowerCase().replace(/\s+/g, '-');
+    if (!clean) return;
+    setExtraFolders((prev) => (prev.includes(clean) ? prev : [...prev, clean]));
+  }, []);
+
+  const bumpDownload = useCallback((id: string) => {
+    setAll((prev) => prev.map((f) => (f.id === id ? { ...f, downloads: (f.downloads || 0) + 1 } : f)));
+  }, []);
+
+  const getFile = useCallback((id: string) => all.find((f) => f.id === id), [all]);
+  const getPublicFile = useCallback((id: string) => all.find((f) => f.id === id && f.public), [all]);
 
   return (
-    <VaultContext.Provider value={{ files, usedBytes, addFiles, removeFile, togglePublic, renameFile, getPublicFile }}>
+    <VaultContext.Provider value={{ files, folders, usedBytes, addFiles, removeFile, togglePublic, toggleStar, renameFile, moveFile, addFolder, bumpDownload, getFile, getPublicFile }}>
       {children}
     </VaultContext.Provider>
   );

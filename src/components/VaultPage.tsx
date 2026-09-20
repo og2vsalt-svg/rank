@@ -35,8 +35,8 @@ export default function VaultPage() {
   const { isLoggedIn, user } = useAuth();
   const { navigate } = useRouter();
   const {
-    files, trash, folders, tags, usedBytes, addFiles, addText, removeFile, restoreFile, purgeFile, emptyTrash,
-    togglePublic, toggleStar, togglePin, renameFile, moveFile, moveMany, trashMany, addFolder, setNote, setTags, setExpiry, setColor, duplicateFile, bumpDownload,
+    files, trash, folders, tags, usedBytes, activity, addFiles, addText, removeFile, restoreFile, purgeFile, emptyTrash,
+    togglePublic, toggleStar, togglePin, renameFile, moveFile, moveMany, trashMany, addFolder, setNote, setTags, setExpiry, setColor, setLock, duplicateFile, bumpDownload, exportVault, importVault,
   } = useVault();
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
@@ -143,6 +143,19 @@ export default function VaultPage() {
             <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
               <div className="flex-1">
                 <p className="text-xs text-neutral-500">{formatBytes(usedBytes)} on this device · {user?.username} · {trash.length} in trash · paste a file anytime</p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <button onClick={exportVault} className="text-xs px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10">export vault</button>
+                  <label className="text-xs px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 cursor-pointer">
+                    import json
+                    <input type="file" accept="application/json" className="hidden" onChange={async (e) => {
+                      const f = e.target.files?.[0];
+                      if (!f) return;
+                      const res = await importVault(f);
+                      ping(res.ok ? `imported ${res.count}` : (res.error || 'import failed'));
+                      e.target.value = '';
+                    }} />
+                  </label>
+                </div>
               </div>
               <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="search files, notes, tags" className="sm:w-56 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm outline-none focus:border-[#0a84ff]/50" />
             </div>
@@ -273,6 +286,7 @@ export default function VaultPage() {
                           <button onClick={() => togglePin(file.id)} className="text-xs px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 transition">{file.pinned ? 'unpin' : 'pin'}</button>
                           <button onClick={() => toggleStar(file.id)} className="text-xs px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 transition">{file.starred ? 'starred' : 'star'}</button>
                           <button onClick={() => togglePublic(file.id)} className="text-xs px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 transition">{file.public ? 'public' : 'private'}</button>
+                          <input defaultValue={file.lockPass} placeholder="share pass" onBlur={(e) => setLock(file.id, e.target.value)} className="text-xs w-24 px-2 py-1.5 rounded-full bg-white/5 outline-none" />
                           <button onClick={() => copyLink(file.id)} className="text-xs px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 transition">copy link</button>
                           <button onClick={() => { duplicateFile(file.id); ping('duplicated'); }} className="text-xs px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 transition">duplicate</button>
                           <select value={file.folder} onChange={(e) => moveFile(file.id, e.target.value)} className="text-xs px-2 py-1.5 rounded-full bg-white/5 border-0 outline-none">
@@ -290,6 +304,17 @@ export default function VaultPage() {
 
             {!shown.length && (
               <p className="text-center text-neutral-600 text-sm mt-10">{showTrash ? 'trash is empty.' : 'nothing in here yet.'}</p>
+            )}
+
+            {activity.length > 0 && (
+              <div className="mt-12">
+                <p className="text-xs text-neutral-500 mb-3">recent activity</p>
+                <ul className="space-y-1.5">
+                  {activity.slice(0, 8).map((ev) => (
+                    <li key={ev.id} className="text-xs text-neutral-500">{new Date(ev.at).toLocaleString()} — {ev.text}</li>
+                  ))}
+                </ul>
+              </div>
             )}
           </>
         )}

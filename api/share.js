@@ -1,10 +1,16 @@
-import { put, head } from '@vercel/blob';
+import { put } from '@vercel/blob';
 
 export const config = {
   api: {
     bodyParser: false,
   },
 };
+
+const SUPABASE_URL = (process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || 'https://tqfocdktvjuwoiyfgesb.supabase.co').replace(/\/$/, '');
+const SUPABASE_KEY =
+  process.env.SUPABASE_ANON_KEY ||
+  process.env.VITE_SUPABASE_ANON_KEY ||
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
 
 function cors(res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -24,18 +30,74 @@ async function readBody(req) {
 
 function blobOpts() {
   const token = process.env.BLOB_READ_WRITE_TOKEN;
-  return { token };
+  return token ? { token } : null;
+}
+
+function sbHeaders() {
+  return {
+    apikey: SUPABASE_KEY,
+    Authorization: `Bearer ${SUPABASE_KEY}`,
+    'Content-Type': 'application/json',
+    Prefer: 'return=representation',
+  };
+}
+
+async function sbGetShare(id) {
+  const url = `${SUPABASE_URL}/rest/v1/public_shares?id=eq.${encodeURIComponent(id)}&select=*&limit=1`;
+  const r = await fetch(url, { headers: sbHeaders() });
+  if (!r.ok) return null;
+  const rows = await r.json();
+  return Array.isArray(rows) && rows[0] ? rows[0] : null;
+}
+
+async function sbUpsertShare(row) {
+  const url = `${SUPABASE_URL}/rest/v1/public_shares`;
+  const r = await fetch(url, {
+    method: 'POST',
+    headers: {
+      ...sbHeaders(),
+      Prefer: 'resolution=merge-duplicates,return=representation',
+    },
+    body: JSON.stringify(row),
+  });
+  if (!r.ok) {
+    const text = await r.text();
+    throw new Error(`supabase insert failed: ${r.status} ${text}`);
+  }
+  const rows = await r.json();
+  return Array.isArray(rows) ? rows[0] : rows;
+}
+
+async function sbBumpDownload(id, next) {
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/public_shares?id=eq.${encodeURIComponent(id)}`, {
+      method: 'PATCH',
+      headers: sbHeaders(),
+      body: JSON.stringify({ download_count: next, updated_at: new Date().toISOString() }),
+    });
+  } catch {}
+}
+
+function rowToMeta(row) {
+  return {
+    id: row.id,
+    name: row.name,
+    type: row.mime || 'application/octet-stream',
+    size: Number(row.size) || 0,
+    url: row.file_url,
+    lockPass: row.lock_pass || '',
+    expiresAt: row.expires_at || null,
+    createdAt: row.created_at,
+    downloads: Number(row.download_count) || 0,
+    author: row.author || null,
+    meta: row.meta || {},
+  };
 }
 
 export default async function handler(req, res) {
   cors(res);
   if (req.method === 'OPTIONS') {
     res.status(204).end();
-    return;
-  }
-
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    res.status(503).json({ error: 'blob store not configured. set BLOB_READ_WRITE_TOKEN (+ optional BLOB_STORE_ID) on vercel.' });
     return;
   }
 
@@ -47,21 +109,25 @@ export default async function handler(req, res) {
         return;
       }
 
-      const metaPath = `meta/${id}.json`;
-      let meta;
-      try {
-        const listed = await head(metaPath, blobOpts());
-        const r = await fetch(listed.url);
-        if (!r.ok) throw new Error('meta missing');
-        meta = await r.json();
-      } catch {
+      const row = await sbGetShare(id);
+      if (!row) {
         res.status(404).json({ error: 'share not found' });
         return;
       }
 
-      if (meta.expiresAt && +new Date(meta.expiresAt) < Date.now()) {
+      if (row.expires_at && +new Date(row.expires_at) < Date.now()) {
         res.status(410).json({ error: 'share expired' });
         return;
+      }
+
+      if (!row.is_public) {
+        res.status(404).json({ error: 'share not found' });
+        return;
+      }
+
+      const meta = rowToMeta(row);
+      if (req.query.dl === '1') {
+        sbBumpDownload(id, (Number(row.download_count) || 0) + 1);
       }
 
       res.status(200).json(meta);
@@ -71,14 +137,14 @@ export default async function handler(req, res) {
     if (req.method === 'POST') {
       const contentType = req.headers['content-type'] || '';
       if (!contentType.includes('application/json')) {
-        res.status(400).json({ error: 'send json { id?, name, type, size, dataUrl, lockPass?, expiresAt? }' });
+        res.status(400).json({ error: 'send json { id?, name, type, size, dataUrl, lockPass?, expiresAt?, author? }' });
         return;
       }
 
       const raw = await readBody(req);
       const body = JSON.parse(raw.toString('utf8'));
-      const id = (body.id || uid()).toString();
-      const name = (body.name || 'file').toString();
+      const id = (body.id || uid()).toString().slice(0, 64);
+      const name = (body.name || 'file').toString().slice(0, 512);
       const type = (body.type || 'application/octet-stream').toString();
       const dataUrl = body.dataUrl;
       if (!dataUrl || typeof dataUrl !== 'string' || !dataUrl.startsWith('data:')) {
@@ -87,40 +153,62 @@ export default async function handler(req, res) {
       }
 
       const comma = dataUrl.indexOf(',');
+      if (comma < 0) {
+        res.status(400).json({ error: 'bad dataUrl' });
+        return;
+      }
       const b64 = dataUrl.slice(comma + 1);
       const buf = Buffer.from(b64, 'base64');
+      const size = Number(body.size) || buf.length;
 
-      const fileBlob = await put(`shares/${id}/${name}`, buf, {
-        access: 'public',
-        contentType: type,
-        addRandomSuffix: false,
-        allowOverwrite: true,
-        ...blobOpts(),
-      });
+      let fileUrl = null;
+      const opts = blobOpts();
+      if (opts) {
+        const fileBlob = await put(`shares/${id}/${name}`, buf, {
+          access: 'public',
+          contentType: type,
+          addRandomSuffix: false,
+          allowOverwrite: true,
+          ...opts,
+        });
+        fileUrl = fileBlob.url;
+      } else if (buf.length <= 1.5 * 1024 * 1024) {
+        fileUrl = dataUrl;
+      } else {
+        res.status(503).json({
+          error: 'file too large for inline storage. set BLOB_READ_WRITE_TOKEN on vercel, or drop something under ~1.5mb.',
+        });
+        return;
+      }
 
-      const meta = {
+      const warn = size > 40 * 1024 * 1024 ? 'large drop. preview clients may feel slow.' : null;
+
+      const row = {
         id,
         name,
-        type,
-        size: body.size || buf.length,
-        url: fileBlob.url,
-        lockPass: body.lockPass || '',
-        expiresAt: body.expiresAt || null,
-        createdAt: new Date().toISOString(),
-        downloads: 0,
-        storeId: process.env.BLOB_STORE_ID || null,
-        warn: buf.length > 40 * 1024 * 1024 ? 'large drop. preview clients may feel slow.' : null,
+        mime: type,
+        size,
+        file_url: fileUrl,
+        lock_pass: body.lockPass || null,
+        expires_at: body.expiresAt || null,
+        is_public: true,
+        download_count: 0,
+        author: body.author || null,
+        meta: { warn, source: 'rankvault' },
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       };
 
-      await put(`meta/${id}.json`, JSON.stringify(meta), {
-        access: 'public',
-        contentType: 'application/json',
-        addRandomSuffix: false,
-        allowOverwrite: true,
-        ...blobOpts(),
-      });
+      await sbUpsertShare(row);
 
-      res.status(200).json({ ok: true, id, url: fileBlob.url, sharePath: `/#share?f=${id}`, embedPath: `/s/${id}` });
+      res.status(200).json({
+        ok: true,
+        id,
+        url: fileUrl,
+        sharePath: `/#share?f=${id}`,
+        embedPath: `/s/${id}`,
+        warn,
+      });
       return;
     }
 

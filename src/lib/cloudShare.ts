@@ -1,3 +1,5 @@
+/** cloud share helpers — server routes write/read public.public_shares on supabase */
+
 export type CloudMeta = {
   id: string;
   name: string;
@@ -8,6 +10,7 @@ export type CloudMeta = {
   expiresAt?: string | null;
   createdAt?: string;
   downloads?: number;
+  author?: string | null;
 };
 
 export async function publishShare(payload: {
@@ -18,7 +21,8 @@ export async function publishShare(payload: {
   dataUrl: string;
   lockPass?: string;
   expiresAt?: string | null;
-}): Promise<{ ok: boolean; id?: string; error?: string }> {
+  author?: string;
+}): Promise<{ ok: boolean; id?: string; url?: string; error?: string }> {
   try {
     const res = await fetch('/api/share', {
       method: 'POST',
@@ -27,7 +31,7 @@ export async function publishShare(payload: {
     });
     const data = await res.json();
     if (!res.ok) return { ok: false, error: data.error || 'upload failed' };
-    return { ok: true, id: data.id };
+    return { ok: true, id: data.id, url: data.url };
   } catch (e: any) {
     return { ok: false, error: e?.message || 'network error' };
   }

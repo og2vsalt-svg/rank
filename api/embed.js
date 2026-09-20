@@ -1,4 +1,8 @@
-import { head } from '@vercel/blob';
+const SUPABASE_URL = (process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || 'https://tqfocdktvjuwoiyfgesb.supabase.co').replace(/\/$/, '');
+const SUPABASE_KEY =
+  process.env.SUPABASE_ANON_KEY ||
+  process.env.VITE_SUPABASE_ANON_KEY ||
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
 
 function esc(s) {
   return String(s || '')
@@ -13,7 +17,7 @@ function isBot(ua) {
   return /discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|skype|linkedinbot|embed|preview|bot|crawler|spider/.test(u);
 }
 
-function page({ title, desc, image, url, type, color }) {
+function page({ title, desc, image, url, color }) {
   const img = image || 'https://og2vsalt-svg.github.io/rank/og.png';
   return `<!doctype html>
 <html lang="en">
@@ -43,6 +47,23 @@ function page({ title, desc, image, url, type, color }) {
 </html>`;
 }
 
+async function loadShare(id) {
+  try {
+    const url = `${SUPABASE_URL}/rest/v1/public_shares?id=eq.${encodeURIComponent(id)}&select=id,name,mime,size,file_url,expires_at,is_public&limit=1`;
+    const r = await fetch(url, {
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`,
+      },
+    });
+    if (!r.ok) return null;
+    const rows = await r.json();
+    return Array.isArray(rows) && rows[0] ? rows[0] : null;
+  } catch {
+    return null;
+  }
+}
+
 export default async function handler(req, res) {
   const id = (req.query.id || '').toString().trim();
   const proto = (req.headers['x-forwarded-proto'] || 'https').toString();
@@ -55,20 +76,13 @@ export default async function handler(req, res) {
     return;
   }
 
-  let meta = null;
-  if (process.env.BLOB_READ_WRITE_TOKEN) {
-    try {
-      const listed = await head(`meta/${id}.json`, { token: process.env.BLOB_READ_WRITE_TOKEN });
-      const r = await fetch(listed.url);
-      if (r.ok) meta = await r.json();
-    } catch {}
-  }
-
-  const title = meta ? `${meta.name} — rankvault` : 'rankvault drop';
-  const desc = meta
-    ? `${meta.type || 'file'} · ${Math.round((meta.size || 0) / 1024)} kb · quiet public drop`
+  const row = await loadShare(id);
+  const live = row && row.is_public && (!row.expires_at || +new Date(row.expires_at) > Date.now());
+  const title = live ? `${row.name} — rankvault` : 'rankvault drop';
+  const desc = live
+    ? `${row.mime || 'file'} · ${Math.round((Number(row.size) || 0) / 1024)} kb · quiet public drop`
     : 'a quiet file drop. open to download.';
-  const image = meta && String(meta.type || '').startsWith('image/') ? meta.url : undefined;
+  const image = live && String(row.mime || '').startsWith('image/') ? row.file_url : undefined;
 
   if (!isBot(req.headers['user-agent']) && req.query.embed !== '1') {
     res.status(302).setHeader('Location', appUrl);
@@ -78,5 +92,5 @@ export default async function handler(req, res) {
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
-  res.status(200).send(page({ title, desc, image, url: appUrl, type: meta?.type, color: '#0a84ff' }));
+  res.status(200).send(page({ title, desc, image, url: appUrl, color: '#0a84ff' }));
 }

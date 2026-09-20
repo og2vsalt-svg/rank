@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from './Router';
 import { useVault } from './VaultContext';
@@ -13,6 +14,9 @@ export default function SharePage() {
   const { shareId, navigate } = useRouter();
   const { getPublicFile, bumpDownload } = useVault();
   const file = shareId ? getPublicFile(shareId) : undefined;
+  const [pass, setPass] = useState('');
+  const [ok, setOk] = useState(false);
+  const locked = !!(file && file.lockPass && !ok);
 
   return (
     <div className="mesh min-h-screen">
@@ -25,6 +29,22 @@ export default function SharePage() {
               <h1 className="text-3xl font-semibold mb-3">this link is private, expired, or gone.</h1>
               <p className="text-neutral-400 mb-6">either it was never marked public, the timer ran out, or it lives on another device. vault files stay local in this demo.</p>
               <button onClick={() => navigate('vault')} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium">open vault</button>
+            </>
+          ) : locked ? (
+            <>
+              <p className="text-[#0a84ff] text-sm mb-2">locked drop</p>
+              <h1 className="text-3xl font-semibold tracking-tight mb-3">{file.name}</h1>
+              <p className="text-sm text-neutral-500 mb-5">this share has a passcode. type it to peek.</p>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (pass === file.lockPass) setOk(true);
+                }}
+                className="flex gap-2"
+              >
+                <input value={pass} onChange={(e) => setPass(e.target.value)} type="password" placeholder="passcode" className="flex-1 px-4 py-2.5 rounded-full bg-white/5 border border-white/10 text-sm outline-none" />
+                <button type="submit" className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium">unlock</button>
+              </form>
             </>
           ) : (
             <>
@@ -46,6 +66,6 @@ export default function SharePage() {
           )}
         </motion.div>
       </div>
-    </div>
+    </n>
   );
 }

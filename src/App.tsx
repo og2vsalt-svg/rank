@@ -4,11 +4,9 @@ import { RouterProvider, useRouter } from './components/Router';
 import { VaultProvider } from './components/VaultContext';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
-import BoostTypes from './components/BoostTypes';
-import PricingTabs from './components/PricingTabs';
+import Features from './components/Features';
 import FAQ from './components/FAQ';
 import Footer from './components/Footer';
-import Cart from './components/Cart';
 import LoginPage from './components/LoginPage';
 import SignupPage from './components/SignupPage';
 import VaultPage from './components/VaultPage';
@@ -27,12 +25,10 @@ function Shell() {
       <Navbar />
       <main>
         <Hero />
-        <BoostTypes />
-        <PricingTabs />
+        <Features />
         <FAQ />
       </main>
       <Footer />
-      <Cart />
     </div>
   );
 }

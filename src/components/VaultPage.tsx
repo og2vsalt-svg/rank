@@ -85,7 +85,7 @@ export default function VaultPage() {
         {!isLoggedIn ? (
           <div className="glass rounded-3xl p-10 text-center">
             <p className="text-lg text-white mb-2">sign in to open your vault</p>
-            <p className="text-sm text-neutral-500 mb-6">same account you already use for boosts.</p>
+            <p className="text-sm text-neutral-500 mb-6">same account keeps your folders together on this device.</p>
             <div className="flex justify-center gap-3">
               <button onClick={() => navigate('login')} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition">log in</button>
               <button onClick={() => navigate('signup')} className="px-5 py-2.5 rounded-full border border-white/15 text-sm text-white hover:bg-white/5 transition">sign up</button>

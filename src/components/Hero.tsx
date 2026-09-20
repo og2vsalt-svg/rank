@@ -1,8 +1,6 @@
 import { motion } from 'framer-motion';
 import { useRouter } from './Router';
 
-const DISCORD = 'https://discord.gg/vfhMrPW2Qu';
-
 export default function Hero() {
   const { navigate } = useRouter();
   return (
@@ -11,20 +9,19 @@ export default function Hero() {
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#af52de]/[0.08] rounded-full blur-[120px] pointer-events-none" />
 
       <div className="relative max-w-3xl mx-auto">
-        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[#0a84ff] text-sm font-medium mb-4 tracking-wide">file hosting + boosts</motion.p>
+        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[#0a84ff] text-sm font-medium mb-4 tracking-wide">private file hosting</motion.p>
 
         <motion.h1 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05, duration: 0.55, ease: [0.22, 1, 0.36, 1] }} className="text-4xl sm:text-5xl font-semibold text-white leading-[1.08] tracking-tight mb-5">
-          drop a file.<br />keep the grind offloaded.
+          drop a file.<br />share only if you want.
         </motion.h1>
 
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.12 }} className="text-neutral-400 text-lg leading-relaxed max-w-xl mb-8">
-          vault for your stuff. boosts when you want ranks done. same apple-quiet ui, no extra chrome.
+          a quiet vault for clips, docs, and dumps. preview in place, sort into folders, flip a file public when you need a link.
         </motion.p>
 
         <div className="flex flex-wrap gap-3 mb-12">
           <button onClick={() => navigate('vault')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black font-medium text-sm hover:bg-neutral-200 transition">open vault</button>
-          <a href={DISCORD} target="_blank" rel="noopener noreferrer" className="inline-flex px-5 py-2.5 rounded-full border border-white/12 text-neutral-300 text-sm hover:text-white transition">discord</a>
-          <a href="#ranks" className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">see prices</a>
+          <a href="#features" className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">see features</a>
         </div>
       </div>
     </section>

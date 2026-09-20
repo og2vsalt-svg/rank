@@ -6,6 +6,8 @@ const items = [
   { title: 'quiet share links', body: 'mark a file public and copy a hash link. optional expiry and a passcode so the drop dies or stays locked.' },
   { title: 'cloud share db', body: 'public drops land in supabase, with vercel blob when a token is set, so the link works on another device.' },
   { title: 'discord embeds', body: '/s/id and /p/page serve og tags so discord, slack, and x preview the filename like a real product.' },
+  { title: 'orbit shelf', body: 'pin share ids on this device so you stop losing the /s links.' },
+  { title: 'signal preview', body: 'mock the discord unfurl before you paste a live drop.' },
   { title: 'snapshot desk', body: 'paste a screenshot straight into the vault and flip it public if you want.' },
   { title: 'sketch pad', body: 'scribble locally and download a png. not a vault clone, just a quiet pad.' },
   { title: 'echo', body: 'poke a host and see how long the tab waits. different lane from files.' },

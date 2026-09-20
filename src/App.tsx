@@ -39,6 +39,9 @@ import SketchPage from './components/SketchPage';
 import EchoPage from './components/EchoPage';
 import LoomPage from './components/LoomPage';
 import SplitPage from './components/SplitPage';
+import BeaconPage from './components/BeaconPage';
+import WeavePage from './components/WeavePage';
+import AuraPage from './components/AuraPage';
 
 function Shell() {
   const { route } = useRouter();
@@ -76,6 +79,9 @@ function Shell() {
   if (route === 'echo') return <EchoPage />;
   if (route === 'loom') return <LoomPage />;
   if (route === 'split') return <SplitPage />;
+  if (route === 'beacon') return <BeaconPage />;
+  if (route === 'weave') return <WeavePage />;
+  if (route === 'aura') return <AuraPage />;
 
   return (
     <div className="mesh min-h-screen">

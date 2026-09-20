@@ -33,6 +33,9 @@ const links = [
   { to: 'echo' as const, label: 'echo' },
   { to: 'loom' as const, label: 'loom' },
   { to: 'split' as const, label: 'split' },
+  { to: 'beacon' as const, label: 'beacon' },
+  { to: 'weave' as const, label: 'weave' },
+  { to: 'aura' as const, label: 'aura' },
 ];
 
 export default function Navbar() {
@@ -98,7 +101,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      <div className={`border-t border-white/5 overflow-hidden transition-all duration-300 ease-out ${menuOpen ? 'max-h-[720px] opacity-100' : 'max-h-0 opacity-0'}`}>
+      <div className={`border-t border-white/5 overflow-hidden transition-all duration-300 ease-out ${menuOpen ? 'max-h-[820px] opacity-100' : 'max-h-0 opacity-0'}`}>
         <div className="px-5 py-4 grid grid-cols-2 sm:grid-cols-4 gap-1">
           {links.map((l) => (
             <button key={l.to} onClick={() => { setMenuOpen(false); navigate(l.to); }} className="block text-sm text-neutral-400 hover:text-white py-1.5 text-left">

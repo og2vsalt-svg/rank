@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"');
 }
 
 function isBot(ua) {
@@ -85,6 +85,9 @@ const PAGE_TITLES = {
   beacon: 'beacon — rankvault',
   weave: 'weave — rankvault',
   aura: 'aura — rankvault',
+  cipher: 'cipher — rankvault',
+  prism: 'prism — rankvault',
+  flux: 'flux — rankvault',
   convert: 'convert — rankvault',
   qr: 'qr — rankvault',
   clip: 'clip — rankvault',

@@ -17,7 +17,7 @@ function isBot(ua) {
   return /discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|skype|linkedinbot|embed|preview|bot|crawler|spider/.test(u);
 }
 
-function page({ title, desc, image, url, color }) {
+function pageHtml({ title, desc, image, url, color }) {
   const img = image || 'https://og2vsalt-svg.github.io/rank/og.png';
   return `<!doctype html>
 <html lang="en">
@@ -70,8 +70,34 @@ async function loadShare(id) {
 
 export default async function handler(req, res) {
   const id = (req.query.id || '').toString().trim();
+  const page = (req.query.page || '').toString().trim();
   const proto = (req.headers['x-forwarded-proto'] || 'https').toString();
   const host = (req.headers['x-forwarded-host'] || req.headers.host || '').toString();
+
+  if (page && !id) {
+    const dest = `${proto}://${host}/#${encodeURIComponent(page)}`;
+    const titles = {
+      vault: 'vault — rankvault',
+      drop: 'drop — rankvault',
+      transfer: 'transfer — rankvault',
+      notes: 'notes — rankvault',
+      paste: 'paste — rankvault',
+      json: 'json desk — rankvault',
+      board: 'board — rankvault',
+      stash: 'stash — rankvault',
+    };
+    const title = titles[page] || `${page} — rankvault`;
+    const desc = 'quiet file hosting and side desks. share only if you want.';
+    if (!isBot(req.headers['user-agent']) && req.query.embed !== '1') {
+      res.status(302).setHeader('Location', dest);
+      res.end();
+      return;
+    }
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.status(200).send(pageHtml({ title, desc, image: undefined, url: dest, color: '#0a84ff' }));
+    return;
+  }
+
   const appUrl = `${proto}://${host}/#share?f=${encodeURIComponent(id)}`;
 
   if (!id) {
@@ -96,5 +122,5 @@ export default async function handler(req, res) {
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
-  res.status(200).send(page({ title, desc, image, url: appUrl, color: '#0a84ff' }));
+  res.status(200).send(pageHtml({ title, desc, image, url: appUrl, color: '#0a84ff' }));
 }

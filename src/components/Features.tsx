@@ -45,6 +45,18 @@ const items = [
     title: 'apple-soft motion',
     body: 'springy buttons, glass cards, blur. supposed to feel like something a human actually designed.',
   },
+  {
+    title: 'albums',
+    body: 'group drops into albums on top of folders. same file can live in inbox and sit in a set.',
+  },
+  {
+    title: 'keyboard + compact',
+    body: 'slash to search, g/l to flip views, question mark for the cheat sheet. compact grid when the pile is huge.',
+  },
+  {
+    title: 'storage split',
+    body: 'see how much of the tab is images vs clips vs docs. still no cap, just honesty about lag.',
+  },
 ];
 
 export default function Features() {

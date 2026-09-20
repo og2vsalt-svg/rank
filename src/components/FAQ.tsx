@@ -19,7 +19,11 @@ const faqs = [
   },
   {
     q: 'can i organize stuff?',
-    a: 'folders, rename, favorites, color dots, search, grid or list. pretty much the usual kit.',
+    a: 'folders, albums, rename, favorites, color dots, search, grid or list. pretty much the usual kit.',
+  },
+  {
+    q: 'is there a file size limit?',
+    a: 'no hard cap. huge drops just warn that the tab might get sleepy while it encodes.',
   },
 ];
 

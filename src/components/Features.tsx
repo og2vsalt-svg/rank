@@ -6,20 +6,20 @@ const items = [
     body: 'files live in your browser for this demo. nothing ships to a random box unless you copy a public link.',
   },
   {
-    title: 'folders + favorites',
-    body: 'inbox by default. make folders, move stuff around, star the ones you keep hitting.',
+    title: 'folders + favorites + pins',
+    body: 'inbox by default. make folders, star keepers, pin the ones that should float to the top.',
   },
   {
     title: 'quiet share links',
-    body: 'mark a file public and copy a hash link. unmarked files stay private even if someone guesses an id.',
+    body: 'mark a file public and copy a hash link. optional expiry so the drop dies on its own.',
   },
   {
-    title: 'inline preview',
-    body: 'images, video, audio, and text open in a soft sheet. everything else just downloads clean.',
+    title: 'paste or drop',
+    body: 'cmd/ctrl-v a screenshot or file right into the vault. drag works too.',
   },
   {
-    title: 'trash + notes',
-    body: 'deletes sit in trash until you purge them. drop a note on a file so you remember why it is there.',
+    title: 'tags + notes',
+    body: 'label dumps so search actually finds them later. notes sit on the preview sheet.',
   },
   {
     title: 'no hard file cap',

@@ -22,15 +22,15 @@ export default function SharePage() {
           {!file ? (
             <>
               <p className="text-[#0a84ff] text-sm mb-2">share</p>
-              <h1 className="text-3xl font-semibold mb-3">this link is private or gone.</h1>
-              <p className="text-neutral-400 mb-6">either it was never marked public, or it lives on another device. vault files stay local in this demo.</p>
+              <h1 className="text-3xl font-semibold mb-3">this link is private, expired, or gone.</h1>
+              <p className="text-neutral-400 mb-6">either it was never marked public, the timer ran out, or it lives on another device. vault files stay local in this demo.</p>
               <button onClick={() => navigate('vault')} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium">open vault</button>
             </>
           ) : (
             <>
               <p className="text-[#0a84ff] text-sm mb-2">public drop</p>
               <h1 className="text-3xl font-semibold tracking-tight mb-2">{file.name}</h1>
-              <p className="text-sm text-neutral-500 mb-6">{formatBytes(file.size)} · {file.type || 'file'} · {file.downloads} downloads</p>
+              <p className="text-sm text-neutral-500 mb-6">{formatBytes(file.size)} · {file.type || 'file'} · {file.downloads} downloads{file.expiresAt ? ' · expires ' + new Date(file.expiresAt).toLocaleString() : ''}</p>
               {file.type.startsWith('image/') && <img src={file.dataUrl} alt="" className="w-full rounded-2xl mb-6" />}
               {file.type.startsWith('video/') && <video src={file.dataUrl} controls className="w-full rounded-2xl mb-6" />}
               {file.type.startsWith('audio/') && <audio src={file.dataUrl} controls className="w-full mb-6" />}

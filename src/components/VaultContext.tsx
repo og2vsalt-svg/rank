@@ -19,6 +19,13 @@ export interface VaultFile {
   expiresAt: string | null;
   trashed: boolean;
   color: string;
+  lockPass: string;
+}
+
+export interface VaultEvent {
+  id: string;
+  at: string;
+  text: string;
 }
 
 interface VaultContextType {
@@ -27,6 +34,7 @@ interface VaultContextType {
   folders: string[];
   tags: string[];
   usedBytes: number;
+  activity: VaultEvent[];
   addFiles: (fileList: FileList | File[], folder?: string) => Promise<{ ok: boolean; error?: string; warn?: string }>;
   addText: (name: string, body: string, folder?: string) => Promise<{ ok: boolean; error?: string }>;
   removeFile: (id: string) => void;
@@ -45,8 +53,11 @@ interface VaultContextType {
   setTags: (id: string, tags: string[]) => void;
   setExpiry: (id: string, hours: number | null) => void;
   setColor: (id: string, color: string) => void;
+  setLock: (id: string, pass: string) => void;
   duplicateFile: (id: string) => void;
   bumpDownload: (id: string) => void;
+  exportVault: () => void;
+  importVault: (file: File) => Promise<{ ok: boolean; error?: string; count?: number }>;
   getFile: (id: string) => VaultFile | undefined;
   getPublicFile: (id: string) => VaultFile | undefined;
 }
@@ -74,6 +85,7 @@ function loadAll(): VaultFile[] {
       expiresAt: f.expiresAt || null,
       trashed: !!f.trashed,
       color: f.color || 'none',
+      lockPass: f.lockPass || '',
     }));
   } catch {
     return [];
@@ -116,6 +128,13 @@ export function VaultProvider({ children }: { children: ReactNode }) {
       return [];
     }
   });
+  const [activity, setActivity] = useState<VaultEvent[]>(() => {
+    try {
+      return JSON.parse(localStorage.getItem('rb_activity') || '[]').slice(0, 40);
+    } catch {
+      return [];
+    }
+  });
 
   useEffect(() => {
     saveAll(all);
@@ -124,6 +143,14 @@ export function VaultProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     localStorage.setItem('rb_folders', JSON.stringify(extraFolders));
   }, [extraFolders]);
+
+  useEffect(() => {
+    localStorage.setItem('rb_activity', JSON.stringify(activity.slice(0, 40)));
+  }, [activity]);
+
+  const log = useCallback((text: string) => {
+    setActivity((prev) => [{ id: uid(), at: new Date().toISOString(), text }, ...prev].slice(0, 40));
+  }, []);
 
   const mine = all.filter((f) => user && f.ownerId === user.id);
   const files = mine.filter((f) => !f.trashed);
@@ -163,11 +190,13 @@ export function VaultProvider({ children }: { children: ReactNode }) {
         expiresAt: null,
         trashed: false,
         color: 'none',
+        lockPass: '',
       });
     }
     setAll((prev) => [...next, ...prev]);
+    log(`added ${next.length} file${next.length > 1 ? 's' : ''} to ${folder}`);
     return { ok: true, warn };
-  }, [user]);
+  }, [user, log]);
 
   const addText = useCallback(async (name: string, body: string, folder = 'inbox') => {
     if (!user) return { ok: false, error: 'log in first' };
@@ -193,26 +222,32 @@ export function VaultProvider({ children }: { children: ReactNode }) {
       expiresAt: null,
       trashed: false,
       color: 'none',
+      lockPass: '',
     };
     setAll((prev) => [rec, ...prev]);
+    log(`saved snippet ${cleanName}`);
     return { ok: true };
-  }, [user]);
+  }, [user, log]);
 
   const removeFile = useCallback((id: string) => {
     setAll((prev) => prev.map((f) => (f.id === id ? { ...f, trashed: true } : f)));
-  }, []);
+    log('moved a file to trash');
+  }, [log]);
 
   const restoreFile = useCallback((id: string) => {
     setAll((prev) => prev.map((f) => (f.id === id ? { ...f, trashed: false } : f)));
-  }, []);
+    log('restored a file');
+  }, [log]);
 
   const purgeFile = useCallback((id: string) => {
     setAll((prev) => prev.filter((f) => f.id !== id));
-  }, []);
+    log('purged a file');
+  }, [log]);
 
   const emptyTrash = useCallback(() => {
     setAll((prev) => prev.filter((f) => !(user && f.ownerId === user.id && f.trashed)));
-  }, [user]);
+    log('emptied trash');
+  }, [user, log]);
 
   const togglePublic = useCallback((id: string) => {
     setAll((prev) => prev.map((f) => (f.id === id ? { ...f, public: !f.public } : f)));
@@ -239,12 +274,14 @@ export function VaultProvider({ children }: { children: ReactNode }) {
   const moveMany = useCallback((ids: string[], folder: string) => {
     const set = new Set(ids);
     setAll((prev) => prev.map((f) => (set.has(f.id) ? { ...f, folder } : f)));
-  }, []);
+    log(`moved ${ids.length} to ${folder}`);
+  }, [log]);
 
   const trashMany = useCallback((ids: string[]) => {
     const set = new Set(ids);
     setAll((prev) => prev.map((f) => (set.has(f.id) ? { ...f, trashed: true } : f)));
-  }, []);
+    log(`trashed ${ids.length}`);
+  }, [log]);
 
   const addFolder = useCallback((name: string) => {
     const clean = name.trim().toLowerCase().replace(/\s+/g, '-');
@@ -270,6 +307,11 @@ export function VaultProvider({ children }: { children: ReactNode }) {
     setAll((prev) => prev.map((f) => (f.id === id ? { ...f, color } : f)));
   }, []);
 
+  const setLock = useCallback((id: string, pass: string) => {
+    setAll((prev) => prev.map((f) => (f.id === id ? { ...f, lockPass: pass } : f)));
+    log(pass ? 'set a share passcode' : 'cleared a share passcode');
+  }, [log]);
+
   const duplicateFile = useCallback((id: string) => {
     setAll((prev) => {
       const src = prev.find((f) => f.id === id);
@@ -283,14 +325,61 @@ export function VaultProvider({ children }: { children: ReactNode }) {
         downloads: 0,
         trashed: false,
         pinned: false,
+        lockPass: '',
       };
       return [copy, ...prev];
     });
-  }, []);
+    log('duplicated a file');
+  }, [log]);
 
   const bumpDownload = useCallback((id: string) => {
     setAll((prev) => prev.map((f) => (f.id === id ? { ...f, downloads: (f.downloads || 0) + 1 } : f)));
   }, []);
+
+  const exportVault = useCallback(() => {
+    if (!user) return;
+    const payload = {
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      folders: extraFolders,
+      files: mine,
+    };
+    const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `rank-vault-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    log('exported vault');
+  }, [user, extraFolders, mine, log]);
+
+  const importVault = useCallback(async (file: File) => {
+    if (!user) return { ok: false, error: 'log in first' };
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      const incoming: VaultFile[] = Array.isArray(parsed) ? parsed : parsed.files;
+      if (!Array.isArray(incoming)) return { ok: false, error: 'not a vault export' };
+      const mapped = incoming.map((f) => ({
+        ...f,
+        id: uid(),
+        ownerId: user.id,
+        folder: f.folder || 'inbox',
+        tags: Array.isArray(f.tags) ? f.tags : [],
+        lockPass: f.lockPass || '',
+        trashed: !!f.trashed,
+      }));
+      setAll((prev) => [...mapped, ...prev]);
+      if (Array.isArray(parsed.folders)) {
+        setExtraFolders((prev) => Array.from(new Set([...prev, ...parsed.folders])));
+      }
+      log(`imported ${mapped.length} files`);
+      return { ok: true, count: mapped.length };
+    } catch {
+      return { ok: false, error: 'could not read that file' };
+    }
+  }, [user, log]);
 
   const getFile = useCallback((id: string) => all.find((f) => f.id === id), [all]);
   const getPublicFile = useCallback((id: string) => {
@@ -300,7 +389,7 @@ export function VaultProvider({ children }: { children: ReactNode }) {
   }, [all]);
 
   return (
-    <VaultContext.Provider value={{ files, trash, folders, tags, usedBytes, addFiles, addText, removeFile, restoreFile, purgeFile, emptyTrash, togglePublic, toggleStar, togglePin, renameFile, moveFile, moveMany, trashMany, addFolder, setNote, setTags, setExpiry, setColor, duplicateFile, bumpDownload, getFile, getPublicFile }}>
+    <VaultContext.Provider value={{ files, trash, folders, tags, usedBytes, activity, addFiles, addText, removeFile, restoreFile, purgeFile, emptyTrash, togglePublic, toggleStar, togglePin, renameFile, moveFile, moveMany, trashMany, addFolder, setNote, setTags, setExpiry, setColor, setLock, duplicateFile, bumpDownload, exportVault, importVault, getFile, getPublicFile }}>
       {children}
     </VaultContext.Provider>
   );

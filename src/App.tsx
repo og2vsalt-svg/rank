@@ -1,5 +1,4 @@
 import { AuthProvider } from './components/AuthContext';
-import { CartProvider } from './components/CartContext';
 import { RouterProvider, useRouter } from './components/Router';
 import { VaultProvider } from './components/VaultContext';
 import Navbar from './components/Navbar';
@@ -37,11 +36,9 @@ export default function App() {
   return (
     <RouterProvider>
       <AuthProvider>
-        <CartProvider>
-          <VaultProvider>
-            <Shell />
-          </VaultProvider>
-        </CartProvider>
+        <VaultProvider>
+          <Shell />
+        </VaultProvider>
       </AuthProvider>
     </RouterProvider>
   );

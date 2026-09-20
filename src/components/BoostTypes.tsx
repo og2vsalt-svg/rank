@@ -1,3 +1,3 @@
-export default function BoostTypes() {
+export default function Unused() {
   return null;
 }

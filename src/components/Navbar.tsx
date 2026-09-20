@@ -11,6 +11,9 @@ const links = [
   { to: 'notes' as const, label: 'notes' },
   { to: 'paste' as const, label: 'paste' },
   { to: 'status' as const, label: 'status' },
+  { to: 'hash' as const, label: 'hash' },
+  { to: 'palette' as const, label: 'palette' },
+  { to: 'pulse' as const, label: 'pulse' },
 ];
 
 export default function Navbar() {

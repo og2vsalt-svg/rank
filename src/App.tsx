@@ -37,6 +37,8 @@ import StashPage from './components/StashPage';
 import SnapshotPage from './components/SnapshotPage';
 import SketchPage from './components/SketchPage';
 import EchoPage from './components/EchoPage';
+import LoomPage from './components/LoomPage';
+import SplitPage from './components/SplitPage';
 
 function Shell() {
   const { route } = useRouter();
@@ -72,6 +74,8 @@ function Shell() {
   if (route === 'snapshot') return <SnapshotPage />;
   if (route === 'sketch') return <SketchPage />;
   if (route === 'echo') return <EchoPage />;
+  if (route === 'loom') return <LoomPage />;
+  if (route === 'split') return <SplitPage />;
 
   return (
     <div className="mesh min-h-screen">

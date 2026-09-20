@@ -25,6 +25,9 @@ import TimerPage from './components/TimerPage';
 import InspectPage from './components/InspectPage';
 import ZipPage from './components/ZipPage';
 import LinksPage from './components/LinksPage';
+import MarkdownPage from './components/MarkdownPage';
+import GalleryPage from './components/GalleryPage';
+import TransferPage from './components/TransferPage';
 
 function Shell() {
   const { route } = useRouter();
@@ -48,6 +51,9 @@ function Shell() {
   if (route === 'inspect') return <InspectPage />;
   if (route === 'zip') return <ZipPage />;
   if (route === 'links') return <LinksPage />;
+  if (route === 'markdown') return <MarkdownPage />;
+  if (route === 'gallery') return <GalleryPage />;
+  if (route === 'transfer') return <TransferPage />;
 
   return (
     <div className="mesh min-h-screen">

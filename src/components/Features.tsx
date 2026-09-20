@@ -7,7 +7,7 @@ const items = [
   },
   {
     title: 'folders + favorites',
-    body: 'inbox by default. make folders, drag stuff around, star the ones you keep hitting.',
+    body: 'inbox by default. make folders, move stuff around, star the ones you keep hitting.',
   },
   {
     title: 'quiet share links',
@@ -15,7 +15,15 @@ const items = [
   },
   {
     title: 'inline preview',
-    body: 'images, video, and audio open in a soft sheet. everything else just downloads clean.',
+    body: 'images, video, audio, and text open in a soft sheet. everything else just downloads clean.',
+  },
+  {
+    title: 'trash + notes',
+    body: 'deletes sit in trash until you purge them. drop a note on a file so you remember why it is there.',
+  },
+  {
+    title: 'no hard file cap',
+    body: 'drop whatever size you want. we only warn when a file is so big the tab might feel sleepy.',
   },
 ];
 
@@ -24,7 +32,7 @@ export default function Features() {
     <section className="py-16 px-5" id="features">
       <div className="max-w-5xl mx-auto">
         <h2 className="text-2xl font-semibold text-white mb-2 tracking-tight">built for dropping files</h2>
-        <p className="text-neutral-500 text-sm mb-8">no storefront. no carts. just a vault that feels like it belongs on a phone.</p>
+        <p className="text-neutral-500 text-sm mb-8">a vault that feels like it belongs on a phone.</p>
         <div className="grid md:grid-cols-2 gap-4">
           {items.map((item, i) => (
             <motion.div

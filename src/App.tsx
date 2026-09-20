@@ -20,6 +20,8 @@ import ClipPage from './components/ClipPage';
 import HashPage from './components/HashPage';
 import PalettePage from './components/PalettePage';
 import PulsePage from './components/PulsePage';
+import DiffPage from './components/DiffPage';
+import TimerPage from './components/TimerPage';
 
 function Shell() {
   const { route } = useRouter();
@@ -38,6 +40,8 @@ function Shell() {
   if (route === 'hash') return <HashPage />;
   if (route === 'palette') return <PalettePage />;
   if (route === 'pulse') return <PulsePage />;
+  if (route === 'diff') return <DiffPage />;
+  if (route === 'timer') return <TimerPage />;
 
   return (
     <div className="mesh min-h-screen">

@@ -50,6 +50,14 @@ const items = [
     body: 'one page to upload a local file, park it in the vault db, and jump straight to a public share.',
   },
   {
+    title: 'diff desk',
+    body: 'line up two text dumps and see what changed. not a file locker, just a compare surface.',
+  },
+  {
+    title: 'timer desk',
+    body: 'a soft countdown while something encodes. zero files live here on purpose.',
+  },
+  {
     title: 'status pulse',
     body: 'see how many files and bytes this tab is holding. still no cap, just honesty.',
   },

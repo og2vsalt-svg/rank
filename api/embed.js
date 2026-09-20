@@ -13,26 +13,28 @@ function isBot(ua) {
   return /discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|skype|linkedinbot|embed|preview|bot|crawler|spider/.test(u);
 }
 
-function page({ title, desc, image, url, type }) {
+function page({ title, desc, image, url, type, color }) {
   const img = image || 'https://og2vsalt-svg.github.io/rank/og.png';
-  const t = type && type.startsWith('image/') ? 'website' : 'website';
   return `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}" />
-<meta name="theme-color" content="#0a84ff" />
-<meta property="og:type" content="${t}" />
+<meta name="theme-color" content="${esc(color)}" />
+<meta property="og:type" content="website" />
 <meta property="og:site_name" content="rankvault" />
 <meta property="og:title" content="${esc(title)}" />
 <meta property="og:description" content="${esc(desc)}" />
 <meta property="og:image" content="${esc(img)}" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
 <meta property="og:url" content="${esc(url)}" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="${esc(title)}" />
 <meta name="twitter:description" content="${esc(desc)}" />
 <meta name="twitter:image" content="${esc(img)}" />
+<meta name="discord:site" content="rankvault" />
 <meta http-equiv="refresh" content="0;url=${esc(url)}" />
 </head>
 <body style="background:#050506;color:#f5f5f7;font-family:Inter,system-ui,sans-serif">
@@ -76,5 +78,5 @@ export default async function handler(req, res) {
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
-  res.status(200).send(page({ title, desc, image, url: appUrl, type: meta?.type }));
+  res.status(200).send(page({ title, desc, image, url: appUrl, type: meta?.type, color: '#0a84ff' }));
 }

@@ -90,11 +90,6 @@ export default async function handler(req, res) {
       const b64 = dataUrl.slice(comma + 1);
       const buf = Buffer.from(b64, 'base64');
 
-      if (buf.length > 90 * 1024 * 1024) {
-        res.status(413).json({ error: 'file too large for this share path (soft ~90mb).' });
-        return;
-      }
-
       const fileBlob = await put(`shares/${id}/${name}`, buf, {
         access: 'public',
         contentType: type,
@@ -114,6 +109,7 @@ export default async function handler(req, res) {
         createdAt: new Date().toISOString(),
         downloads: 0,
         storeId: process.env.BLOB_STORE_ID || null,
+        warn: buf.length > 40 * 1024 * 1024 ? 'large drop. preview clients may feel slow.' : null,
       };
 
       await put(`meta/${id}.json`, JSON.stringify(meta), {
@@ -124,7 +120,7 @@ export default async function handler(req, res) {
         ...blobOpts(),
       });
 
-      res.status(200).json({ ok: true, id, url: fileBlob.url, sharePath: `/#share?f=${id}` });
+      res.status(200).json({ ok: true, id, url: fileBlob.url, sharePath: `/#share?f=${id}`, embedPath: `/s/${id}` });
       return;
     }
 

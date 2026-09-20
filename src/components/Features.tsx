@@ -57,6 +57,22 @@ const items = [
     title: 'storage split',
     body: 'see how much of the tab is images vs clips vs docs. still no cap, just honesty about lag.',
   },
+  {
+    title: 'twins',
+    body: 'spot same-name same-size doubles so you can trash the extras without hunting.',
+  },
+  {
+    title: 'command jump',
+    body: 'cmd/ctrl-k opens a soft spotlight over the vault. type a name and hop into the preview sheet.',
+  },
+  {
+    title: 'folder rename',
+    body: 'rename any folder except inbox and every file inside follows.',
+  },
+  {
+    title: 'browser quota hint',
+    body: 'we show the estimate the browser reports. never a hard stop — just so you know when the tab might get heavy.',
+  },
 ];
 
 export default function Features() {

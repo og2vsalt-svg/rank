@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 
-export type Route = 'home' | 'login' | 'signup' | 'vault' | 'share' | 'notes' | 'paste' | 'drop' | 'status' | 'convert' | 'qr' | 'clip' | 'hash' | 'palette' | 'pulse' | 'diff' | 'timer';
+export type Route = 'home' | 'login' | 'signup' | 'vault' | 'share' | 'notes' | 'paste' | 'drop' | 'status' | 'convert' | 'qr' | 'clip' | 'hash' | 'palette' | 'pulse' | 'diff' | 'timer' | 'inspect' | 'zip' | 'links';
 
 interface RouterContextType {
   route: Route;
@@ -20,7 +20,7 @@ function parseHash() {
   const raw = window.location.hash.replace('#', '');
   const [path, qs] = raw.split('?');
   const params = new URLSearchParams(qs || '');
-  const known: Route[] = ['login', 'signup', 'vault', 'share', 'notes', 'paste', 'drop', 'status', 'convert', 'qr', 'clip', 'hash', 'palette', 'pulse', 'diff', 'timer'];
+  const known: Route[] = ['login', 'signup', 'vault', 'share', 'notes', 'paste', 'drop', 'status', 'convert', 'qr', 'clip', 'hash', 'palette', 'pulse', 'diff', 'timer', 'inspect', 'zip', 'links'];
   if (path === 'share' || path.startsWith('file/')) {
     return { route: 'share' as Route, shareId: params.get('f') || path.replace('file/', '') };
   }

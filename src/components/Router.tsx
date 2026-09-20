@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 
-type Route = 'home' | 'login' | 'signup';
+export type Route = 'home' | 'login' | 'signup' | 'vault';
 
 interface RouterContextType {
   route: Route;
@@ -16,9 +16,10 @@ export function useRouter() {
 }
 
 function getRouteFromHash(): Route {
-  const hash = window.location.hash.replace('#', '');
+  const hash = window.location.hash.replace('#', '').split('?')[0];
   if (hash === 'login') return 'login';
   if (hash === 'signup') return 'signup';
+  if (hash === 'vault' || hash.startsWith('file/')) return 'vault';
   return 'home';
 }
 
@@ -33,7 +34,6 @@ export function RouterProvider({ children }: { children: ReactNode }) {
 
   const navigate = useCallback((to: Route) => {
     if (to === 'home') {
-      // clear hash entirely so anchor links (#ranks etc) work
       history.pushState(null, '', window.location.pathname);
       setRoute('home');
     } else {

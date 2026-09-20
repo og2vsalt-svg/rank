@@ -19,15 +19,19 @@ const faqs = [
   },
   {
     q: 'can i organize stuff?',
-    a: 'folders, albums, rename, favorites, color dots, search, twins filter, command jump, grid or list.',
+    a: 'folders, albums, rename, favorites, color dots, search, grid or list. pretty much the usual kit.',
   },
   {
     q: 'is there a file size limit?',
-    a: 'no hard cap. huge drops just warn that the tab might get sleepy while it encodes. the quota bar is an estimate, never a block.',
+    a: 'no hard cap. huge drops just warn that the tab might get sleepy while it encodes.',
   },
   {
-    q: 'what is twins?',
-    a: 'same filename plus same byte size. tap twins to only see likely doubles.',
+    q: 'can i grab a pile at once?',
+    a: 'yeah. select files then download, star, pin, duplicate, or flip them public. no fake quota.',
+  },
+  {
+    q: 'does this work offline?',
+    a: 'once the site is loaded, the vault is just this browser. links only work on the same device unless you export.',
   },
 ];
 

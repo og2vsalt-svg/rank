@@ -54,14 +54,21 @@ export default function SharePage() {
               {file.type.startsWith('image/') && <img src={file.dataUrl} alt="" className="w-full rounded-2xl mb-6" />}
               {file.type.startsWith('video/') && <video src={file.dataUrl} controls className="w-full rounded-2xl mb-6" />}
               {file.type.startsWith('audio/') && <audio src={file.dataUrl} controls className="w-full mb-6" />}
-              <a
-                href={file.dataUrl}
-                download={file.name}
-                onClick={() => bumpDownload(file.id)}
-                className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium"
-              >
-                download
-              </a>
+              {(file.type.startsWith('text/') || file.type.includes('json')) && (
+                <pre className="text-[12px] text-neutral-300 bg-black/40 rounded-2xl p-4 mb-6 max-h-64 overflow-auto whitespace-pre-wrap break-all">{(() => { try { return atob(file.dataUrl.split(',')[1] || ''); } catch { return ''; } })()}</pre>
+              )}
+              <div className="flex flex-wrap gap-2">
+                <a
+                  href={file.dataUrl}
+                  download={file.name}
+                  onClick={() => bumpDownload(file.id)}
+                  className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium"
+                >
+                  download
+                </a>
+                <a href={file.dataUrl} target="_blank" rel="noreferrer" className="inline-flex px-5 py-2.5 rounded-full bg-white/5 text-sm">open raw</a>
+                <button onClick={() => navigator.clipboard.writeText(window.location.href)} className="inline-flex px-5 py-2.5 rounded-full bg-white/5 text-sm">copy this link</button>
+              </div>
             </>
           )}
         </motion.div>

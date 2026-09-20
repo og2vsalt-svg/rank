@@ -58,20 +58,16 @@ const items = [
     body: 'see how much of the tab is images vs clips vs docs. still no cap, just honesty about lag.',
   },
   {
-    title: 'twins',
-    body: 'spot same-name same-size doubles so you can trash the extras without hunting.',
+    title: 'batch star pin public',
+    body: 'select a pile and favorite, pin, duplicate, or flip public in one tap. keeps the old single-file moves.',
   },
   {
-    title: 'command jump',
-    body: 'cmd/ctrl-k opens a soft spotlight over the vault. type a name and hop into the preview sheet.',
+    title: 'markdown + raw',
+    body: 'copy a markdown link from the preview sheet, or open the raw data url in another tab.',
   },
   {
-    title: 'folder rename',
-    body: 'rename any folder except inbox and every file inside follows.',
-  },
-  {
-    title: 'browser quota hint',
-    body: 'we show the estimate the browser reports. never a hard stop — just so you know when the tab might get heavy.',
+    title: 'peek text',
+    body: 'txt and json snippets render inside the preview so you do not have to download first.',
   },
 ];
 

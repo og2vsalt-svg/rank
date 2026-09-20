@@ -25,6 +25,9 @@ const links = [
   { to: 'record' as const, label: 'record' },
   { to: 'count' as const, label: 'count' },
   { to: 'units' as const, label: 'units' },
+  { to: 'json' as const, label: 'json' },
+  { to: 'board' as const, label: 'board' },
+  { to: 'stash' as const, label: 'stash' },
 ];
 
 export default function Navbar() {

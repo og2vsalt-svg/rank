@@ -13,6 +13,9 @@ const items = [
   { title: 'count + units', body: 'weigh text and flip file sizes without opening another tab.' },
   { title: 'no hard file cap', body: 'drop whatever size you want. we only warn when a file is so big the tab might feel sleepy.' },
   { title: 'apple-soft motion', body: 'springy buttons, glass cards, blur. supposed to feel like something a human actually designed.' },
+  { title: 'json desk', body: 'pretty print or crush a blob without leaving the tab.' },
+  { title: 'scratch board', body: 'inbox / doing / done cards that live only on this device.' },
+  { title: 'clipboard stash', body: 'park snippets you keep losing. separate from the file vault.' },
 ];
 
 export default function Features() {

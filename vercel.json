@@ -4,6 +4,7 @@
     { "source": "/s/:id", "destination": "/api/embed?id=:id" },
     { "source": "/file/:id", "destination": "/api/embed?id=:id" },
     { "source": "/embed/:id", "destination": "/api/embed?id=:id&embed=1" },
+    { "source": "/p/:page", "destination": "/api/embed?page=:page" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [

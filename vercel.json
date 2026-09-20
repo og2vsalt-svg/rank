@@ -2,6 +2,16 @@
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/s/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/file/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/embed/:id", "destination": "/api/embed?id=:id&embed=1" },
     { "source": "/(.*)", "destination": "/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/s/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, s-maxage=60, stale-while-revalidate=300" }
+      ]
+    }
   ]
 }

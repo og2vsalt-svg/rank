@@ -19,6 +19,8 @@ const items = [
   { title: 'json desk', body: 'pretty print or crush a blob without leaving the tab.' },
   { title: 'scratch board', body: 'inbox / doing / done cards that live only on this device.' },
   { title: 'clipboard stash', body: 'park snippets you keep losing. separate from the file vault.' },
+  { title: 'loom player', body: 'drop audio and listen in-tab. no account, no vault dump.' },
+  { title: 'split desk', body: 'carve a local file into chunks when a host is being picky. warning only if it is huge.' },
 ];
 
 export default function Features() {

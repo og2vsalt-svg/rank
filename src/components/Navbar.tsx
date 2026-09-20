@@ -31,6 +31,8 @@ const links = [
   { to: 'board' as const, label: 'board' },
   { to: 'stash' as const, label: 'stash' },
   { to: 'echo' as const, label: 'echo' },
+  { to: 'loom' as const, label: 'loom' },
+  { to: 'split' as const, label: 'split' },
 ];
 
 export default function Navbar() {

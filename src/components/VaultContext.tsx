@@ -12,8 +12,11 @@ export interface VaultFile {
   public: boolean;
   folder: string;
   starred: boolean;
+  pinned: boolean;
   downloads: number;
   note: string;
+  tags: string[];
+  expiresAt: string | null;
   trashed: boolean;
 }
 
@@ -21,6 +24,7 @@ interface VaultContextType {
   files: VaultFile[];
   trash: VaultFile[];
   folders: string[];
+  tags: string[];
   usedBytes: number;
   addFiles: (fileList: FileList | File[], folder?: string) => Promise<{ ok: boolean; error?: string; warn?: string }>;
   removeFile: (id: string) => void;
@@ -29,12 +33,15 @@ interface VaultContextType {
   emptyTrash: () => void;
   togglePublic: (id: string) => void;
   toggleStar: (id: string) => void;
+  togglePin: (id: string) => void;
   renameFile: (id: string, name: string) => void;
   moveFile: (id: string, folder: string) => void;
   moveMany: (ids: string[], folder: string) => void;
   trashMany: (ids: string[]) => void;
   addFolder: (name: string) => void;
   setNote: (id: string, note: string) => void;
+  setTags: (id: string, tags: string[]) => void;
+  setExpiry: (id: string, hours: number | null) => void;
   duplicateFile: (id: string) => void;
   bumpDownload: (id: string) => void;
   getFile: (id: string) => VaultFile | undefined;
@@ -57,8 +64,11 @@ function loadAll(): VaultFile[] {
       ...f,
       folder: f.folder || 'inbox',
       starred: !!f.starred,
+      pinned: !!f.pinned,
       downloads: f.downloads || 0,
       note: f.note || '',
+      tags: Array.isArray(f.tags) ? f.tags : [],
+      expiresAt: f.expiresAt || null,
       trashed: !!f.trashed,
     }));
   } catch {
@@ -70,7 +80,7 @@ function saveAll(files: VaultFile[]) {
   try {
     localStorage.setItem('rb_vault', JSON.stringify(files));
   } catch {
-    // browser storage can get sluggish with huge payloads; keep state in memory
+    // storage can get sleepy with huge payloads; keep it in memory
   }
 }
 
@@ -81,6 +91,11 @@ function readAsDataUrl(file: File): Promise<string> {
     reader.onerror = () => reject(reader.error);
     reader.readAsDataURL(file);
   });
+}
+
+function stillLive(f: VaultFile) {
+  if (!f.expiresAt) return true;
+  return +new Date(f.expiresAt) > Date.now();
 }
 
 export function VaultProvider({ children }: { children: ReactNode }) {
@@ -107,6 +122,7 @@ export function VaultProvider({ children }: { children: ReactNode }) {
   const trash = mine.filter((f) => f.trashed);
   const usedBytes = mine.reduce((n, f) => n + f.size, 0);
   const folders = Array.from(new Set(['inbox', ...extraFolders, ...files.map((f) => f.folder)]));
+  const tags = Array.from(new Set(files.flatMap((f) => f.tags)));
 
   const addFiles = useCallback(async (fileList: FileList | File[], folder = 'inbox') => {
     if (!user) return { ok: false, error: 'log in first' };
@@ -132,8 +148,11 @@ export function VaultProvider({ children }: { children: ReactNode }) {
         public: false,
         folder,
         starred: false,
+        pinned: false,
         downloads: 0,
         note: '',
+        tags: [],
+        expiresAt: null,
         trashed: false,
       });
     }
@@ -163,6 +182,10 @@ export function VaultProvider({ children }: { children: ReactNode }) {
 
   const toggleStar = useCallback((id: string) => {
     setAll((prev) => prev.map((f) => (f.id === id ? { ...f, starred: !f.starred } : f)));
+  }, []);
+
+  const togglePin = useCallback((id: string) => {
+    setAll((prev) => prev.map((f) => (f.id === id ? { ...f, pinned: !f.pinned } : f)));
   }, []);
 
   const renameFile = useCallback((id: string, name: string) => {
@@ -195,6 +218,16 @@ export function VaultProvider({ children }: { children: ReactNode }) {
     setAll((prev) => prev.map((f) => (f.id === id ? { ...f, note } : f)));
   }, []);
 
+  const setTags = useCallback((id: string, tags: string[]) => {
+    const clean = tags.map((t) => t.trim().toLowerCase()).filter(Boolean);
+    setAll((prev) => prev.map((f) => (f.id === id ? { ...f, tags: Array.from(new Set(clean)) } : f)));
+  }, []);
+
+  const setExpiry = useCallback((id: string, hours: number | null) => {
+    const expiresAt = hours == null ? null : new Date(Date.now() + hours * 3600 * 1000).toISOString();
+    setAll((prev) => prev.map((f) => (f.id === id ? { ...f, expiresAt } : f)));
+  }, []);
+
   const duplicateFile = useCallback((id: string) => {
     setAll((prev) => {
       const src = prev.find((f) => f.id === id);
@@ -207,6 +240,7 @@ export function VaultProvider({ children }: { children: ReactNode }) {
         public: false,
         downloads: 0,
         trashed: false,
+        pinned: false,
       };
       return [copy, ...prev];
     });
@@ -217,10 +251,14 @@ export function VaultProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const getFile = useCallback((id: string) => all.find((f) => f.id === id), [all]);
-  const getPublicFile = useCallback((id: string) => all.find((f) => f.id === id && f.public && !f.trashed), [all]);
+  const getPublicFile = useCallback((id: string) => {
+    const f = all.find((x) => x.id === id && x.public && !x.trashed);
+    if (!f || !stillLive(f)) return undefined;
+    return f;
+  }, [all]);
 
   return (
-    <VaultContext.Provider value={{ files, trash, folders, usedBytes, addFiles, removeFile, restoreFile, purgeFile, emptyTrash, togglePublic, toggleStar, renameFile, moveFile, moveMany, trashMany, addFolder, setNote, duplicateFile, bumpDownload, getFile, getPublicFile }}>
+    <VaultContext.Provider value={{ files, trash, folders, tags, usedBytes, addFiles, removeFile, restoreFile, purgeFile, emptyTrash, togglePublic, toggleStar, togglePin, renameFile, moveFile, moveMany, trashMany, addFolder, setNote, setTags, setExpiry, duplicateFile, bumpDownload, getFile, getPublicFile }}>
       {children}
     </VaultContext.Provider>
   );

@@ -33,6 +33,14 @@ const items = [
     title: 'no hard file cap',
     body: 'drop whatever size you want. we only warn when a file is so big the tab might feel sleepy.',
   },
+  {
+    title: 'batch download',
+    body: 'select a pile and pull them down one by one. no fake cap, just a little wait if they are huge.',
+  },
+  {
+    title: 'apple-soft motion',
+    body: 'springy buttons, glass cards, blur. supposed to feel like something a human actually designed.',
+  },
 ];
 
 export default function Features() {

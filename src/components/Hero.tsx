@@ -16,7 +16,7 @@ export default function Hero() {
         </motion.h1>
 
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.12 }} className="text-neutral-400 text-lg leading-relaxed max-w-xl mb-8">
-          a quiet vault for clips, docs, and dumps. preview in place, sort into folders, flip a file public when you need a link.
+          a quiet vault for clips, docs, and dumps. preview in place, sort into folders, flip a file public when you need a link. no size lock. just a heads up if the tab might lag.
         </motion.p>
 
         <div className="flex flex-wrap gap-3 mb-12">

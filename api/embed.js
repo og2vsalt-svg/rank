@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"');
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 function isBot(ua) {
@@ -41,7 +41,7 @@ function pageHtml({ title, desc, image, url, color }) {
 <meta name="twitter:title" content="${esc(title)}" />
 <meta name="twitter:description" content="${esc(desc)}" />
 <meta name="twitter:image" content="${esc(img)}" />
-<meta name="discord:site" content="rankvault" />
+<meta name="theme-color" content="${esc(color)}" />
 <meta name="og:image:alt" content="${esc(title)}" />
 <meta http-equiv="refresh" content="0;url=${esc(url)}" />
 </head>
@@ -88,6 +88,8 @@ const PAGE_TITLES = {
   cipher: 'cipher — rankvault',
   prism: 'prism — rankvault',
   flux: 'flux — rankvault',
+  orbit: 'orbit — rankvault',
+  signal: 'signal — rankvault',
   convert: 'convert — rankvault',
   qr: 'qr — rankvault',
   clip: 'clip — rankvault',

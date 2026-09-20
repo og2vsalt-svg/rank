@@ -45,6 +45,8 @@ import AuraPage from './components/AuraPage';
 import CipherPage from './components/CipherPage';
 import PrismPage from './components/PrismPage';
 import FluxPage from './components/FluxPage';
+import OrbitPage from './components/OrbitPage';
+import SignalPage from './components/SignalPage';
 
 function Shell() {
   const { route } = useRouter();
@@ -88,6 +90,8 @@ function Shell() {
   if (route === 'cipher') return <CipherPage />;
   if (route === 'prism') return <PrismPage />;
   if (route === 'flux') return <FluxPage />;
+  if (route === 'orbit') return <OrbitPage />;
+  if (route === 'signal') return <SignalPage />;
 
   return (
     <div className="mesh min-h-screen">

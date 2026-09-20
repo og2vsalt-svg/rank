@@ -17,6 +17,9 @@ import StatusPage from './components/StatusPage';
 import ConvertPage from './components/ConvertPage';
 import QrPage from './components/QrPage';
 import ClipPage from './components/ClipPage';
+import HashPage from './components/HashPage';
+import PalettePage from './components/PalettePage';
+import PulsePage from './components/PulsePage';
 
 function Shell() {
   const { route } = useRouter();
@@ -32,6 +35,9 @@ function Shell() {
   if (route === 'convert') return <ConvertPage />;
   if (route === 'qr') return <QrPage />;
   if (route === 'clip') return <ClipPage />;
+  if (route === 'hash') return <HashPage />;
+  if (route === 'palette') return <PalettePage />;
+  if (route === 'pulse') return <PulsePage />;
 
   return (
     <div className="mesh min-h-screen">

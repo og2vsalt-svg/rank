@@ -1,5 +1,6 @@
 import { createContext, useContext, useCallback, useEffect, useState, type ReactNode } from 'react';
 import { useAuth } from './AuthContext';
+import { publishShare } from '../lib/cloudShare';
 
 export interface VaultFile {
   id: string;
@@ -21,6 +22,7 @@ export interface VaultFile {
   color: string;
   lockPass: string;
   collection: string;
+  cloudSynced?: boolean;
 }
 
 export interface VaultEvent {
@@ -42,7 +44,7 @@ interface VaultContextType {
   restoreFile: (id: string) => void;
   purgeFile: (id: string) => void;
   emptyTrash: () => void;
-  togglePublic: (id: string) => void;
+  togglePublic: (id: string) => Promise<{ ok: boolean; error?: string; cloud?: boolean }>;
   toggleStar: (id: string) => void;
   togglePin: (id: string) => void;
   renameFile: (id: string, name: string) => void;
@@ -92,6 +94,7 @@ function loadAll(): VaultFile[] {
       color: f.color || 'none',
       lockPass: f.lockPass || '',
       collection: f.collection || '',
+      cloudSynced: !!f.cloudSynced,
     }));
   } catch {
     return [];
@@ -167,7 +170,7 @@ export function VaultProvider({ children }: { children: ReactNode }) {
       next.push({
         id: uid(), name: file.name, type: file.type || 'application/octet-stream', size: file.size, dataUrl,
         createdAt: new Date().toISOString(), ownerId: user.id, public: false, folder, starred: false, pinned: false,
-        downloads: 0, note: '', tags: [], expiresAt: null, trashed: false, color: 'none', lockPass: '', collection: '',
+        downloads: 0, note: '', tags: [], expiresAt: null, trashed: false, color: 'none', lockPass: '', collection: '', cloudSynced: false,
       });
     }
     setAll((prev) => [...next, ...prev]);
@@ -184,7 +187,7 @@ export function VaultProvider({ children }: { children: ReactNode }) {
     const rec: VaultFile = {
       id: uid(), name: cleanName, type: 'text/plain', size: blob.size, dataUrl, createdAt: new Date().toISOString(),
       ownerId: user.id, public: false, folder, starred: false, pinned: false, downloads: 0, note: '', tags: ['snippet'],
-      expiresAt: null, trashed: false, color: 'none', lockPass: '', collection: '',
+      expiresAt: null, trashed: false, color: 'none', lockPass: '', collection: '', cloudSynced: false,
     };
     setAll((prev) => [rec, ...prev]);
     log(`saved snippet ${cleanName}`);
@@ -195,7 +198,41 @@ export function VaultProvider({ children }: { children: ReactNode }) {
   const restoreFile = useCallback((id: string) => { setAll((prev) => prev.map((f) => (f.id === id ? { ...f, trashed: false } : f))); log('restored a file'); }, [log]);
   const purgeFile = useCallback((id: string) => { setAll((prev) => prev.filter((f) => f.id !== id)); log('purged a file'); }, [log]);
   const emptyTrash = useCallback(() => { setAll((prev) => prev.filter((f) => !(user && f.ownerId === user.id && f.trashed))); log('emptied trash'); }, [user, log]);
-  const togglePublic = useCallback((id: string) => { setAll((prev) => prev.map((f) => (f.id === id ? { ...f, public: !f.public } : f))); }, []);
+
+  const togglePublic = useCallback(async (id: string) => {
+    const current = all.find((f) => f.id === id);
+    if (!current) return { ok: false, error: 'file missing' };
+    const makingPublic = !current.public;
+
+    setAll((prev) => prev.map((f) => (f.id === id ? { ...f, public: makingPublic } : f)));
+
+    if (!makingPublic) {
+      log('made a file private');
+      return { ok: true, cloud: false };
+    }
+
+    log('publishing share to cloud db…');
+    const res = await publishShare({
+      id: current.id,
+      name: current.name,
+      type: current.type,
+      size: current.size,
+      dataUrl: current.dataUrl,
+      lockPass: current.lockPass,
+      expiresAt: current.expiresAt,
+    });
+
+    if (res.ok) {
+      setAll((prev) => prev.map((f) => (f.id === id ? { ...f, public: true, cloudSynced: true } : f)));
+      log('cloud share live');
+      return { ok: true, cloud: true };
+    }
+
+    // still public locally so same-device links work; cloud failed
+    log('cloud publish failed — link still works on this device only');
+    return { ok: true, cloud: false, error: res.error };
+  }, [all, log]);
+
   const toggleStar = useCallback((id: string) => { setAll((prev) => prev.map((f) => (f.id === id ? { ...f, starred: !f.starred } : f))); }, []);
   const togglePin = useCallback((id: string) => { setAll((prev) => prev.map((f) => (f.id === id ? { ...f, pinned: !f.pinned } : f))); }, []);
   const renameFile = useCallback((id: string, name: string) => { const clean = name.trim(); if (!clean) return; setAll((prev) => prev.map((f) => (f.id === id ? { ...f, name: clean } : f))); }, []);
@@ -211,10 +248,10 @@ export function VaultProvider({ children }: { children: ReactNode }) {
   const setExpiry = useCallback((id: string, hours: number | null) => { const expiresAt = hours == null ? null : new Date(Date.now() + hours * 3600 * 1000).toISOString(); setAll((prev) => prev.map((f) => (f.id === id ? { ...f, expiresAt } : f))); }, []);
   const setColor = useCallback((id: string, color: string) => { setAll((prev) => prev.map((f) => (f.id === id ? { ...f, color } : f))); }, []);
   const setLock = useCallback((id: string, pass: string) => { setAll((prev) => prev.map((f) => (f.id === id ? { ...f, lockPass: pass } : f))); log(pass ? 'set a share passcode' : 'cleared a share passcode'); }, [log]);
-  const duplicateFile = useCallback((id: string) => { setAll((prev) => { const src = prev.find((f) => f.id === id); if (!src) return prev; const copy: VaultFile = { ...src, id: uid(), name: src.name.replace(/(\.[^.]+)?$/, (m) => ' copy' + m), createdAt: new Date().toISOString(), public: false, downloads: 0, trashed: false, pinned: false, lockPass: '' }; return [copy, ...prev]; }); log('duplicated a file'); }, [log]);
+  const duplicateFile = useCallback((id: string) => { setAll((prev) => { const src = prev.find((f) => f.id === id); if (!src) return prev; const copy: VaultFile = { ...src, id: uid(), name: src.name.replace(/(\.[^.]+)?$/, (m) => ' copy' + m), createdAt: new Date().toISOString(), public: false, downloads: 0, trashed: false, pinned: false, lockPass: '', cloudSynced: false }; return [copy, ...prev]; }); log('duplicated a file'); }, [log]);
   const bumpDownload = useCallback((id: string) => { setAll((prev) => prev.map((f) => (f.id === id ? { ...f, downloads: (f.downloads || 0) + 1 } : f))); }, []);
   const exportVault = useCallback(() => { if (!user) return; const payload = { version: 1, exportedAt: new Date().toISOString(), folders: extraFolders, files: mine }; const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `rank-vault-${new Date().toISOString().slice(0, 10)}.json`; a.click(); URL.revokeObjectURL(url); log('exported vault'); }, [user, extraFolders, mine, log]);
-  const importVault = useCallback(async (file: File) => { if (!user) return { ok: false, error: 'log in first' }; try { const text = await file.text(); const parsed = JSON.parse(text); const incoming: VaultFile[] = Array.isArray(parsed) ? parsed : parsed.files; if (!Array.isArray(incoming)) return { ok: false, error: 'not a vault export' }; const mapped = incoming.map((f) => ({ ...f, id: uid(), ownerId: user.id, folder: f.folder || 'inbox', tags: Array.isArray(f.tags) ? f.tags : [], lockPass: f.lockPass || '', trashed: !!f.trashed })); setAll((prev) => [...mapped, ...prev]); if (Array.isArray(parsed.folders)) setExtraFolders((prev) => Array.from(new Set([...prev, ...parsed.folders]))); log(`imported ${mapped.length} files`); return { ok: true, count: mapped.length }; } catch { return { ok: false, error: 'could not read that file' }; } }, [user, log]);
+  const importVault = useCallback(async (file: File) => { if (!user) return { ok: false, error: 'log in first' }; try { const text = await file.text(); const parsed = JSON.parse(text); const incoming: VaultFile[] = Array.isArray(parsed) ? parsed : parsed.files; if (!Array.isArray(incoming)) return { ok: false, error: 'not a vault export' }; const mapped = incoming.map((f) => ({ ...f, id: uid(), ownerId: user.id, folder: f.folder || 'inbox', tags: Array.isArray(f.tags) ? f.tags : [], lockPass: f.lockPass || '', trashed: !!f.trashed, cloudSynced: false })); setAll((prev) => [...mapped, ...prev]); if (Array.isArray(parsed.folders)) setExtraFolders((prev) => Array.from(new Set([...prev, ...parsed.folders]))); log(`imported ${mapped.length} files`); return { ok: true, count: mapped.length }; } catch { return { ok: false, error: 'could not read that file' }; } }, [user, log]);
   const getFile = useCallback((id: string) => all.find((f) => f.id === id), [all]);
   const getPublicFile = useCallback((id: string) => { const f = all.find((x) => x.id === id && x.public && !x.trashed); if (!f || !stillLive(f)) return undefined; return f; }, [all]);
 

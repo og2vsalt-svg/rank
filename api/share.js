@@ -172,13 +172,8 @@ export default async function handler(req, res) {
           ...opts,
         });
         fileUrl = fileBlob.url;
-      } else if (buf.length <= 1.5 * 1024 * 1024) {
-        fileUrl = dataUrl;
       } else {
-        res.status(503).json({
-          error: 'file too large for inline storage. set BLOB_READ_WRITE_TOKEN on vercel, or drop something under ~1.5mb.',
-        });
-        return;
+        fileUrl = dataUrl;
       }
 
       const warn = size > 40 * 1024 * 1024 ? 'large drop. preview clients may feel slow.' : null;

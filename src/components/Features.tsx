@@ -24,6 +24,9 @@ const items = [
   { title: 'beacon', body: 'publish a tiny presence card to the share db. discord unfurls /s/ like a product link.' },
   { title: 'weave', body: 'stitch local files into one download. not a vault, just glue.' },
   { title: 'aura', body: 'a quiet sine in the tab. zero hosting, zero files.' },
+  { title: 'cipher', body: 'xor + base64 lockbox in the tab. not hosting, not the vault.' },
+  { title: 'prism', body: 'read a still locally and pull the average color.' },
+  { title: 'flux', body: 'type a line and download a looping html typewriter.' },
 ];
 
 export default function Features() {

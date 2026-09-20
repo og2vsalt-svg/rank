@@ -31,6 +31,9 @@ import TransferPage from './components/TransferPage';
 import RecordPage from './components/RecordPage';
 import CountPage from './components/CountPage';
 import UnitsPage from './components/UnitsPage';
+import JsonPage from './components/JsonPage';
+import BoardPage from './components/BoardPage';
+import StashPage from './components/StashPage';
 
 function Shell() {
   const { route } = useRouter();
@@ -60,6 +63,9 @@ function Shell() {
   if (route === 'record') return <RecordPage />;
   if (route === 'count') return <CountPage />;
   if (route === 'units') return <UnitsPage />;
+  if (route === 'json') return <JsonPage />;
+  if (route === 'board') return <BoardPage />;
+  if (route === 'stash') return <StashPage />;
 
   return (
     <div className="mesh min-h-screen">

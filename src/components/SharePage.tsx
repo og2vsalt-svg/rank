@@ -66,6 +66,6 @@ export default function SharePage() {
           )}
         </motion.div>
       </div>
-    </n>
+    </div>
   );
 }

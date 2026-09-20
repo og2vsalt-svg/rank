@@ -8,7 +8,8 @@ import Navbar from './Navbar';
 function formatBytes(n: number) {
   if (n < 1024) return n + ' b';
   if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' kb';
-  return (n / (1024 * 1024)).toFixed(2) + ' mb';
+  if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(2) + ' mb';
+  return (n / (1024 * 1024 * 1024)).toFixed(2) + ' gb';
 }
 
 function iconFor(type: string) {
@@ -17,37 +18,61 @@ function iconFor(type: string) {
   if (type.startsWith('audio/')) return '🎵';
   if (type.includes('pdf')) return '📄';
   if (type.includes('zip') || type.includes('compressed')) return '📦';
+  if (type.startsWith('text/') || type.includes('json')) return '✎';
   return '📁';
+}
+
+function textPreview(file: VaultFile) {
+  if (!file.dataUrl.includes(',')) return '';
+  try {
+    return decodeURIComponent(escape(atob(file.dataUrl.split(',')[1].slice(0, 8000))));
+  } catch {
+    return '';
+  }
 }
 
 export default function VaultPage() {
   const { isLoggedIn, user } = useAuth();
   const { navigate } = useRouter();
-  const { files, folders, usedBytes, addFiles, removeFile, togglePublic, toggleStar, renameFile, moveFile, addFolder } = useVault();
+  const {
+    files, trash, folders, usedBytes, addFiles, removeFile, restoreFile, purgeFile, emptyTrash,
+    togglePublic, toggleStar, renameFile, moveFile, moveMany, trashMany, addFolder, setNote, duplicateFile, bumpDownload,
+  } = useVault();
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
   const [query, setQuery] = useState('');
   const [folder, setFolder] = useState('inbox');
   const [view, setView] = useState<'grid' | 'list'>('grid');
   const [onlyStarred, setOnlyStarred] = useState(false);
+  const [showTrash, setShowTrash] = useState(false);
+  const [sort, setSort] = useState<'new' | 'name' | 'size'>('new');
   const [busy, setBusy] = useState(false);
   const [toast, setToast] = useState('');
   const [preview, setPreview] = useState<VaultFile | null>(null);
   const [newFolder, setNewFolder] = useState('');
+  const [selected, setSelected] = useState<string[]>([]);
+
+  const source = showTrash ? trash : files;
 
   const shown = useMemo(() => {
-    return files.filter((f) => {
-      if (onlyStarred && !f.starred) return false;
-      if (folder !== 'all' && f.folder !== folder) return false;
+    const list = source.filter((f) => {
+      if (!showTrash && onlyStarred && !f.starred) return false;
+      if (!showTrash && folder !== 'all' && f.folder !== folder) return false;
       const q = query.trim().toLowerCase();
-      if (q && !f.name.toLowerCase().includes(q)) return false;
+      if (q && !f.name.toLowerCase().includes(q) && !f.note.toLowerCase().includes(q)) return false;
       return true;
     });
-  }, [files, query, folder, onlyStarred]);
+    list.sort((a, b) => {
+      if (sort === 'name') return a.name.localeCompare(b.name);
+      if (sort === 'size') return b.size - a.size;
+      return +new Date(b.createdAt) - +new Date(a.createdAt);
+    });
+    return list;
+  }, [source, query, folder, onlyStarred, showTrash, sort]);
 
   const ping = (msg: string) => {
     setToast(msg);
-    setTimeout(() => setToast(''), 1800);
+    setTimeout(() => setToast(''), 2200);
   };
 
   const onDrop = async (list: FileList | File[] | null) => {
@@ -55,7 +80,8 @@ export default function VaultPage() {
     setBusy(true);
     const res = await addFiles(list, folder === 'all' ? 'inbox' : folder);
     setBusy(false);
-    ping(res.ok ? 'uploaded' : res.error || 'failed');
+    if (!res.ok) ping(res.error || 'failed');
+    else ping(res.warn || 'uploaded');
   };
 
   const copyLink = async (id: string) => {
@@ -68,6 +94,10 @@ export default function VaultPage() {
     }
   };
 
+  const toggleSelect = (id: string) => {
+    setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  };
+
   return (
     <div className="mesh min-h-screen">
       <Navbar />
@@ -76,7 +106,7 @@ export default function VaultPage() {
           <p className="text-[#0a84ff] text-sm font-medium mb-2 tracking-wide">vault</p>
           <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-white mb-3">your files, locally hosted.</h1>
           <p className="text-neutral-400 max-w-xl mb-8">
-            drop anything in. preview, rename, favorite, sort into folders, share a public link. this demo lives in your browser so it stays snappy and private to this device.
+            drop anything in. preview, rename, favorite, sort into folders, leave a note, share a public link. no hard size cap — just a heads up if a drop might make this tab sleepy.
           </p>
         </motion.div>
 
@@ -93,15 +123,15 @@ export default function VaultPage() {
           <>
             <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
               <div className="flex-1">
-                <p className="text-xs text-neutral-500">{formatBytes(usedBytes)} used · {user?.username}</p>
+                <p className="text-xs text-neutral-500">{formatBytes(usedBytes)} on this device · {user?.username} · {trash.length} in trash</p>
               </div>
-              <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="search files" className="sm:w-56 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm outline-none focus:border-[#0a84ff]/50" />
+              <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="search files or notes" className="sm:w-56 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm outline-none focus:border-[#0a84ff]/50" />
             </div>
 
             <div className="flex flex-wrap items-center gap-2 mb-5">
-              <button onClick={() => setFolder('all')} className={`text-xs px-3 py-1.5 rounded-full transition ${folder === 'all' ? 'bg-white text-black' : 'bg-white/5 hover:bg-white/10'}`}>all</button>
-              {folders.map((f) => (
-                <button key={f} onClick={() => setFolder(f)} className={`text-xs px-3 py-1.5 rounded-full transition ${folder === f ? 'bg-white text-black' : 'bg-white/5 hover:bg-white/10'}`}>{f}</button>
+              <button onClick={() => { setShowTrash(false); setFolder('all'); }} className={`text-xs px-3 py-1.5 rounded-full transition ${!showTrash && folder === 'all' ? 'bg-white text-black' : 'bg-white/5 hover:bg-white/10'}`}>all</button>
+              {!showTrash && folders.map((f) => (
+                <button key={f} onClick={() => { setShowTrash(false); setFolder(f); }} className={`text-xs px-3 py-1.5 rounded-full transition ${folder === f && !showTrash ? 'bg-white text-black' : 'bg-white/5 hover:bg-white/10'}`}>{f}</button>
               ))}
               <form
                 onSubmit={(e) => {
@@ -114,20 +144,55 @@ export default function VaultPage() {
                 <input value={newFolder} onChange={(e) => setNewFolder(e.target.value)} placeholder="new folder" className="w-28 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs outline-none" />
               </form>
               <button onClick={() => setOnlyStarred((v) => !v)} className={`text-xs px-3 py-1.5 rounded-full ${onlyStarred ? 'bg-[#0a84ff] text-white' : 'bg-white/5'}`}>favorites</button>
+              <button onClick={() => setShowTrash((v) => !v)} className={`text-xs px-3 py-1.5 rounded-full ${showTrash ? 'bg-white text-black' : 'bg-white/5'}`}>trash</button>
               <button onClick={() => setView(view === 'grid' ? 'list' : 'grid')} className="text-xs px-3 py-1.5 rounded-full bg-white/5">{view}</button>
+              <select value={sort} onChange={(e) => setSort(e.target.value as typeof sort)} className="text-xs px-3 py-1.5 rounded-full bg-white/5 border-0 outline-none">
+                <option value="new">newest</option>
+                <option value="name">name</option>
+                <option value="size">size</option>
+              </select>
             </div>
 
-            <motion.div
-              onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-              onDragLeave={() => setDragOver(false)}
-              onDrop={(e) => { e.preventDefault(); setDragOver(false); onDrop(e.dataTransfer.files); }}
-              onClick={() => inputRef.current?.click()}
-              className={`glass rounded-[28px] p-10 text-center cursor-pointer transition-all duration-300 ${dragOver ? 'scale-[1.01] border-[#0a84ff]/40' : ''}`}
-            >
-              <input ref={inputRef} type="file" multiple className="hidden" onChange={(e) => onDrop(e.target.files)} />
-              <p className="text-white font-medium">{busy ? 'uploading…' : 'drop files here'}</p>
-              <p className="text-sm text-neutral-500 mt-1">or click to browse. images, clips, docs, whatever.</p>
-            </motion.div>
+            <AnimatePresence>
+              {selected.length > 0 && !showTrash && (
+                <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="mb-4 glass rounded-full px-4 py-2 flex flex-wrap items-center gap-2">
+                  <span className="text-xs text-neutral-400">{selected.length} selected</span>
+                  <select
+                    onChange={(e) => { if (e.target.value) { moveMany(selected, e.target.value); ping('moved'); } }}
+                    className="text-xs px-2 py-1 rounded-full bg-white/5 border-0"
+                    defaultValue=""
+                  >
+                    <option value="" disabled>move to</option>
+                    {folders.map((f) => <option key={f} value={f}>{f}</option>)}
+                  </select>
+                  <button onClick={() => { trashMany(selected); setSelected([]); ping('sent to trash'); }} className="text-xs px-3 py-1 rounded-full text-red-400">trash selected</button>
+                  <button onClick={() => setSelected([])} className="text-xs px-3 py-1 rounded-full bg-white/5">clear</button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {showTrash && (
+              <div className="mb-4 flex items-center justify-between">
+                <p className="text-sm text-neutral-500">deleted files sit here until you purge them.</p>
+                {trash.length > 0 && (
+                  <button onClick={() => { emptyTrash(); ping('trash emptied'); }} className="text-xs px-3 py-1.5 rounded-full text-red-400 hover:bg-red-500/10">empty trash</button>
+                )}
+              </div>
+            )}
+
+            {!showTrash && (
+              <motion.div
+                onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                onDragLeave={() => setDragOver(false)}
+                onDrop={(e) => { e.preventDefault(); setDragOver(false); onDrop(e.dataTransfer.files); }}
+                onClick={() => inputRef.current?.click()}
+                className={`glass rounded-[28px] p-10 text-center cursor-pointer transition-all duration-300 ${dragOver ? 'scale-[1.01] border-[#0a84ff]/40' : ''}`}
+              >
+                <input ref={inputRef} type="file" multiple className="hidden" onChange={(e) => onDrop(e.target.files)} />
+                <p className="text-white font-medium">{busy ? 'uploading…' : 'drop files here'}</p>
+                <p className="text-sm text-neutral-500 mt-1">or click to browse. any size. big ones just take a second.</p>
+              </motion.div>
+            )}
 
             <div className={view === 'grid' ? 'mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-4' : 'mt-8 space-y-3'}>
               <AnimatePresence>
@@ -139,7 +204,7 @@ export default function VaultPage() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.96 }}
                     transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-                    className="glass rounded-3xl p-4 flex flex-col gap-3"
+                    className={`glass rounded-3xl p-4 flex flex-col gap-3 ${selected.includes(file.id) ? 'ring-1 ring-[#0a84ff]/50' : ''}`}
                   >
                     <button onClick={() => setPreview(file)} className="aspect-[16/10] rounded-2xl bg-black/30 overflow-hidden flex items-center justify-center">
                       {file.type.startsWith('image/') ? (
@@ -148,27 +213,43 @@ export default function VaultPage() {
                         <span className="text-3xl">{iconFor(file.type)}</span>
                       )}
                     </button>
-                    <input
-                      defaultValue={file.name}
-                      onBlur={(e) => renameFile(file.id, e.target.value)}
-                      className="bg-transparent text-sm text-white outline-none truncate"
-                    />
-                    <p className="text-xs text-neutral-500">{formatBytes(file.size)} · {file.folder}</p>
+                    <div className="flex items-center gap-2">
+                      {!showTrash && (
+                        <input type="checkbox" checked={selected.includes(file.id)} onChange={() => toggleSelect(file.id)} className="accent-[#0a84ff]" />
+                      )}
+                      <input
+                        defaultValue={file.name}
+                        onBlur={(e) => renameFile(file.id, e.target.value)}
+                        className="bg-transparent text-sm text-white outline-none truncate flex-1"
+                      />
+                    </div>
+                    <p className="text-xs text-neutral-500">{formatBytes(file.size)} · {file.folder} · {file.downloads} dl</p>
+                    {file.note && <p className="text-xs text-neutral-400 line-clamp-2">{file.note}</p>}
                     <div className="flex flex-wrap gap-2">
-                      <button onClick={() => toggleStar(file.id)} className="text-xs px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 transition">{file.starred ? 'starred' : 'star'}</button>
-                      <button onClick={() => togglePublic(file.id)} className="text-xs px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 transition">
-                        {file.public ? 'public' : 'private'}
-                      </button>
-                      <button onClick={() => copyLink(file.id)} className="text-xs px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 transition">copy link</button>
-                      <select
-                        value={file.folder}
-                        onChange={(e) => moveFile(file.id, e.target.value)}
-                        className="text-xs px-2 py-1.5 rounded-full bg-white/5 border-0 outline-none"
-                      >
-                        {folders.map((f) => <option key={f} value={f}>{f}</option>)}
-                      </select>
-                      <a href={file.dataUrl} download={file.name} className="text-xs px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 transition">download</a>
-                      <button onClick={() => removeFile(file.id)} className="text-xs px-3 py-1.5 rounded-full text-red-400 hover:bg-red-500/10 transition">delete</button>
+                      {showTrash ? (
+                        <>
+                          <button onClick={() => { restoreFile(file.id); ping('restored'); }} className="text-xs px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 transition">restore</button>
+                          <button onClick={() => { purgeFile(file.id); ping('gone'); }} className="text-xs px-3 py-1.5 rounded-full text-red-400 hover:bg-red-500/10 transition">purge</button>
+                        </>
+                      ) : (
+                        <>
+                          <button onClick={() => toggleStar(file.id)} className="text-xs px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 transition">{file.starred ? 'starred' : 'star'}</button>
+                          <button onClick={() => togglePublic(file.id)} className="text-xs px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 transition">
+                            {file.public ? 'public' : 'private'}
+                          </button>
+                          <button onClick={() => copyLink(file.id)} className="text-xs px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 transition">copy link</button>
+                          <button onClick={() => { duplicateFile(file.id); ping('duplicated'); }} className="text-xs px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 transition">duplicate</button>
+                          <select
+                            value={file.folder}
+                            onChange={(e) => moveFile(file.id, e.target.value)}
+                            className="text-xs px-2 py-1.5 rounded-full bg-white/5 border-0 outline-none"
+                          >
+                            {folders.map((f) => <option key={f} value={f}>{f}</option>)}
+                          </select>
+                          <a href={file.dataUrl} download={file.name} onClick={() => bumpDownload(file.id)} className="text-xs px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 transition">download</a>
+                          <button onClick={() => { removeFile(file.id); ping('sent to trash'); }} className="text-xs px-3 py-1.5 rounded-full text-red-400 hover:bg-red-500/10 transition">delete</button>
+                        </>
+                      )}
                     </div>
                   </motion.article>
                 ))}
@@ -176,7 +257,7 @@ export default function VaultPage() {
             </div>
 
             {!shown.length && (
-              <p className="text-center text-neutral-600 text-sm mt-10">nothing in here yet.</p>
+              <p className="text-center text-neutral-600 text-sm mt-10">{showTrash ? 'trash is empty.' : 'nothing in here yet.'}</p>
             )}
           </>
         )}
@@ -194,9 +275,20 @@ export default function VaultPage() {
                 {preview.type.startsWith('image/') && <img src={preview.dataUrl} alt="" className="max-h-[65vh] rounded-xl" />}
                 {preview.type.startsWith('video/') && <video src={preview.dataUrl} controls className="max-h-[65vh] rounded-xl" />}
                 {preview.type.startsWith('audio/') && <audio src={preview.dataUrl} controls className="w-full" />}
-                {!preview.type.startsWith('image/') && !preview.type.startsWith('video/') && !preview.type.startsWith('audio/') && (
+                {(preview.type.startsWith('text/') || preview.type.includes('json')) && (
+                  <pre className="w-full text-xs text-neutral-300 whitespace-pre-wrap font-mono">{textPreview(preview)}</pre>
+                )}
+                {!preview.type.startsWith('image/') && !preview.type.startsWith('video/') && !preview.type.startsWith('audio/') && !preview.type.startsWith('text/') && !preview.type.includes('json') && (
                   <p className="text-sm text-neutral-400 py-10">no inline preview. just download it.</p>
                 )}
+              </div>
+              <div className="p-4 border-t border-white/10">
+                <textarea
+                  defaultValue={preview.note}
+                  onBlur={(e) => setNote(preview.id, e.target.value)}
+                  placeholder="add a note…"
+                  className="w-full bg-white/5 rounded-2xl px-3 py-2 text-sm outline-none min-h-[72px]"
+                />
               </div>
             </motion.div>
           </motion.div>

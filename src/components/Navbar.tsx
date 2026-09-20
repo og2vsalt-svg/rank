@@ -19,6 +19,9 @@ const links = [
   { to: 'inspect' as const, label: 'inspect' },
   { to: 'zip' as const, label: 'zip' },
   { to: 'links' as const, label: 'links' },
+  { to: 'markdown' as const, label: 'markdown' },
+  { to: 'gallery' as const, label: 'gallery' },
+  { to: 'transfer' as const, label: 'transfer' },
 ];
 
 export default function Navbar() {

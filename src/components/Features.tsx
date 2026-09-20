@@ -1,74 +1,16 @@
 import { motion } from 'framer-motion';
 
 const items = [
-  {
-    title: 'local-first vault',
-    body: 'files live in your browser for this demo. nothing ships to a random box unless you copy a public link.',
-  },
-  {
-    title: 'folders + favorites + pins',
-    body: 'inbox by default. make folders, star keepers, pin the ones that should float to the top.',
-  },
-  {
-    title: 'quiet share links',
-    body: 'mark a file public and copy a hash link. optional expiry and a passcode so the drop dies or stays locked.',
-  },
-  {
-    title: 'cloud share db',
-    body: 'public drops can land in vercel blob so the link works on another device, not just this tab.',
-  },
-  {
-    title: 'discord embeds',
-    body: '/s/id pages serve og tags so discord, slack, and x preview the filename and image like a real product.',
-  },
-  {
-    title: 'convert desk',
-    body: 'remap png/jpg/webp in the tab. separate from the vault on purpose.',
-  },
-  {
-    title: 'qr desk',
-    body: 'turn a share url into a scannable square when typing the hash is mid.',
-  },
-  {
-    title: 'clip rooms',
-    body: 'stash raw text clips with their own links. not files, not notes, just a clipboard with memory.',
-  },
-  {
-    title: 'paste or drop',
-    body: 'cmd/ctrl-v a screenshot or file right into the vault. drag works too.',
-  },
-  {
-    title: 'notes desk',
-    body: 'a second surface that is just writing. not a file dump. titles, drafts, delete when you are done.',
-  },
-  {
-    title: 'paste desk',
-    body: 'publish raw text and grab a hash link. logs, configs, lyrics. lives next to the vault, not inside it.',
-  },
-  {
-    title: 'quick drop',
-    body: 'one page to upload a local file, park it in the vault db, and jump straight to a public share.',
-  },
-  {
-    title: 'diff desk',
-    body: 'line up two text dumps and see what changed. not a file locker, just a compare surface.',
-  },
-  {
-    title: 'timer desk',
-    body: 'a soft countdown while something encodes. zero files live here on purpose.',
-  },
-  {
-    title: 'status pulse',
-    body: 'see how many files and bytes this tab is holding. still no cap, just honesty.',
-  },
-  {
-    title: 'no hard file cap',
-    body: 'drop whatever size you want. we only warn when a file is so big the tab might feel sleepy.',
-  },
-  {
-    title: 'apple-soft motion',
-    body: 'springy buttons, glass cards, blur. supposed to feel like something a human actually designed.',
-  },
+  { title: 'local-first vault', body: 'files live in your browser for this demo. nothing ships to a random box unless you copy a public link.' },
+  { title: 'folders + favorites + pins', body: 'inbox by default. make folders, star keepers, pin the ones that should float to the top.' },
+  { title: 'quiet share links', body: 'mark a file public and copy a hash link. optional expiry and a passcode so the drop dies or stays locked.' },
+  { title: 'cloud share db', body: 'public drops land in supabase, with vercel blob when a token is set, so the link works on another device.' },
+  { title: 'discord embeds', body: '/s/id pages serve og tags so discord, slack, and x preview the filename and image like a real product.' },
+  { title: 'markdown desk', body: 'split writer with a live preview. stays on this device.' },
+  { title: 'gallery wall', body: 'drop stills onto a quiet grid. no account needed.' },
+  { title: 'transfer desk', body: 'one-shot upload into the public shares table with a discord-ready /s/ link.' },
+  { title: 'no hard file cap', body: 'drop whatever size you want. we only warn when a file is so big the tab might feel sleepy.' },
+  { title: 'apple-soft motion', body: 'springy buttons, glass cards, blur. supposed to feel like something a human actually designed.' },
 ];
 
 export default function Features() {

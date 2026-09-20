@@ -1,13 +1,19 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
+  Check,
   Download,
   File,
   FileText,
   Film,
+  Folder,
   FolderOpen,
+  Grid2x2,
   Image as ImageIcon,
+  LayoutList,
   Music,
+  Pencil,
+  Pin,
   Search,
   Trash2,
   Upload,
@@ -21,14 +27,17 @@ type VaultFile = {
   size: number;
   addedAt: number;
   dataUrl: string;
+  folder: string;
+  pinned: boolean;
 };
 
 const DB_NAME = "rank-vault";
 const STORE = "files";
+const FOLDERS_KEY = "rank-vault-folders";
 
 function openDb(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
-    const req = indexedDB.open(DB_NAME, 1);
+    const req = indexedDB.open(DB_NAME, 2);
     req.onupgradeneeded = () => {
       const db = req.result;
       if (!db.objectStoreNames.contains(STORE)) db.createObjectStore(STORE, { keyPath: "id" });
@@ -38,12 +47,21 @@ function openDb(): Promise<IDBDatabase> {
   });
 }
 
+function normalize(file: VaultFile): VaultFile {
+  return {
+    ...file,
+    folder: file.folder || "inbox",
+    pinned: Boolean(file.pinned),
+  };
+}
+
 async function listFiles(): Promise<VaultFile[]> {
   const db = await openDb();
   return new Promise((resolve, reject) => {
     const tx = db.transaction(STORE, "readonly");
     const req = tx.objectStore(STORE).getAll();
-    req.onsuccess = () => resolve((req.result as VaultFile[]).sort((a, b) => b.addedAt - a.addedAt));
+    req.onsuccess = () =>
+      resolve((req.result as VaultFile[]).map(normalize).sort((a, b) => b.addedAt - a.addedAt));
     req.onerror = () => reject(req.error);
   });
 }
@@ -52,7 +70,7 @@ async function putFile(file: VaultFile) {
   const db = await openDb();
   return new Promise<void>((resolve, reject) => {
     const tx = db.transaction(STORE, "readwrite");
-    tx.objectStore(STORE).put(file);
+    tx.objectStore(STORE).put(normalize(file));
     tx.oncomplete = () => resolve();
     tx.onerror = () => reject(tx.error);
   });
@@ -91,12 +109,32 @@ function iconFor(type: string) {
   return File;
 }
 
+type SortKey = "newest" | "oldest" | "name" | "size";
+type KindFilter = "all" | "image" | "video" | "audio" | "doc";
+
 export default function App() {
   const [files, setFiles] = useState<VaultFile[]>([]);
   const [query, setQuery] = useState("");
   const [dragging, setDragging] = useState(false);
   const [preview, setPreview] = useState<VaultFile | null>(null);
   const [busy, setBusy] = useState(false);
+  const [folder, setFolder] = useState("inbox");
+  const [folders, setFolders] = useState<string[]>(() => {
+    try {
+      const raw = localStorage.getItem(FOLDERS_KEY);
+      const parsed = raw ? (JSON.parse(raw) as string[]) : [];
+      return Array.from(new Set(["inbox", ...parsed]));
+    } catch {
+      return ["inbox"];
+    }
+  });
+  const [sort, setSort] = useState<SortKey>("newest");
+  const [kind, setKind] = useState<KindFilter>("all");
+  const [view, setView] = useState<"grid" | "list">("grid");
+  const [selected, setSelected] = useState<string[]>([]);
+  const [renaming, setRenaming] = useState<string | null>(null);
+  const [renameValue, setRenameValue] = useState("");
+  const [toast, setToast] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
   const refresh = useCallback(async () => {
@@ -107,11 +145,36 @@ export default function App() {
     refresh();
   }, [refresh]);
 
+  useEffect(() => {
+    localStorage.setItem(FOLDERS_KEY, JSON.stringify(folders.filter((f) => f !== "inbox")));
+  }, [folders]);
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(""), 2200);
+    return () => clearTimeout(t);
+  }, [toast]);
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return files;
-    return files.filter((f) => f.name.toLowerCase().includes(q));
-  }, [files, query]);
+    let next = files.filter((f) => f.folder === folder);
+    if (q) next = next.filter((f) => f.name.toLowerCase().includes(q));
+    if (kind === "image") next = next.filter((f) => f.type.startsWith("image/"));
+    if (kind === "video") next = next.filter((f) => f.type.startsWith("video/"));
+    if (kind === "audio") next = next.filter((f) => f.type.startsWith("audio/"));
+    if (kind === "doc")
+      next = next.filter(
+        (f) => f.type.includes("text") || f.type.includes("pdf") || f.type.includes("json"),
+      );
+    next = [...next].sort((a, b) => {
+      if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
+      if (sort === "name") return a.name.localeCompare(b.name);
+      if (sort === "size") return b.size - a.size;
+      if (sort === "oldest") return a.addedAt - b.addedAt;
+      return b.addedAt - a.addedAt;
+    });
+    return next;
+  }, [files, query, folder, kind, sort]);
 
   const used = files.reduce((acc, f) => acc + f.size, 0);
 
@@ -129,9 +192,12 @@ export default function App() {
           size: file.size,
           addedAt: Date.now(),
           dataUrl,
+          folder,
+          pinned: false,
         });
       }
       await refresh();
+      setToast(`saved ${incoming.length} file${incoming.length === 1 ? "" : "s"}`);
     } finally {
       setBusy(false);
     }
@@ -142,6 +208,45 @@ export default function App() {
     a.href = file.dataUrl;
     a.download = file.name;
     a.click();
+  }
+
+  function addFolder() {
+    const name = window.prompt("folder name")?.trim().toLowerCase();
+    if (!name) return;
+    setFolders((prev) => Array.from(new Set([...prev, name])));
+    setFolder(name);
+  }
+
+  async function togglePin(file: VaultFile) {
+    await putFile({ ...file, pinned: !file.pinned });
+    await refresh();
+  }
+
+  async function saveRename(file: VaultFile) {
+    const name = renameValue.trim();
+    if (name && name !== file.name) {
+      await putFile({ ...file, name });
+      await refresh();
+    }
+    setRenaming(null);
+  }
+
+  async function bulkDelete() {
+    for (const id of selected) await deleteFile(id);
+    setSelected([]);
+    setPreview(null);
+    await refresh();
+  }
+
+  async function moveSelected(target: string) {
+    const map = new Map(files.map((f) => [f.id, f]));
+    for (const id of selected) {
+      const file = map.get(id);
+      if (file) await putFile({ ...file, folder: target });
+    }
+    setSelected([]);
+    await refresh();
+    setToast(`moved to ${target}`);
   }
 
   return (
@@ -171,7 +276,28 @@ export default function App() {
           </div>
         </header>
 
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+        <div className="mt-8 flex flex-wrap gap-2">
+          {folders.map((f) => (
+            <button
+              key={f}
+              onClick={() => {
+                setFolder(f);
+                setSelected([]);
+              }}
+              className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs transition ${
+                folder === f ? "bg-white text-black" : "glass text-white/70 hover:text-white"
+              }`}
+            >
+              <Folder className="h-3.5 w-3.5" />
+              {f}
+            </button>
+          ))}
+          <button onClick={addFolder} className="rounded-full px-3 py-1.5 text-xs text-white/50 hover:text-white">
+            + folder
+          </button>
+        </div>
+
+        <div className="mt-5 flex flex-col gap-3 sm:flex-row">
           <label className="glass flex h-12 flex-1 items-center gap-3 rounded-2xl px-4">
             <Search className="h-4 w-4 text-white/40" />
             <input
@@ -181,6 +307,33 @@ export default function App() {
               className="w-full bg-transparent text-sm outline-none placeholder:text-white/30"
             />
           </label>
+          <select
+            value={kind}
+            onChange={(e) => setKind(e.target.value as KindFilter)}
+            className="glass h-12 rounded-2xl px-3 text-sm outline-none"
+          >
+            <option value="all">all types</option>
+            <option value="image">images</option>
+            <option value="video">videos</option>
+            <option value="audio">audio</option>
+            <option value="doc">docs</option>
+          </select>
+          <select
+            value={sort}
+            onChange={(e) => setSort(e.target.value as SortKey)}
+            className="glass h-12 rounded-2xl px-3 text-sm outline-none"
+          >
+            <option value="newest">newest</option>
+            <option value="oldest">oldest</option>
+            <option value="name">name</option>
+            <option value="size">size</option>
+          </select>
+          <button
+            onClick={() => setView(view === "grid" ? "list" : "grid")}
+            className="glass inline-flex h-12 w-12 items-center justify-center rounded-2xl"
+          >
+            {view === "grid" ? <LayoutList className="h-4 w-4" /> : <Grid2x2 className="h-4 w-4" />}
+          </button>
           <button
             onClick={() => inputRef.current?.click()}
             className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-white px-5 text-sm font-medium text-black transition hover:scale-[1.02] active:scale-[0.98]"
@@ -197,6 +350,27 @@ export default function App() {
           />
         </div>
 
+        <AnimatePresence>
+          {selected.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              className="glass mt-4 flex flex-wrap items-center gap-2 rounded-2xl px-4 py-3 text-sm"
+            >
+              <span className="text-white/60">{selected.length} selected</span>
+              {folders.map((f) => (
+                <button key={f} onClick={() => moveSelected(f)} className="rounded-full bg-white/8 px-3 py-1 text-xs">
+                  move to {f}
+                </button>
+              ))}
+              <button onClick={bulkDelete} className="ml-auto rounded-full bg-red-500/15 px-3 py-1 text-xs text-red-300">
+                delete
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <motion.div
           onDragOver={(e) => {
             e.preventDefault();
@@ -209,37 +383,88 @@ export default function App() {
             if (e.dataTransfer.files) ingest(e.dataTransfer.files);
           }}
           animate={{ scale: dragging ? 1.01 : 1, borderColor: dragging ? "rgba(10,132,255,0.6)" : "rgba(255,255,255,0.1)" }}
-          className="glass mt-6 flex min-h-[180px] flex-col items-center justify-center rounded-3xl border border-dashed px-6 py-10 text-center"
+          className="glass mt-6 flex min-h-[140px] flex-col items-center justify-center rounded-3xl border border-dashed px-6 py-10 text-center"
         >
           <FolderOpen className="mb-3 h-8 w-8 text-white/40" />
-          <p className="text-sm text-white/70">{busy ? "saving to vault…" : "drop files here"}</p>
+          <p className="text-sm text-white/70">{busy ? "saving to vault…" : `drop files into ${folder}`}</p>
           <p className="mt-1 text-xs text-white/35">stays in your browser. nothing leaves this machine.</p>
         </motion.div>
 
-        <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className={view === "grid" ? "mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3" : "mt-8 flex flex-col gap-2"}>
           <AnimatePresence>
             {filtered.map((file) => {
               const Icon = iconFor(file.type);
+              const on = selected.includes(file.id);
               return (
-                <motion.button
+                <motion.div
                   layout
                   key={file.id}
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.96 }}
                   transition={{ type: "spring", stiffness: 260, damping: 24 }}
-                  onClick={() => setPreview(file)}
-                  className="glass group rounded-3xl p-4 text-left transition hover:-translate-y-0.5"
+                  className={`glass group relative text-left transition hover:-translate-y-0.5 ${
+                    view === "grid" ? "rounded-3xl p-4" : "flex items-center gap-4 rounded-2xl px-4 py-3"
+                  } ${on ? "ring-1 ring-[#0a84ff]" : ""}`}
                 >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/8">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelected((prev) => (prev.includes(file.id) ? prev.filter((id) => id !== file.id) : [...prev, file.id]));
+                    }}
+                    className={`absolute right-3 top-3 flex h-6 w-6 items-center justify-center rounded-full ${
+                      on ? "bg-[#0a84ff] text-white" : "bg-white/8 text-white/40"
+                    }`}
+                  >
+                    <Check className="h-3.5 w-3.5" />
+                  </button>
+                  <button onClick={() => setPreview(file)} className={view === "grid" ? "w-full text-left" : "flex flex-1 items-center gap-4 text-left"}>
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white/8">
                       <Icon className="h-5 w-5 text-white/80" />
                     </div>
-                    <span className="text-[11px] text-white/35">{formatBytes(file.size)}</span>
+                    <div className={view === "grid" ? "mt-4" : "min-w-0 flex-1"}>
+                      {renaming === file.id ? (
+                        <input
+                          autoFocus
+                          value={renameValue}
+                          onChange={(e) => setRenameValue(e.target.value)}
+                          onBlur={() => saveRename(file)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") saveRename(file);
+                            if (e.key === "Escape") setRenaming(null);
+                          }}
+                          onClick={(e) => e.stopPropagation()}
+                          className="w-full rounded-lg bg-white/8 px-2 py-1 text-sm outline-none"
+                        />
+                      ) : (
+                        <p className="truncate text-sm font-medium text-white">
+                          {file.pinned ? "· " : ""}
+                          {file.name}
+                        </p>
+                      )}
+                      <p className="mt-1 text-xs text-white/35">
+                        {formatBytes(file.size)} · {new Date(file.addedAt).toLocaleString()}
+                      </p>
+                    </div>
+                  </button>
+                  <div className={`flex gap-1 ${view === "grid" ? "mt-3" : ""}`}>
+                    <button
+                      onClick={() => togglePin(file)}
+                      className="rounded-full p-2 text-white/40 hover:bg-white/8 hover:text-white"
+                    >
+                      <Pin className={`h-3.5 w-3.5 ${file.pinned ? "text-[#0a84ff]" : ""}`} />
+                    </button>
+                    <button
+                      onClick={() => {
+                        setRenaming(file.id);
+                        setRenameValue(file.name);
+                      }}
+                      className="rounded-full p-2 text-white/40 hover:bg-white/8 hover:text-white"
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                    </button>
                   </div>
-                  <p className="mt-4 truncate text-sm font-medium text-white">{file.name}</p>
-                  <p className="mt-1 text-xs text-white/35">{new Date(file.addedAt).toLocaleString()}</p>
-                </motion.button>
+                </motion.div>
               );
             })}
           </AnimatePresence>
@@ -270,7 +495,9 @@ export default function App() {
               <div className="flex items-center justify-between border-b border-white/8 px-5 py-4">
                 <div>
                   <p className="text-sm font-medium">{preview.name}</p>
-                  <p className="text-xs text-white/40">{preview.type || "file"} · {formatBytes(preview.size)}</p>
+                  <p className="text-xs text-white/40">
+                    {preview.type || "file"} · {formatBytes(preview.size)} · {preview.folder}
+                  </p>
                 </div>
                 <button onClick={() => setPreview(null)} className="rounded-full p-2 hover:bg-white/8">
                   <X className="h-4 w-4" />
@@ -309,6 +536,19 @@ export default function App() {
                 </button>
               </div>
             </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 16 }}
+            className="glass fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-full px-4 py-2 text-sm"
+          >
+            {toast}
           </motion.div>
         )}
       </AnimatePresence>

@@ -42,6 +42,9 @@ import SplitPage from './components/SplitPage';
 import BeaconPage from './components/BeaconPage';
 import WeavePage from './components/WeavePage';
 import AuraPage from './components/AuraPage';
+import CipherPage from './components/CipherPage';
+import PrismPage from './components/PrismPage';
+import FluxPage from './components/FluxPage';
 
 function Shell() {
   const { route } = useRouter();
@@ -82,6 +85,9 @@ function Shell() {
   if (route === 'beacon') return <BeaconPage />;
   if (route === 'weave') return <WeavePage />;
   if (route === 'aura') return <AuraPage />;
+  if (route === 'cipher') return <CipherPage />;
+  if (route === 'prism') return <PrismPage />;
+  if (route === 'flux') return <FluxPage />;
 
   return (
     <div className="mesh min-h-screen">

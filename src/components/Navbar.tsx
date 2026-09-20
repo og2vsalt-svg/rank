@@ -6,6 +6,8 @@ const links = [
   { to: 'vault' as const, label: 'vault' },
   { to: 'drop' as const, label: 'drop' },
   { to: 'transfer' as const, label: 'transfer' },
+  { to: 'snapshot' as const, label: 'snapshot' },
+  { to: 'sketch' as const, label: 'sketch' },
   { to: 'convert' as const, label: 'convert' },
   { to: 'qr' as const, label: 'qr' },
   { to: 'clip' as const, label: 'clip' },
@@ -28,6 +30,7 @@ const links = [
   { to: 'json' as const, label: 'json' },
   { to: 'board' as const, label: 'board' },
   { to: 'stash' as const, label: 'stash' },
+  { to: 'echo' as const, label: 'echo' },
 ];
 
 export default function Navbar() {
@@ -93,7 +96,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      <div className={`border-t border-white/5 overflow-hidden transition-all duration-300 ease-out ${menuOpen ? 'max-h-[640px] opacity-100' : 'max-h-0 opacity-0'}`}>
+      <div className={`border-t border-white/5 overflow-hidden transition-all duration-300 ease-out ${menuOpen ? 'max-h-[720px] opacity-100' : 'max-h-0 opacity-0'}`}>
         <div className="px-5 py-4 grid grid-cols-2 sm:grid-cols-4 gap-1">
           {links.map((l) => (
             <button key={l.to} onClick={() => { setMenuOpen(false); navigate(l.to); }} className="block text-sm text-neutral-400 hover:text-white py-1.5 text-left">

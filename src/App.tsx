@@ -34,6 +34,9 @@ import UnitsPage from './components/UnitsPage';
 import JsonPage from './components/JsonPage';
 import BoardPage from './components/BoardPage';
 import StashPage from './components/StashPage';
+import SnapshotPage from './components/SnapshotPage';
+import SketchPage from './components/SketchPage';
+import EchoPage from './components/EchoPage';
 
 function Shell() {
   const { route } = useRouter();
@@ -66,6 +69,9 @@ function Shell() {
   if (route === 'json') return <JsonPage />;
   if (route === 'board') return <BoardPage />;
   if (route === 'stash') return <StashPage />;
+  if (route === 'snapshot') return <SnapshotPage />;
+  if (route === 'sketch') return <SketchPage />;
+  if (route === 'echo') return <EchoPage />;
 
   return (
     <div className="mesh min-h-screen">

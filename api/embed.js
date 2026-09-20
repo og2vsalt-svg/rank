@@ -39,6 +39,7 @@ function page({ title, desc, image, url, color }) {
 <meta name="twitter:description" content="${esc(desc)}" />
 <meta name="twitter:image" content="${esc(img)}" />
 <meta name="discord:site" content="rankvault" />
+<meta property="og:image:alt" content="${esc(title)}" />
 <meta http-equiv="refresh" content="0;url=${esc(url)}" />
 </head>
 <body style="background:#050506;color:#f5f5f7;font-family:Inter,system-ui,sans-serif">

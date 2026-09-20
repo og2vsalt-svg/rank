@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from './AuthContext';
 import { useRouter } from './Router';
@@ -35,13 +35,14 @@ export default function VaultPage() {
   const { isLoggedIn, user } = useAuth();
   const { navigate } = useRouter();
   const {
-    files, trash, folders, usedBytes, addFiles, removeFile, restoreFile, purgeFile, emptyTrash,
-    togglePublic, toggleStar, renameFile, moveFile, moveMany, trashMany, addFolder, setNote, duplicateFile, bumpDownload,
+    files, trash, folders, tags, usedBytes, addFiles, removeFile, restoreFile, purgeFile, emptyTrash,
+    togglePublic, toggleStar, togglePin, renameFile, moveFile, moveMany, trashMany, addFolder, setNote, setTags, setExpiry, duplicateFile, bumpDownload,
   } = useVault();
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
   const [query, setQuery] = useState('');
   const [folder, setFolder] = useState('inbox');
+  const [tag, setTag] = useState('all');
   const [view, setView] = useState<'grid' | 'list'>('grid');
   const [onlyStarred, setOnlyStarred] = useState(false);
   const [showTrash, setShowTrash] = useState(false);
@@ -58,17 +59,19 @@ export default function VaultPage() {
     const list = source.filter((f) => {
       if (!showTrash && onlyStarred && !f.starred) return false;
       if (!showTrash && folder !== 'all' && f.folder !== folder) return false;
+      if (!showTrash && tag !== 'all' && !(f.tags || []).includes(tag)) return false;
       const q = query.trim().toLowerCase();
-      if (q && !f.name.toLowerCase().includes(q) && !f.note.toLowerCase().includes(q)) return false;
+      if (q && !f.name.toLowerCase().includes(q) && !f.note.toLowerCase().includes(q) && !(f.tags || []).join(' ').includes(q)) return false;
       return true;
     });
     list.sort((a, b) => {
+      if (!!b.pinned !== !!a.pinned) return Number(b.pinned) - Number(a.pinned);
       if (sort === 'name') return a.name.localeCompare(b.name);
       if (sort === 'size') return b.size - a.size;
       return +new Date(b.createdAt) - +new Date(a.createdAt);
     });
     return list;
-  }, [source, query, folder, onlyStarred, showTrash, sort]);
+  }, [source, query, folder, tag, onlyStarred, showTrash, sort]);
 
   const ping = (msg: string) => {
     setToast(msg);
@@ -83,6 +86,19 @@ export default function VaultPage() {
     if (!res.ok) ping(res.error || 'failed');
     else ping(res.warn || 'uploaded');
   };
+
+  useEffect(() => {
+    const onPaste = (e: ClipboardEvent) => {
+      if (!isLoggedIn || showTrash) return;
+      const items = e.clipboardData?.files;
+      if (items && items.length) {
+        e.preventDefault();
+        onDrop(items);
+      }
+    };
+    window.addEventListener('paste', onPaste);
+    return () => window.removeEventListener('paste', onPaste);
+  }, [isLoggedIn, showTrash, folder]);
 
   const copyLink = async (id: string) => {
     const url = `${window.location.origin}${window.location.pathname}#share?f=${id}`;
@@ -106,7 +122,7 @@ export default function VaultPage() {
           <p className="text-[#0a84ff] text-sm font-medium mb-2 tracking-wide">vault</p>
           <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-white mb-3">your files, locally hosted.</h1>
           <p className="text-neutral-400 max-w-xl mb-8">
-            drop anything in. preview, rename, favorite, sort into folders, leave a note, share a public link. no hard size cap — just a heads up if a drop might make this tab sleepy.
+            drop or paste anything in. preview, pin, tag, expire a public link. no hard size cap — just a heads up if a drop might make this tab sleepy.
           </p>
         </motion.div>
 
@@ -123,9 +139,9 @@ export default function VaultPage() {
           <>
             <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
               <div className="flex-1">
-                <p className="text-xs text-neutral-500">{formatBytes(usedBytes)} on this device · {user?.username} · {trash.length} in trash</p>
+                <p className="text-xs text-neutral-500">{formatBytes(usedBytes)} on this device · {user?.username} · {trash.length} in trash · paste a file anytime</p>
               </div>
-              <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="search files or notes" className="sm:w-56 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm outline-none focus:border-[#0a84ff]/50" />
+              <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="search files, notes, tags" className="sm:w-56 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm outline-none focus:border-[#0a84ff]/50" />
             </div>
 
             <div className="flex flex-wrap items-center gap-2 mb-5">
@@ -133,16 +149,13 @@ export default function VaultPage() {
               {!showTrash && folders.map((f) => (
                 <button key={f} onClick={() => { setShowTrash(false); setFolder(f); }} className={`text-xs px-3 py-1.5 rounded-full transition ${folder === f && !showTrash ? 'bg-white text-black' : 'bg-white/5 hover:bg-white/10'}`}>{f}</button>
               ))}
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  addFolder(newFolder);
-                  setNewFolder('');
-                }}
-                className="flex gap-2"
-              >
+              <form onSubmit={(e) => { e.preventDefault(); addFolder(newFolder); setNewFolder(''); }} className="flex gap-2">
                 <input value={newFolder} onChange={(e) => setNewFolder(e.target.value)} placeholder="new folder" className="w-28 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs outline-none" />
               </form>
+              <select value={tag} onChange={(e) => setTag(e.target.value)} className="text-xs px-3 py-1.5 rounded-full bg-white/5 border-0 outline-none">
+                <option value="all">any tag</option>
+                {tags.map((t) => <option key={t} value={t}>{t}</option>)}
+              </select>
               <button onClick={() => setOnlyStarred((v) => !v)} className={`text-xs px-3 py-1.5 rounded-full ${onlyStarred ? 'bg-[#0a84ff] text-white' : 'bg-white/5'}`}>favorites</button>
               <button onClick={() => setShowTrash((v) => !v)} className={`text-xs px-3 py-1.5 rounded-full ${showTrash ? 'bg-white text-black' : 'bg-white/5'}`}>trash</button>
               <button onClick={() => setView(view === 'grid' ? 'list' : 'grid')} className="text-xs px-3 py-1.5 rounded-full bg-white/5">{view}</button>
@@ -157,11 +170,7 @@ export default function VaultPage() {
               {selected.length > 0 && !showTrash && (
                 <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="mb-4 glass rounded-full px-4 py-2 flex flex-wrap items-center gap-2">
                   <span className="text-xs text-neutral-400">{selected.length} selected</span>
-                  <select
-                    onChange={(e) => { if (e.target.value) { moveMany(selected, e.target.value); ping('moved'); } }}
-                    className="text-xs px-2 py-1 rounded-full bg-white/5 border-0"
-                    defaultValue=""
-                  >
+                  <select onChange={(e) => { if (e.target.value) { moveMany(selected, e.target.value); ping('moved'); } }} className="text-xs px-2 py-1 rounded-full bg-white/5 border-0" defaultValue="">
                     <option value="" disabled>move to</option>
                     {folders.map((f) => <option key={f} value={f}>{f}</option>)}
                   </select>
@@ -190,7 +199,7 @@ export default function VaultPage() {
               >
                 <input ref={inputRef} type="file" multiple className="hidden" onChange={(e) => onDrop(e.target.files)} />
                 <p className="text-white font-medium">{busy ? 'uploading…' : 'drop files here'}</p>
-                <p className="text-sm text-neutral-500 mt-1">or click to browse. any size. big ones just take a second.</p>
+                <p className="text-sm text-neutral-500 mt-1">or click to browse, or paste. any size. big ones just take a second.</p>
               </motion.div>
             )}
 
@@ -206,7 +215,8 @@ export default function VaultPage() {
                     transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
                     className={`glass rounded-3xl p-4 flex flex-col gap-3 ${selected.includes(file.id) ? 'ring-1 ring-[#0a84ff]/50' : ''}`}
                   >
-                    <button onClick={() => setPreview(file)} className="aspect-[16/10] rounded-2xl bg-black/30 overflow-hidden flex items-center justify-center">
+                    <button onClick={() => setPreview(file)} className="aspect-[16/10] rounded-2xl bg-black/30 overflow-hidden flex items-center justify-center relative">
+                      {file.pinned && <span className="absolute top-2 left-2 text-[10px] px-2 py-0.5 rounded-full bg-white text-black">pinned</span>}
                       {file.type.startsWith('image/') ? (
                         <img src={file.dataUrl} alt="" className="w-full h-full object-cover" />
                       ) : (
@@ -217,13 +227,9 @@ export default function VaultPage() {
                       {!showTrash && (
                         <input type="checkbox" checked={selected.includes(file.id)} onChange={() => toggleSelect(file.id)} className="accent-[#0a84ff]" />
                       )}
-                      <input
-                        defaultValue={file.name}
-                        onBlur={(e) => renameFile(file.id, e.target.value)}
-                        className="bg-transparent text-sm text-white outline-none truncate flex-1"
-                      />
+                      <input defaultValue={file.name} onBlur={(e) => renameFile(file.id, e.target.value)} className="bg-transparent text-sm text-white outline-none truncate flex-1" />
                     </div>
-                    <p className="text-xs text-neutral-500">{formatBytes(file.size)} · {file.folder} · {file.downloads} dl</p>
+                    <p className="text-xs text-neutral-500">{formatBytes(file.size)} · {file.folder} · {file.downloads} dl{(file.tags || []).length ? ' · ' + file.tags.join(', ') : ''}</p>
                     {file.note && <p className="text-xs text-neutral-400 line-clamp-2">{file.note}</p>}
                     <div className="flex flex-wrap gap-2">
                       {showTrash ? (
@@ -233,17 +239,12 @@ export default function VaultPage() {
                         </>
                       ) : (
                         <>
+                          <button onClick={() => togglePin(file.id)} className="text-xs px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 transition">{file.pinned ? 'unpin' : 'pin'}</button>
                           <button onClick={() => toggleStar(file.id)} className="text-xs px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 transition">{file.starred ? 'starred' : 'star'}</button>
-                          <button onClick={() => togglePublic(file.id)} className="text-xs px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 transition">
-                            {file.public ? 'public' : 'private'}
-                          </button>
+                          <button onClick={() => togglePublic(file.id)} className="text-xs px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 transition">{file.public ? 'public' : 'private'}</button>
                           <button onClick={() => copyLink(file.id)} className="text-xs px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 transition">copy link</button>
                           <button onClick={() => { duplicateFile(file.id); ping('duplicated'); }} className="text-xs px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 transition">duplicate</button>
-                          <select
-                            value={file.folder}
-                            onChange={(e) => moveFile(file.id, e.target.value)}
-                            className="text-xs px-2 py-1.5 rounded-full bg-white/5 border-0 outline-none"
-                          >
+                          <select value={file.folder} onChange={(e) => moveFile(file.id, e.target.value)} className="text-xs px-2 py-1.5 rounded-full bg-white/5 border-0 outline-none">
                             {folders.map((f) => <option key={f} value={f}>{f}</option>)}
                           </select>
                           <a href={file.dataUrl} download={file.name} onClick={() => bumpDownload(file.id)} className="text-xs px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 transition">download</a>
@@ -282,13 +283,16 @@ export default function VaultPage() {
                   <p className="text-sm text-neutral-400 py-10">no inline preview. just download it.</p>
                 )}
               </div>
-              <div className="p-4 border-t border-white/10">
-                <textarea
-                  defaultValue={preview.note}
-                  onBlur={(e) => setNote(preview.id, e.target.value)}
-                  placeholder="add a note…"
-                  className="w-full bg-white/5 rounded-2xl px-3 py-2 text-sm outline-none min-h-[72px]"
-                />
+              <div className="p-4 border-t border-white/10 space-y-3">
+                <textarea defaultValue={preview.note} onBlur={(e) => setNote(preview.id, e.target.value)} placeholder="add a note…" className="w-full bg-white/5 rounded-2xl px-3 py-2 text-sm outline-none min-h-[72px]" />
+                <input defaultValue={(preview.tags || []).join(', ')} onBlur={(e) => setTags(preview.id, e.target.value.split(/[,\s]+/))} placeholder="tags, comma separated" className="w-full bg-white/5 rounded-2xl px-3 py-2 text-sm outline-none" />
+                <div className="flex flex-wrap gap-2 items-center">
+                  <span className="text-xs text-neutral-500">link expiry</span>
+                  <button onClick={() => setExpiry(preview.id, null)} className="text-xs px-3 py-1.5 rounded-full bg-white/5">never</button>
+                  <button onClick={() => setExpiry(preview.id, 1)} className="text-xs px-3 py-1.5 rounded-full bg-white/5">1h</button>
+                  <button onClick={() => setExpiry(preview.id, 24)} className="text-xs px-3 py-1.5 rounded-full bg-white/5">24h</button>
+                  <button onClick={() => setExpiry(preview.id, 168)} className="text-xs px-3 py-1.5 rounded-full bg-white/5">7d</button>
+                </div>
               </div>
             </motion.div>
           </motion.div>

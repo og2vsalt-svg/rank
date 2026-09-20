@@ -22,6 +22,11 @@ async function readBody(req) {
   return Buffer.concat(chunks);
 }
 
+function blobOpts() {
+  const token = process.env.BLOB_READ_WRITE_TOKEN;
+  return { token };
+}
+
 export default async function handler(req, res) {
   cors(res);
   if (req.method === 'OPTIONS') {
@@ -30,7 +35,7 @@ export default async function handler(req, res) {
   }
 
   if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    res.status(503).json({ error: 'blob store not configured. add BLOB_READ_WRITE_TOKEN on vercel.' });
+    res.status(503).json({ error: 'blob store not configured. set BLOB_READ_WRITE_TOKEN (+ optional BLOB_STORE_ID) on vercel.' });
     return;
   }
 
@@ -43,12 +48,9 @@ export default async function handler(req, res) {
       }
 
       const metaPath = `meta/${id}.json`;
-      const metaUrl = `https://blob.vercel-storage.com/${metaPath}`;
-
-      // try head + fetch of public meta blob
       let meta;
       try {
-        const listed = await head(metaPath, { token: process.env.BLOB_READ_WRITE_TOKEN });
+        const listed = await head(metaPath, blobOpts());
         const r = await fetch(listed.url);
         if (!r.ok) throw new Error('meta missing');
         meta = await r.json();
@@ -84,22 +86,21 @@ export default async function handler(req, res) {
         return;
       }
 
-      // decode data url
       const comma = dataUrl.indexOf(',');
       const b64 = dataUrl.slice(comma + 1);
       const buf = Buffer.from(b64, 'base64');
 
       if (buf.length > 90 * 1024 * 1024) {
-        res.status(413).json({ error: 'file too large for this share path (soft ~90mb). still no hard product cap, but blob post has a practical limit.' });
+        res.status(413).json({ error: 'file too large for this share path (soft ~90mb).' });
         return;
       }
 
       const fileBlob = await put(`shares/${id}/${name}`, buf, {
         access: 'public',
         contentType: type,
-        token: process.env.BLOB_READ_WRITE_TOKEN,
         addRandomSuffix: false,
         allowOverwrite: true,
+        ...blobOpts(),
       });
 
       const meta = {
@@ -112,14 +113,15 @@ export default async function handler(req, res) {
         expiresAt: body.expiresAt || null,
         createdAt: new Date().toISOString(),
         downloads: 0,
+        storeId: process.env.BLOB_STORE_ID || null,
       };
 
       await put(`meta/${id}.json`, JSON.stringify(meta), {
         access: 'public',
         contentType: 'application/json',
-        token: process.env.BLOB_READ_WRITE_TOKEN,
         addRandomSuffix: false,
         allowOverwrite: true,
+        ...blobOpts(),
       });
 
       res.status(200).json({ ok: true, id, url: fileBlob.url, sharePath: `/#share?f=${id}` });

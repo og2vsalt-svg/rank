@@ -1,6 +1,7 @@
 import { createContext, useContext, useCallback, useEffect, useState, type ReactNode } from 'react';
 import { useAuth } from './AuthContext';
 import { publishShare } from '../lib/cloudShare';
+import { idbGet, idbSet, migrateFromLocalStorage } from '../lib/localDb';
 
 export interface VaultFile {
   id: string;
@@ -38,6 +39,7 @@ interface VaultContextType {
   tags: string[];
   usedBytes: number;
   activity: VaultEvent[];
+  ready: boolean;
   addFiles: (fileList: FileList | File[], folder?: string) => Promise<{ ok: boolean; error?: string; warn?: string }>;
   addText: (name: string, body: string, folder?: string) => Promise<{ ok: boolean; error?: string }>;
   removeFile: (id: string) => void;
@@ -77,44 +79,22 @@ export function useVault() {
   return ctx;
 }
 
-function loadAll(): VaultFile[] {
-  try {
-    const raw = localStorage.getItem('rb_vault');
-    const parsed = raw ? JSON.parse(raw) : [];
-    return parsed.map((f: VaultFile) => ({
-      ...f,
-      folder: f.folder || 'inbox',
-      starred: !!f.starred,
-      pinned: !!f.pinned,
-      downloads: f.downloads || 0,
-      note: f.note || '',
-      tags: Array.isArray(f.tags) ? f.tags : [],
-      expiresAt: f.expiresAt || null,
-      trashed: !!f.trashed,
-      color: f.color || 'none',
-      lockPass: f.lockPass || '',
-      collection: f.collection || '',
-      cloudSynced: !!f.cloudSynced,
-    }));
-  } catch {
-    return [];
-  }
-}
-
-function saveAll(files: VaultFile[]) {
-  try {
-    localStorage.setItem('rb_vault', JSON.stringify(files));
-  } catch {
-  }
-}
-
-function readAsDataUrl(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result));
-    reader.onerror = () => reject(reader.error);
-    reader.readAsDataURL(file);
-  });
+function normalize(f: VaultFile): VaultFile {
+  return {
+    ...f,
+    folder: f.folder || 'inbox',
+    starred: !!f.starred,
+    pinned: !!f.pinned,
+    downloads: f.downloads || 0,
+    note: f.note || '',
+    tags: Array.isArray(f.tags) ? f.tags : [],
+    expiresAt: f.expiresAt || null,
+    trashed: !!f.trashed,
+    color: f.color || 'none',
+    lockPass: f.lockPass || '',
+    collection: f.collection || '',
+    cloudSynced: !!f.cloudSynced,
+  };
 }
 
 function stillLive(f: VaultFile) {
@@ -126,23 +106,66 @@ function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
 
+function readAsDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
+}
+
 export function VaultProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
-  const [all, setAll] = useState<VaultFile[]>(() => loadAll());
-  const [extraFolders, setExtraFolders] = useState<string[]>(() => {
-    try { return JSON.parse(localStorage.getItem('rb_folders') || '[]'); } catch { return []; }
-  });
-  const [extraCols, setExtraCols] = useState<string[]>(() => {
-    try { return JSON.parse(localStorage.getItem('rb_cols') || '[]'); } catch { return []; }
-  });
-  const [activity, setActivity] = useState<VaultEvent[]>(() => {
-    try { return JSON.parse(localStorage.getItem('rb_activity') || '[]').slice(0, 40); } catch { return []; }
-  });
+  const [all, setAll] = useState<VaultFile[]>([]);
+  const [extraFolders, setExtraFolders] = useState<string[]>([]);
+  const [extraCols, setExtraCols] = useState<string[]>([]);
+  const [activity, setActivity] = useState<VaultEvent[]>([]);
+  const [ready, setReady] = useState(false);
 
-  useEffect(() => { saveAll(all); }, [all]);
-  useEffect(() => { localStorage.setItem('rb_folders', JSON.stringify(extraFolders)); }, [extraFolders]);
-  useEffect(() => { localStorage.setItem('rb_cols', JSON.stringify(extraCols)); }, [extraCols]);
-  useEffect(() => { localStorage.setItem('rb_activity', JSON.stringify(activity.slice(0, 40))); }, [activity]);
+  // load from indexeddb (and migrate old localStorage once)
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      await migrateFromLocalStorage();
+      const vault = (await idbGet<VaultFile[]>('rb_vault')) || [];
+      const folders = (await idbGet<string[]>('rb_folders')) || [];
+      const cols = (await idbGet<string[]>('rb_cols')) || [];
+      const acts = (await idbGet<VaultEvent[]>('rb_activity')) || [];
+      if (cancelled) return;
+      setAll(vault.map(normalize));
+      setExtraFolders(folders);
+      setExtraCols(cols);
+      setActivity(acts.slice(0, 40));
+      setReady(true);
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  // persist on every change once ready
+  useEffect(() => {
+    if (!ready) return;
+    idbSet('rb_vault', all);
+    // small mirror for quick session restore / export fallback
+    try {
+      localStorage.setItem('rb_vault_meta', JSON.stringify({ count: all.length, updatedAt: Date.now() }));
+    } catch { /* ignore quota */ }
+  }, [all, ready]);
+
+  useEffect(() => {
+    if (!ready) return;
+    idbSet('rb_folders', extraFolders);
+  }, [extraFolders, ready]);
+
+  useEffect(() => {
+    if (!ready) return;
+    idbSet('rb_cols', extraCols);
+  }, [extraCols, ready]);
+
+  useEffect(() => {
+    if (!ready) return;
+    idbSet('rb_activity', activity.slice(0, 40));
+  }, [activity, ready]);
 
   const log = useCallback((text: string) => {
     setActivity((prev) => [{ id: uid(), at: new Date().toISOString(), text }, ...prev].slice(0, 40));
@@ -228,7 +251,6 @@ export function VaultProvider({ children }: { children: ReactNode }) {
       return { ok: true, cloud: true };
     }
 
-    // still public locally so same-device links work; cloud failed
     log('cloud publish failed — link still works on this device only');
     return { ok: true, cloud: false, error: res.error };
   }, [all, log]);
@@ -256,7 +278,7 @@ export function VaultProvider({ children }: { children: ReactNode }) {
   const getPublicFile = useCallback((id: string) => { const f = all.find((x) => x.id === id && x.public && !x.trashed); if (!f || !stillLive(f)) return undefined; return f; }, [all]);
 
   return (
-    <VaultContext.Provider value={{ files, trash, folders, tags, usedBytes, activity, addFiles, addText, removeFile, restoreFile, purgeFile, emptyTrash, togglePublic, toggleStar, togglePin, renameFile, moveFile, moveMany, trashMany, addFolder, setNote, setTags, setExpiry, setColor, setLock, duplicateFile, bumpDownload, exportVault, importVault, getFile, getPublicFile, collections, addCollection, setCollection, renameFolder }}>
+    <VaultContext.Provider value={{ files, trash, folders, tags, usedBytes, activity, ready, addFiles, addText, removeFile, restoreFile, purgeFile, emptyTrash, togglePublic, toggleStar, togglePin, renameFile, moveFile, moveMany, trashMany, addFolder, setNote, setTags, setExpiry, setColor, setLock, duplicateFile, bumpDownload, exportVault, importVault, getFile, getPublicFile, collections, addCollection, setCollection, renameFolder }}>
       {children}
     </VaultContext.Provider>
   );

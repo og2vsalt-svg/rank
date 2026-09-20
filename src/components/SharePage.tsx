@@ -11,6 +11,10 @@ function formatBytes(n: number) {
   return (n / (1024 * 1024)).toFixed(2) + ' mb';
 }
 
+function embedUrl(id: string) {
+  return `${window.location.origin}/s/${id}`;
+}
+
 export default function SharePage() {
   const { shareId, navigate } = useRouter();
   const { getPublicFile, bumpDownload } = useVault();
@@ -19,6 +23,7 @@ export default function SharePage() {
   const [loading, setLoading] = useState(!!shareId && !local);
   const [pass, setPass] = useState('');
   const [ok, setOk] = useState(false);
+  const [copied, setCopied] = useState('');
 
   useEffect(() => {
     let cancelled = false;
@@ -64,6 +69,13 @@ export default function SharePage() {
       : null;
 
   const locked = !!(file && file.lockPass && !ok);
+
+  const copyEmbed = async () => {
+    if (!file) return;
+    const url = embedUrl(file.id);
+    await navigator.clipboard.writeText(url);
+    setCopied(url);
+  };
 
   return (
     <div className="mesh min-h-screen">
@@ -113,8 +125,9 @@ export default function SharePage() {
                   download
                 </a>
                 <a href={file.url} target="_blank" rel="noreferrer" className="inline-flex px-5 py-2.5 rounded-full bg-white/5 text-sm">open raw</a>
-                <button onClick={() => navigator.clipboard.writeText(window.location.href)} className="inline-flex px-5 py-2.5 rounded-full bg-white/5 text-sm">copy this link</button>
+                <button onClick={copyEmbed} className="inline-flex px-5 py-2.5 rounded-full bg-white/5 text-sm">copy discord link</button>
               </div>
+              {copied && <p className="text-xs text-neutral-500 mt-4">embed url: {copied}</p>}
             </>
           )}
         </motion.div>

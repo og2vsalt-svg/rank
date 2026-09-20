@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 
-export type Route = 'home' | 'login' | 'signup' | 'vault' | 'share' | 'notes' | 'paste' | 'drop' | 'status';
+export type Route = 'home' | 'login' | 'signup' | 'vault' | 'share' | 'notes' | 'paste' | 'drop' | 'status' | 'convert' | 'qr' | 'clip';
 
 interface RouterContextType {
   route: Route;
@@ -20,7 +20,7 @@ function parseHash() {
   const raw = window.location.hash.replace('#', '');
   const [path, qs] = raw.split('?');
   const params = new URLSearchParams(qs || '');
-  const known: Route[] = ['login', 'signup', 'vault', 'share', 'notes', 'paste', 'drop', 'status'];
+  const known: Route[] = ['login', 'signup', 'vault', 'share', 'notes', 'paste', 'drop', 'status', 'convert', 'qr', 'clip'];
   if (path === 'share' || path.startsWith('file/')) {
     return { route: 'share' as Route, shareId: params.get('f') || path.replace('file/', '') };
   }
@@ -42,7 +42,7 @@ export function RouterProvider({ children }: { children: ReactNode }) {
     if (to === 'home') {
       history.pushState(null, '', window.location.pathname);
       setState({ route: 'home', shareId: null });
-    } else if ((to === 'share' || to === 'paste') && extra) {
+    } else if ((to === 'share' || to === 'paste' || to === 'clip') && extra) {
       window.location.hash = `${to}?f=${extra}`;
     } else {
       window.location.hash = to;

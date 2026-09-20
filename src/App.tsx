@@ -14,6 +14,9 @@ import NotesPage from './components/NotesPage';
 import PastePage from './components/PastePage';
 import DropPage from './components/DropPage';
 import StatusPage from './components/StatusPage';
+import ConvertPage from './components/ConvertPage';
+import QrPage from './components/QrPage';
+import ClipPage from './components/ClipPage';
 
 function Shell() {
   const { route } = useRouter();
@@ -26,6 +29,9 @@ function Shell() {
   if (route === 'paste') return <PastePage />;
   if (route === 'drop') return <DropPage />;
   if (route === 'status') return <StatusPage />;
+  if (route === 'convert') return <ConvertPage />;
+  if (route === 'qr') return <QrPage />;
+  if (route === 'clip') return <ClipPage />;
 
   return (
     <div className="mesh min-h-screen">

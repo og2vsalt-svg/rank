@@ -14,6 +14,26 @@ const items = [
     body: 'mark a file public and copy a hash link. optional expiry and a passcode so the drop dies or stays locked.',
   },
   {
+    title: 'cloud share db',
+    body: 'public drops can land in vercel blob so the link works on another device, not just this tab.',
+  },
+  {
+    title: 'discord embeds',
+    body: '/s/id pages serve og tags so discord, slack, and x preview the filename and image like a real product.',
+  },
+  {
+    title: 'convert desk',
+    body: 'remap png/jpg/webp in the tab. separate from the vault on purpose.',
+  },
+  {
+    title: 'qr desk',
+    body: 'turn a share url into a scannable square when typing the hash is mid.',
+  },
+  {
+    title: 'clip rooms',
+    body: 'stash raw text clips with their own links. not files, not notes, just a clipboard with memory.',
+  },
+  {
     title: 'paste or drop',
     body: 'cmd/ctrl-v a screenshot or file right into the vault. drag works too.',
   },
@@ -34,36 +54,12 @@ const items = [
     body: 'see how many files and bytes this tab is holding. still no cap, just honesty.',
   },
   {
-    title: 'snippets + notes on files',
-    body: 'dump raw text as a .txt in one tap. tags and notes still sit on the preview sheet.',
-  },
-  {
-    title: 'export the whole vault',
-    body: 'download a json dump of everything on this device, or import one back. handy when you wipe a profile.',
-  },
-  {
-    title: 'activity trail',
-    body: 'a tiny recents list so you remember what you just dropped, moved, or purged.',
-  },
-  {
     title: 'no hard file cap',
     body: 'drop whatever size you want. we only warn when a file is so big the tab might feel sleepy.',
   },
   {
-    title: 'batch download',
-    body: 'select a pile and pull them down one by one. no fake cap, just a little wait if they are huge.',
-  },
-  {
-    title: 'type filters + recents',
-    body: 'jump to images, clips, audio, or docs. a recents strip keeps the last drops one tap away.',
-  },
-  {
     title: 'apple-soft motion',
     body: 'springy buttons, glass cards, blur. supposed to feel like something a human actually designed.',
-  },
-  {
-    title: 'discord-ready links',
-    body: 'og + twitter tags so pasted urls look like a real product instead of a bare title.',
   },
 ];
 

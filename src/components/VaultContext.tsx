@@ -40,13 +40,13 @@ interface VaultContextType {
   usedBytes: number;
   activity: VaultEvent[];
   ready: boolean;
-  addFiles: (fileList: FileList | File[], folder?: string) => Promise<{ ok: boolean; error?: string; warn?: string }>;
+  addFiles: (fileList: FileList | File[], folder?: string) => Promise<{ ok: boolean; error?: string; warn?: string; ids?: string[] }>;
   addText: (name: string, body: string, folder?: string) => Promise<{ ok: boolean; error?: string }>;
   removeFile: (id: string) => void;
   restoreFile: (id: string) => void;
   purgeFile: (id: string) => void;
   emptyTrash: () => void;
-  togglePublic: (id: string) => Promise<{ ok: boolean; error?: string; cloud?: boolean }>;
+  togglePublic: (id: string) => Promise<{ ok: boolean; error?: string; cloud?: boolean; id?: string }>;
   toggleStar: (id: string) => void;
   togglePin: (id: string) => void;
   renameFile: (id: string, name: string) => void;
@@ -123,7 +123,6 @@ export function VaultProvider({ children }: { children: ReactNode }) {
   const [activity, setActivity] = useState<VaultEvent[]>([]);
   const [ready, setReady] = useState(false);
 
-  // load from indexeddb (and migrate old localStorage once)
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -142,11 +141,9 @@ export function VaultProvider({ children }: { children: ReactNode }) {
     return () => { cancelled = true; };
   }, []);
 
-  // persist on every change once ready
   useEffect(() => {
     if (!ready) return;
     idbSet('rb_vault', all);
-    // small mirror for quick session restore / export fallback
     try {
       localStorage.setItem('rb_vault_meta', JSON.stringify({ count: all.length, updatedAt: Date.now() }));
     } catch { /* ignore quota */ }
@@ -198,7 +195,7 @@ export function VaultProvider({ children }: { children: ReactNode }) {
     }
     setAll((prev) => [...next, ...prev]);
     log(`added ${next.length} file${next.length > 1 ? 's' : ''} to ${folder}`);
-    return { ok: true, warn };
+    return { ok: true, warn, ids: next.map((f) => f.id) };
   }, [user, log]);
 
   const addText = useCallback(async (name: string, body: string, folder = 'inbox') => {
@@ -227,13 +224,13 @@ export function VaultProvider({ children }: { children: ReactNode }) {
     if (!current) return { ok: false, error: 'file missing' };
     const makingPublic = !current.public;
 
-    setAll((prev) => prev.map((f) => (f.id === id ? { ...f, public: makingPublic } : f)));
-
     if (!makingPublic) {
+      setAll((prev) => prev.map((f) => (f.id === id ? { ...f, public: false, cloudSynced: false } : f)));
       log('made a file private');
       return { ok: true, cloud: false };
     }
 
+    setAll((prev) => prev.map((f) => (f.id === id ? { ...f, public: true } : f)));
     log('publishing share to cloud db…');
     const res = await publishShare({
       id: current.id,
@@ -247,12 +244,13 @@ export function VaultProvider({ children }: { children: ReactNode }) {
 
     if (res.ok) {
       setAll((prev) => prev.map((f) => (f.id === id ? { ...f, public: true, cloudSynced: true } : f)));
-      log('cloud share live');
-      return { ok: true, cloud: true };
+      log('cloud share live — anyone with the link can open it');
+      return { ok: true, cloud: true, id: current.id };
     }
 
-    log('cloud publish failed — link still works on this device only');
-    return { ok: true, cloud: false, error: res.error };
+    setAll((prev) => prev.map((f) => (f.id === id ? { ...f, public: false, cloudSynced: false } : f)));
+    log('cloud publish failed — kept private so you do not send a dead link');
+    return { ok: false, cloud: false, error: res.error || 'could not publish share' };
   }, [all, log]);
 
   const toggleStar = useCallback((id: string) => { setAll((prev) => prev.map((f) => (f.id === id ? { ...f, starred: !f.starred } : f))); }, []);

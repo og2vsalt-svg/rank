@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"');
 }
 
 function isBot(ua) {
@@ -85,6 +85,9 @@ export default async function handler(req, res) {
       json: 'json desk — rankvault',
       board: 'board — rankvault',
       stash: 'stash — rankvault',
+      snapshot: 'snapshot — rankvault',
+      sketch: 'sketch — rankvault',
+      echo: 'echo — rankvault',
     };
     const title = titles[page] || `${page} — rankvault`;
     const desc = 'quiet file hosting and side desks. share only if you want.';

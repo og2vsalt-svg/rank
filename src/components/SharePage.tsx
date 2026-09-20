@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useRouter } from './Router';
 import { useVault } from './VaultContext';
 import Navbar from './Navbar';
-import { fetchShare, type CloudMeta } from '../lib/cloudShare';
+import { fetchShare, shareUrls, type CloudMeta } from '../lib/cloudShare';
 
 function formatBytes(n: number) {
   if (n < 1024) return n + ' b';
@@ -11,16 +11,13 @@ function formatBytes(n: number) {
   return (n / (1024 * 1024)).toFixed(2) + ' mb';
 }
 
-function embedUrl(id: string) {
-  return `${window.location.origin}/s/${id}`;
-}
-
 export default function SharePage() {
   const { shareId, navigate } = useRouter();
   const { getPublicFile, bumpDownload } = useVault();
   const local = shareId ? getPublicFile(shareId) : undefined;
   const [cloud, setCloud] = useState<CloudMeta | null>(null);
-  const [loading, setLoading] = useState(!!shareId && !local);
+  const [loading, setLoading] = useState(!!shareId);
+  const [err, setErr] = useState('');
   const [pass, setPass] = useState('');
   const [ok, setOk] = useState(false);
   const [copied, setCopied] = useState('');
@@ -28,43 +25,52 @@ export default function SharePage() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      if (!shareId || local) {
+      if (!shareId) {
         setLoading(false);
+        setErr('missing share id');
         return;
       }
       setLoading(true);
-      const meta = await fetchShare(shareId);
-      if (!cancelled) {
+      setErr('');
+      try {
+        const meta = await fetchShare(shareId);
+        if (cancelled) return;
         setCloud(meta);
-        setLoading(false);
+        if (!meta && !getPublicFile(shareId)) {
+          setErr('this share is missing, expired, or never made it to the cloud.');
+        }
+      } catch {
+        if (!cancelled) setErr('could not reach the share database.');
+      } finally {
+        if (!cancelled) setLoading(false);
       }
     })();
     return () => { cancelled = true; };
-  }, [shareId, local]);
+  }, [shareId]);
 
-  const file = local
+  const file = cloud
     ? {
-        id: local.id,
-        name: local.name,
-        type: local.type,
-        size: local.size,
-        url: local.dataUrl,
-        lockPass: local.lockPass,
-        expiresAt: local.expiresAt,
-        downloads: local.downloads,
-        isLocal: true as const,
+        id: cloud.id,
+        name: cloud.name,
+        type: cloud.type,
+        size: cloud.size,
+        url: cloud.url,
+        lockPass: cloud.lockPass || '',
+        expiresAt: cloud.expiresAt || null,
+        downloads: cloud.downloads || 0,
+        isLocal: false as const,
       }
-    : cloud
+    : local
       ? {
-          id: cloud.id,
-          name: cloud.name,
-          type: cloud.type,
-          size: cloud.size,
-          url: cloud.url,
-          lockPass: cloud.lockPass || '',
-          expiresAt: cloud.expiresAt || null,
-          downloads: cloud.downloads || 0,
-          isLocal: false as const,
+          id: local.id,
+          name: local.name,
+          type: local.type,
+          size: local.size,
+          url: local.dataUrl,
+          lockPass: local.lockPass,
+          expiresAt: local.expiresAt,
+          downloads: local.downloads,
+          isLocal: true as const,
         }
       : null;
 
@@ -72,7 +78,7 @@ export default function SharePage() {
 
   const copyEmbed = async () => {
     if (!file) return;
-    const url = embedUrl(file.id);
+    const url = shareUrls(file.id).embed;
     await navigator.clipboard.writeText(url);
     setCopied(url);
   };
@@ -81,15 +87,15 @@ export default function SharePage() {
     <div className="mesh min-h-screen">
       <Navbar />
       <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-8">
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-3xl p-8">
           {loading ? (
-            <p className="text-neutral-400 text-sm">looking up share…</p>
+            <p className="text-neutral-400 text-sm">loading share…</p>
           ) : !file ? (
             <>
               <p className="text-[#0a84ff] text-sm mb-2">share</p>
-              <h1 className="text-3xl font-semibold mb-3">this link is private, expired, or gone.</h1>
-              <p className="text-neutral-400 mb-6">either it was never published to the cloud db, the timer ran out, or blob is not wired on this deploy yet.</p>
-              <button onClick={() => navigate('vault')} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium">open vault</button>
+              <h1 className="text-3xl font-semibold tracking-tight mb-3">nothing here</h1>
+              <p className="text-sm text-neutral-500 mb-6">{err || 'this link does not point to a live public drop.'}</p>
+              <button onClick={() => navigate('home')} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium">back home</button>
             </>
           ) : locked ? (
             <>
@@ -115,6 +121,11 @@ export default function SharePage() {
               {file.type.startsWith('image/') && <img src={file.url} alt="" className="w-full rounded-2xl mb-6" />}
               {file.type.startsWith('video/') && <video src={file.url} controls className="w-full rounded-2xl mb-6" />}
               {file.type.startsWith('audio/') && <audio src={file.url} controls className="w-full mb-6" />}
+              {file.type.startsWith('text/') && !file.type.includes('html') && file.url.startsWith('data:') && (
+                <pre className="text-xs text-neutral-400 bg-black/30 rounded-2xl p-4 mb-6 overflow-auto max-h-64 whitespace-pre-wrap break-all">
+                  {(() => { try { return atob(file.url.split(',')[1] || ''); } catch { return ''; } })()}
+                </pre>
+              )}
               <div className="flex flex-wrap gap-2">
                 <a
                   href={file.url}

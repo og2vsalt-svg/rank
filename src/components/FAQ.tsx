@@ -3,7 +3,7 @@ import { useState } from 'react';
 const faqs = [
   {
     q: 'where do files actually live?',
-    a: 'in this build they stay in your browser storage. same device, same vault. it is a demo cap of 8mb so the page stays fast.',
+    a: 'in this build they stay in your browser storage. same device, same vault.',
   },
   {
     q: 'can other people see my files?',

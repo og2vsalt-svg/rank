@@ -32,7 +32,6 @@ interface VaultContextType {
 }
 
 const VaultContext = createContext<VaultContextType | null>(null);
-const LIMIT = 8 * 1024 * 1024;
 
 export function useVault() {
   const ctx = useContext(VaultContext);
@@ -95,9 +94,6 @@ export function VaultProvider({ children }: { children: ReactNode }) {
     if (!user) return { ok: false, error: 'log in first' };
     const incoming = Array.from(fileList);
     if (!incoming.length) return { ok: false, error: 'no files' };
-    const extra = incoming.reduce((n, f) => n + f.size, 0);
-    const current = loadAll().filter((f) => f.ownerId === user.id).reduce((n, f) => n + f.size, 0);
-    if (current + extra > LIMIT) return { ok: false, error: 'vault is full (8mb demo cap in-browser)' };
 
     const next: VaultFile[] = [];
     for (const file of incoming) {

@@ -34,8 +34,6 @@ export default function VaultPage() {
   const [toast, setToast] = useState('');
   const [preview, setPreview] = useState<VaultFile | null>(null);
   const [newFolder, setNewFolder] = useState('');
-  const cap = 8 * 1024 * 1024;
-  const pct = Math.min(100, (usedBytes / cap) * 100);
 
   const shown = useMemo(() => {
     return files.filter((f) => {
@@ -95,10 +93,7 @@ export default function VaultPage() {
           <>
             <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
               <div className="flex-1">
-                <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
-                  <motion.div className="h-full bg-[#0a84ff]" initial={{ width: 0 }} animate={{ width: pct + '%' }} transition={{ type: 'spring', stiffness: 120, damping: 20 }} />
-                </div>
-                <p className="text-xs text-neutral-500 mt-2">{formatBytes(usedBytes)} of 8 mb · {user?.username}</p>
+                <p className="text-xs text-neutral-500">{formatBytes(usedBytes)} used · {user?.username}</p>
               </div>
               <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="search files" className="sm:w-56 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm outline-none focus:border-[#0a84ff]/50" />
             </div>

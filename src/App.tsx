@@ -10,6 +10,10 @@ import LoginPage from './components/LoginPage';
 import SignupPage from './components/SignupPage';
 import VaultPage from './components/VaultPage';
 import SharePage from './components/SharePage';
+import NotesPage from './components/NotesPage';
+import PastePage from './components/PastePage';
+import DropPage from './components/DropPage';
+import StatusPage from './components/StatusPage';
 
 function Shell() {
   const { route } = useRouter();
@@ -18,6 +22,10 @@ function Shell() {
   if (route === 'signup') return <SignupPage />;
   if (route === 'vault') return <VaultPage />;
   if (route === 'share') return <SharePage />;
+  if (route === 'notes') return <NotesPage />;
+  if (route === 'paste') return <PastePage />;
+  if (route === 'drop') return <DropPage />;
+  if (route === 'status') return <StatusPage />;
 
   return (
     <div className="mesh min-h-screen">

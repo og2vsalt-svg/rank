@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 
-export type Route = 'home' | 'login' | 'signup' | 'vault' | 'share';
+export type Route = 'home' | 'login' | 'signup' | 'vault' | 'share' | 'notes' | 'paste' | 'drop' | 'status';
 
 interface RouterContextType {
   route: Route;
@@ -20,12 +20,11 @@ function parseHash() {
   const raw = window.location.hash.replace('#', '');
   const [path, qs] = raw.split('?');
   const params = new URLSearchParams(qs || '');
-  if (path === 'login') return { route: 'login' as Route, shareId: null };
-  if (path === 'signup') return { route: 'signup' as Route, shareId: null };
-  if (path === 'vault') return { route: 'vault' as Route, shareId: params.get('f') };
+  const known: Route[] = ['login', 'signup', 'vault', 'share', 'notes', 'paste', 'drop', 'status'];
   if (path === 'share' || path.startsWith('file/')) {
     return { route: 'share' as Route, shareId: params.get('f') || path.replace('file/', '') };
   }
+  if (known.includes(path as Route)) return { route: path as Route, shareId: params.get('f') };
   if (params.get('f')) return { route: 'share' as Route, shareId: params.get('f') };
   return { route: 'home' as Route, shareId: null };
 }
@@ -43,8 +42,8 @@ export function RouterProvider({ children }: { children: ReactNode }) {
     if (to === 'home') {
       history.pushState(null, '', window.location.pathname);
       setState({ route: 'home', shareId: null });
-    } else if (to === 'share' && extra) {
-      window.location.hash = `share?f=${extra}`;
+    } else if ((to === 'share' || to === 'paste') && extra) {
+      window.location.hash = `${to}?f=${extra}`;
     } else {
       window.location.hash = to;
     }

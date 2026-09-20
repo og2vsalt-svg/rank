@@ -2,6 +2,14 @@ import { useState, useRef, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { useRouter } from './Router';
 
+const links = [
+  { to: 'vault' as const, label: 'vault' },
+  { to: 'drop' as const, label: 'drop' },
+  { to: 'notes' as const, label: 'notes' },
+  { to: 'paste' as const, label: 'paste' },
+  { to: 'status' as const, label: 'status' },
+];
+
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -26,10 +34,12 @@ export default function Navbar() {
           rank<span className="text-[#0a84ff]">vault</span>
         </button>
 
-        <div className="hidden md:flex items-center gap-6">
-          <button onClick={() => navigate('vault')} className="text-[13px] text-neutral-400 hover:text-white transition-colors">Vault</button>
-          <a href="#features" className="text-[13px] text-neutral-400 hover:text-white transition-colors">Features</a>
-          <a href="#faq" className="text-[13px] text-neutral-400 hover:text-white transition-colors">FAQ</a>
+        <div className="hidden md:flex items-center gap-5">
+          {links.map((l) => (
+            <button key={l.to} onClick={() => navigate(l.to)} className="text-[13px] text-neutral-400 hover:text-white transition-colors">
+              {l.label}
+            </button>
+          ))}
         </div>
 
         <div className="flex items-center gap-1.5">
@@ -46,14 +56,14 @@ export default function Navbar() {
                   <p className="text-sm font-medium text-white truncate">{user!.username}</p>
                   <p className="text-xs text-neutral-500 truncate">{user!.email}</p>
                 </div>
-                <button onClick={() => { setUserMenuOpen(false); navigate('vault'); }} className="w-full text-left px-4 py-2.5 text-sm text-neutral-300 hover:bg-white/5">Open vault</button>
-                <button onClick={() => { logout(); setUserMenuOpen(false); }} className="w-full text-left px-4 py-2.5 text-sm text-neutral-400 hover:text-red-400 hover:bg-white/5">Log out</button>
+                <button onClick={() => { setUserMenuOpen(false); navigate('vault'); }} className="w-full text-left px-4 py-2.5 text-sm text-neutral-300 hover:bg-white/5">open vault</button>
+                <button onClick={() => { logout(); setUserMenuOpen(false); }} className="w-full text-left px-4 py-2.5 text-sm text-neutral-400 hover:text-red-400 hover:bg-white/5">log out</button>
               </div>
             </div>
           ) : (
             <div className="flex items-center gap-1.5">
-              <button onClick={() => navigate('login')} className="text-[13px] text-neutral-400 hover:text-white px-3 py-1.5 rounded-full transition-colors">Log in</button>
-              <button onClick={() => navigate('signup')} className="hidden sm:inline-flex text-[13px] font-medium px-3.5 py-1.5 rounded-full bg-white text-black hover:bg-neutral-200 transition-colors">Sign up</button>
+              <button onClick={() => navigate('login')} className="text-[13px] text-neutral-400 hover:text-white px-3 py-1.5 rounded-full transition-colors">log in</button>
+              <button onClick={() => navigate('signup')} className="hidden sm:inline-flex text-[13px] font-medium px-3.5 py-1.5 rounded-full bg-white text-black hover:bg-neutral-200 transition-colors">sign up</button>
             </div>
           )}
 
@@ -65,9 +75,11 @@ export default function Navbar() {
 
       <div className={`md:hidden border-t border-white/5 overflow-hidden transition-all duration-300 ease-out ${menuOpen ? 'max-h-80 opacity-100' : 'max-h-0 opacity-0'}`}>
         <div className="px-5 py-4 space-y-2">
-          <button onClick={() => { setMenuOpen(false); navigate('vault'); }} className="block text-sm text-neutral-400 hover:text-white py-1.5">Vault</button>
-          <a href="#features" onClick={() => setMenuOpen(false)} className="block text-sm text-neutral-400 hover:text-white py-1.5">Features</a>
-          <a href="#faq" onClick={() => setMenuOpen(false)} className="block text-sm text-neutral-400 hover:text-white py-1.5">FAQ</a>
+          {links.map((l) => (
+            <button key={l.to} onClick={() => { setMenuOpen(false); navigate(l.to); }} className="block text-sm text-neutral-400 hover:text-white py-1.5">
+              {l.label}
+            </button>
+          ))}
         </div>
       </div>
     </nav>

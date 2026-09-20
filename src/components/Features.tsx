@@ -18,7 +18,23 @@ const items = [
     body: 'cmd/ctrl-v a screenshot or file right into the vault. drag works too.',
   },
   {
-    title: 'snippets + notes',
+    title: 'notes desk',
+    body: 'a second surface that is just writing. not a file dump. titles, drafts, delete when you are done.',
+  },
+  {
+    title: 'paste desk',
+    body: 'publish raw text and grab a hash link. logs, configs, lyrics. lives next to the vault, not inside it.',
+  },
+  {
+    title: 'quick drop',
+    body: 'one page to upload a local file, park it in the vault db, and jump straight to a public share.',
+  },
+  {
+    title: 'status pulse',
+    body: 'see how many files and bytes this tab is holding. still no cap, just honesty.',
+  },
+  {
+    title: 'snippets + notes on files',
     body: 'dump raw text as a .txt in one tap. tags and notes still sit on the preview sheet.',
   },
   {
@@ -46,28 +62,8 @@ const items = [
     body: 'springy buttons, glass cards, blur. supposed to feel like something a human actually designed.',
   },
   {
-    title: 'albums',
-    body: 'group drops into albums on top of folders. same file can live in inbox and sit in a set.',
-  },
-  {
-    title: 'keyboard + compact',
-    body: 'slash to search, g/l to flip views, question mark for the cheat sheet. compact grid when the pile is huge.',
-  },
-  {
-    title: 'storage split',
-    body: 'see how much of the tab is images vs clips vs docs. still no cap, just honesty about lag.',
-  },
-  {
-    title: 'batch star pin public',
-    body: 'select a pile and favorite, pin, duplicate, or flip public in one tap. keeps the old single-file moves.',
-  },
-  {
-    title: 'markdown + raw',
-    body: 'copy a markdown link from the preview sheet, or open the raw data url in another tab.',
-  },
-  {
-    title: 'peek text',
-    body: 'txt and json snippets render inside the preview so you do not have to download first.',
+    title: 'discord-ready links',
+    body: 'og + twitter tags so pasted urls look like a real product instead of a bare title.',
   },
 ];
 

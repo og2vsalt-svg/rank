@@ -18,6 +18,7 @@ export interface VaultFile {
   tags: string[];
   expiresAt: string | null;
   trashed: boolean;
+  color: string;
 }
 
 interface VaultContextType {
@@ -27,6 +28,7 @@ interface VaultContextType {
   tags: string[];
   usedBytes: number;
   addFiles: (fileList: FileList | File[], folder?: string) => Promise<{ ok: boolean; error?: string; warn?: string }>;
+  addText: (name: string, body: string, folder?: string) => Promise<{ ok: boolean; error?: string }>;
   removeFile: (id: string) => void;
   restoreFile: (id: string) => void;
   purgeFile: (id: string) => void;
@@ -42,6 +44,7 @@ interface VaultContextType {
   setNote: (id: string, note: string) => void;
   setTags: (id: string, tags: string[]) => void;
   setExpiry: (id: string, hours: number | null) => void;
+  setColor: (id: string, color: string) => void;
   duplicateFile: (id: string) => void;
   bumpDownload: (id: string) => void;
   getFile: (id: string) => VaultFile | undefined;
@@ -70,6 +73,7 @@ function loadAll(): VaultFile[] {
       tags: Array.isArray(f.tags) ? f.tags : [],
       expiresAt: f.expiresAt || null,
       trashed: !!f.trashed,
+      color: f.color || 'none',
     }));
   } catch {
     return [];
@@ -96,6 +100,10 @@ function readAsDataUrl(file: File): Promise<string> {
 function stillLive(f: VaultFile) {
   if (!f.expiresAt) return true;
   return +new Date(f.expiresAt) > Date.now();
+}
+
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
 
 export function VaultProvider({ children }: { children: ReactNode }) {
@@ -138,7 +146,7 @@ export function VaultProvider({ children }: { children: ReactNode }) {
     for (const file of incoming) {
       const dataUrl = await readAsDataUrl(file);
       next.push({
-        id: Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
+        id: uid(),
         name: file.name,
         type: file.type || 'application/octet-stream',
         size: file.size,
@@ -154,10 +162,40 @@ export function VaultProvider({ children }: { children: ReactNode }) {
         tags: [],
         expiresAt: null,
         trashed: false,
+        color: 'none',
       });
     }
     setAll((prev) => [...next, ...prev]);
     return { ok: true, warn };
+  }, [user]);
+
+  const addText = useCallback(async (name: string, body: string, folder = 'inbox') => {
+    if (!user) return { ok: false, error: 'log in first' };
+    const cleanName = (name.trim() || 'note') + (name.endsWith('.txt') ? '' : '.txt');
+    const blob = new Blob([body], { type: 'text/plain' });
+    const file = new File([blob], cleanName, { type: 'text/plain' });
+    const dataUrl = await readAsDataUrl(file);
+    const rec: VaultFile = {
+      id: uid(),
+      name: cleanName,
+      type: 'text/plain',
+      size: blob.size,
+      dataUrl,
+      createdAt: new Date().toISOString(),
+      ownerId: user.id,
+      public: false,
+      folder,
+      starred: false,
+      pinned: false,
+      downloads: 0,
+      note: '',
+      tags: ['snippet'],
+      expiresAt: null,
+      trashed: false,
+      color: 'none',
+    };
+    setAll((prev) => [rec, ...prev]);
+    return { ok: true };
   }, [user]);
 
   const removeFile = useCallback((id: string) => {
@@ -228,13 +266,17 @@ export function VaultProvider({ children }: { children: ReactNode }) {
     setAll((prev) => prev.map((f) => (f.id === id ? { ...f, expiresAt } : f)));
   }, []);
 
+  const setColor = useCallback((id: string, color: string) => {
+    setAll((prev) => prev.map((f) => (f.id === id ? { ...f, color } : f)));
+  }, []);
+
   const duplicateFile = useCallback((id: string) => {
     setAll((prev) => {
       const src = prev.find((f) => f.id === id);
       if (!src) return prev;
       const copy: VaultFile = {
         ...src,
-        id: Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
+        id: uid(),
         name: src.name.replace(/(\.[^.]+)?$/, (m) => ' copy' + m),
         createdAt: new Date().toISOString(),
         public: false,
@@ -258,7 +300,7 @@ export function VaultProvider({ children }: { children: ReactNode }) {
   }, [all]);
 
   return (
-    <VaultContext.Provider value={{ files, trash, folders, tags, usedBytes, addFiles, removeFile, restoreFile, purgeFile, emptyTrash, togglePublic, toggleStar, togglePin, renameFile, moveFile, moveMany, trashMany, addFolder, setNote, setTags, setExpiry, duplicateFile, bumpDownload, getFile, getPublicFile }}>
+    <VaultContext.Provider value={{ files, trash, folders, tags, usedBytes, addFiles, addText, removeFile, restoreFile, purgeFile, emptyTrash, togglePublic, toggleStar, togglePin, renameFile, moveFile, moveMany, trashMany, addFolder, setNote, setTags, setExpiry, setColor, duplicateFile, bumpDownload, getFile, getPublicFile }}>
       {children}
     </VaultContext.Provider>
   );

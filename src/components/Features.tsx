@@ -18,8 +18,8 @@ const items = [
     body: 'cmd/ctrl-v a screenshot or file right into the vault. drag works too.',
   },
   {
-    title: 'tags + notes',
-    body: 'label dumps so search actually finds them later. notes sit on the preview sheet.',
+    title: 'snippets + notes',
+    body: 'dump raw text as a .txt in one tap. tags and notes still sit on the preview sheet.',
   },
   {
     title: 'no hard file cap',

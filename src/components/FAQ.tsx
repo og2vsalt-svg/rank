@@ -15,11 +15,11 @@ const faqs = [
   },
   {
     q: 'what file types work?',
-    a: 'anything. images, clips, zips, pdfs. preview is nicest for media.',
+    a: 'anything. images, clips, zips, pdfs, raw text snippets. preview is nicest for media.',
   },
   {
     q: 'can i organize stuff?',
-    a: 'folders, rename, favorites, search, grid or list. pretty much the usual kit.',
+    a: 'folders, rename, favorites, color dots, search, grid or list. pretty much the usual kit.',
   },
 ];
 

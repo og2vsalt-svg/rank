@@ -5,6 +5,7 @@ import { useRouter } from './Router';
 const links = [
   { to: 'vault' as const, label: 'vault' },
   { to: 'drop' as const, label: 'drop' },
+  { to: 'transfer' as const, label: 'transfer' },
   { to: 'convert' as const, label: 'convert' },
   { to: 'qr' as const, label: 'qr' },
   { to: 'clip' as const, label: 'clip' },
@@ -21,7 +22,9 @@ const links = [
   { to: 'links' as const, label: 'links' },
   { to: 'markdown' as const, label: 'markdown' },
   { to: 'gallery' as const, label: 'gallery' },
-  { to: 'transfer' as const, label: 'transfer' },
+  { to: 'record' as const, label: 'record' },
+  { to: 'count' as const, label: 'count' },
+  { to: 'units' as const, label: 'units' },
 ];
 
 export default function Navbar() {
@@ -49,7 +52,7 @@ export default function Navbar() {
         </button>
 
         <div className="hidden xl:flex items-center gap-3 overflow-x-auto">
-          {links.map((l) => (
+          {links.slice(0, 8).map((l) => (
             <button key={l.to} onClick={() => navigate(l.to)} className="text-[13px] text-neutral-400 hover:text-white transition-colors">
               {l.label}
             </button>
@@ -81,16 +84,16 @@ export default function Navbar() {
             </div>
           )}
 
-          <button onClick={() => setMenuOpen(!menuOpen)} className="xl:hidden text-neutral-400 hover:text-white p-1 ml-1" aria-label="Menu">
+          <button onClick={() => setMenuOpen(!menuOpen)} className="text-neutral-400 hover:text-white p-1 ml-1" aria-label="Menu">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
           </button>
         </div>
       </div>
 
-      <div className={`xl:hidden border-t border-white/5 overflow-hidden transition-all duration-300 ease-out ${menuOpen ? 'max-h-[480px] opacity-100' : 'max-h-0 opacity-0'}`}>
-        <div className="px-5 py-4 space-y-2">
+      <div className={`border-t border-white/5 overflow-hidden transition-all duration-300 ease-out ${menuOpen ? 'max-h-[640px] opacity-100' : 'max-h-0 opacity-0'}`}>
+        <div className="px-5 py-4 grid grid-cols-2 sm:grid-cols-4 gap-1">
           {links.map((l) => (
-            <button key={l.to} onClick={() => { setMenuOpen(false); navigate(l.to); }} className="block text-sm text-neutral-400 hover:text-white py-1.5">
+            <button key={l.to} onClick={() => { setMenuOpen(false); navigate(l.to); }} className="block text-sm text-neutral-400 hover:text-white py-1.5 text-left">
               {l.label}
             </button>
           ))}

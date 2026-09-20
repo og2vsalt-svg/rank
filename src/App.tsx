@@ -28,6 +28,9 @@ import LinksPage from './components/LinksPage';
 import MarkdownPage from './components/MarkdownPage';
 import GalleryPage from './components/GalleryPage';
 import TransferPage from './components/TransferPage';
+import RecordPage from './components/RecordPage';
+import CountPage from './components/CountPage';
+import UnitsPage from './components/UnitsPage';
 
 function Shell() {
   const { route } = useRouter();
@@ -54,6 +57,9 @@ function Shell() {
   if (route === 'markdown') return <MarkdownPage />;
   if (route === 'gallery') return <GalleryPage />;
   if (route === 'transfer') return <TransferPage />;
+  if (route === 'record') return <RecordPage />;
+  if (route === 'count') return <CountPage />;
+  if (route === 'units') return <UnitsPage />;
 
   return (
     <div className="mesh min-h-screen">

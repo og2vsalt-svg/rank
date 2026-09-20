@@ -31,15 +31,18 @@ function page({ title, desc, image, url, color }) {
 <meta property="og:title" content="${esc(title)}" />
 <meta property="og:description" content="${esc(desc)}" />
 <meta property="og:image" content="${esc(img)}" />
+<meta property="og:image:secure_url" content="${esc(img)}" />
+<meta property="og:image:type" content="image/png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <meta property="og:url" content="${esc(url)}" />
+<meta property="og:locale" content="en_US" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="${esc(title)}" />
 <meta name="twitter:description" content="${esc(desc)}" />
 <meta name="twitter:image" content="${esc(img)}" />
 <meta name="discord:site" content="rankvault" />
-<meta property="og:image:alt" content="${esc(title)}" />
+<meta name="og:image:alt" content="${esc(title)}" />
 <meta http-equiv="refresh" content="0;url=${esc(url)}" />
 </head>
 <body style="background:#050506;color:#f5f5f7;font-family:Inter,system-ui,sans-serif">

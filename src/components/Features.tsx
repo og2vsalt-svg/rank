@@ -9,6 +9,8 @@ const items = [
   { title: 'markdown desk', body: 'split writer with a live preview. stays on this device.' },
   { title: 'gallery wall', body: 'drop stills onto a quiet grid. no account needed.' },
   { title: 'transfer desk', body: 'one-shot upload into the public shares table with a discord-ready /s/ link.' },
+  { title: 'record desk', body: 'leave a voice memo in the tab. download it into the vault when you want it to live.' },
+  { title: 'count + units', body: 'weigh text and flip file sizes without opening another tab.' },
   { title: 'no hard file cap', body: 'drop whatever size you want. we only warn when a file is so big the tab might feel sleepy.' },
   { title: 'apple-soft motion', body: 'springy buttons, glass cards, blur. supposed to feel like something a human actually designed.' },
 ];

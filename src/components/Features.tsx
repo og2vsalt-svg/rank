@@ -11,7 +11,7 @@ const items = [
   },
   {
     title: 'quiet share links',
-    body: 'mark a file public and copy a hash link. optional expiry so the drop dies on its own.',
+    body: 'mark a file public and copy a hash link. optional expiry and a passcode so the drop dies or stays locked.',
   },
   {
     title: 'paste or drop',
@@ -20,6 +20,14 @@ const items = [
   {
     title: 'snippets + notes',
     body: 'dump raw text as a .txt in one tap. tags and notes still sit on the preview sheet.',
+  },
+  {
+    title: 'export the whole vault',
+    body: 'download a json dump of everything on this device, or import one back. handy when you wipe a profile.',
+  },
+  {
+    title: 'activity trail',
+    body: 'a tiny recents list so you remember what you just dropped, moved, or purged.',
   },
   {
     title: 'no hard file cap',

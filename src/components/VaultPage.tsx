@@ -35,8 +35,8 @@ export default function VaultPage() {
   const { isLoggedIn, user } = useAuth();
   const { navigate } = useRouter();
   const {
-    files, trash, folders, tags, usedBytes, addFiles, removeFile, restoreFile, purgeFile, emptyTrash,
-    togglePublic, toggleStar, togglePin, renameFile, moveFile, moveMany, trashMany, addFolder, setNote, setTags, setExpiry, duplicateFile, bumpDownload,
+    files, trash, folders, tags, usedBytes, addFiles, addText, removeFile, restoreFile, purgeFile, emptyTrash,
+    togglePublic, toggleStar, togglePin, renameFile, moveFile, moveMany, trashMany, addFolder, setNote, setTags, setExpiry, setColor, duplicateFile, bumpDownload,
   } = useVault();
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
@@ -52,6 +52,9 @@ export default function VaultPage() {
   const [preview, setPreview] = useState<VaultFile | null>(null);
   const [newFolder, setNewFolder] = useState('');
   const [selected, setSelected] = useState<string[]>([]);
+  const [snipName, setSnipName] = useState('');
+  const [snipBody, setSnipBody] = useState('');
+  const [showSnip, setShowSnip] = useState(false);
 
   const source = showTrash ? trash : files;
 
@@ -203,6 +206,27 @@ export default function VaultPage() {
               </motion.div>
             )}
 
+            {!showTrash && (
+              <div className="mt-4">
+                <button onClick={() => setShowSnip((v) => !v)} className="text-xs px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10">{showSnip ? 'hide snippet' : 'new text snippet'}</button>
+                {showSnip && (
+                  <form
+                    onSubmit={async (e) => {
+                      e.preventDefault();
+                      const res = await addText(snipName, snipBody, folder === 'all' ? 'inbox' : folder);
+                      if (res.ok) { setSnipName(''); setSnipBody(''); setShowSnip(false); ping('snippet saved'); }
+                      else ping(res.error || 'failed');
+                    }}
+                    className="mt-3 glass rounded-3xl p-4 space-y-3"
+                  >
+                    <input value={snipName} onChange={(e) => setSnipName(e.target.value)} placeholder="snippet name" className="w-full bg-white/5 rounded-2xl px-3 py-2 text-sm outline-none" />
+                    <textarea value={snipBody} onChange={(e) => setSnipBody(e.target.value)} placeholder="paste notes, keys, whatever…" className="w-full bg-white/5 rounded-2xl px-3 py-2 text-sm outline-none min-h-[120px]" />
+                    <button type="submit" className="px-4 py-2 rounded-full bg-white text-black text-sm font-medium">save snippet</button>
+                  </form>
+                )}
+              </div>
+            )}
+
             <div className={view === 'grid' ? 'mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-4' : 'mt-8 space-y-3'}>
               <AnimatePresence>
                 {shown.map((file) => (
@@ -230,6 +254,13 @@ export default function VaultPage() {
                       <input defaultValue={file.name} onBlur={(e) => renameFile(file.id, e.target.value)} className="bg-transparent text-sm text-white outline-none truncate flex-1" />
                     </div>
                     <p className="text-xs text-neutral-500">{formatBytes(file.size)} · {file.folder} · {file.downloads} dl{(file.tags || []).length ? ' · ' + file.tags.join(', ') : ''}</p>
+                    {!showTrash && (
+                      <div className="flex gap-1.5">
+                        {['none','red','orange','yellow','green','blue','purple'].map((c) => (
+                          <button key={c} onClick={() => setColor(file.id, c)} className={`w-3.5 h-3.5 rounded-full ${file.color===c ? 'ring-2 ring-white/80' : ''}`} style={{ background: c==='none' ? '#3a3a3c' : c }} />
+                        ))}
+                      </div>
+                    )}
                     {file.note && <p className="text-xs text-neutral-400 line-clamp-2">{file.note}</p>}
                     <div className="flex flex-wrap gap-2">
                       {showTrash ? (

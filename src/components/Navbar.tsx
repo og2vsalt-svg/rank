@@ -5,6 +5,9 @@ import { useRouter } from './Router';
 const links = [
   { to: 'vault' as const, label: 'vault' },
   { to: 'harbor' as const, label: 'harbor' },
+  { to: 'folio' as const, label: 'folio' },
+  { to: 'relay' as const, label: 'relay' },
+  { to: 'mirror' as const, label: 'mirror' },
   { to: 'drop' as const, label: 'drop' },
   { to: 'transfer' as const, label: 'transfer' },
   { to: 'compass' as const, label: 'compass' },
@@ -113,7 +116,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      <div className={`border-t border-white/5 overflow-hidden transition-all duration-300 ease-out ${menuOpen ? 'max-h-[1200px] opacity-100' : 'max-h-0 opacity-0'}`}>
+      <div className={`border-t border-white/5 overflow-hidden transition-all duration-300 ease-out ${menuOpen ? 'max-h-[1400px] opacity-100' : 'max-h-0 opacity-0'}`}>
         <div className="px-5 py-4 grid grid-cols-2 sm:grid-cols-4 gap-1">
           {links.map((l) => (
             <button key={l.to} onClick={() => { setMenuOpen(false); navigate(l.to); }} className="block text-sm text-neutral-400 hover:text-white py-1.5 text-left">

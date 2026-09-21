@@ -73,6 +73,9 @@ import LanternPage from './components/LanternPage';
 import CapsulePage from './components/CapsulePage';
 import RipplePage from './components/RipplePage';
 import HavenPage from './components/HavenPage';
+import WellPage from './components/WellPage';
+import OnyxPage from './components/OnyxPage';
+import BridgePage from './components/BridgePage';
 
 function Shell() {
   const { route } = useRouter();
@@ -144,6 +147,9 @@ function Shell() {
   if (route === 'capsule') return <CapsulePage />;
   if (route === 'ripple') return <RipplePage />;
   if (route === 'haven') return <HavenPage />;
+  if (route === 'well') return <WellPage />;
+  if (route === 'onyx') return <OnyxPage />;
+  if (route === 'bridge') return <BridgePage />;
 
   return (
     <div className="mesh min-h-screen">

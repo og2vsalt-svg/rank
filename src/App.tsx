@@ -62,6 +62,10 @@ import ParcelPage from './components/ParcelPage';
 import StudioPage from './components/StudioPage';
 import WhisperPage from './components/WhisperPage';
 import GlidePage from './components/GlidePage';
+import NookPage from './components/NookPage';
+import EmberPage from './components/EmberPage';
+import GaugePage from './components/GaugePage';
+import TidePage from './components/TidePage';
 
 function Shell() {
   const { route } = useRouter();
@@ -122,6 +126,10 @@ function Shell() {
   if (route === 'studio') return <StudioPage />;
   if (route === 'whisper') return <WhisperPage />;
   if (route === 'glide') return <GlidePage />;
+  if (route === 'nook') return <NookPage />;
+  if (route === 'ember') return <EmberPage />;
+  if (route === 'gauge') return <GaugePage />;
+  if (route === 'tide') return <TidePage />;
 
   return (
     <div className="mesh min-h-screen">

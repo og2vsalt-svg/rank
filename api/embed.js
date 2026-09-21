@@ -71,6 +71,9 @@ async function loadShare(id) {
 const PAGE_TITLES = {
   vault: 'vault — rankvault',
   harbor: 'harbor — rankvault',
+  parcel: 'parcel — rankvault',
+  atlas: 'atlas — rankvault',
+  studio: 'studio — rankvault',
   drop: 'drop — rankvault',
   transfer: 'transfer — rankvault',
   notes: 'notes — rankvault',
@@ -116,6 +119,9 @@ const PAGE_TITLES = {
   tidy: 'tidy — rankvault',
   quay: 'quay — rankvault',
   lens: 'lens — rankvault',
+  folio: 'folio — rankvault',
+  relay: 'relay — rankvault',
+  mirror: 'mirror — rankvault',
 };
 
 export default async function handler(req, res) {

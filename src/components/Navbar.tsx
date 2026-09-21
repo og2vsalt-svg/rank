@@ -36,6 +36,7 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'zip', label: 'zip' },
       { to: 'gauge', label: 'gauge' },
       { to: 'willow', label: 'willow' },
+      { to: 'forge', label: 'forge' },
     ],
   },
   {
@@ -64,6 +65,7 @@ const groups: { title: string; items: NavItem[] }[] = [
     items: [
       { to: 'notes', label: 'notes' },
       { to: 'hearth', label: 'hearth' },
+      { to: 'quill', label: 'quill' },
       { to: 'onyx', label: 'onyx' },
       { to: 'paste', label: 'paste' },
       { to: 'clip', label: 'clip' },
@@ -79,6 +81,7 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'flux', label: 'flux' },
       { to: 'nook', label: 'nook' },
       { to: 'ember', label: 'ember' },
+      { to: 'ridge', label: 'ridge' },
     ],
   },
   {

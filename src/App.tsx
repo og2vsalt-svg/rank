@@ -50,6 +50,9 @@ import SignalPage from './components/SignalPage';
 import TidyPage from './components/TidyPage';
 import QuayPage from './components/QuayPage';
 import LensPage from './components/LensPage';
+import DriftPage from './components/DriftPage';
+import CompassPage from './components/CompassPage';
+import KeepPage from './components/KeepPage';
 
 function Shell() {
   const { route } = useRouter();
@@ -98,6 +101,9 @@ function Shell() {
   if (route === 'tidy') return <TidyPage />;
   if (route === 'quay') return <QuayPage />;
   if (route === 'lens') return <LensPage />;
+  if (route === 'drift') return <DriftPage />;
+  if (route === 'compass') return <CompassPage />;
+  if (route === 'keep') return <KeepPage />;
 
   return (
     <div className="mesh min-h-screen">

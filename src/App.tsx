@@ -54,6 +54,9 @@ import DriftPage from './components/DriftPage';
 import CompassPage from './components/CompassPage';
 import KeepPage from './components/KeepPage';
 import HarborPage from './components/HarborPage';
+import FolioPage from './components/FolioPage';
+import RelayPage from './components/RelayPage';
+import MirrorPage from './components/MirrorPage';
 
 function Shell() {
   const { route } = useRouter();
@@ -106,6 +109,9 @@ function Shell() {
   if (route === 'compass') return <CompassPage />;
   if (route === 'keep') return <KeepPage />;
   if (route === 'harbor') return <HarborPage />;
+  if (route === 'folio') return <FolioPage />;
+  if (route === 'relay') return <RelayPage />;
+  if (route === 'mirror') return <MirrorPage />;
 
   return (
     <div className="mesh min-h-screen">

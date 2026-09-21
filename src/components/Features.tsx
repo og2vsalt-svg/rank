@@ -5,7 +5,7 @@ const items = [
   { title: 'folders + favorites + pins', body: 'inbox by default. make folders, star keepers, pin the ones that should float to the top.' },
   { title: 'quiet share links', body: 'mark a file public and copy a hash link. optional expiry and a passcode so the drop dies or stays locked.' },
   { title: 'cloud share db', body: 'public drops land in supabase, with vercel blob when a token is set, so the link works on another device.' },
-  { title: 'discord embeds', body: '/s/id and /p/page serve og tags so discord, slack, and x preview the filename like a real product.' },
+  { title: 'discord embeds', body: '/s/id and /e/page serve og tags so discord, slack, and x preview the filename like a real product.' },
   { title: 'harbor', body: 'park a local file straight into the share table. discord-ready /s link comes back.' },
   { title: 'parcel', body: 'same cloud drop with a timer on the label. not a vault clone.' },
   { title: 'atlas', body: 'index files already in the vault by type. search without opening the big grid.' },
@@ -36,6 +36,8 @@ const items = [
   { title: 'cipher', body: 'xor + base64 lockbox in the tab. not hosting, not the vault.' },
   { title: 'prism', body: 'read a still locally and pull the average color.' },
   { title: 'flux', body: 'type a line and download a looping html typewriter.' },
+  { title: 'courier', body: 'push a local file straight into the shares db and get a discord-ready /s/ link. no vault detour.' },
+  { title: 'lantern', body: 'mock the discord unfurl for a share id before you paste it.' },
 ];
 
 export default function Features() {

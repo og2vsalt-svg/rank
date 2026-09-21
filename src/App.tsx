@@ -57,6 +57,9 @@ import HarborPage from './components/HarborPage';
 import FolioPage from './components/FolioPage';
 import RelayPage from './components/RelayPage';
 import MirrorPage from './components/MirrorPage';
+import AtlasPage from './components/AtlasPage';
+import ParcelPage from './components/ParcelPage';
+import StudioPage from './components/StudioPage';
 
 function Shell() {
   const { route } = useRouter();
@@ -112,6 +115,9 @@ function Shell() {
   if (route === 'folio') return <FolioPage />;
   if (route === 'relay') return <RelayPage />;
   if (route === 'mirror') return <MirrorPage />;
+  if (route === 'atlas') return <AtlasPage />;
+  if (route === 'parcel') return <ParcelPage />;
+  if (route === 'studio') return <StudioPage />;
 
   return (
     <div className="mesh min-h-screen">

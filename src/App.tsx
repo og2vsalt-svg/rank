@@ -68,6 +68,8 @@ import GaugePage from './components/GaugePage';
 import TidePage from './components/TidePage';
 import GrovePage from './components/GrovePage';
 import SparkPage from './components/SparkPage';
+import CourierPage from './components/CourierPage';
+import LanternPage from './components/LanternPage';
 
 function Shell() {
   const { route } = useRouter();
@@ -134,6 +136,8 @@ function Shell() {
   if (route === 'tide') return <TidePage />;
   if (route === 'grove') return <GrovePage />;
   if (route === 'spark') return <SparkPage />;
+  if (route === 'courier') return <CourierPage />;
+  if (route === 'lantern') return <LanternPage />;
 
   return (
     <div className="mesh min-h-screen">

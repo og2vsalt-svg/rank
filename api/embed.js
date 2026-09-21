@@ -130,6 +130,12 @@ const PAGE_TITLES = {
   folio: 'folio — rankvault',
   relay: 'relay — rankvault',
   mirror: 'mirror — rankvault',
+  shelf: 'shelf — rankvault',
+  reel: 'reel — rankvault',
+  pact: 'pact — rankvault',
+  wick: 'wick — rankvault',
+  nexus: 'nexus — rankvault',
+  veil: 'veil — rankvault',
 };
 
 export default async function handler(req, res) {

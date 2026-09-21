@@ -70,6 +70,9 @@ import GrovePage from './components/GrovePage';
 import SparkPage from './components/SparkPage';
 import CourierPage from './components/CourierPage';
 import LanternPage from './components/LanternPage';
+import CapsulePage from './components/CapsulePage';
+import RipplePage from './components/RipplePage';
+import HavenPage from './components/HavenPage';
 
 function Shell() {
   const { route } = useRouter();
@@ -138,6 +141,9 @@ function Shell() {
   if (route === 'spark') return <SparkPage />;
   if (route === 'courier') return <CourierPage />;
   if (route === 'lantern') return <LanternPage />;
+  if (route === 'capsule') return <CapsulePage />;
+  if (route === 'ripple') return <RipplePage />;
+  if (route === 'haven') return <HavenPage />;
 
   return (
     <div className="mesh min-h-screen">

@@ -47,6 +47,9 @@ import PrismPage from './components/PrismPage';
 import FluxPage from './components/FluxPage';
 import OrbitPage from './components/OrbitPage';
 import SignalPage from './components/SignalPage';
+import TidyPage from './components/TidyPage';
+import QuayPage from './components/QuayPage';
+import LensPage from './components/LensPage';
 
 function Shell() {
   const { route } = useRouter();
@@ -92,6 +95,9 @@ function Shell() {
   if (route === 'flux') return <FluxPage />;
   if (route === 'orbit') return <OrbitPage />;
   if (route === 'signal') return <SignalPage />;
+  if (route === 'tidy') return <TidyPage />;
+  if (route === 'quay') return <QuayPage />;
+  if (route === 'lens') return <LensPage />;
 
   return (
     <div className="mesh min-h-screen">

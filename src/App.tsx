@@ -66,6 +66,8 @@ import NookPage from './components/NookPage';
 import EmberPage from './components/EmberPage';
 import GaugePage from './components/GaugePage';
 import TidePage from './components/TidePage';
+import GrovePage from './components/GrovePage';
+import SparkPage from './components/SparkPage';
 
 function Shell() {
   const { route } = useRouter();
@@ -130,6 +132,8 @@ function Shell() {
   if (route === 'ember') return <EmberPage />;
   if (route === 'gauge') return <GaugePage />;
   if (route === 'tide') return <TidePage />;
+  if (route === 'grove') return <GrovePage />;
+  if (route === 'spark') return <SparkPage />;
 
   return (
     <div className="mesh min-h-screen">

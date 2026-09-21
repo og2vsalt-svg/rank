@@ -44,6 +44,9 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'tide', label: 'tide' },
       { to: 'spark', label: 'spark' },
       { to: 'lantern', label: 'lantern' },
+      { to: 'capsule', label: 'capsule' },
+      { to: 'ripple', label: 'ripple' },
+      { to: 'haven', label: 'haven' },
     ],
   },
   {

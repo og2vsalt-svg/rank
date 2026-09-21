@@ -92,6 +92,8 @@ import ForgePage from './components/ForgePage';
 import LumenPage from './components/LumenPage';
 import MeadowPage from './components/MeadowPage';
 import AnvilPage from './components/AnvilPage';
+import NexusPage from './components/NexusPage';
+import VeilPage from './components/VeilPage';
 
 function Shell() {
   const { route } = useRouter();
@@ -182,6 +184,8 @@ function Shell() {
   if (route === 'lumen') return <LumenPage />;
   if (route === 'meadow') return <MeadowPage />;
   if (route === 'anvil') return <AnvilPage />;
+  if (route === 'nexus') return <NexusPage />;
+  if (route === 'veil') return <VeilPage />;
 
   return (
     <div className="mesh min-h-screen">

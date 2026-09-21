@@ -53,6 +53,7 @@ import LensPage from './components/LensPage';
 import DriftPage from './components/DriftPage';
 import CompassPage from './components/CompassPage';
 import KeepPage from './components/KeepPage';
+import HarborPage from './components/HarborPage';
 
 function Shell() {
   const { route } = useRouter();
@@ -104,6 +105,7 @@ function Shell() {
   if (route === 'drift') return <DriftPage />;
   if (route === 'compass') return <CompassPage />;
   if (route === 'keep') return <KeepPage />;
+  if (route === 'harbor') return <HarborPage />;
 
   return (
     <div className="mesh min-h-screen">

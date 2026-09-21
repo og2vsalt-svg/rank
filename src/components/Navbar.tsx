@@ -4,6 +4,7 @@ import { useRouter } from './Router';
 
 const links = [
   { to: 'vault' as const, label: 'vault' },
+  { to: 'harbor' as const, label: 'harbor' },
   { to: 'drop' as const, label: 'drop' },
   { to: 'transfer' as const, label: 'transfer' },
   { to: 'compass' as const, label: 'compass' },

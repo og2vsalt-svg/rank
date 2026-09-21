@@ -94,6 +94,10 @@ import MeadowPage from './components/MeadowPage';
 import AnvilPage from './components/AnvilPage';
 import NexusPage from './components/NexusPage';
 import VeilPage from './components/VeilPage';
+import ShelfPage from './components/ShelfPage';
+import ReelPage from './components/ReelPage';
+import PactPage from './components/PactPage';
+import WickPage from './components/WickPage';
 
 function Shell() {
   const { route } = useRouter();
@@ -186,6 +190,10 @@ function Shell() {
   if (route === 'anvil') return <AnvilPage />;
   if (route === 'nexus') return <NexusPage />;
   if (route === 'veil') return <VeilPage />;
+  if (route === 'shelf') return <ShelfPage />;
+  if (route === 'reel') return <ReelPage />;
+  if (route === 'pact') return <PactPage />;
+  if (route === 'wick') return <WickPage />;
 
   return (
     <div className="mesh min-h-screen">

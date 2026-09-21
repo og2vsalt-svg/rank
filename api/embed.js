@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"');
 }
 
 function isBot(ua) {
@@ -71,6 +71,8 @@ async function loadShare(id) {
 
 const PAGE_TITLES = {
   vault: 'vault — rankvault',
+  vale: 'vale — rankvault',
+  hearth: 'hearth — rankvault',
   harbor: 'harbor — rankvault',
   parcel: 'parcel — rankvault',
   atlas: 'atlas — rankvault',

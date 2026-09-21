@@ -60,6 +60,8 @@ import MirrorPage from './components/MirrorPage';
 import AtlasPage from './components/AtlasPage';
 import ParcelPage from './components/ParcelPage';
 import StudioPage from './components/StudioPage';
+import WhisperPage from './components/WhisperPage';
+import GlidePage from './components/GlidePage';
 
 function Shell() {
   const { route } = useRouter();
@@ -118,6 +120,8 @@ function Shell() {
   if (route === 'atlas') return <AtlasPage />;
   if (route === 'parcel') return <ParcelPage />;
   if (route === 'studio') return <StudioPage />;
+  if (route === 'whisper') return <WhisperPage />;
+  if (route === 'glide') return <GlidePage />;
 
   return (
     <div className="mesh min-h-screen">

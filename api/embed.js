@@ -41,7 +41,6 @@ function pageHtml({ title, desc, image, url, color }) {
 <meta name="twitter:title" content="${esc(title)}" />
 <meta name="twitter:description" content="${esc(desc)}" />
 <meta name="twitter:image" content="${esc(img)}" />
-<meta name="theme-color" content="${esc(color)}" />
 <meta name="og:image:alt" content="${esc(title)}" />
 <meta http-equiv="refresh" content="0;url=${esc(url)}" />
 </head>
@@ -74,6 +73,8 @@ const PAGE_TITLES = {
   parcel: 'parcel — rankvault',
   atlas: 'atlas — rankvault',
   studio: 'studio — rankvault',
+  whisper: 'whisper — rankvault',
+  glide: 'glide — rankvault',
   drop: 'drop — rankvault',
   transfer: 'transfer — rankvault',
   notes: 'notes — rankvault',

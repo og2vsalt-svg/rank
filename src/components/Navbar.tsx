@@ -25,6 +25,7 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'split', label: 'split' },
       { to: 'weave', label: 'weave' },
       { to: 'zip', label: 'zip' },
+      { to: 'gauge', label: 'gauge' },
     ],
   },
   {
@@ -37,6 +38,7 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'relay', label: 'relay' },
       { to: 'links', label: 'links' },
       { to: 'qr', label: 'qr' },
+      { to: 'tide', label: 'tide' },
     ],
   },
   {
@@ -55,6 +57,8 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'board', label: 'board' },
       { to: 'stash', label: 'stash' },
       { to: 'flux', label: 'flux' },
+      { to: 'nook', label: 'nook' },
+      { to: 'ember', label: 'ember' },
     ],
   },
   {
@@ -189,7 +193,7 @@ export default function Navbar() {
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`text-neutral-500 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}><path d="M6 9l6 6 6-6" /></svg>
                     </span>
                   </button>
-                  <div className={`overflow-hidden transition-all duration-250 ease-out ${open ? 'max-h-64 opacity-100' : 'max-h-0 opacity-0'}`}>
+                  <div className={`overflow-hidden transition-all duration-250 ease-out ${open ? 'max-h-80 opacity-100' : 'max-h-0 opacity-0'}`}>
                     <div className="px-2 pb-2.5 grid grid-cols-2 sm:grid-cols-3 gap-0.5">
                       {g.items.map((l) => (
                         <button key={l.to} onClick={() => go(l.to)} className="text-left text-[13px] text-neutral-400 hover:text-white hover:bg-white/5 rounded-xl px-2.5 py-2 transition-colors">{l.label}</button>

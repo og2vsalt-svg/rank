@@ -89,6 +89,9 @@ import HearthPage from './components/HearthPage';
 import QuillPage from './components/QuillPage';
 import RidgePage from './components/RidgePage';
 import ForgePage from './components/ForgePage';
+import LumenPage from './components/LumenPage';
+import MeadowPage from './components/MeadowPage';
+import AnvilPage from './components/AnvilPage';
 
 function Shell() {
   const { route } = useRouter();
@@ -176,6 +179,9 @@ function Shell() {
   if (route === 'quill') return <QuillPage />;
   if (route === 'ridge') return <RidgePage />;
   if (route === 'forge') return <ForgePage />;
+  if (route === 'lumen') return <LumenPage />;
+  if (route === 'meadow') return <MeadowPage />;
+  if (route === 'anvil') return <AnvilPage />;
 
   return (
     <div className="mesh min-h-screen">

@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"');
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 function isBot(ua) {
@@ -26,6 +26,7 @@ function pageHtml({ title, desc, image, url, color }) {
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}" />
 <meta name="theme-color" content="${esc(color)}" />
+<meta name="robots" content="noindex" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="rankvault" />
 <meta property="og:title" content="${esc(title)}" />
@@ -42,6 +43,7 @@ function pageHtml({ title, desc, image, url, color }) {
 <meta name="twitter:description" content="${esc(desc)}" />
 <meta name="twitter:image" content="${esc(img)}" />
 <meta name="og:image:alt" content="${esc(title)}" />
+<link rel="canonical" href="${esc(url)}" />
 <meta http-equiv="refresh" content="0;url=${esc(url)}" />
 </head>
 <body style="background:#050506;color:#f5f5f7;font-family:Inter,system-ui,sans-serif">
@@ -79,6 +81,9 @@ const PAGE_TITLES = {
   transfer: 'transfer — rankvault',
   notes: 'notes — rankvault',
   paste: 'paste — rankvault',
+  well: 'well — rankvault',
+  onyx: 'onyx — rankvault',
+  bridge: 'bridge — rankvault',
   json: 'json desk — rankvault',
   board: 'board — rankvault',
   stash: 'stash — rankvault',

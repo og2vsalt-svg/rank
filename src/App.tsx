@@ -82,6 +82,8 @@ import LarkPage from './components/LarkPage';
 import DewPage from './components/DewPage';
 import MossPage from './components/MossPage';
 import KilnPage from './components/KilnPage';
+import FlintPage from './components/FlintPage';
+import CovePage from './components/CovePage';
 
 function Shell() {
   const { route } = useRouter();
@@ -162,6 +164,8 @@ function Shell() {
   if (route === 'dew') return <DewPage />;
   if (route === 'moss') return <MossPage />;
   if (route === 'kiln') return <KilnPage />;
+  if (route === 'flint') return <FlintPage />;
+  if (route === 'cove') return <CovePage />;
 
   return (
     <div className="mesh min-h-screen">

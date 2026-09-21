@@ -9,9 +9,6 @@ const SB_KEY =
   (import.meta as any).env?.VITE_SUPABASE_ANON_KEY ||
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
 
-/** max inline body we post straight to supabase when api/blob is unavailable */
-const INLINE_MAX = 1.4 * 1024 * 1024;
-
 export type CloudMeta = {
   id: string;
   name: string;
@@ -72,17 +69,15 @@ async function publishToSupabase(payload: {
   lockPass?: string;
   expiresAt?: string | null;
   author?: string;
-}): Promise<{ ok: boolean; id?: string; url?: string; error?: string }> {
+}): Promise<{ ok: boolean; id?: string; url?: string; error?: string; warn?: string }> {
   if (!payload.dataUrl || !payload.dataUrl.startsWith('data:')) {
     return { ok: false, error: 'missing file data' };
   }
   const approx = Math.floor(((payload.dataUrl.split(',')[1] || '').length * 3) / 4);
-  if (approx > INLINE_MAX && payload.size > INLINE_MAX) {
-    return {
-      ok: false,
-      error: 'file too big for direct share (~1.4mb max without blob storage). try a smaller file or set BLOB_READ_WRITE_TOKEN on vercel.',
-    };
-  }
+  const warn =
+    approx > 8 * 1024 * 1024 || payload.size > 8 * 1024 * 1024
+      ? 'big drop. the tab or host may feel slow. no hard cap on our side.'
+      : undefined;
 
   const row = {
     id: payload.id,
@@ -95,7 +90,7 @@ async function publishToSupabase(payload: {
     is_public: true,
     download_count: 0,
     author: payload.author || null,
-    meta: { source: 'rankvault-client' },
+    meta: { source: 'rankvault-client', warn },
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   };
@@ -108,9 +103,9 @@ async function publishToSupabase(payload: {
 
   if (!res.ok) {
     const text = await res.text();
-    return { ok: false, error: text || `supabase ${res.status}` };
+    return { ok: false, error: text || `supabase ${res.status}`, warn };
   }
-  return { ok: true, id: payload.id, url: payload.dataUrl };
+  return { ok: true, id: payload.id, url: payload.dataUrl, warn };
 }
 
 export async function publishShare(payload: {
@@ -122,7 +117,7 @@ export async function publishShare(payload: {
   lockPass?: string;
   expiresAt?: string | null;
   author?: string;
-}): Promise<{ ok: boolean; id?: string; url?: string; error?: string }> {
+}): Promise<{ ok: boolean; id?: string; url?: string; error?: string; warn?: string }> {
   try {
     const res = await fetch('/api/share', {
       method: 'POST',
@@ -131,11 +126,12 @@ export async function publishShare(payload: {
     });
     if (res.ok) {
       const data = await res.json();
-      return { ok: true, id: data.id || payload.id, url: data.url };
+      return { ok: true, id: data.id || payload.id, url: data.url, warn: data.warn };
     }
     const data = await res.json().catch(() => ({}));
-    if (payload.size > INLINE_MAX) {
-      return { ok: false, error: data.error || 'upload failed' };
+    // fall through to supabase instead of hard-blocking on size
+    if (data.error && payload.size < 2 * 1024 * 1024) {
+      return { ok: false, error: data.error };
     }
   } catch {
     // no api (static host) — fall through

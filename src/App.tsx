@@ -79,6 +79,9 @@ import BridgePage from './components/BridgePage';
 import WillowPage from './components/WillowPage';
 import SpirePage from './components/SpirePage';
 import LarkPage from './components/LarkPage';
+import DewPage from './components/DewPage';
+import MossPage from './components/MossPage';
+import KilnPage from './components/KilnPage';
 
 function Shell() {
   const { route } = useRouter();
@@ -156,6 +159,9 @@ function Shell() {
   if (route === 'willow') return <WillowPage />;
   if (route === 'spire') return <SpirePage />;
   if (route === 'lark') return <LarkPage />;
+  if (route === 'dew') return <DewPage />;
+  if (route === 'moss') return <MossPage />;
+  if (route === 'kiln') return <KilnPage />;
 
   return (
     <div className="mesh min-h-screen">

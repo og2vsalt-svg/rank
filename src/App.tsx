@@ -86,6 +86,9 @@ import FlintPage from './components/FlintPage';
 import CovePage from './components/CovePage';
 import ValePage from './components/ValePage';
 import HearthPage from './components/HearthPage';
+import QuillPage from './components/QuillPage';
+import RidgePage from './components/RidgePage';
+import ForgePage from './components/ForgePage';
 
 function Shell() {
   const { route } = useRouter();
@@ -170,6 +173,9 @@ function Shell() {
   if (route === 'cove') return <CovePage />;
   if (route === 'vale') return <ValePage />;
   if (route === 'hearth') return <HearthPage />;
+  if (route === 'quill') return <QuillPage />;
+  if (route === 'ridge') return <RidgePage />;
+  if (route === 'forge') return <ForgePage />;
 
   return (
     <div className="mesh min-h-screen">

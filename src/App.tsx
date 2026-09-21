@@ -76,6 +76,9 @@ import HavenPage from './components/HavenPage';
 import WellPage from './components/WellPage';
 import OnyxPage from './components/OnyxPage';
 import BridgePage from './components/BridgePage';
+import WillowPage from './components/WillowPage';
+import SpirePage from './components/SpirePage';
+import LarkPage from './components/LarkPage';
 
 function Shell() {
   const { route } = useRouter();
@@ -150,6 +153,9 @@ function Shell() {
   if (route === 'well') return <WellPage />;
   if (route === 'onyx') return <OnyxPage />;
   if (route === 'bridge') return <BridgePage />;
+  if (route === 'willow') return <WillowPage />;
+  if (route === 'spire') return <SpirePage />;
+  if (route === 'lark') return <LarkPage />;
 
   return (
     <div className="mesh min-h-screen">

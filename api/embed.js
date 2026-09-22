@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"');
 }
 
 function isBot(ua) {
@@ -74,6 +74,7 @@ const PAGE_TITLES = {
   silo: 'silo — rankvault',
   halo: 'halo — rankvault',
   annex: 'annex — rankvault',
+  rift: 'rift — rankvault',
   vale: 'vale — rankvault',
   hearth: 'hearth — rankvault',
   harbor: 'harbor — rankvault',

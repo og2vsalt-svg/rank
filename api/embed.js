@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"');
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 function isBot(ua) {
@@ -36,13 +36,13 @@ function pageHtml({ title, desc, image, url, color }) {
 <meta property="og:image:type" content="image/png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="${esc(title)}" />
 <meta property="og:url" content="${esc(url)}" />
 <meta property="og:locale" content="en_US" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="${esc(title)}" />
 <meta name="twitter:description" content="${esc(desc)}" />
 <meta name="twitter:image" content="${esc(img)}" />
-<meta name="og:image:alt" content="${esc(title)}" />
 <link rel="canonical" href="${esc(url)}" />
 <meta http-equiv="refresh" content="0;url=${esc(url)}" />
 </head>
@@ -71,6 +71,9 @@ async function loadShare(id) {
 
 const PAGE_TITLES = {
   vault: 'vault — rankvault',
+  silo: 'silo — rankvault',
+  halo: 'halo — rankvault',
+  annex: 'annex — rankvault',
   vale: 'vale — rankvault',
   hearth: 'hearth — rankvault',
   harbor: 'harbor — rankvault',
@@ -102,6 +105,21 @@ const PAGE_TITLES = {
   flux: 'flux — rankvault',
   orbit: 'orbit — rankvault',
   signal: 'signal — rankvault',
+  tidy: 'tidy — rankvault',
+  quay: 'quay — rankvault',
+  lens: 'lens — rankvault',
+  drift: 'drift — rankvault',
+  compass: 'compass — rankvault',
+  keep: 'keep — rankvault',
+  folio: 'folio — rankvault',
+  relay: 'relay — rankvault',
+  mirror: 'mirror — rankvault',
+  shelf: 'shelf — rankvault',
+  reel: 'reel — rankvault',
+  pact: 'pact — rankvault',
+  wick: 'wick — rankvault',
+  nexus: 'nexus — rankvault',
+  veil: 'veil — rankvault',
   convert: 'convert — rankvault',
   qr: 'qr — rankvault',
   clip: 'clip — rankvault',
@@ -121,21 +139,6 @@ const PAGE_TITLES = {
   status: 'status — rankvault',
   login: 'log in — rankvault',
   signup: 'sign up — rankvault',
-  keep: 'keep — rankvault',
-  compass: 'compass — rankvault',
-  drift: 'drift — rankvault',
-  tidy: 'tidy — rankvault',
-  quay: 'quay — rankvault',
-  lens: 'lens — rankvault',
-  folio: 'folio — rankvault',
-  relay: 'relay — rankvault',
-  mirror: 'mirror — rankvault',
-  shelf: 'shelf — rankvault',
-  reel: 'reel — rankvault',
-  pact: 'pact — rankvault',
-  wick: 'wick — rankvault',
-  nexus: 'nexus — rankvault',
-  veil: 'veil — rankvault',
 };
 
 export default async function handler(req, res) {

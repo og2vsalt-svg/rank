@@ -111,6 +111,9 @@ import RiftPage from './components/RiftPage';
 import LoftPage from './components/LoftPage';
 import ReedPage from './components/ReedPage';
 import BrookPage from './components/BrookPage';
+import MarblePage from './components/MarblePage';
+import QuartzPage from './components/QuartzPage';
+import IvoryPage from './components/IvoryPage';
 
 function Shell() {
   const { route } = useRouter();
@@ -220,6 +223,9 @@ function Shell() {
   if (route === 'silo') return <SiloPage />;
   if (route === 'halo') return <HaloPage />;
   if (route === 'annex') return <AnnexPage />;
+  if (route === 'marble') return <MarblePage />;
+  if (route === 'quartz') return <QuartzPage />;
+  if (route === 'ivory') return <IvoryPage />;
 
   return (
     <div className="mesh min-h-screen">

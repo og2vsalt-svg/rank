@@ -121,6 +121,8 @@ import PinePage from './components/PinePage';
 import FogPage from './components/FogPage';
 import DunePage from './components/DunePage';
 import MicaPage from './components/MicaPage';
+import OpalPage from './components/OpalPage';
+import ShorePage from './components/ShorePage';
 
 function Shell() {
   const { route } = useRouter();
@@ -240,6 +242,8 @@ function Shell() {
   if (route === 'fog') return <FogPage />;
   if (route === 'dune') return <DunePage />;
   if (route === 'mica') return <MicaPage />;
+  if (route === 'opal') return <OpalPage />;
+  if (route === 'shore') return <ShorePage />;
 
   return (
     <div className="mesh min-h-screen">

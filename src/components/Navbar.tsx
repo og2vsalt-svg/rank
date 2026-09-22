@@ -8,11 +8,11 @@ const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'foyer', label: 'foyer' },
   { to: 'drop', label: 'drop' },
+  { to: 'gully', label: 'gully' },
+  { to: 'sail', label: 'sail' },
+  { to: 'orb', label: 'orb' },
   { to: 'quiver', label: 'quiver' },
   { to: 'alcove', label: 'alcove' },
-  { to: 'spindle', label: 'spindle' },
-  { to: 'pinnacle', label: 'pinnacle' },
-  { to: 'keystone', label: 'keystone' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -20,6 +20,7 @@ const groups: { title: string; items: NavItem[] }[] = [
     title: 'files',
     items: [
       { to: 'vault', label: 'vault' },
+      { to: 'gully', label: 'gully' },
       { to: 'spindle', label: 'spindle' },
       { to: 'nest', label: 'nest' },
       { to: 'pinnacle', label: 'pinnacle' },
@@ -75,6 +76,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'sail', label: 'sail' },
+      { to: 'orb', label: 'orb' },
       { to: 'quiver', label: 'quiver' },
       { to: 'foyer', label: 'foyer' },
       { to: 'keystone', label: 'keystone' },
@@ -183,6 +186,9 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'loom', label: 'loom' },
       { to: 'aura', label: 'aura' },
       { to: 'ledger', label: 'ledger' },
+      { to: 'cairn', label: 'cairn' },
+      { to: 'lagoon', label: 'lagoon' },
+      { to: 'thistle', label: 'thistle' },
     ],
   },
 ];

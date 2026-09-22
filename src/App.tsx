@@ -129,6 +129,9 @@ import ArchivePage from './components/ArchivePage';
 import CanopyPage from './components/CanopyPage';
 import WispPage from './components/WispPage';
 import SolsticePage from './components/SolsticePage';
+import NimbusPage from './components/NimbusPage';
+import StridePage from './components/StridePage';
+import GlintPage from './components/GlintPage';
 
 function Shell() {
   const { route } = useRouter();
@@ -140,6 +143,9 @@ function Shell() {
   if (route === 'notes') return <NotesPage />;
   if (route === 'paste') return <PastePage />;
   if (route === 'drop') return <DropPage />;
+  if (route === 'nimbus') return <NimbusPage />;
+  if (route === 'stride') return <StridePage />;
+  if (route === 'glint') return <GlintPage />;
   if (route === 'rift') return <RiftPage />;
   if (route === 'loft') return <LoftPage />;
   if (route === 'reed') return <ReedPage />;

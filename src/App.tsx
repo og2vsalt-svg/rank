@@ -102,6 +102,8 @@ import BloomPage from './components/BloomPage';
 import DuskPage from './components/DuskPage';
 import CratePage from './components/CratePage';
 import SlatePage from './components/SlatePage';
+import TracePage from './components/TracePage';
+import LedgerPage from './components/LedgerPage';
 
 function Shell() {
   const { route } = useRouter();
@@ -202,6 +204,8 @@ function Shell() {
   if (route === 'dusk') return <DuskPage />;
   if (route === 'crate') return <CratePage />;
   if (route === 'slate') return <SlatePage />;
+  if (route === 'trace') return <TracePage />;
+  if (route === 'ledger') return <LedgerPage />;
 
   return (
     <div className="mesh min-h-screen">

@@ -141,6 +141,9 @@ import LintelPage from './components/LintelPage';
 import QuorumPage from './components/QuorumPage';
 import BarrowPage from './components/BarrowPage';
 import TerracePage from './components/TerracePage';
+import KeystonePage from './components/KeystonePage';
+import NestPage from './components/NestPage';
+import PinnaclePage from './components/PinnaclePage';
 
 function Shell() {
   const { route } = useRouter();
@@ -280,6 +283,9 @@ function Shell() {
   if (route === 'quorum') return <QuorumPage />;
   if (route === 'barrow') return <BarrowPage />;
   if (route === 'terrace') return <TerracePage />;
+  if (route === 'keystone') return <KeystonePage />;
+  if (route === 'nest') return <NestPage />;
+  if (route === 'pinnacle') return <PinnaclePage />;
 
   return (
     <div className="mesh min-h-screen">

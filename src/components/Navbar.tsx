@@ -6,13 +6,13 @@ type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
-  { to: 'silo', label: 'silo' },
-  { to: 'halo', label: 'halo' },
   { to: 'drop', label: 'drop' },
-  { to: 'rift', label: 'rift' },
-  { to: 'loft', label: 'loft' },
-  { to: 'reed', label: 'reed' },
+  { to: 'pebble', label: 'pebble' },
+  { to: 'amber', label: 'amber' },
+  { to: 'cedar', label: 'cedar' },
   { to: 'brook', label: 'brook' },
+  { to: 'halo', label: 'halo' },
+  { to: 'ivory', label: 'ivory' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -21,6 +21,10 @@ const groups: { title: string; items: NavItem[] }[] = [
     items: [
       { to: 'vault', label: 'vault' },
       { to: 'silo', label: 'silo' },
+      { to: 'amber', label: 'amber' },
+      { to: 'cedar', label: 'cedar' },
+      { to: 'marble', label: 'marble' },
+      { to: 'quartz', label: 'quartz' },
       { to: 'rift', label: 'rift' },
       { to: 'loft', label: 'loft' },
       { to: 'reed', label: 'reed' },
@@ -56,6 +60,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'pebble', label: 'pebble' },
+      { to: 'ivory', label: 'ivory' },
       { to: 'halo', label: 'halo' },
       { to: 'nexus', label: 'nexus' },
       { to: 'cove', label: 'cove' },

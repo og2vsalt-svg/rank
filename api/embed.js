@@ -173,6 +173,12 @@ const PAGE_TITLES = {
   nimbus: 'nimbus — rankvault',
   stride: 'stride — rankvault',
   glint: 'glint — rankvault',
+  gully: 'gully — rankvault',
+  sail: 'sail — rankvault',
+  orb: 'orb — rankvault',
+  cairn: 'cairn — rankvault',
+  lagoon: 'lagoon — rankvault',
+  thistle: 'thistle — rankvault',
 };
 
 export default async function handler(req, res) {

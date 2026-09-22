@@ -9,10 +9,10 @@ const primary: NavItem[] = [
   { to: 'foyer', label: 'foyer' },
   { to: 'terrace', label: 'terrace' },
   { to: 'drop', label: 'drop' },
+  { to: 'keystone', label: 'keystone' },
+  { to: 'nest', label: 'nest' },
+  { to: 'pinnacle', label: 'pinnacle' },
   { to: 'lintel', label: 'lintel' },
-  { to: 'quarry', label: 'quarry' },
-  { to: 'aperture', label: 'aperture' },
-  { to: 'vellum', label: 'vellum' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -20,6 +20,8 @@ const groups: { title: string; items: NavItem[] }[] = [
     title: 'files',
     items: [
       { to: 'vault', label: 'vault' },
+      { to: 'nest', label: 'nest' },
+      { to: 'pinnacle', label: 'pinnacle' },
       { to: 'lintel', label: 'lintel' },
       { to: 'barrow', label: 'barrow' },
       { to: 'nimbus', label: 'nimbus' },
@@ -73,6 +75,7 @@ const groups: { title: string; items: NavItem[] }[] = [
     title: 'share',
     items: [
       { to: 'foyer', label: 'foyer' },
+      { to: 'keystone', label: 'keystone' },
       { to: 'terrace', label: 'terrace' },
       { to: 'wisp', label: 'wisp' },
       { to: 'nimbus', label: 'nimbus' },
@@ -148,6 +151,7 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'quarry', label: 'quarry' },
       { to: 'convert', label: 'convert' },
       { to: 'hash', label: 'hash' },
+      { to: 'keystone', label: 'keystone' },
       { to: 'diff', label: 'diff' },
       { to: 'inspect', label: 'inspect' },
       { to: 'glide', label: 'glide' },

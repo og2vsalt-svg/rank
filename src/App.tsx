@@ -132,6 +132,9 @@ import SolsticePage from './components/SolsticePage';
 import NimbusPage from './components/NimbusPage';
 import StridePage from './components/StridePage';
 import GlintPage from './components/GlintPage';
+import QuarryPage from './components/QuarryPage';
+import AperturePage from './components/AperturePage';
+import VellumPage from './components/VellumPage';
 
 function Shell() {
   const { route } = useRouter();
@@ -146,6 +149,9 @@ function Shell() {
   if (route === 'nimbus') return <NimbusPage />;
   if (route === 'stride') return <StridePage />;
   if (route === 'glint') return <GlintPage />;
+  if (route === 'quarry') return <QuarryPage />;
+  if (route === 'aperture') return <AperturePage />;
+  if (route === 'vellum') return <VellumPage />;
   if (route === 'rift') return <RiftPage />;
   if (route === 'loft') return <LoftPage />;
   if (route === 'reed') return <ReedPage />;

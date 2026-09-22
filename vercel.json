@@ -4,5 +4,13 @@
     { "source": "/p/:page", "destination": "/api/embed?page=:page" },
     { "source": "/api/share", "destination": "/api/share" },
     { "source": "/api/embed", "destination": "/api/embed" }
+  ],
+  "headers": [
+    {
+      "source": "/s/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, s-maxage=60, stale-while-revalidate=300" }
+      ]
+    }
   ]
 }

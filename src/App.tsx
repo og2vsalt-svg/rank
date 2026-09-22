@@ -107,6 +107,7 @@ import LedgerPage from './components/LedgerPage';
 import SiloPage from './components/SiloPage';
 import HaloPage from './components/HaloPage';
 import AnnexPage from './components/AnnexPage';
+import RiftPage from './components/RiftPage';
 
 function Shell() {
   const { route } = useRouter();
@@ -118,6 +119,7 @@ function Shell() {
   if (route === 'notes') return <NotesPage />;
   if (route === 'paste') return <PastePage />;
   if (route === 'drop') return <DropPage />;
+  if (route === 'rift') return <RiftPage />;
   if (route === 'status') return <StatusPage />;
   if (route === 'convert') return <ConvertPage />;
   if (route === 'qr') return <QrPage />;

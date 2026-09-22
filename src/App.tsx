@@ -117,6 +117,8 @@ import IvoryPage from './components/IvoryPage';
 import AmberPage from './components/AmberPage';
 import PebblePage from './components/PebblePage';
 import CedarPage from './components/CedarPage';
+import PinePage from './components/PinePage';
+import FogPage from './components/FogPage';
 
 function Shell() {
   const { route } = useRouter();
@@ -232,6 +234,8 @@ function Shell() {
   if (route === 'amber') return <AmberPage />;
   if (route === 'pebble') return <PebblePage />;
   if (route === 'cedar') return <CedarPage />;
+  if (route === 'pine') return <PinePage />;
+  if (route === 'fog') return <FogPage />;
 
   return (
     <div className="mesh min-h-screen">

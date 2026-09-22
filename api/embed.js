@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"');
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 function isBot(ua) {
@@ -151,6 +151,12 @@ const PAGE_TITLES = {
   status: 'status — rankvault',
   login: 'log in — rankvault',
   signup: 'sign up — rankvault',
+  mica: 'mica — rankvault',
+  dune: 'dune — rankvault',
+  fog: 'fog — rankvault',
+  pine: 'pine — rankvault',
+  opal: 'opal — rankvault',
+  shore: 'shore — rankvault',
 };
 
 export default async function handler(req, res) {

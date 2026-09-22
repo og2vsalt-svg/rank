@@ -135,6 +135,8 @@ import GlintPage from './components/GlintPage';
 import QuarryPage from './components/QuarryPage';
 import AperturePage from './components/AperturePage';
 import VellumPage from './components/VellumPage';
+import FoyerPage from './components/FoyerPage';
+import MeridianPage from './components/MeridianPage';
 
 function Shell() {
   const { route } = useRouter();
@@ -268,6 +270,8 @@ function Shell() {
   if (route === 'canopy') return <CanopyPage />;
   if (route === 'wisp') return <WispPage />;
   if (route === 'solstice') return <SolsticePage />;
+  if (route === 'foyer') return <FoyerPage />;
+  if (route === 'meridian') return <MeridianPage />;
 
   return (
     <div className="mesh min-h-screen">

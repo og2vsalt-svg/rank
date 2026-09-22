@@ -6,13 +6,13 @@ type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
+  { to: 'nimbus', label: 'nimbus' },
   { to: 'drop', label: 'drop' },
+  { to: 'glint', label: 'glint' },
+  { to: 'stride', label: 'stride' },
   { to: 'canopy', label: 'canopy' },
   { to: 'wisp', label: 'wisp' },
   { to: 'solstice', label: 'solstice' },
-  { to: 'shore', label: 'shore' },
-  { to: 'inlet', label: 'inlet' },
-  { to: 'archive', label: 'archive' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -20,6 +20,9 @@ const groups: { title: string; items: NavItem[] }[] = [
     title: 'files',
     items: [
       { to: 'vault', label: 'vault' },
+      { to: 'nimbus', label: 'nimbus' },
+      { to: 'stride', label: 'stride' },
+      { to: 'glint', label: 'glint' },
       { to: 'canopy', label: 'canopy' },
       { to: 'solstice', label: 'solstice' },
       { to: 'shore', label: 'shore' },
@@ -66,6 +69,7 @@ const groups: { title: string; items: NavItem[] }[] = [
     title: 'share',
     items: [
       { to: 'wisp', label: 'wisp' },
+      { to: 'nimbus', label: 'nimbus' },
       { to: 'inlet', label: 'inlet' },
       { to: 'cinder', label: 'cinder' },
       { to: 'archive', label: 'archive' },
@@ -101,6 +105,7 @@ const groups: { title: string; items: NavItem[] }[] = [
     title: 'create',
     items: [
       { to: 'mica', label: 'mica' },
+      { to: 'glint', label: 'glint' },
       { to: 'annex', label: 'annex' },
       { to: 'notes', label: 'notes' },
       { to: 'slate', label: 'slate' },
@@ -130,6 +135,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'stride', label: 'stride' },
       { to: 'convert', label: 'convert' },
       { to: 'hash', label: 'hash' },
       { to: 'diff', label: 'diff' },

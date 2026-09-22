@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"');
 }
 
 function isBot(ua) {
@@ -73,6 +73,10 @@ const PAGE_TITLES = {
   vault: 'vault — rankvault',
   foyer: 'foyer — rankvault',
   meridian: 'meridian — rankvault',
+  lintel: 'lintel — rankvault',
+  quorum: 'quorum — rankvault',
+  barrow: 'barrow — rankvault',
+  terrace: 'terrace — rankvault',
   quarry: 'quarry — rankvault',
   aperture: 'aperture — rankvault',
   vellum: 'vellum — rankvault',

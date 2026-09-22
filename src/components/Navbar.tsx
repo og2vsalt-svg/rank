@@ -7,9 +7,9 @@ type NavItem = { to: Route; label: string };
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'foyer', label: 'foyer' },
-  { to: 'nimbus', label: 'nimbus' },
+  { to: 'terrace', label: 'terrace' },
   { to: 'drop', label: 'drop' },
-  { to: 'glint', label: 'glint' },
+  { to: 'lintel', label: 'lintel' },
   { to: 'quarry', label: 'quarry' },
   { to: 'aperture', label: 'aperture' },
   { to: 'vellum', label: 'vellum' },
@@ -20,6 +20,8 @@ const groups: { title: string; items: NavItem[] }[] = [
     title: 'files',
     items: [
       { to: 'vault', label: 'vault' },
+      { to: 'lintel', label: 'lintel' },
+      { to: 'barrow', label: 'barrow' },
       { to: 'nimbus', label: 'nimbus' },
       { to: 'stride', label: 'stride' },
       { to: 'glint', label: 'glint' },
@@ -71,6 +73,7 @@ const groups: { title: string; items: NavItem[] }[] = [
     title: 'share',
     items: [
       { to: 'foyer', label: 'foyer' },
+      { to: 'terrace', label: 'terrace' },
       { to: 'wisp', label: 'wisp' },
       { to: 'nimbus', label: 'nimbus' },
       { to: 'inlet', label: 'inlet' },
@@ -140,6 +143,7 @@ const groups: { title: string; items: NavItem[] }[] = [
     title: 'tools',
     items: [
       { to: 'meridian', label: 'meridian' },
+      { to: 'quorum', label: 'quorum' },
       { to: 'stride', label: 'stride' },
       { to: 'quarry', label: 'quarry' },
       { to: 'convert', label: 'convert' },

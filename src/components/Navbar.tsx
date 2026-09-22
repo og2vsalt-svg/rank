@@ -6,10 +6,10 @@ type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
+  { to: 'crate', label: 'crate' },
+  { to: 'slate', label: 'slate' },
+  { to: 'drop', label: 'drop' },
   { to: 'harbor', label: 'harbor' },
-  { to: 'dusk', label: 'dusk' },
-  { to: 'bloom', label: 'bloom' },
-  { to: 'wick', label: 'wick' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -17,6 +17,7 @@ const groups: { title: string; items: NavItem[] }[] = [
     title: 'files',
     items: [
       { to: 'vault', label: 'vault' },
+      { to: 'crate', label: 'crate' },
       { to: 'vale', label: 'vale' },
       { to: 'well', label: 'well' },
       { to: 'bridge', label: 'bridge' },
@@ -72,6 +73,7 @@ const groups: { title: string; items: NavItem[] }[] = [
     title: 'create',
     items: [
       { to: 'notes', label: 'notes' },
+      { to: 'slate', label: 'slate' },
       { to: 'veil', label: 'veil' },
       { to: 'hearth', label: 'hearth' },
       { to: 'quill', label: 'quill' },

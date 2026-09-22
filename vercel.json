@@ -2,15 +2,7 @@
   "rewrites": [
     { "source": "/s/:id", "destination": "/api/embed?id=:id" },
     { "source": "/p/:page", "destination": "/api/embed?page=:page" },
-    { "source": "/e/:page", "destination": "/api/embed?page=:page&embed=1" },
-    { "source": "/embed/:id", "destination": "/api/embed?id=:id&embed=1" }
-  ],
-  "headers": [
-    {
-      "source": "/s/(.*)",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, s-maxage=60, stale-while-revalidate=300" }
-      ]
-    }
+    { "source": "/api/share", "destination": "/api/share" },
+    { "source": "/api/embed", "destination": "/api/embed" }
   ]
 }

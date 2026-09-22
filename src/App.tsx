@@ -126,6 +126,9 @@ import ShorePage from './components/ShorePage';
 import InletPage from './components/InletPage';
 import CinderPage from './components/CinderPage';
 import ArchivePage from './components/ArchivePage';
+import CanopyPage from './components/CanopyPage';
+import WispPage from './components/WispPage';
+import SolsticePage from './components/SolsticePage';
 
 function Shell() {
   const { route } = useRouter();
@@ -250,6 +253,9 @@ function Shell() {
   if (route === 'inlet') return <InletPage />;
   if (route === 'cinder') return <CinderPage />;
   if (route === 'archive') return <ArchivePage />;
+  if (route === 'canopy') return <CanopyPage />;
+  if (route === 'wisp') return <WispPage />;
+  if (route === 'solstice') return <SolsticePage />;
 
   return (
     <div className="mesh min-h-screen">

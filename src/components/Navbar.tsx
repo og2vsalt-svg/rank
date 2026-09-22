@@ -7,12 +7,12 @@ type NavItem = { to: Route; label: string };
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
+  { to: 'canopy', label: 'canopy' },
+  { to: 'wisp', label: 'wisp' },
+  { to: 'solstice', label: 'solstice' },
   { to: 'shore', label: 'shore' },
   { to: 'inlet', label: 'inlet' },
-  { to: 'cinder', label: 'cinder' },
   { to: 'archive', label: 'archive' },
-  { to: 'opal', label: 'opal' },
-  { to: 'halo', label: 'halo' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -20,6 +20,8 @@ const groups: { title: string; items: NavItem[] }[] = [
     title: 'files',
     items: [
       { to: 'vault', label: 'vault' },
+      { to: 'canopy', label: 'canopy' },
+      { to: 'solstice', label: 'solstice' },
       { to: 'shore', label: 'shore' },
       { to: 'dune', label: 'dune' },
       { to: 'silo', label: 'silo' },
@@ -63,6 +65,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'wisp', label: 'wisp' },
       { to: 'inlet', label: 'inlet' },
       { to: 'cinder', label: 'cinder' },
       { to: 'archive', label: 'archive' },

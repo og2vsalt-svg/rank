@@ -147,6 +147,9 @@ import PinnaclePage from './components/PinnaclePage';
 import AlcovePage from './components/AlcovePage';
 import SpindlePage from './components/SpindlePage';
 import QuiverPage from './components/QuiverPage';
+import CairnPage from './components/CairnPage';
+import LagoonPage from './components/LagoonPage';
+import ThistlePage from './components/ThistlePage';
 
 function Shell() {
   const { route } = useRouter();
@@ -292,6 +295,9 @@ function Shell() {
   if (route === 'alcove') return <AlcovePage />;
   if (route === 'spindle') return <SpindlePage />;
   if (route === 'quiver') return <QuiverPage />;
+  if (route === 'cairn') return <CairnPage />;
+  if (route === 'lagoon') return <LagoonPage />;
+  if (route === 'thistle') return <ThistlePage />;
 
   return (
     <div className="mesh min-h-screen">

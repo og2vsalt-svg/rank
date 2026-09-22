@@ -6,13 +6,13 @@ type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
+  { to: 'foyer', label: 'foyer' },
   { to: 'nimbus', label: 'nimbus' },
   { to: 'drop', label: 'drop' },
   { to: 'glint', label: 'glint' },
   { to: 'quarry', label: 'quarry' },
   { to: 'aperture', label: 'aperture' },
   { to: 'vellum', label: 'vellum' },
-  { to: 'stride', label: 'stride' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -70,6 +70,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'foyer', label: 'foyer' },
       { to: 'wisp', label: 'wisp' },
       { to: 'nimbus', label: 'nimbus' },
       { to: 'inlet', label: 'inlet' },
@@ -138,6 +139,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'meridian', label: 'meridian' },
       { to: 'stride', label: 'stride' },
       { to: 'quarry', label: 'quarry' },
       { to: 'convert', label: 'convert' },

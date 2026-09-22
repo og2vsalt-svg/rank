@@ -123,6 +123,9 @@ import DunePage from './components/DunePage';
 import MicaPage from './components/MicaPage';
 import OpalPage from './components/OpalPage';
 import ShorePage from './components/ShorePage';
+import InletPage from './components/InletPage';
+import CinderPage from './components/CinderPage';
+import ArchivePage from './components/ArchivePage';
 
 function Shell() {
   const { route } = useRouter();
@@ -244,6 +247,9 @@ function Shell() {
   if (route === 'mica') return <MicaPage />;
   if (route === 'opal') return <OpalPage />;
   if (route === 'shore') return <ShorePage />;
+  if (route === 'inlet') return <InletPage />;
+  if (route === 'cinder') return <CinderPage />;
+  if (route === 'archive') return <ArchivePage />;
 
   return (
     <div className="mesh min-h-screen">

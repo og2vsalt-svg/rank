@@ -7,12 +7,12 @@ type NavItem = { to: Route; label: string };
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'foyer', label: 'foyer' },
-  { to: 'terrace', label: 'terrace' },
   { to: 'drop', label: 'drop' },
-  { to: 'keystone', label: 'keystone' },
-  { to: 'nest', label: 'nest' },
+  { to: 'quiver', label: 'quiver' },
+  { to: 'alcove', label: 'alcove' },
+  { to: 'spindle', label: 'spindle' },
   { to: 'pinnacle', label: 'pinnacle' },
-  { to: 'lintel', label: 'lintel' },
+  { to: 'keystone', label: 'keystone' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -20,6 +20,7 @@ const groups: { title: string; items: NavItem[] }[] = [
     title: 'files',
     items: [
       { to: 'vault', label: 'vault' },
+      { to: 'spindle', label: 'spindle' },
       { to: 'nest', label: 'nest' },
       { to: 'pinnacle', label: 'pinnacle' },
       { to: 'lintel', label: 'lintel' },
@@ -74,6 +75,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'quiver', label: 'quiver' },
       { to: 'foyer', label: 'foyer' },
       { to: 'keystone', label: 'keystone' },
       { to: 'terrace', label: 'terrace' },
@@ -113,6 +115,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'create',
     items: [
+      { to: 'alcove', label: 'alcove' },
       { to: 'vellum', label: 'vellum' },
       { to: 'mica', label: 'mica' },
       { to: 'glint', label: 'glint' },

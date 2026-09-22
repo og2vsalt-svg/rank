@@ -109,6 +109,7 @@ import HaloPage from './components/HaloPage';
 import AnnexPage from './components/AnnexPage';
 import RiftPage from './components/RiftPage';
 import LoftPage from './components/LoftPage';
+import ReedPage from './components/ReedPage';
 
 function Shell() {
   const { route } = useRouter();
@@ -122,6 +123,7 @@ function Shell() {
   if (route === 'drop') return <DropPage />;
   if (route === 'rift') return <RiftPage />;
   if (route === 'loft') return <LoftPage />;
+  if (route === 'reed') return <ReedPage />;
   if (route === 'status') return <StatusPage />;
   if (route === 'convert') return <ConvertPage />;
   if (route === 'qr') return <QrPage />;

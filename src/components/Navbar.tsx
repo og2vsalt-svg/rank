@@ -9,10 +9,10 @@ const primary: NavItem[] = [
   { to: 'nimbus', label: 'nimbus' },
   { to: 'drop', label: 'drop' },
   { to: 'glint', label: 'glint' },
+  { to: 'quarry', label: 'quarry' },
+  { to: 'aperture', label: 'aperture' },
+  { to: 'vellum', label: 'vellum' },
   { to: 'stride', label: 'stride' },
-  { to: 'canopy', label: 'canopy' },
-  { to: 'wisp', label: 'wisp' },
-  { to: 'solstice', label: 'solstice' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -23,6 +23,8 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'nimbus', label: 'nimbus' },
       { to: 'stride', label: 'stride' },
       { to: 'glint', label: 'glint' },
+      { to: 'quarry', label: 'quarry' },
+      { to: 'aperture', label: 'aperture' },
       { to: 'canopy', label: 'canopy' },
       { to: 'solstice', label: 'solstice' },
       { to: 'shore', label: 'shore' },
@@ -104,6 +106,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'create',
     items: [
+      { to: 'vellum', label: 'vellum' },
       { to: 'mica', label: 'mica' },
       { to: 'glint', label: 'glint' },
       { to: 'annex', label: 'annex' },
@@ -136,6 +139,7 @@ const groups: { title: string; items: NavItem[] }[] = [
     title: 'tools',
     items: [
       { to: 'stride', label: 'stride' },
+      { to: 'quarry', label: 'quarry' },
       { to: 'convert', label: 'convert' },
       { to: 'hash', label: 'hash' },
       { to: 'diff', label: 'diff' },

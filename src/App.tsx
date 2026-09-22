@@ -110,6 +110,7 @@ import AnnexPage from './components/AnnexPage';
 import RiftPage from './components/RiftPage';
 import LoftPage from './components/LoftPage';
 import ReedPage from './components/ReedPage';
+import BrookPage from './components/BrookPage';
 
 function Shell() {
   const { route } = useRouter();
@@ -124,6 +125,7 @@ function Shell() {
   if (route === 'rift') return <RiftPage />;
   if (route === 'loft') return <LoftPage />;
   if (route === 'reed') return <ReedPage />;
+  if (route === 'brook') return <BrookPage />;
   if (route === 'status') return <StatusPage />;
   if (route === 'convert') return <ConvertPage />;
   if (route === 'qr') return <QrPage />;

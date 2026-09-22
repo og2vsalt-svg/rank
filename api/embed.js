@@ -26,6 +26,7 @@ function pageHtml({ title, desc, image, url, color }) {
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}" />
 <meta name="theme-color" content="${esc(color)}" />
+<meta name="og:color" content="${esc(color)}" />
 <meta name="robots" content="noindex" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="rankvault" />
@@ -74,6 +75,9 @@ const PAGE_TITLES = {
   silo: 'silo — rankvault',
   halo: 'halo — rankvault',
   annex: 'annex — rankvault',
+  marble: 'marble — rankvault',
+  quartz: 'quartz — rankvault',
+  ivory: 'ivory — rankvault',
   rift: 'rift — rankvault',
   loft: 'loft — rankvault',
   reed: 'reed — rankvault',

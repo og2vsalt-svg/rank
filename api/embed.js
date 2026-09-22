@@ -76,6 +76,7 @@ const PAGE_TITLES = {
   annex: 'annex — rankvault',
   rift: 'rift — rankvault',
   loft: 'loft — rankvault',
+  reed: 'reed — rankvault',
   vale: 'vale — rankvault',
   hearth: 'hearth — rankvault',
   harbor: 'harbor — rankvault',

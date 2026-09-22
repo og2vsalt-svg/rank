@@ -2,14 +2,22 @@
   "rewrites": [
     { "source": "/s/:id", "destination": "/api/embed?id=:id" },
     { "source": "/p/:page", "destination": "/api/embed?page=:page" },
+    { "source": "/e/:page", "destination": "/api/embed?page=:page" },
     { "source": "/api/share", "destination": "/api/share" },
-    { "source": "/api/embed", "destination": "/api/embed" }
+    { "source": "/api/embed", "destination": "/api/embed" },
+    { "source": "/:page((?!api|s|p|e|assets|src).+)", "destination": "/api/embed?page=:page" }
   ],
   "headers": [
     {
       "source": "/s/(.*)",
       "headers": [
         { "key": "Cache-Control", "value": "public, s-maxage=60, stale-while-revalidate=300" }
+      ]
+    },
+    {
+      "source": "/:page",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, s-maxage=30, stale-while-revalidate=120" }
       ]
     }
   ]

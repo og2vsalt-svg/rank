@@ -137,6 +137,10 @@ import AperturePage from './components/AperturePage';
 import VellumPage from './components/VellumPage';
 import FoyerPage from './components/FoyerPage';
 import MeridianPage from './components/MeridianPage';
+import LintelPage from './components/LintelPage';
+import QuorumPage from './components/QuorumPage';
+import BarrowPage from './components/BarrowPage';
+import TerracePage from './components/TerracePage';
 
 function Shell() {
   const { route } = useRouter();
@@ -272,6 +276,10 @@ function Shell() {
   if (route === 'solstice') return <SolsticePage />;
   if (route === 'foyer') return <FoyerPage />;
   if (route === 'meridian') return <MeridianPage />;
+  if (route === 'lintel') return <LintelPage />;
+  if (route === 'quorum') return <QuorumPage />;
+  if (route === 'barrow') return <BarrowPage />;
+  if (route === 'terrace') return <TerracePage />;
 
   return (
     <div className="mesh min-h-screen">

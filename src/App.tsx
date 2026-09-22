@@ -104,6 +104,9 @@ import CratePage from './components/CratePage';
 import SlatePage from './components/SlatePage';
 import TracePage from './components/TracePage';
 import LedgerPage from './components/LedgerPage';
+import SiloPage from './components/SiloPage';
+import HaloPage from './components/HaloPage';
+import AnnexPage from './components/AnnexPage';
 
 function Shell() {
   const { route } = useRouter();
@@ -206,6 +209,9 @@ function Shell() {
   if (route === 'slate') return <SlatePage />;
   if (route === 'trace') return <TracePage />;
   if (route === 'ledger') return <LedgerPage />;
+  if (route === 'silo') return <SiloPage />;
+  if (route === 'halo') return <HaloPage />;
+  if (route === 'annex') return <AnnexPage />;
 
   return (
     <div className="mesh min-h-screen">

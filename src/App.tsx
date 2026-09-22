@@ -144,6 +144,9 @@ import TerracePage from './components/TerracePage';
 import KeystonePage from './components/KeystonePage';
 import NestPage from './components/NestPage';
 import PinnaclePage from './components/PinnaclePage';
+import AlcovePage from './components/AlcovePage';
+import SpindlePage from './components/SpindlePage';
+import QuiverPage from './components/QuiverPage';
 
 function Shell() {
   const { route } = useRouter();
@@ -286,6 +289,9 @@ function Shell() {
   if (route === 'keystone') return <KeystonePage />;
   if (route === 'nest') return <NestPage />;
   if (route === 'pinnacle') return <PinnaclePage />;
+  if (route === 'alcove') return <AlcovePage />;
+  if (route === 'spindle') return <SpindlePage />;
+  if (route === 'quiver') return <QuiverPage />;
 
   return (
     <div className="mesh min-h-screen">

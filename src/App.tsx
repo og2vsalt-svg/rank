@@ -114,6 +114,9 @@ import BrookPage from './components/BrookPage';
 import MarblePage from './components/MarblePage';
 import QuartzPage from './components/QuartzPage';
 import IvoryPage from './components/IvoryPage';
+import AmberPage from './components/AmberPage';
+import PebblePage from './components/PebblePage';
+import CedarPage from './components/CedarPage';
 
 function Shell() {
   const { route } = useRouter();
@@ -226,6 +229,9 @@ function Shell() {
   if (route === 'marble') return <MarblePage />;
   if (route === 'quartz') return <QuartzPage />;
   if (route === 'ivory') return <IvoryPage />;
+  if (route === 'amber') return <AmberPage />;
+  if (route === 'pebble') return <PebblePage />;
+  if (route === 'cedar') return <CedarPage />;
 
   return (
     <div className="mesh min-h-screen">

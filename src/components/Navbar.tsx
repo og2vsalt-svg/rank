@@ -8,9 +8,9 @@ const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
   { to: 'pebble', label: 'pebble' },
+  { to: 'pine', label: 'pine' },
+  { to: 'fog', label: 'fog' },
   { to: 'amber', label: 'amber' },
-  { to: 'cedar', label: 'cedar' },
-  { to: 'brook', label: 'brook' },
   { to: 'halo', label: 'halo' },
   { to: 'ivory', label: 'ivory' },
 ];
@@ -21,6 +21,7 @@ const groups: { title: string; items: NavItem[] }[] = [
     items: [
       { to: 'vault', label: 'vault' },
       { to: 'silo', label: 'silo' },
+      { to: 'fog', label: 'fog' },
       { to: 'amber', label: 'amber' },
       { to: 'cedar', label: 'cedar' },
       { to: 'marble', label: 'marble' },
@@ -61,6 +62,7 @@ const groups: { title: string; items: NavItem[] }[] = [
     title: 'share',
     items: [
       { to: 'pebble', label: 'pebble' },
+      { to: 'pine', label: 'pine' },
       { to: 'ivory', label: 'ivory' },
       { to: 'halo', label: 'halo' },
       { to: 'nexus', label: 'nexus' },

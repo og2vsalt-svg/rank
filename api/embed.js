@@ -26,8 +26,6 @@ function pageHtml({ title, desc, image, url, color }) {
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}" />
 <meta name="theme-color" content="${esc(color)}" />
-<meta name="theme-color" content="${esc(color)}" />
-<meta name="og:color" content="${esc(color)}" />
 <meta name="robots" content="noindex" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="rankvault" />
@@ -73,6 +71,9 @@ async function loadShare(id) {
 
 const PAGE_TITLES = {
   vault: 'vault — rankvault',
+  quarry: 'quarry — rankvault',
+  aperture: 'aperture — rankvault',
+  vellum: 'vellum — rankvault',
   silo: 'silo — rankvault',
   halo: 'halo — rankvault',
   annex: 'annex — rankvault',
@@ -160,6 +161,9 @@ const PAGE_TITLES = {
   canopy: 'canopy — rankvault',
   wisp: 'wisp — rankvault',
   solstice: 'solstice — rankvault',
+  nimbus: 'nimbus — rankvault',
+  stride: 'stride — rankvault',
+  glint: 'glint — rankvault',
 };
 
 export default async function handler(req, res) {

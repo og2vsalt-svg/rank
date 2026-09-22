@@ -129,7 +129,6 @@ export async function publishShare(payload: {
       return { ok: true, id: data.id || payload.id, url: data.url, warn: data.warn };
     }
     const data = await res.json().catch(() => ({}));
-    // fall through to supabase instead of hard-blocking on size
     if (data.error && payload.size < 2 * 1024 * 1024) {
       return { ok: false, error: data.error };
     }
@@ -156,6 +155,23 @@ export async function fetchShare(id: string): Promise<CloudMeta | null> {
     return await fetchShareFromSupabase(id);
   } catch {
     return null;
+  }
+}
+
+export async function listPublicShares(limit = 24): Promise<CloudMeta[]> {
+  try {
+    const res = await fetch(
+      `${SB_URL}/rest/v1/public_shares?is_public=eq.true&select=id,name,mime,size,file_url,expires_at,created_at,download_count,author,lock_pass&order=created_at.desc&limit=${limit}`,
+      { headers: sbHeaders() },
+    );
+    if (!res.ok) return [];
+    const rows = await res.json();
+    if (!Array.isArray(rows)) return [];
+    return rows
+      .filter((row: any) => !row.expires_at || +new Date(row.expires_at) > Date.now())
+      .map(rowToMeta);
+  } catch {
+    return [];
   }
 }
 

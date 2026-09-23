@@ -72,6 +72,9 @@ async function loadShare(id) {
 const PAGE_TITLES = {
   vault: 'vault — rankvault',
   foyer: 'foyer — rankvault',
+  vista: 'vista — rankvault',
+  coral: 'coral — rankvault',
+  ash: 'ash — rankvault',
   alcove: 'alcove — rankvault',
   spindle: 'spindle — rankvault',
   quiver: 'quiver — rankvault',

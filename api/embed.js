@@ -95,6 +95,8 @@ const PAGE_TITLES = {
   mirth: 'mirth — rankvault',
   manor: 'manor — public drops',
   locket: 'locket — lock and send',
+  relic: 'relic — time capsule drop',
+  mosaic: 'mosaic — stitch stills',
   share: 'share — rankvault',
 };
 

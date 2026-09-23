@@ -1,15 +1,17 @@
 {
   "rewrites": [
     { "source": "/s/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/p/:page", "destination": "/api/embed?page=:page" },
     { "source": "/e/:page", "destination": "/api/embed?page=:page" },
-    { "source": "/file/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/g/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/o/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/d/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/go/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/drop/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/q/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/lumen/:id", "destination": "/api/embed?id=:id" }
+    { "source": "/p/:page", "destination": "/api/embed?page=:page" }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET,POST,OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type" }
+      ]
+    }
   ]
 }

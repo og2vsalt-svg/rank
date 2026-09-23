@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"');
 }
 
 function isBot(ua) {
@@ -101,6 +101,10 @@ const PAGE_TITLES = {
   quill: 'quill — sign a receipt',
   pebble: 'pebble — local hashes',
   spool: 'spool — share aliases',
+  ledger: 'ledger — public drops',
+  ridge: 'ridge — sniff a file',
+  wick: 'wick — timed drop',
+  orbit: 'orbit — discord card',
 };
 
 export default async function handler(req, res) {

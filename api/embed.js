@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"');
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 function isBot(ua) {
@@ -19,20 +19,22 @@ function isBot(ua) {
 
 function pageHtml({ title, desc, image, url, color }) {
   const img = image || 'https://og2vsalt-svg.github.io/rank/og.png';
+  const isRemoteImg = /^https?:\/\//i.test(img) && !img.startsWith('data:');
+  const safeImg = isRemoteImg ? img : 'https://og2vsalt-svg.github.io/rank/og.png';
   return `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}" />
-<meta name="theme-color" content="${esc(color)}" />
+<meta name="theme-color" content="${esc(color || '#0A84FF')}" />
 <meta name="robots" content="noindex" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="rankvault" />
 <meta property="og:title" content="${esc(title)}" />
 <meta property="og:description" content="${esc(desc)}" />
-<meta property="og:image" content="${esc(img)}" />
-<meta property="og:image:secure_url" content="${esc(img)}" />
+<meta property="og:image" content="${esc(safeImg)}" />
+<meta property="og:image:secure_url" content="${esc(safeImg)}" />
 <meta property="og:image:type" content="image/png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
@@ -42,13 +44,14 @@ function pageHtml({ title, desc, image, url, color }) {
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="${esc(title)}" />
 <meta name="twitter:description" content="${esc(desc)}" />
-<meta name="twitter:image" content="${esc(img)}" />
-<meta name="theme-color" content="#0a84ff" />
+<meta name="twitter:image" content="${esc(safeImg)}" />
 <link rel="canonical" href="${esc(url)}" />
-<meta http-equiv="refresh" content="0;url=${esc(url)}" />
 </head>
-<body style="background:#050506;color:#f5f5f7;font-family:Inter,system-ui,sans-serif">
-<p>opening drop… <a href="${esc(url)}">continue</a></p>
+<body style="background:#050506;color:#f5f5f7;font-family:Inter,system-ui,sans-serif;padding:48px 24px">
+<p style="opacity:.7;font-size:14px">rankvault drop</p>
+<h1 style="font-size:28px;letter-spacing:-.03em">${esc(title)}</h1>
+<p style="color:#a1a1aa;max-width:40rem">${esc(desc)}</p>
+<p><a href="${esc(url)}" style="color:#0a84ff">open in rankvault</a></p>
 </body>
 </html>`;
 }
@@ -84,6 +87,8 @@ const PAGE_TITLES = {
   hush: 'hush — rankvault',
   sieve: 'sieve — rankvault',
   velvet: 'velvet — rankvault',
+  wren: 'wren — rankvault',
+  nectar: 'nectar — rankvault',
 };
 
 export default async function handler(req, res) {
@@ -102,7 +107,7 @@ export default async function handler(req, res) {
       return;
     }
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.status(200).send(pageHtml({ title, desc, image: undefined, url: dest, color: '#0a84ff' }));
+    res.status(200).send(pageHtml({ title, desc, image: undefined, url: dest, color: '#0A84FF' }));
     return;
   }
 
@@ -117,10 +122,13 @@ export default async function handler(req, res) {
   const row = await loadShare(id);
   const live = row && row.is_public && (!row.expires_at || +new Date(row.expires_at) > Date.now());
   const title = live ? `${row.name} — rankvault` : 'rankvault drop';
+  const kb = Math.max(1, Math.round((Number(row?.size) || 0) / 1024));
   const desc = live
-    ? `${row.mime || 'file'} · ${Math.round((Number(row.size) || 0) / 1024)} kb · quiet public drop`
+    ? `${row.mime || 'file'} · ${kb} kb · public drop`
     : 'a quiet file drop. open to download.';
-  const image = live && String(row.mime || '').startsWith('image/') ? row.file_url : undefined;
+  const image = live && String(row.mime || '').startsWith('image/') && String(row.file_url || '').startsWith('http')
+    ? row.file_url
+    : undefined;
 
   if (!isBot(req.headers['user-agent']) && req.query.embed !== '1') {
     res.status(302).setHeader('Location', appUrl);
@@ -130,5 +138,5 @@ export default async function handler(req, res) {
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
-  res.status(200).send(pageHtml({ title, desc, image, url: appUrl, color: '#0a84ff' }));
+  res.status(200).send(pageHtml({ title, desc, image, url: appUrl, color: '#0A84FF' }));
 }

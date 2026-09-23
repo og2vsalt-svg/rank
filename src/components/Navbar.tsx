@@ -14,6 +14,8 @@ const primary: NavItem[] = [
   { to: 'manor', label: 'manor' },
   { to: 'hush', label: 'hush' },
   { to: 'vesper', label: 'vesper' },
+  { to: 'quay', label: 'quay' },
+  { to: 'lumen', label: 'lumen' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -43,6 +45,7 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'yarrow', label: 'yarrow' },
       { to: 'knoll', label: 'knoll' },
       { to: 'vesper', label: 'vesper' },
+      { to: 'lumen', label: 'lumen' },
     ],
   },
   {
@@ -65,6 +68,7 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'ledger', label: 'ledger' },
       { to: 'wick', label: 'wick' },
       { to: 'wicket', label: 'wicket' },
+      { to: 'quay', label: 'quay' },
     ],
   },
   {

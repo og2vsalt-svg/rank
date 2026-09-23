@@ -160,6 +160,9 @@ import SablePage from './components/SablePage';
 import TrovePage from './components/TrovePage';
 import RovePage from './components/RovePage';
 import PlumePage from './components/PlumePage';
+import VistaPage from './components/VistaPage';
+import CoralPage from './components/CoralPage';
+import AshPage from './components/AshPage';
 
 function Shell() {
   const { route } = useRouter();
@@ -318,6 +321,9 @@ function Shell() {
   if (route === 'trove') return <TrovePage />;
   if (route === 'rove') return <RovePage />;
   if (route === 'plume') return <PlumePage />;
+  if (route === 'vista') return <VistaPage />;
+  if (route === 'coral') return <CoralPage />;
+  if (route === 'ash') return <AshPage />;
 
   return (
     <div className="mesh min-h-screen">

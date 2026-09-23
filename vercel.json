@@ -8,6 +8,8 @@
     { "source": "/o/:id", "destination": "/api/embed?id=:id" },
     { "source": "/d/:id", "destination": "/api/embed?id=:id" },
     { "source": "/go/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/drop/:id", "destination": "/api/embed?id=:id" }
+    { "source": "/drop/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/q/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/lumen/:id", "destination": "/api/embed?id=:id" }
   ]
 }

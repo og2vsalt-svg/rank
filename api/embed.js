@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"');
 }
 
 function isBot(ua) {
@@ -25,11 +25,12 @@ function prettySize(n) {
   return (x / (1024 * 1024 * 1024)).toFixed(2) + ' gb';
 }
 
-function pageHtml({ title, desc, image, url, color }) {
+function pageHtml({ title, desc, image, url, color, mime }) {
   const img = image || 'https://og2vsalt-svg.github.io/rank/og.png';
   const isRemoteImg = /^https?:\/\//i.test(img) && !img.startsWith('data:');
   const safeImg = isRemoteImg ? img : 'https://og2vsalt-svg.github.io/rank/og.png';
   const c = color || '#0A84FF';
+  const imgType = mime && String(mime).startsWith('image/') ? mime : 'image/png';
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -44,7 +45,7 @@ function pageHtml({ title, desc, image, url, color }) {
 <meta property="og:description" content="${esc(desc)}" />
 <meta property="og:image" content="${esc(safeImg)}" />
 <meta property="og:image:secure_url" content="${esc(safeImg)}" />
-<meta property="og:image:type" content="image/png" />
+<meta property="og:image:type" content="${esc(imgType)}" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <meta property="og:image:alt" content="${esc(title)}" />
@@ -111,6 +112,8 @@ const PAGE_TITLES = {
   wicket: 'wicket — share doors',
   vesper: 'vesper — tonight’s readout',
   marrow: 'marrow — hex peek',
+  quay: 'quay — dock and launch',
+  lumen: 'lumen — light table',
 };
 
 export default async function handler(req, res) {
@@ -146,7 +149,8 @@ export default async function handler(req, res) {
   const desc = live
     ? `${row.mime || 'file'} · ${prettySize(row.size)}${row.author ? ' · ' + row.author : ''} · public drop`
     : 'a quiet file drop. open to download.';
-  const image = live && String(row.mime || '').startsWith('image/') && String(row.file_url || '').startsWith('http')
+  const mime = String((live && row.mime) || '');
+  const image = live && mime.startsWith('image/') && String(row.file_url || '').startsWith('http')
     ? row.file_url
     : undefined;
 
@@ -158,5 +162,5 @@ export default async function handler(req, res) {
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
-  res.status(200).send(pageHtml({ title, desc, image, url: appUrl, color: '#0A84FF' }));
+  res.status(200).send(pageHtml({ title, desc, image, url: appUrl, color: '#0A84FF', mime }));
 }

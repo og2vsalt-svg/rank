@@ -65,6 +65,9 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'wren', label: 'wren' },
       { to: 'mirth', label: 'mirth' },
       { to: 'mosaic', label: 'mosaic' },
+      { to: 'loom', label: 'loom' },
+      { to: 'prism', label: 'prism' },
+      { to: 'quill', label: 'quill' },
     ],
   },
   {

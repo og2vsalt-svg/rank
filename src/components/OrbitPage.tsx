@@ -1,93 +1,66 @@
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { useRouter } from './Router';
+import { shareUrls } from '../lib/cloudShare';
 
-const KEY = 'rankvault.orbit.v1';
-
-type Item = { id: string; label: string; addedAt: number };
-
-function load(): Item[] {
-  try {
-    const raw = localStorage.getItem(KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-}
+const PRESETS = [
+  { label: 'clean blue', color: '#0A84FF', title: 'rankvault drop', desc: 'private file hosting. share only if you want.' },
+  { label: 'dusk', color: '#AF52DE', title: 'dusk drop', desc: 'a quiet public file. open when you are ready.' },
+  { label: 'mint', color: '#30D158', title: 'fresh share', desc: 'just landed in the cloud table.' },
+];
 
 export default function OrbitPage() {
-  const { navigate } = useRouter();
-  const [items, setItems] = useState<Item[]>(load);
   const [id, setId] = useState('');
-  const [label, setLabel] = useState('');
-
-  useEffect(() => {
-    localStorage.setItem(KEY, JSON.stringify(items));
-  }, [items]);
-
-  function add() {
-    const clean = id.trim().replace(/^.*[?#]f=/, '').replace(/^\/s\//, '').replace(/^\/file\//, '');
-    if (!clean) return;
-    setItems((prev) => [{ id: clean, label: label.trim() || clean, addedAt: Date.now() }, ...prev.filter((p) => p.id !== clean)]);
-    setId('');
-    setLabel('');
-  }
+  const [preset, setPreset] = useState(0);
+  const p = PRESETS[preset];
+  const urls = useMemo(() => (id.trim() ? shareUrls(id.trim()) : { embed: '', app: '' }), [id]);
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <main className="pt-24 pb-20 px-5">
-        <div className="max-w-xl mx-auto">
-          <p className="text-xs tracking-[0.2em] uppercase text-neutral-500 mb-3">orbit</p>
-          <h1 className="text-3xl font-semibold text-white tracking-tight">link shelf</h1>
-          <p className="text-sm text-neutral-500 mt-2 mb-8">park share ids on this device. not a vault. just a quiet list so you stop losing drops.</p>
-
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-3xl p-6 space-y-3">
-            <input
-              value={id}
-              onChange={(e) => setId(e.target.value)}
-              placeholder="share id or /s/abc"
-              className="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/50"
-            />
-            <input
-              value={label}
-              onChange={(e) => setLabel(e.target.value)}
-              placeholder="optional nickname"
-              className="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/50"
-            />
-            <button onClick={add} className="w-full rounded-full bg-white text-black py-2.5 text-sm font-medium">pin to orbit</button>
-          </motion.div>
-
-          <div className="mt-6 space-y-2">
-            {items.length === 0 && <p className="text-sm text-neutral-600">nothing parked yet.</p>}
-            {items.map((item, i) => (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.03 }}
-                className="glass rounded-2xl px-4 py-3 flex items-center justify-between gap-3"
+      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-[32px] p-8">
+          <p className="text-[#0a84ff] text-sm mb-2">orbit</p>
+          <h1 className="text-3xl font-semibold mb-3">spin a discord embed.</h1>
+          <p className="text-neutral-400 text-sm mb-6">pick a vibe, paste the share id, copy the /s/ url. discord scrapes that path, not the hash route.</p>
+          <input
+            value={id}
+            onChange={(e) => setId(e.target.value)}
+            placeholder="share id"
+            className="w-full mb-4 px-4 py-2.5 rounded-full bg-white/5 border border-white/10 text-sm outline-none"
+          />
+          <div className="flex flex-wrap gap-2 mb-6">
+            {PRESETS.map((item, i) => (
+              <button
+                key={item.label}
+                onClick={() => setPreset(i)}
+                className={`px-3.5 py-1.5 rounded-full text-sm border ${i === preset ? 'bg-white text-black border-transparent' : 'bg-white/5 border-white/10 text-neutral-300'}`}
               >
-                <div className="min-w-0">
-                  <p className="text-sm text-white truncate">{item.label}</p>
-                  <p className="text-xs text-neutral-500 truncate">{item.id}</p>
-                </div>
-                <div className="flex gap-2 shrink-0">
-                  <button onClick={() => navigate('share', item.id)} className="text-xs px-3 py-1.5 rounded-full bg-white/10">open</button>
-                  <button
-                    onClick={() => navigator.clipboard.writeText(`${location.origin}/s/${item.id}`)}
-                    className="text-xs px-3 py-1.5 rounded-full bg-white/10"
-                  >
-                    copy /s
-                  </button>
-                  <button onClick={() => setItems((p) => p.filter((x) => x.id !== item.id))} className="text-xs text-neutral-500">drop</button>
-                </div>
-              </motion.div>
+                {item.label}
+              </button>
             ))}
           </div>
-        </div>
-      </main>
+          <div className="rounded-2xl overflow-hidden border border-white/10 bg-[#2b2d31] mb-6">
+            <div className="flex">
+              <div className="w-1" style={{ background: p.color }} />
+              <div className="p-4 flex-1">
+                <p className="text-[#00a8fc] text-xs mb-1">rankvault</p>
+                <p className="text-white font-semibold text-sm mb-1">{p.title}</p>
+                <p className="text-[#dbdee1] text-sm mb-3">{p.desc}</p>
+                <div className="h-28 rounded-xl" style={{ background: `linear-gradient(135deg, ${p.color}66, #111 80%)` }} />
+              </div>
+            </div>
+          </div>
+          <p className="text-[12px] text-neutral-500 break-all mb-4">{urls.embed || 'needs an id'}</p>
+          <button
+            disabled={!urls.embed}
+            onClick={() => urls.embed && navigator.clipboard.writeText(urls.embed)}
+            className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40"
+          >
+            copy embed url
+          </button>
+        </motion.div>
+      </div>
     </div>
   );
 }

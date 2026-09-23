@@ -182,6 +182,10 @@ const PAGE_TITLES = {
   cairn: 'cairn — rankvault',
   lagoon: 'lagoon — rankvault',
   thistle: 'thistle — rankvault',
+  sable: 'sable — rankvault',
+  trove: 'trove — rankvault',
+  rove: 'rove — rankvault',
+  plume: 'plume — rankvault',
 };
 
 export default async function handler(req, res) {

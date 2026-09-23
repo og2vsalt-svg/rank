@@ -56,6 +56,7 @@ function pageHtml({ title, desc, image, url, color }) {
 <meta name="twitter:image" content="${esc(safeImg)}" />
 <meta name="twitter:image:alt" content="${esc(title)}" />
 <meta name="twitter:site" content="@rankvault" />
+<meta name="og:color" content="${esc(c)}" />
 <link rel="canonical" href="${esc(url)}" />
 </head>
 <body style="background:#050506;color:#f5f5f7;font-family:Inter,system-ui,sans-serif;padding:48px 24px">
@@ -98,6 +99,8 @@ const PAGE_TITLES = {
   loom: 'loom — queue a pack',
   prism: 'prism — pull colors',
   quill: 'quill — sign a receipt',
+  pebble: 'pebble — local hashes',
+  spool: 'spool — share aliases',
 };
 
 export default async function handler(req, res) {

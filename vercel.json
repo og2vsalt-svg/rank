@@ -4,6 +4,8 @@
     { "source": "/p/:page", "destination": "/api/embed?page=:page" },
     { "source": "/e/:page", "destination": "/api/embed?page=:page" },
     { "source": "/file/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/g/:id", "destination": "/api/embed?id=:id" }
+    { "source": "/g/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/o/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/d/:id", "destination": "/api/embed?id=:id" }
   ]
 }

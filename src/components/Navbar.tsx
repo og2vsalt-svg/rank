@@ -6,13 +6,13 @@ type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
-  { to: 'linen', label: 'linen' },
-  { to: 'hush', label: 'hush' },
   { to: 'drop', label: 'drop' },
+  { to: 'manor', label: 'manor' },
+  { to: 'locket', label: 'locket' },
+  { to: 'hush', label: 'hush' },
+  { to: 'linen', label: 'linen' },
   { to: 'petal', label: 'petal' },
-  { to: 'mirth', label: 'mirth' },
   { to: 'wren', label: 'wren' },
-  { to: 'nectar', label: 'nectar' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -24,6 +24,8 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'sable', label: 'sable' },
       { to: 'trove', label: 'trove' },
       { to: 'drop', label: 'drop' },
+      { to: 'manor', label: 'manor' },
+      { to: 'locket', label: 'locket' },
       { to: 'petal', label: 'petal' },
       { to: 'sieve', label: 'sieve' },
       { to: 'well', label: 'well' },

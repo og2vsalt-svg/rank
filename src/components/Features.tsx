@@ -38,6 +38,9 @@ const items = [
   { title: 'flux', body: 'type a line and download a looping html typewriter.' },
   { title: 'courier', body: 'push a local file straight into the shares db and get a discord-ready /s/ link. no vault detour.' },
   { title: 'lantern', body: 'mock the discord unfurl for a share id before you paste it.' },
+  { title: 'fen desk', body: 'fingerprint a local file then publish a discord-ready /s drop.' },
+  { title: 'brine desk', body: 'batch-upload local files to the share db and copy every embed link.' },
+  { title: 'isle desk', body: 'build pro discord cards for file drops and any desk page.' },
 ];
 
 export default function Features() {

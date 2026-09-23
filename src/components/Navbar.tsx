@@ -8,11 +8,11 @@ const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'foyer', label: 'foyer' },
   { to: 'drop', label: 'drop' },
-  { to: 'gully', label: 'gully' },
+  { to: 'sable', label: 'sable' },
+  { to: 'trove', label: 'trove' },
   { to: 'sail', label: 'sail' },
   { to: 'orb', label: 'orb' },
-  { to: 'quiver', label: 'quiver' },
-  { to: 'alcove', label: 'alcove' },
+  { to: 'plume', label: 'plume' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -20,6 +20,8 @@ const groups: { title: string; items: NavItem[] }[] = [
     title: 'files',
     items: [
       { to: 'vault', label: 'vault' },
+      { to: 'sable', label: 'sable' },
+      { to: 'trove', label: 'trove' },
       { to: 'gully', label: 'gully' },
       { to: 'spindle', label: 'spindle' },
       { to: 'nest', label: 'nest' },
@@ -119,6 +121,7 @@ const groups: { title: string; items: NavItem[] }[] = [
     title: 'create',
     items: [
       { to: 'alcove', label: 'alcove' },
+      { to: 'plume', label: 'plume' },
       { to: 'vellum', label: 'vellum' },
       { to: 'mica', label: 'mica' },
       { to: 'glint', label: 'glint' },
@@ -189,6 +192,8 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'cairn', label: 'cairn' },
       { to: 'lagoon', label: 'lagoon' },
       { to: 'thistle', label: 'thistle' },
+      { to: 'rove', label: 'rove' },
+      { to: 'isle', label: 'isle' },
     ],
   },
 ];

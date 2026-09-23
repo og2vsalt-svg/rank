@@ -43,6 +43,7 @@ function pageHtml({ title, desc, image, url, color }) {
 <meta name="twitter:title" content="${esc(title)}" />
 <meta name="twitter:description" content="${esc(desc)}" />
 <meta name="twitter:image" content="${esc(img)}" />
+<meta name="theme-color" content="#0a84ff" />
 <link rel="canonical" href="${esc(url)}" />
 <meta http-equiv="refresh" content="0;url=${esc(url)}" />
 </head>
@@ -71,6 +72,7 @@ async function loadShare(id) {
 
 const PAGE_TITLES = {
   vault: 'vault — rankvault',
+  still: 'still — rankvault',
   frost: 'frost — rankvault',
   grain: 'grain — rankvault',
   foyer: 'foyer — rankvault',

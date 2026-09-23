@@ -9,6 +9,8 @@ const items = [
   { title: 'discord embeds', body: '/s/id and /e/page serve og tags so discord, slack, and x preview the filename like a real product.' },
   { title: 'no hard file cap', body: 'drop whatever size you want. we only warn when a file is so big the tab might feel sleepy.' },
   { title: 'apple-soft motion', body: 'springy buttons, glass cards, blur. supposed to feel like something a human actually designed.' },
+  { title: 'quay dock', body: 'park files, launch them into the share table, copy a discord card. different job than the vault.' },
+  { title: 'lumen table', body: 'inspect stills on-device before they ever leave the tab.' },
 ];
 
 export default function Features() {

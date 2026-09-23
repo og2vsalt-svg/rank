@@ -163,6 +163,8 @@ import PlumePage from './components/PlumePage';
 import VistaPage from './components/VistaPage';
 import CoralPage from './components/CoralPage';
 import AshPage from './components/AshPage';
+import FrostPage from './components/FrostPage';
+import GrainPage from './components/GrainPage';
 
 function Shell() {
   const { route } = useRouter();
@@ -171,6 +173,8 @@ function Shell() {
   if (route === 'signup') return <SignupPage />;
   if (route === 'vault') return <VaultPage />;
   if (route === 'share') return <SharePage />;
+  if (route === 'frost') return <FrostPage />;
+  if (route === 'grain') return <GrainPage />;
   if (route === 'notes') return <NotesPage />;
   if (route === 'paste') return <PastePage />;
   if (route === 'drop') return <DropPage />;

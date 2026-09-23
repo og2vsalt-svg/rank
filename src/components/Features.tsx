@@ -9,6 +9,9 @@ const items = [
   { title: 'discord embeds', body: '/s/id serves og tags so discord previews the filename like a real product.' },
   { title: 'no hard file cap', body: 'drop whatever size you want. we only warn when the tab might feel sleepy.' },
   { title: 'apple-soft motion', body: 'springy buttons, glass cards, blur. supposed to feel human-made.' },
+  { title: 'keel manifests', body: 'tick vault files and copy a shipping list, or save it as its own drop.' },
+  { title: 'helix threads', body: 'stack timed beats into one text file. different from notes or studio.' },
+  { title: 'zinc embed check', body: 'paste a share id and preview the exact /s card discord will unfurl.' },
 ];
 
 export default function Features() {

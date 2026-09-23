@@ -23,7 +23,7 @@ export default function PulsePage() {
         <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-8">
           <p className="text-[#0a84ff] text-sm mb-2">pulse</p>
           <h1 className="text-3xl font-semibold tracking-tight mb-3">a quiet heartbeat of what you hold.</h1>
-          <p className="text-sm text-neutral-400 mb-8">counts only. no boosting, no ranks, no fake heat. just how heavy the tab is.</p>
+          <p className="text-sm text-neutral-400 mb-8">counts only. just how heavy the tab is. nothing dressed up.</p>
           <div className="grid grid-cols-3 gap-3">
             {[
               { k: 'files', v: String(stats.total) },

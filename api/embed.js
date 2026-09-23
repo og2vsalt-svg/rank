@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"');
 }
 
 function isBot(ua) {
@@ -63,9 +63,9 @@ function pageHtml({ title, desc, image, url, color, mime }) {
 <h1 style="font-size:28px;letter-spacing:-.03em">${esc(title)}</h1>
 <p style="color:#a1a1aa;max-width:40rem">${esc(desc)}</p>
 <p><a href="${esc(url)}" style="color:#0a84ff">open in rankvault</a></p>
-<script>if(!/discord|bot|embed|preview/i.test(navigator.userAgent||'')) location.replace(${JSON.stringify('PLACEHOLDER')});</script>
+<script>if(!/discord|bot|embed|preview/i.test(navigator.userAgent||'')) location.replace(${JSON.stringify(url)});</script>
 </body>
-</html>`.replace('PLACEHOLDER', url);
+</html>`;
 }
 
 async function loadShare(id) {
@@ -91,6 +91,9 @@ const PAGE_TITLES = {
   hush: 'hush — rankvault',
   manor: 'manor — public drops',
   share: 'share — rankvault',
+  keel: 'keel — shipping list',
+  helix: 'helix — thread drop',
+  zinc: 'zinc — embed preview',
 };
 
 export default async function handler(req, res) {
@@ -122,9 +125,10 @@ export default async function handler(req, res) {
 
   const row = await loadShare(id);
   const live = row && row.is_public && (!row.expires_at || +new Date(row.expires_at) > Date.now());
-  const title = live ? `${row.name} — rankvault` : 'rankvault drop';
+  const title = live ? `${row.name}` : 'rankvault drop';
+  const kind = (live && row.mime) ? String(row.mime).split(';')[0] : 'file';
   const desc = live
-    ? `${row.mime || 'file'} · ${prettySize(row.size)}${row.author ? ' · ' + row.author : ''} · public drop`
+    ? `${kind} · ${prettySize(row.size)}${row.author ? ' · ' + row.author : ''}${row.download_count ? ' · ' + row.download_count + ' opens' : ''} · public drop on rankvault`
     : 'a quiet file drop. open to download.';
   const mime = String((live && row.mime) || '');
   const image = live && mime.startsWith('image/') && String(row.file_url || '').startsWith('http')

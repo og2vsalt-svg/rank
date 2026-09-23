@@ -80,6 +80,8 @@ const PAGE_TITLES = {
   coral: 'coral — rankvault',
   ash: 'ash — rankvault',
   drop: 'drop — rankvault',
+  linen: 'linen — rankvault',
+  hush: 'hush — rankvault',
 };
 
 export default async function handler(req, res) {

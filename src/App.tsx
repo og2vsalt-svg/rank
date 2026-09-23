@@ -156,6 +156,10 @@ import OrbPage from './components/OrbPage';
 import FenPage from './components/FenPage';
 import BrinePage from './components/BrinePage';
 import IslePage from './components/IslePage';
+import SablePage from './components/SablePage';
+import TrovePage from './components/TrovePage';
+import RovePage from './components/RovePage';
+import PlumePage from './components/PlumePage';
 
 function Shell() {
   const { route } = useRouter();
@@ -310,6 +314,10 @@ function Shell() {
   if (route === 'fen') return <FenPage />;
   if (route === 'brine') return <BrinePage />;
   if (route === 'isle') return <IslePage />;
+  if (route === 'sable') return <SablePage />;
+  if (route === 'trove') return <TrovePage />;
+  if (route === 'rove') return <RovePage />;
+  if (route === 'plume') return <PlumePage />;
 
   return (
     <div className="mesh min-h-screen">

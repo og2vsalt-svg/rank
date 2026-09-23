@@ -1,16 +1,14 @@
 import { motion } from 'framer-motion';
 
 const items = [
-  { title: 'local-first vault', body: 'files live in your browser for this demo. nothing ships to a random box unless you copy a public link.' },
-  { title: 'frost desk', body: 'blur a still on this device and download a png. not a vault clone.' },
-  { title: 'grain desk', body: 'roll film grain in the tab. zero hosting.' },
-  { title: 'quiet share links', body: 'mark a file public and copy a hash link. optional expiry and a passcode so the drop dies or stays locked.' },
-  { title: 'cloud share db', body: 'public drops land in supabase, with vercel blob when a token is set, so the link works on another device.' },
-  { title: 'discord embeds', body: '/s/id and /e/page serve og tags so discord, slack, and x preview the filename like a real product.' },
-  { title: 'no hard file cap', body: 'drop whatever size you want. we only warn when a file is so big the tab might feel sleepy.' },
-  { title: 'apple-soft motion', body: 'springy buttons, glass cards, blur. supposed to feel like something a human actually designed.' },
-  { title: 'nimbus batch', body: 'publish a whole pile at once and get discord-ready links. not the vault grid.' },
-  { title: 'pulse + meridian', body: 'heartbeat counts of what you hold, plus a timezone stamp for when a drop actually landed.' },
+  { title: 'local-first vault', body: 'files live in your browser first. nothing ships unless you flip a drop public.' },
+  { title: 'studio notes', body: 'write or paste text, publish it as a public file with a discord-ready /s link.' },
+  { title: 'parcel batch', body: 'drop a handful of local files, get a list of embed links back. not the vault grid.' },
+  { title: 'signal check', body: 'paste a share id and see if the drop is still live in the db.' },
+  { title: 'cloud share db', body: 'public drops land in supabase, with vercel blob when a token is set.' },
+  { title: 'discord embeds', body: '/s/id serves og tags so discord previews the filename like a real product.' },
+  { title: 'no hard file cap', body: 'drop whatever size you want. we only warn when the tab might feel sleepy.' },
+  { title: 'apple-soft motion', body: 'springy buttons, glass cards, blur. supposed to feel human-made.' },
 ];
 
 export default function Features() {

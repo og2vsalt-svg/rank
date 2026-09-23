@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"');
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 function isBot(ua) {
@@ -56,8 +56,6 @@ function pageHtml({ title, desc, image, url, color, mime }) {
 <meta name="twitter:description" content="${esc(desc)}" />
 <meta name="twitter:image" content="${esc(safeImg)}" />
 <meta name="twitter:image:alt" content="${esc(title)}" />
-<meta name="twitter:site" content="@rankvault" />
-<meta name="og:color" content="${esc(c)}" />
 <link rel="canonical" href="${esc(url)}" />
 </head>
 <body style="background:#050506;color:#f5f5f7;font-family:Inter,system-ui,sans-serif;padding:48px 24px">
@@ -65,8 +63,9 @@ function pageHtml({ title, desc, image, url, color, mime }) {
 <h1 style="font-size:28px;letter-spacing:-.03em">${esc(title)}</h1>
 <p style="color:#a1a1aa;max-width:40rem">${esc(desc)}</p>
 <p><a href="${esc(url)}" style="color:#0a84ff">open in rankvault</a></p>
+<script>if(!/discord|bot|embed|preview/i.test(navigator.userAgent||'')) location.replace(${JSON.stringify('PLACEHOLDER')});</script>
 </body>
-</html>`;
+</html>`.replace('PLACEHOLDER', url);
 }
 
 async function loadShare(id) {
@@ -86,34 +85,12 @@ async function loadShare(id) {
 const PAGE_TITLES = {
   vault: 'vault — rankvault',
   drop: 'drop — rankvault',
+  studio: 'studio — rankvault',
+  parcel: 'parcel — rankvault',
+  signal: 'signal — rankvault',
   hush: 'hush — rankvault',
   manor: 'manor — public drops',
-  locket: 'locket — lock and send',
-  relic: 'relic — time capsule drop',
-  mosaic: 'mosaic — stitch stills',
   share: 'share — rankvault',
-  braid: 'braid — pack public drops',
-  glyph: 'glyph — discord card preview',
-  yarn: 'yarn — notes on a drop',
-  axis: 'axis — vault readout',
-  cask: 'cask — packing list',
-  loom: 'loom — queue a pack',
-  prism: 'prism — pull colors',
-  quill: 'quill — sign a receipt',
-  pebble: 'pebble — local hashes',
-  spool: 'spool — share aliases',
-  ledger: 'ledger — public drops',
-  ridge: 'ridge — sniff a file',
-  wick: 'wick — timed drop',
-  orbit: 'orbit — discord card',
-  fathom: 'fathom — file depth',
-  yarrow: 'yarrow — rename on intake',
-  knoll: 'knoll — piles by type',
-  wicket: 'wicket — share doors',
-  vesper: 'vesper — tonight’s readout',
-  marrow: 'marrow — hex peek',
-  quay: 'quay — dock and launch',
-  lumen: 'lumen — light table',
 };
 
 export default async function handler(req, res) {

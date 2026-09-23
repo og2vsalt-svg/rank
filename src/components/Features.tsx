@@ -9,8 +9,8 @@ const items = [
   { title: 'discord embeds', body: '/s/id and /e/page serve og tags so discord, slack, and x preview the filename like a real product.' },
   { title: 'no hard file cap', body: 'drop whatever size you want. we only warn when a file is so big the tab might feel sleepy.' },
   { title: 'apple-soft motion', body: 'springy buttons, glass cards, blur. supposed to feel like something a human actually designed.' },
-  { title: 'quay dock', body: 'park files, launch them into the share table, copy a discord card. different job than the vault.' },
-  { title: 'lumen table', body: 'inspect stills on-device before they ever leave the tab.' },
+  { title: 'nimbus batch', body: 'publish a whole pile at once and get discord-ready links. not the vault grid.' },
+  { title: 'pulse + meridian', body: 'heartbeat counts of what you hold, plus a timezone stamp for when a drop actually landed.' },
 ];
 
 export default function Features() {

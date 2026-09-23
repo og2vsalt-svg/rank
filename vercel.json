@@ -1,17 +1,6 @@
 {
   "rewrites": [
     { "source": "/s/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/e/:page", "destination": "/api/embed?page=:page" },
-    { "source": "/p/:page", "destination": "/api/embed?page=:page" }
-  ],
-  "headers": [
-    {
-      "source": "/api/(.*)",
-      "headers": [
-        { "key": "Access-Control-Allow-Origin", "value": "*" },
-        { "key": "Access-Control-Allow-Methods", "value": "GET,POST,OPTIONS" },
-        { "key": "Access-Control-Allow-Headers", "value": "Content-Type" }
-      ]
-    }
+    { "source": "/e/:page", "destination": "/api/embed?page=:page" }
   ]
 }

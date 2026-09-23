@@ -1,96 +1,84 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { useAuth } from './AuthContext';
-import { publishShare, shareUrls } from '../lib/cloudShare';
+import { useVault } from './VaultContext';
+import { shareUrls } from '../lib/cloudShare';
 
-function rid() {
-  return Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
-}
+type Row = { name: string; id?: string; link?: string; embed?: string; error?: string; warn?: string };
 
 export default function ParcelPage() {
-  const { user } = useAuth();
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [file, setFile] = useState<File | null>(null);
-  const [note, setNote] = useState('');
-  const [hours, setHours] = useState('24');
+  const { addFiles, togglePublic } = useVault();
+  const [rows, setRows] = useState<Row[]>([]);
   const [busy, setBusy] = useState(false);
   const [warn, setWarn] = useState('');
-  const [err, setErr] = useState('');
-  const [done, setDone] = useState<{ embed: string; app: string } | null>(null);
 
-  const onPick = (f?: File) => {
-    if (!f) return;
-    setFile(f);
-    setDone(null);
-    setErr('');
-    setWarn(f.size > 8 * 1024 * 1024 ? 'chunky file. still sending, tab might nap.' : '');
+  const onFiles = async (list: FileList | null) => {
+    if (!list?.length) return;
+    const files = [...list];
+    if (files.some((f) => f.size > 40 * 1024 * 1024)) setWarn('at least one file is chunky. expect lag, no hard cap.');
+    else setWarn('');
+    setBusy(true);
+    const next: Row[] = [];
+    for (const file of files) {
+      try {
+        const fake = {
+          0: file,
+          length: 1,
+          item: (i: number) => (i === 0 ? file : null),
+          [Symbol.iterator]: function* () { yield file; },
+        } as unknown as FileList;
+        const result = await addFiles(fake, 'parcel');
+        if (!result.ok || !result.ids?.[0]) {
+          next.push({ name: file.name, error: result.error || 'save failed' });
+          continue;
+        }
+        const id = result.ids[0];
+        const pub = await togglePublic(id);
+        const urls = shareUrls(id);
+        next.push({
+          name: file.name,
+          id,
+          link: urls.app,
+          embed: urls.embed,
+          error: pub.ok ? undefined : pub.error,
+          warn: result.warn,
+        });
+      } catch (e: any) {
+        next.push({ name: file.name, error: e?.message || 'failed' });
+      }
+    }
+    setRows(next);
+    setBusy(false);
   };
 
-  const send = async () => {
-    if (!file) return;
-    setBusy(true);
-    setErr('');
-    try {
-      const dataUrl = await new Promise<string>((resolve, reject) => {
-        const r = new FileReader();
-        r.onload = () => resolve(String(r.result || ''));
-        r.onerror = () => reject(new Error('read failed'));
-        r.readAsDataURL(file);
-      });
-      const id = rid();
-      const hrs = Number(hours) || 0;
-      const expiresAt = hrs > 0 ? new Date(Date.now() + hrs * 3600 * 1000).toISOString() : undefined;
-      const res = await publishShare({
-        id,
-        name: note.trim() ? `${file.name} — ${note.trim()}` : file.name,
-        type: file.type || 'application/octet-stream',
-        size: file.size,
-        dataUrl,
-        expiresAt,
-        author: user?.username,
-      });
-      if (!res.ok) {
-        setErr(res.error || 'could not ship the parcel');
-        return;
-      }
-      const urls = shareUrls(res.id || id);
-      setDone({ embed: urls.embed, app: urls.app });
-    } catch (e: any) {
-      setErr(e?.message || 'failed');
-    } finally {
-      setBusy(false);
-    }
+  const copyAll = async () => {
+    const text = rows.filter((r) => r.embed).map((r) => `${r.name}\n${r.embed}`).join('\n\n');
+    try { await navigator.clipboard.writeText(text); } catch {}
   };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
       <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          className="glass rounded-[28px] p-8"
-        >
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-[32px] p-8">
           <p className="text-[#0a84ff] text-sm mb-2">parcel</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-2">ship a timed drop</h1>
-          <p className="text-sm text-neutral-500 mb-6">local file goes into the share db with an optional expiry. discord unfurls /s like a product card.</p>
-          <input ref={inputRef} type="file" className="hidden" onChange={(e) => onPick(e.target.files?.[0])} />
-          <button onClick={() => inputRef.current?.click()} className="w-full rounded-2xl border border-dashed border-white/15 bg-white/[0.03] px-6 py-10 text-sm text-neutral-400">
-            {file ? file.name : 'pick a file from this machine'}
-          </button>
-          {warn && <p className="text-xs text-amber-300/80 mt-3">{warn}</p>}
-          <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="optional note on the label" className="mt-4 w-full px-4 py-2.5 rounded-full bg-white/5 border border-white/10 text-sm outline-none" />
-          <input value={hours} onChange={(e) => setHours(e.target.value)} placeholder="hours until it fades (0 = keep)" className="mt-3 w-full px-4 py-2.5 rounded-full bg-white/5 border border-white/10 text-sm outline-none" />
-          <button disabled={!file || busy} onClick={send} className="mt-4 px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40">
-            {busy ? 'shipping…' : 'ship parcel'}
-          </button>
-          {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
-          {done && (
-            <div className="mt-6 space-y-2 text-sm">
-              <p className="break-all text-[#0a84ff]">{done.embed}</p>
-              <button onClick={() => navigator.clipboard.writeText(done.embed)} className="px-4 py-2 rounded-full bg-white/5 text-sm">copy discord link</button>
+          <h1 className="text-3xl font-semibold tracking-tight mb-2">one pile, many discord links.</h1>
+          <p className="text-neutral-400 text-sm mb-6">batch publish local files. each one gets its own /s/ embed card.</p>
+          <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition">
+            <input type="file" multiple className="hidden" onChange={(e) => onFiles(e.target.files)} />
+            <p className="text-white font-medium">{busy ? 'packing…' : 'drop a handful of files'}</p>
+          </label>
+          {warn && <p className="text-xs text-amber-300/80 mt-4">{warn}</p>}
+          {rows.length > 0 && (
+            <div className="mt-6 space-y-3">
+              <button onClick={copyAll} className="px-4 py-2 rounded-full bg-white text-black text-sm font-medium">copy embed links</button>
+              {rows.map((r) => (
+                <div key={r.name + (r.id || '')} className="rounded-2xl bg-white/[0.04] border border-white/8 px-4 py-3">
+                  <p className="text-sm text-white truncate">{r.name}</p>
+                  {r.embed && <p className="text-xs text-neutral-500 break-all mt-1">{r.embed}</p>}
+                  {r.error && <p className="text-xs text-red-400 mt-1">{r.error}</p>}
+                </div>
+              ))}
             </div>
           )}
         </motion.div>

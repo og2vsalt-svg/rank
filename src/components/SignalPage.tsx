@@ -1,55 +1,55 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
+import { fetchShare, shareUrls } from '../lib/cloudShare';
 
 export default function SignalPage() {
-  const [name, setName] = useState('quiet drop');
-  const [line, setLine] = useState('a file waiting on rankvault');
-  const preview = useMemo(() => {
-    const title = name.trim() || 'rankvault';
-    const desc = line.trim() || 'quiet file hosting';
-    return { title, desc };
-  }, [name, line]);
+  const [raw, setRaw] = useState('');
+  const [status, setStatus] = useState('');
+  const [detail, setDetail] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  const probe = async () => {
+    const id = raw.trim().replace(/^.*[?&#]f=/, '').replace(/^.*\/s\//, '').replace(/[^a-zA-Z0-9_-]/g, '');
+    if (!id) {
+      setStatus('need an id');
+      setDetail('');
+      return;
+    }
+    setBusy(true);
+    setStatus('listening…');
+    setDetail('');
+    try {
+      const meta = await fetchShare(id);
+      if (!meta) {
+        setStatus('quiet');
+        setDetail('no live public drop for that id. expired, private, or never published.');
+      } else {
+        setStatus('live');
+        setDetail(`${meta.name} · ${meta.type} · ${meta.size} bytes\n${shareUrls(id).embed}`);
+      }
+    } catch (e: any) {
+      setStatus('broken');
+      setDetail(e?.message || 'network hiccup');
+    } finally {
+      setBusy(false);
+    }
+  };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <main className="pt-24 pb-20 px-5">
-        <div className="max-w-xl mx-auto">
-          <p className="text-xs tracking-[0.2em] uppercase text-neutral-500 mb-3">signal</p>
-          <h1 className="text-3xl font-semibold text-white tracking-tight">embed preview</h1>
-          <p className="text-sm text-neutral-500 mt-2 mb-8">see how a discord unfurl wants to look. real /s links already ship og tags from the api.</p>
-
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-3xl p-6 space-y-3">
-            <input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/50"
-            />
-            <textarea
-              value={line}
-              onChange={(e) => setLine(e.target.value)}
-              rows={3}
-              className="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/50 resize-none"
-            />
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="mt-6 rounded-2xl overflow-hidden border border-white/10 bg-[#2b2d31]"
-          >
-            <div className="h-1 bg-[#0a84ff]" />
-            <div className="p-4">
-              <p className="text-[11px] text-[#00a8fc] mb-1">rankvault</p>
-              <p className="text-sm font-semibold text-[#00a8fc]">{preview.title}</p>
-              <p className="text-sm text-[#dbdee1] mt-1">{preview.desc}</p>
-              <div className="mt-3 h-28 rounded-xl bg-gradient-to-br from-[#0a84ff]/40 to-[#af52de]/30" />
-            </div>
-          </motion.div>
-          <p className="text-xs text-neutral-600 mt-3">paste a live /s/id in discord and the server embed route fills title + size for you.</p>
-        </div>
-      </main>
+      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-[32px] p-8">
+          <p className="text-[#0a84ff] text-sm mb-2">signal</p>
+          <h1 className="text-3xl font-semibold tracking-tight mb-2">is this drop still breathing?</h1>
+          <p className="text-neutral-400 text-sm mb-6">paste a share id or /s/ link. we ping the db, no extra tools.</p>
+          <input value={raw} onChange={(e) => setRaw(e.target.value)} placeholder="id or https://…/s/…" className="w-full mb-4 bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/50 transition" />
+          <button onClick={probe} disabled={busy} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-50 hover:scale-[1.02] active:scale-[0.98] transition-transform">{busy ? 'pinging…' : 'check signal'}</button>
+          {status && <p className="mt-5 text-sm text-white">{status}</p>}
+          {detail && <pre className="mt-2 text-xs text-neutral-400 whitespace-pre-wrap break-all">{detail}</pre>}
+        </motion.div>
+      </div>
     </div>
   );
 }

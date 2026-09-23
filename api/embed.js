@@ -14,7 +14,14 @@ function esc(s) {
 
 function isBot(ua) {
   const u = (ua || '').toLowerCase();
-  return /discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|skype|linkedinbot|embed|preview|bot|crawler|spider/.test(u);
+  return /discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|skype|linkedinbot|embed|preview|bot|crawler|spider|redditbot|applebot|discordbot/.test(u);
+}
+
+function prettySize(n) {
+  const x = Number(n) || 0;
+  if (x < 1024) return x + ' b';
+  if (x < 1024 * 1024) return Math.max(1, Math.round(x / 1024)) + ' kb';
+  return (x / (1024 * 1024)).toFixed(1) + ' mb';
 }
 
 function pageHtml({ title, desc, image, url, color }) {
@@ -47,10 +54,9 @@ function pageHtml({ title, desc, image, url, color }) {
 <meta name="twitter:image" content="${esc(safeImg)}" />
 <meta name="twitter:image:alt" content="${esc(title)}" />
 <link rel="canonical" href="${esc(url)}" />
-<meta name="discord:site" content="rankvault" />
 </head>
 <body style="background:#050506;color:#f5f5f7;font-family:Inter,system-ui,sans-serif;padding:48px 24px">
-<p style="opacity:.7;font-size:14px">rankvault drop</p>
+<p style="opacity:.7;font-size:14px">rankvault</p>
 <h1 style="font-size:28px;letter-spacing:-.03em">${esc(title)}</h1>
 <p style="color:#a1a1aa;max-width:40rem">${esc(desc)}</p>
 <p><a href="${esc(url)}" style="color:#0a84ff">open in rankvault</a></p>
@@ -60,12 +66,9 @@ function pageHtml({ title, desc, image, url, color }) {
 
 async function loadShare(id) {
   try {
-    const url = `${SUPABASE_URL}/rest/v1/public_shares?id=eq.${encodeURIComponent(id)}&select=id,name,mime,size,file_url,expires_at,is_public&limit=1`;
+    const url = `${SUPABASE_URL}/rest/v1/public_shares?id=eq.${encodeURIComponent(id)}&select=id,name,mime,size,file_url,expires_at,is_public,author,download_count&limit=1`;
     const r = await fetch(url, {
-      headers: {
-        apikey: SUPABASE_KEY,
-        Authorization: `Bearer ${SUPABASE_KEY}`,
-      },
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
     });
     if (!r.ok) return null;
     const rows = await r.json();
@@ -77,27 +80,18 @@ async function loadShare(id) {
 
 const PAGE_TITLES = {
   vault: 'vault — rankvault',
-  still: 'still — rankvault',
-  frost: 'frost — rankvault',
-  grain: 'grain — rankvault',
-  foyer: 'foyer — rankvault',
-  vista: 'vista — rankvault',
-  coral: 'coral — rankvault',
-  ash: 'ash — rankvault',
   drop: 'drop — rankvault',
-  linen: 'linen — rankvault',
   hush: 'hush — rankvault',
-  sieve: 'sieve — rankvault',
-  velvet: 'velvet — rankvault',
-  wren: 'wren — rankvault',
-  nectar: 'nectar — rankvault',
-  petal: 'petal — rankvault',
-  mirth: 'mirth — rankvault',
   manor: 'manor — public drops',
   locket: 'locket — lock and send',
   relic: 'relic — time capsule drop',
   mosaic: 'mosaic — stitch stills',
   share: 'share — rankvault',
+  braid: 'braid — pack public drops',
+  glyph: 'glyph — discord card preview',
+  yarn: 'yarn — notes on a drop',
+  axis: 'axis — vault readout',
+  cask: 'cask — packing list',
 };
 
 export default async function handler(req, res) {
@@ -121,7 +115,6 @@ export default async function handler(req, res) {
   }
 
   const appUrl = `${proto}://${host}/#share?f=${encodeURIComponent(id)}`;
-
   if (!id) {
     res.status(302).setHeader('Location', '/');
     res.end();
@@ -131,9 +124,8 @@ export default async function handler(req, res) {
   const row = await loadShare(id);
   const live = row && row.is_public && (!row.expires_at || +new Date(row.expires_at) > Date.now());
   const title = live ? `${row.name} — rankvault` : 'rankvault drop';
-  const kb = Math.max(1, Math.round((Number(row?.size) || 0) / 1024));
   const desc = live
-    ? `${row.mime || 'file'} · ${kb} kb · public drop`
+    ? `${row.mime || 'file'} · ${prettySize(row.size)}${row.author ? ' · ' + row.author : ''} · public drop`
     : 'a quiet file drop. open to download.';
   const image = live && String(row.mime || '').startsWith('image/') && String(row.file_url || '').startsWith('http')
     ? row.file_url

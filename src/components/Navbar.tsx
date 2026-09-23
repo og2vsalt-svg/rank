@@ -46,6 +46,9 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'nectar', label: 'nectar' },
       { to: 'lantern', label: 'lantern' },
       { to: 'quiver', label: 'quiver' },
+      { to: 'glyph', label: 'glyph' },
+      { to: 'braid', label: 'braid' },
+      { to: 'yarn', label: 'yarn' },
     ],
   },
   {
@@ -79,6 +82,8 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'atlas', label: 'atlas' },
       { to: 'harbor', label: 'harbor' },
       { to: 'grove', label: 'grove' },
+      { to: 'axis', label: 'axis' },
+      { to: 'cask', label: 'cask' },
     ],
   },
 ];

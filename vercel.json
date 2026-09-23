@@ -2,6 +2,7 @@
   "rewrites": [
     { "source": "/s/:id", "destination": "/api/embed?id=:id" },
     { "source": "/p/:page", "destination": "/api/embed?page=:page" },
-    { "source": "/e/:page", "destination": "/api/embed?page=:page" }
+    { "source": "/e/:page", "destination": "/api/embed?page=:page" },
+    { "source": "/file/:id", "destination": "/api/embed?id=:id" }
   ]
 }

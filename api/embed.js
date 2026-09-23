@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"');
 }
 
 function isBot(ua) {
@@ -45,7 +45,9 @@ function pageHtml({ title, desc, image, url, color }) {
 <meta name="twitter:title" content="${esc(title)}" />
 <meta name="twitter:description" content="${esc(desc)}" />
 <meta name="twitter:image" content="${esc(safeImg)}" />
+<meta name="twitter:image:alt" content="${esc(title)}" />
 <link rel="canonical" href="${esc(url)}" />
+<meta name="discord:site" content="rankvault" />
 </head>
 <body style="background:#050506;color:#f5f5f7;font-family:Inter,system-ui,sans-serif;padding:48px 24px">
 <p style="opacity:.7;font-size:14px">rankvault drop</p>
@@ -91,6 +93,9 @@ const PAGE_TITLES = {
   nectar: 'nectar — rankvault',
   petal: 'petal — rankvault',
   mirth: 'mirth — rankvault',
+  manor: 'manor — public drops',
+  locket: 'locket — lock and send',
+  share: 'share — rankvault',
 };
 
 export default async function handler(req, res) {

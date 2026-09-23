@@ -6,35 +6,37 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"');
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 function isBot(ua) {
   const u = (ua || '').toLowerCase();
-  return /discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|skype|linkedinbot|embed|preview|bot|crawler|spider|redditbot|applebot|discordbot/.test(u);
+  return /discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|skype|linkedinbot|embed|preview|bot|crawler|spider|redditbot|applebot|discordbot|iframely|unfurl/.test(u);
 }
 
 function prettySize(n) {
   const x = Number(n) || 0;
   if (x < 1024) return x + ' b';
   if (x < 1024 * 1024) return Math.max(1, Math.round(x / 1024)) + ' kb';
-  return (x / (1024 * 1024)).toFixed(1) + ' mb';
+  if (x < 1024 * 1024 * 1024) return (x / (1024 * 1024)).toFixed(1) + ' mb';
+  return (x / (1024 * 1024 * 1024)).toFixed(2) + ' gb';
 }
 
 function pageHtml({ title, desc, image, url, color }) {
   const img = image || 'https://og2vsalt-svg.github.io/rank/og.png';
   const isRemoteImg = /^https?:\/\//i.test(img) && !img.startsWith('data:');
   const safeImg = isRemoteImg ? img : 'https://og2vsalt-svg.github.io/rank/og.png';
+  const c = color || '#0A84FF';
   return `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}" />
-<meta name="theme-color" content="${esc(color || '#0A84FF')}" />
+<meta name="theme-color" content="${esc(c)}" />
 <meta name="robots" content="noindex" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="rankvault" />
@@ -53,6 +55,7 @@ function pageHtml({ title, desc, image, url, color }) {
 <meta name="twitter:description" content="${esc(desc)}" />
 <meta name="twitter:image" content="${esc(safeImg)}" />
 <meta name="twitter:image:alt" content="${esc(title)}" />
+<meta name="twitter:site" content="@rankvault" />
 <link rel="canonical" href="${esc(url)}" />
 </head>
 <body style="background:#050506;color:#f5f5f7;font-family:Inter,system-ui,sans-serif;padding:48px 24px">
@@ -92,6 +95,9 @@ const PAGE_TITLES = {
   yarn: 'yarn — notes on a drop',
   axis: 'axis — vault readout',
   cask: 'cask — packing list',
+  loom: 'loom — queue a pack',
+  prism: 'prism — pull colors',
+  quill: 'quill — sign a receipt',
 };
 
 export default async function handler(req, res) {

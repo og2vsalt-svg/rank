@@ -89,6 +89,8 @@ const PAGE_TITLES = {
   velvet: 'velvet — rankvault',
   wren: 'wren — rankvault',
   nectar: 'nectar — rankvault',
+  petal: 'petal — rankvault',
+  mirth: 'mirth — rankvault',
 };
 
 export default async function handler(req, res) {

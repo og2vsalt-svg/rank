@@ -9,10 +9,10 @@ const primary: NavItem[] = [
   { to: 'linen', label: 'linen' },
   { to: 'hush', label: 'hush' },
   { to: 'drop', label: 'drop' },
+  { to: 'wren', label: 'wren' },
+  { to: 'nectar', label: 'nectar' },
   { to: 'sieve', label: 'sieve' },
   { to: 'velvet', label: 'velvet' },
-  { to: 'coral', label: 'coral' },
-  { to: 'vista', label: 'vista' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -39,9 +39,9 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'coral', label: 'coral' },
       { to: 'vista', label: 'vista' },
       { to: 'ash', label: 'ash' },
+      { to: 'nectar', label: 'nectar' },
       { to: 'lantern', label: 'lantern' },
       { to: 'quiver', label: 'quiver' },
-      { to: 'foyer', label: 'foyer' },
     ],
   },
   {
@@ -52,6 +52,7 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'markdown', label: 'markdown' },
       { to: 'sketch', label: 'sketch' },
       { to: 'studio', label: 'studio' },
+      { to: 'wren', label: 'wren' },
     ],
   },
   {

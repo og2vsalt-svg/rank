@@ -165,6 +165,7 @@ import CoralPage from './components/CoralPage';
 import AshPage from './components/AshPage';
 import FrostPage from './components/FrostPage';
 import GrainPage from './components/GrainPage';
+import StillPage from './components/StillPage';
 
 function Shell() {
   const { route } = useRouter();
@@ -173,6 +174,7 @@ function Shell() {
   if (route === 'signup') return <SignupPage />;
   if (route === 'vault') return <VaultPage />;
   if (route === 'share') return <SharePage />;
+  if (route === 'still') return <StillPage />;
   if (route === 'frost') return <FrostPage />;
   if (route === 'grain') return <GrainPage />;
   if (route === 'notes') return <NotesPage />;

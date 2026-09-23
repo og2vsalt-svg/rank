@@ -6,6 +6,8 @@
     { "source": "/file/:id", "destination": "/api/embed?id=:id" },
     { "source": "/g/:id", "destination": "/api/embed?id=:id" },
     { "source": "/o/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/d/:id", "destination": "/api/embed?id=:id" }
+    { "source": "/d/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/go/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/drop/:id", "destination": "/api/embed?id=:id" }
   ]
 }

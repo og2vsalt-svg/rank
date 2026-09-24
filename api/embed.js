@@ -44,6 +44,7 @@ function pageHtml({ title, desc, image, url, color, mime }) {
 <meta name="robots" content="noindex" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="rankvault" />
+<meta name="og:site_name" content="rankvault" />
 <meta property="og:title" content="${esc(title)}" />
 <meta property="og:description" content="${esc(desc)}" />
 <meta property="og:image" content="${esc(safeImg)}" />
@@ -111,6 +112,9 @@ const PAGE_TITLES = {
   prism: 'prism — audio drop',
   wisp: 'wisp — fading note',
   mosaic: 'mosaic — image wall',
+  vesper: 'vesper — evening drop',
+  ridge: 'ridge — folder publish',
+  still: 'still — clean image drop',
 };
 
 export default async function handler(req, res) {

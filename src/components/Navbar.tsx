@@ -7,13 +7,13 @@ type NavItem = { to: Route; label: string };
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
+  { to: 'conduit', label: 'conduit' },
+  { to: 'ticker', label: 'ticker' },
   { to: 'studio', label: 'studio' },
   { to: 'parcel', label: 'parcel' },
   { to: 'signal', label: 'signal' },
   { to: 'nimbus', label: 'nimbus' },
-  { to: 'ledger', label: 'ledger' },
   { to: 'orbit', label: 'orbit' },
-  { to: 'manor', label: 'manor' },
   { to: 'hush', label: 'hush' },
 ];
 
@@ -30,11 +30,15 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'relic', label: 'relic' },
       { to: 'keel', label: 'keel' },
       { to: 'spool', label: 'spool' },
+      { to: 'relay', label: 'relay' },
+      { to: 'conduit', label: 'conduit' },
     ],
   },
   {
     title: 'share',
     items: [
+      { to: 'ticker', label: 'ticker' },
+      { to: 'pulse', label: 'pulse' },
       { to: 'hush', label: 'hush' },
       { to: 'orbit', label: 'orbit' },
       { to: 'signal', label: 'signal' },
@@ -55,11 +59,13 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'sketch', label: 'sketch' },
       { to: 'helix', label: 'helix' },
       { to: 'quill', label: 'quill' },
+      { to: 'loom', label: 'loom' },
     ],
   },
   {
     title: 'tools',
     items: [
+      { to: 'palette', label: 'palette' },
       { to: 'convert', label: 'convert' },
       { to: 'hash', label: 'hash' },
       { to: 'qr', label: 'qr' },

@@ -15,6 +15,7 @@ const primary: NavItem[] = [
   { to: 'sieve', label: 'sieve' },
   { to: 'prism', label: 'prism' },
   { to: 'studio', label: 'studio' },
+  { to: 'atelier', label: 'atelier' },
   { to: 'zinc', label: 'zinc' },
 ];
 
@@ -70,12 +71,14 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'loom', label: 'loom' },
       { to: 'prism', label: 'prism' },
       { to: 'mosaic', label: 'mosaic' },
+      { to: 'atelier', label: 'atelier' },
     ],
   },
   {
     title: 'tools',
     items: [
       { to: 'quartz', label: 'quartz' },
+      { to: 'nadir', label: 'nadir' },
       { to: 'sieve', label: 'sieve' },
       { to: 'palette', label: 'palette' },
       { to: 'convert', label: 'convert' },

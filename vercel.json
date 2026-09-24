@@ -40,6 +40,14 @@
     { "source": "/grove", "destination": "/api/embed?page=grove" },
     { "source": "/vellum", "destination": "/api/embed?page=vellum" },
     { "source": "/copper", "destination": "/api/embed?page=copper" },
+    { "source": "/pavilion", "destination": "/api/embed?page=pavilion" },
+    { "source": "/sanctum", "destination": "/api/embed?page=sanctum" },
+    { "source": "/trestle", "destination": "/api/embed?page=trestle" },
+    { "source": "/umber", "destination": "/api/embed?page=umber" },
+    { "source": "/basin", "destination": "/api/embed?page=basin" },
+    { "source": "/chapel", "destination": "/api/embed?page=chapel" },
+    { "source": "/observatory", "destination": "/api/embed?page=observatory" },
+    { "source": "/atrium", "destination": "/api/embed?page=atrium" },
     { "source": "/l/:page", "destination": "/api/embed?page=:page" }
   ],
   "headers": [

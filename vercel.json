@@ -22,6 +22,9 @@
     { "source": "/cobalt", "destination": "/api/embed?page=cobalt" },
     { "source": "/heath", "destination": "/api/embed?page=heath" },
     { "source": "/alder", "destination": "/api/embed?page=alder" },
+    { "source": "/pebble", "destination": "/api/embed?page=pebble" },
+    { "source": "/lantern", "destination": "/api/embed?page=lantern" },
+    { "source": "/sluice", "destination": "/api/embed?page=sluice" },
     { "source": "/l/:page", "destination": "/api/embed?page=:page" }
   ],
   "headers": [

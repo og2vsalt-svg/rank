@@ -13,6 +13,7 @@ const primary: NavItem[] = [
   { to: 'vellum', label: 'vellum' },
   { to: 'copper', label: 'copper' },
   { to: 'harbor', label: 'harbor' },
+  { to: 'atrium', label: 'atrium' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -92,6 +93,11 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'mosaic', label: 'mosaic' },
       { to: 'atelier', label: 'atelier' },
       { to: 'ledge', label: 'ledge' },
+      { to: 'pavilion', label: 'pavilion' },
+      { to: 'sanctum', label: 'sanctum' },
+      { to: 'umber', label: 'umber' },
+      { to: 'chapel', label: 'chapel' },
+      { to: 'basin', label: 'basin' },
     ],
   },
   {
@@ -110,6 +116,9 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'status', label: 'status' },
       { to: 'meridian', label: 'meridian' },
       { to: 'tempo', label: 'tempo' },
+      { to: 'trestle', label: 'trestle' },
+      { to: 'observatory', label: 'observatory' },
+      { to: 'atrium', label: 'atrium' },
     ],
   },
 ];

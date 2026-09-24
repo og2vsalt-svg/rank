@@ -40,6 +40,7 @@ function pageHtml({ title, desc, image, url, color, mime }) {
     extra.push(`<meta property="og:audio" content="${esc(image)}" />`);
     extra.push(`<meta property="og:audio:type" content="${esc(mime)}" />`);
   }
+  extra.push(`<meta name="theme-color" content="${esc(c)}" />`);
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -110,6 +111,9 @@ const PAGE_TITLES = {
   hush: 'hush — rankvault',
   manor: 'manor — public drops',
   share: 'share — rankvault',
+  pebble: 'pebble — stills',
+  lantern: 'lantern — cards',
+  sluice: 'sluice — queue',
 };
 
 export default async function handler(req, res) {

@@ -29,6 +29,7 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'locket', label: 'locket' },
       { to: 'relic', label: 'relic' },
       { to: 'keel', label: 'keel' },
+      { to: 'spool', label: 'spool' },
     ],
   },
   {
@@ -41,6 +42,7 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'glyph', label: 'glyph' },
       { to: 'quay', label: 'quay' },
       { to: 'zinc', label: 'zinc' },
+      { to: 'lumen', label: 'lumen' },
     ],
   },
   {
@@ -52,6 +54,7 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'markdown', label: 'markdown' },
       { to: 'sketch', label: 'sketch' },
       { to: 'helix', label: 'helix' },
+      { to: 'quill', label: 'quill' },
     ],
   },
   {

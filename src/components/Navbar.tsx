@@ -7,15 +7,15 @@ type NavItem = { to: Route; label: string };
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
+  { to: 'meadow', label: 'meadow' },
+  { to: 'lark', label: 'lark' },
+  { to: 'inlet', label: 'inlet' },
+  { to: 'quartz', label: 'quartz' },
   { to: 'ledger', label: 'ledger' },
   { to: 'sieve', label: 'sieve' },
   { to: 'prism', label: 'prism' },
-  { to: 'wisp', label: 'wisp' },
-  { to: 'mosaic', label: 'mosaic' },
-  { to: 'conduit', label: 'conduit' },
   { to: 'studio', label: 'studio' },
   { to: 'zinc', label: 'zinc' },
-  { to: 'hush', label: 'hush' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -24,6 +24,7 @@ const groups: { title: string; items: NavItem[] }[] = [
     items: [
       { to: 'vault', label: 'vault' },
       { to: 'drop', label: 'drop' },
+      { to: 'meadow', label: 'meadow' },
       { to: 'parcel', label: 'parcel' },
       { to: 'nimbus', label: 'nimbus' },
       { to: 'manor', label: 'manor' },
@@ -39,6 +40,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'lark', label: 'lark' },
+      { to: 'inlet', label: 'inlet' },
       { to: 'ticker', label: 'ticker' },
       { to: 'pulse', label: 'pulse' },
       { to: 'hush', label: 'hush' },
@@ -72,6 +75,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'quartz', label: 'quartz' },
       { to: 'sieve', label: 'sieve' },
       { to: 'palette', label: 'palette' },
       { to: 'convert', label: 'convert' },

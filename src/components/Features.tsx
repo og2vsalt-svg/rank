@@ -3,15 +3,14 @@ import { motion } from 'framer-motion';
 const items = [
   { title: 'local-first vault', body: 'files live in your browser first. nothing ships unless you flip a drop public.' },
   { title: 'studio notes', body: 'write or paste text, publish it as a public file with a discord-ready /s link.' },
-  { title: 'parcel batch', body: 'drop a handful of local files, get a list of embed links back. not the vault grid.' },
-  { title: 'signal check', body: 'paste a share id and see if the drop is still live in the db.' },
+  { title: 'meadow batch', body: 'drop a pile of local files straight into the share db. get embed links, skip the vault grid.' },
+  { title: 'lark cards', body: 'preview the exact discord unfurl before you paste a /s link in a server.' },
+  { title: 'inlet pull', body: 'paste a share id, check the db, stash a note in your vault if you want it locally.' },
+  { title: 'quartz inspect', body: 'read name, type, size from a local file without saving anything.' },
   { title: 'cloud share db', body: 'public drops land in supabase, with vercel blob when a token is set.' },
-  { title: 'discord embeds', body: '/s/id serves og tags so discord previews the filename like a real product.' },
+  { title: 'discord embeds', body: '/s/id and /f/id serve og tags so discord previews the filename like a real product.' },
   { title: 'no hard file cap', body: 'drop whatever size you want. we only warn when the tab might feel sleepy.' },
   { title: 'apple-soft motion', body: 'springy buttons, glass cards, blur. supposed to feel human-made.' },
-  { title: 'keel manifests', body: 'tick vault files and copy a shipping list, or save it as its own drop.' },
-  { title: 'helix threads', body: 'stack timed beats into one text file. different from notes or studio.' },
-  { title: 'zinc embed check', body: 'paste a share id and preview the exact /s card discord will unfurl.' },
 ];
 
 export default function Features() {

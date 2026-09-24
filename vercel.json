@@ -3,9 +3,14 @@
     { "source": "/s/:id", "destination": "/api/embed?id=:id" },
     { "source": "/f/:id", "destination": "/api/embed?id=:id" },
     { "source": "/d/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/g/:id", "destination": "/api/embed?id=:id" },
     { "source": "/p/:page", "destination": "/api/embed?page=:page" },
     { "source": "/embed/:id", "destination": "/api/embed?id=:id&embed=1" },
-    { "source": "/share/:id", "destination": "/api/embed?id=:id" }
+    { "source": "/share/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/drop", "destination": "/api/embed?page=drop" },
+    { "source": "/vault", "destination": "/api/embed?page=vault" },
+    { "source": "/portage", "destination": "/api/embed?page=portage" },
+    { "source": "/gazette", "destination": "/api/embed?page=gazette" }
   ],
   "headers": [
     {

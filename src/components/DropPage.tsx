@@ -58,7 +58,11 @@ export default function DropPage() {
           <p className="text-[#0a84ff] text-sm mb-2">quick drop</p>
           <h1 className="text-3xl font-semibold mb-3">upload local, flip public.</h1>
           <p className="text-neutral-400 text-sm mb-6">lands in your vault, then publishes to the cloud db so anyone with the link can open it.</p>
-          <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition">
+          <label
+            className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition"
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => { e.preventDefault(); onFiles(e.dataTransfer.files); }}
+          >
             <input type="file" multiple className="hidden" onChange={(e) => onFiles(e.target.files)} />
             <p className="text-white font-medium">{busy ? 'publishing…' : 'click or drop a file here'}</p>
             <p className="text-xs text-neutral-500 mt-2">no hard limit. just a slowness warning if it is huge.</p>

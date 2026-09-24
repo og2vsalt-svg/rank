@@ -3,7 +3,7 @@ import { useState } from 'react';
 const faqs = [
   {
     q: 'where do files actually live?',
-    a: 'in this build they stay in your browser storage. same device, same vault.',
+    a: 'private stuff lives in this browser. public drops also write to the cloud table so a share link works off-device.',
   },
   {
     q: 'can other people see my files?',
@@ -31,7 +31,7 @@ const faqs = [
   },
   {
     q: 'does this work offline?',
-    a: 'once the site is loaded, the vault is just this browser. links only work on the same device unless you export.',
+    a: 'the vault itself is this browser. public /s/id links unfurl on discord and open anywhere.',
   },
 ];
 

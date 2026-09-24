@@ -124,6 +124,11 @@ const PAGE_TITLES = {
   still: 'still — clean image drop',
   sieve: 'sieve — local inspect',
   ledger: 'ledger — public drops',
+  atelier: 'atelier — stamped still',
+  nadir: 'nadir — byte peek',
+  ferry: 'ferry — device drop',
+  lantern: 'lantern — night drop',
+  willow: 'willow — file notes',
 };
 
 export default async function handler(req, res) {

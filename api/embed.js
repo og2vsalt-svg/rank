@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"');
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 function isBot(ua) {
@@ -98,41 +98,16 @@ async function loadShare(id) {
 const PAGE_TITLES = {
   vault: 'vault — rankvault',
   drop: 'drop — rankvault',
+  opal: 'opal — color pull',
+  nest: 'nest — pack files',
+  thorn: 'thorn — sticky pins',
+  marrow: 'marrow — listen',
   studio: 'studio — rankvault',
   parcel: 'parcel — rankvault',
   signal: 'signal — rankvault',
   hush: 'hush — rankvault',
   manor: 'manor — public drops',
   share: 'share — rankvault',
-  keel: 'keel — shipping list',
-  helix: 'helix — thread drop',
-  zinc: 'zinc — embed preview',
-  spool: 'spool — file reel',
-  quill: 'quill — text drop',
-  lumen: 'lumen — card builder',
-  relay: 'relay — cloud drop',
-  pulse: 'pulse — public drops',
-  palette: 'palette — color pull',
-  loom: 'loom — thread desk',
-  conduit: 'conduit — cloud drop',
-  ticker: 'ticker — public drops',
-  prism: 'prism — audio drop',
-  wisp: 'wisp — fading note',
-  mosaic: 'mosaic — image wall',
-  vesper: 'vesper — evening drop',
-  ridge: 'ridge — folder publish',
-  still: 'still — clean image drop',
-  sieve: 'sieve — local inspect',
-  ledger: 'ledger — public drops',
-  atelier: 'atelier — stamped still',
-  nadir: 'nadir — byte peek',
-  ferry: 'ferry — device drop',
-  lantern: 'lantern — night drop',
-  willow: 'willow — file notes',
-  meridian: 'meridian — time desk',
-  solace: 'solace — private notes',
-  tempo: 'tempo — local listen',
-  quilt: 'quilt — still mosaic',
 };
 
 export default async function handler(req, res) {

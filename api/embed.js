@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"');
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 function isBot(ua) {
@@ -41,7 +41,7 @@ function pageHtml({ title, desc, image, url, color, mime }) {
     extra.push(`<meta property="og:audio:type" content="${esc(mime)}" />`);
   }
   extra.push(`<meta name="theme-color" content="${esc(c)}" />`);
-  extra.push(`<meta name="og:site_name" content="rankvault" />`);
+  extra.push(`<meta property="og:site_name" content="rankvault" />`);
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -69,7 +69,6 @@ ${extra.join('\n')}
 <meta name="twitter:description" content="${esc(desc)}" />
 <meta name="twitter:image" content="${esc(safeImg)}" />
 <meta name="twitter:image:alt" content="${esc(title)}" />
-<meta name="twitter:site" content="@rankvault" />
 <link rel="canonical" href="${esc(url)}" />
 </head>
 <body style="background:#050506;color:#f5f5f7;font-family:Inter,system-ui,sans-serif;padding:48px 24px">
@@ -101,6 +100,9 @@ const PAGE_TITLES = {
   drop: 'drop — rankvault',
   portage: 'portage — haul files',
   gazette: 'gazette — public drops',
+  convoy: 'convoy — pack a drop',
+  bazaar: 'bazaar — browse public files',
+  atoll: 'atoll — embed card',
   opal: 'opal — color pull',
   nest: 'nest — pack files',
   thorn: 'thorn — sticky pins',

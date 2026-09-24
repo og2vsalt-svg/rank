@@ -37,6 +37,9 @@
     { "source": "/isthmus", "destination": "/api/embed?page=isthmus" },
     { "source": "/saffron", "destination": "/api/embed?page=saffron" },
     { "source": "/bramble", "destination": "/api/embed?page=bramble" },
+    { "source": "/grove", "destination": "/api/embed?page=grove" },
+    { "source": "/vellum", "destination": "/api/embed?page=vellum" },
+    { "source": "/copper", "destination": "/api/embed?page=copper" },
     { "source": "/l/:page", "destination": "/api/embed?page=:page" }
   ],
   "headers": [

@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"');
 }
 
 function isBot(ua) {
@@ -129,6 +129,10 @@ const PAGE_TITLES = {
   ferry: 'ferry — device drop',
   lantern: 'lantern — night drop',
   willow: 'willow — file notes',
+  meridian: 'meridian — time desk',
+  solace: 'solace — private notes',
+  tempo: 'tempo — local listen',
+  quilt: 'quilt — still mosaic',
 };
 
 export default async function handler(req, res) {

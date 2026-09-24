@@ -1,70 +1,72 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { shareUrls } from '../lib/cloudShare';
+
+function hex(n: number) {
+  return n.toString(16).padStart(2, '0');
+}
 
 export default function OpalPage() {
-  const [id, setId] = useState('');
-  const [title, setTitle] = useState('quiet drop');
-  const [copied, setCopied] = useState('');
+  const [swatches, setSwatches] = useState<string[]>([]);
+  const [name, setName] = useState('');
+  const [warn, setWarn] = useState('');
+  const [preview, setPreview] = useState('');
 
-  const urls = useMemo(() => {
-    const clean = id.trim();
-    if (!clean) return null;
-    return shareUrls(clean);
-  }, [id]);
-
-  const copy = async (value: string) => {
-    await navigator.clipboard.writeText(value);
-    setCopied(value);
+  const onFile = async (file: File | undefined) => {
+    if (!file) return;
+    setWarn(file.size > 25 * 1024 * 1024 ? 'chunky image. sampling can feel sleepy.' : '');
+    setName(file.name);
+    const url = URL.createObjectURL(file);
+    setPreview(url);
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const w = 48;
+      const h = Math.max(1, Math.round((img.height / img.width) * w));
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      ctx.drawImage(img, 0, 0, w, h);
+      const data = ctx.getImageData(0, 0, w, h).data;
+      const buckets = new Map<string, number>();
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i] >> 4 << 4;
+        const g = data[i + 1] >> 4 << 4;
+        const b = data[i + 2] >> 4 << 4;
+        const key = `#${hex(r)}${hex(g)}${hex(b)}`;
+        buckets.set(key, (buckets.get(key) || 0) + 1);
+      }
+      const ranked = [...buckets.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8).map(([c]) => c);
+      setSwatches(ranked);
+    };
+    img.src = url;
   };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
       <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          className="glass rounded-[32px] p-8"
-        >
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-[32px] p-8">
           <p className="text-[#0a84ff] text-sm mb-2">opal</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">discord card preview.</h1>
-          <p className="text-neutral-400 text-sm mb-6">
-            paste a share id. copy the /s/ link so discord, slack, and imessage pick up the og tags.
-          </p>
-          <input
-            value={id}
-            onChange={(e) => setId(e.target.value)}
-            placeholder="share id"
-            className="w-full px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm outline-none mb-3"
-          />
-          <input
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="card title"
-            className="w-full px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm outline-none mb-6"
-          />
-          <div className="rounded-[24px] overflow-hidden border border-white/10 bg-[#111214]">
-            <div className="h-36 bg-gradient-to-br from-[#0a84ff]/40 via-[#1c1c1e] to-black" />
-            <div className="p-4">
-              <p className="text-[11px] uppercase tracking-wide text-[#0a84ff]">rankvault</p>
-              <p className="text-white font-medium mt-1">{title || 'quiet drop'}</p>
-              <p className="text-xs text-neutral-500 mt-1">file hosting · no hard cap, just slowness warnings</p>
-            </div>
+          <h1 className="text-3xl font-semibold mb-3">pull colors off a local still.</h1>
+          <p className="text-neutral-400 text-sm mb-6">does not upload. just samples pixels so you can copy a palette.</p>
+          <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-8 text-center">
+            <input type="file" accept="image/*" className="hidden" onChange={(e) => onFile(e.target.files?.[0])} />
+            <p className="text-white font-medium">drop an image</p>
+            <p className="text-xs text-neutral-500 mt-2">stays on this machine</p>
+          </label>
+          {warn && <p className="text-xs text-amber-300/80 mt-4">{warn}</p>}
+          {preview && <img src={preview} alt="" className="mt-6 w-full max-h-64 object-contain rounded-2xl" />}
+          {name && <p className="text-xs text-neutral-500 mt-3">{name}</p>}
+          <div className="mt-6 grid grid-cols-4 gap-2">
+            {swatches.map((c) => (
+              <button key={c} onClick={() => navigator.clipboard.writeText(c).catch(() => {})} className="rounded-2xl overflow-hidden text-left">
+                <span className="block h-14" style={{ background: c }} />
+                <span className="block text-[11px] text-neutral-400 px-1 py-1.5">{c}</span>
+              </button>
+            ))}
           </div>
-          {urls && (
-            <div className="mt-6 space-y-2">
-              <button onClick={() => copy(urls.embed)} className="w-full px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium">
-                copy discord embed url
-              </button>
-              <button onClick={() => copy(urls.app)} className="w-full px-5 py-2.5 rounded-full bg-white/5 text-sm">
-                copy in-app share url
-              </button>
-            </div>
-          )}
-          {copied && <p className="text-xs text-neutral-500 mt-4 break-all">{copied}</p>}
         </motion.div>
       </div>
     </div>

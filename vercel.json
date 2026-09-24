@@ -13,7 +13,16 @@
     { "source": "/gazette", "destination": "/api/embed?page=gazette" },
     { "source": "/rill", "destination": "/api/embed?page=rill" },
     { "source": "/solstice", "destination": "/api/embed?page=solstice" },
-    { "source": "/harbor", "destination": "/api/embed?page=harbor" }
+    { "source": "/harbor", "destination": "/api/embed?page=harbor" },
+    { "source": "/oxbow", "destination": "/api/embed?page=oxbow" },
+    { "source": "/juniper", "destination": "/api/embed?page=juniper" },
+    { "source": "/estuary", "destination": "/api/embed?page=estuary" },
+    { "source": "/zephyr", "destination": "/api/embed?page=zephyr" },
+    { "source": "/birch", "destination": "/api/embed?page=birch" },
+    { "source": "/cobalt", "destination": "/api/embed?page=cobalt" },
+    { "source": "/heath", "destination": "/api/embed?page=heath" },
+    { "source": "/alder", "destination": "/api/embed?page=alder" },
+    { "source": "/l/:page", "destination": "/api/embed?page=:page" }
   ],
   "headers": [
     {

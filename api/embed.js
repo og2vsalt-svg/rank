@@ -122,6 +122,9 @@ const PAGE_TITLES = {
   isthmus: 'isthmus — pair two drops',
   saffron: 'saffron — warm cards',
   bramble: 'bramble — link thicket',
+  grove: 'grove — share stands',
+  vellum: 'vellum — text desk',
+  copper: 'copper — file check',
 };
 
 export default async function handler(req, res) {

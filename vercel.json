@@ -10,7 +10,10 @@
     { "source": "/drop", "destination": "/api/embed?page=drop" },
     { "source": "/vault", "destination": "/api/embed?page=vault" },
     { "source": "/portage", "destination": "/api/embed?page=portage" },
-    { "source": "/gazette", "destination": "/api/embed?page=gazette" }
+    { "source": "/gazette", "destination": "/api/embed?page=gazette" },
+    { "source": "/rill", "destination": "/api/embed?page=rill" },
+    { "source": "/solstice", "destination": "/api/embed?page=solstice" },
+    { "source": "/harbor", "destination": "/api/embed?page=harbor" }
   ],
   "headers": [
     {

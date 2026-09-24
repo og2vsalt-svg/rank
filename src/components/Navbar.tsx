@@ -9,15 +9,15 @@ const primary: NavItem[] = [
   { to: 'drop', label: 'drop' },
   { to: 'meadow', label: 'meadow' },
   { to: 'lark', label: 'lark' },
+  { to: 'nook', label: 'nook' },
+  { to: 'pebble', label: 'pebble' },
+  { to: 'isle', label: 'isle' },
   { to: 'inlet', label: 'inlet' },
   { to: 'quartz', label: 'quartz' },
   { to: 'ledger', label: 'ledger' },
   { to: 'sieve', label: 'sieve' },
   { to: 'prism', label: 'prism' },
   { to: 'studio', label: 'studio' },
-  { to: 'atelier', label: 'atelier' },
-  { to: 'zinc', label: 'zinc' },
-  { to: 'solace', label: 'solace' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -37,6 +37,7 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'relay', label: 'relay' },
       { to: 'conduit', label: 'conduit' },
       { to: 'ridge', label: 'ridge' },
+      { to: 'pebble', label: 'pebble' },
     ],
   },
   {
@@ -75,6 +76,8 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'atelier', label: 'atelier' },
       { to: 'quilt', label: 'quilt' },
       { to: 'solace', label: 'solace' },
+      { to: 'nook', label: 'nook' },
+      { to: 'isle', label: 'isle' },
     ],
   },
   {
@@ -135,7 +138,7 @@ export default function Navbar() {
           rank<span className="text-[#0a84ff]">vault</span>
         </button>
         <div className="hidden lg:flex items-center gap-1 min-w-0">
-          {primary.map((l) => (
+          {primary.slice(0, 8).map((l) => (
             <button key={l.to} onClick={() => navigate(l.to)} className="text-[13px] text-neutral-400 hover:text-white px-2.5 py-1.5 rounded-full hover:bg-white/5 transition-colors">
               {l.label}
             </button>

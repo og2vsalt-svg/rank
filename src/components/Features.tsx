@@ -5,14 +5,14 @@ const items = [
   { title: 'studio notes', body: 'write or paste text, publish it as a public file with a discord-ready /s link.' },
   { title: 'meadow batch', body: 'drop a pile of local files straight into the share db. get embed links, skip the vault grid.' },
   { title: 'lark cards', body: 'preview the exact discord unfurl before you paste a /s link in a server.' },
-  { title: 'inlet pull', body: 'paste a share id, check the db, stash a note in your vault if you want it locally.' },
-  { title: 'quartz inspect', body: 'read name, type, size from a local file without saving anything.' },
+  { title: 'opal palette', body: 'sample colors from a still on this machine. never leaves the tab.' },
+  { title: 'nest pack', body: 'bundle vault files into one json nest you can download and bring back later.' },
+  { title: 'thorn pins', body: 'sticky local notes with zero file upload.' },
+  { title: 'marrow listen', body: 'play a local track and park it in vault if you want to keep it.' },
   { title: 'cloud share db', body: 'public drops land in supabase, with vercel blob when a token is set.' },
   { title: 'discord embeds', body: '/s/id and /f/id serve og tags so discord previews the filename like a real product.' },
   { title: 'no hard file cap', body: 'drop whatever size you want. we only warn when the tab might feel sleepy.' },
   { title: 'apple-soft motion', body: 'springy buttons, glass cards, blur. supposed to feel human-made.' },
-  { title: 'atelier stills', body: 'stamp a caption on a local image and publish it as a discord-ready drop.' },
-  { title: 'nadir peek', body: 'hex glance a file on this machine before you flip it into the share db.' },
 ];
 
 export default function Features() {

@@ -1,6 +1,16 @@
 {
+  "headers": [
+    {
+      "source": "/s/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, s-maxage=60, stale-while-revalidate=300" }
+      ]
+    }
+  ],
   "rewrites": [
     { "source": "/s/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/f/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/embed/:id", "destination": "/api/embed?id=:id" },
     { "source": "/e/:page", "destination": "/api/embed?page=:page" }
   ]
 }

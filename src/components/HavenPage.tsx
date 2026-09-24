@@ -25,7 +25,7 @@ export default function HavenPage() {
         <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-8">
           <p className="text-[#0a84ff] text-sm mb-2">haven</p>
           <h1 className="text-3xl font-semibold tracking-tight mb-3">collect public links.</h1>
-          <p className="text-neutral-400 text-sm mb-6">a shelf for /s/ drops and anything else. not storage — just a clean list you can paste into discord later.</p>
+          <p className="text-neutral-400 text-sm mb-6">a shelf for /s/ drops and anything else. paste into discord later.</p>
           <div className="flex flex-col gap-3">
             <input value={name} onChange={(e) => setName(e.target.value)} placeholder="label" className="rounded-2xl bg-white/[0.05] border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/50" />
             <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://… or /s/id" className="rounded-2xl bg-white/[0.05] border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/50" />

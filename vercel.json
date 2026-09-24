@@ -8,6 +8,8 @@
     { "source": "/embed/:id", "destination": "/api/embed?id=:id&embed=1" },
     { "source": "/share/:id", "destination": "/api/embed?id=:id" },
     { "source": "/drop", "destination": "/api/embed?page=drop" },
+    { "source": "/haven", "destination": "/api/embed?page=haven" },
+    { "source": "/loft", "destination": "/api/embed?page=loft" },
     { "source": "/vault", "destination": "/api/embed?page=vault" },
     { "source": "/portage", "destination": "/api/embed?page=portage" },
     { "source": "/gazette", "destination": "/api/embed?page=gazette" },

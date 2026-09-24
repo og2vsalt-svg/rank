@@ -31,6 +31,9 @@ function pageHtml({ title, desc, image, url, color, mime }) {
   const safeImg = isRemoteImg ? img : 'https://og2vsalt-svg.github.io/rank/og.png';
   const c = color || '#0A84FF';
   const imgType = mime && String(mime).startsWith('image/') ? mime : 'image/png';
+  const videoTag = mime && String(mime).startsWith('video/') && isRemoteImg && image
+    ? `<meta property="og:video" content="${esc(image)}" />\n<meta property="og:video:type" content="${esc(mime)}" />`
+    : '';
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -51,6 +54,7 @@ function pageHtml({ title, desc, image, url, color, mime }) {
 <meta property="og:image:alt" content="${esc(title)}" />
 <meta property="og:url" content="${esc(url)}" />
 <meta property="og:locale" content="en_US" />
+${videoTag}
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="${esc(title)}" />
 <meta name="twitter:description" content="${esc(desc)}" />
@@ -104,6 +108,9 @@ const PAGE_TITLES = {
   loom: 'loom — thread desk',
   conduit: 'conduit — cloud drop',
   ticker: 'ticker — public drops',
+  prism: 'prism — audio drop',
+  wisp: 'wisp — fading note',
+  mosaic: 'mosaic — image wall',
 };
 
 export default async function handler(req, res) {
@@ -141,7 +148,7 @@ export default async function handler(req, res) {
     ? `${kind} · ${prettySize(row.size)}${row.author ? ' · ' + row.author : ''}${row.download_count ? ' · ' + row.download_count + ' opens' : ''} · public drop on rankvault`
     : 'a quiet file drop. open to download.';
   const mime = String((live && row.mime) || '');
-  const image = live && mime.startsWith('image/') && String(row.file_url || '').startsWith('http')
+  const image = live && (mime.startsWith('image/') || mime.startsWith('video/')) && String(row.file_url || '').startsWith('http')
     ? row.file_url
     : undefined;
 

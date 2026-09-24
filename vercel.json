@@ -1,21 +1,17 @@
 {
-  "headers": [
-    {
-      "source": "/s/(.*)",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, s-maxage=60, stale-while-revalidate=300" }
-      ]
-    }
-  ],
   "rewrites": [
     { "source": "/s/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/f/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/embed/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/e/:page", "destination": "/api/embed?page=:page" },
     { "source": "/p/:page", "destination": "/api/embed?page=:page" },
-    { "source": "/go/:page", "destination": "/api/embed?page=:page" },
-    { "source": "/d/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/x/:page", "destination": "/api/embed?page=:page" },
-    { "source": "/link/:page", "destination": "/api/embed?page=:page" }
+    { "source": "/embed/:id", "destination": "/api/embed?id=:id&embed=1" },
+    { "source": "/share/:id", "destination": "/api/embed?id=:id" }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET,POST,OPTIONS" }
+      ]
+    }
   ]
 }

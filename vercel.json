@@ -25,6 +25,9 @@
     { "source": "/pebble", "destination": "/api/embed?page=pebble" },
     { "source": "/lantern", "destination": "/api/embed?page=lantern" },
     { "source": "/sluice", "destination": "/api/embed?page=sluice" },
+    { "source": "/reef", "destination": "/api/embed?page=reef" },
+    { "source": "/pollen", "destination": "/api/embed?page=pollen" },
+    { "source": "/ledge", "destination": "/api/embed?page=ledge" },
     { "source": "/l/:page", "destination": "/api/embed?page=:page" }
   ],
   "headers": [

@@ -7,6 +7,10 @@ type NavItem = { to: Route; label: string };
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
+  { to: 'opal', label: 'opal' },
+  { to: 'nest', label: 'nest' },
+  { to: 'thorn', label: 'thorn' },
+  { to: 'marrow', label: 'marrow' },
   { to: 'kiln', label: 'kiln' },
   { to: 'meadow', label: 'meadow' },
   { to: 'lark', label: 'lark' },
@@ -15,10 +19,6 @@ const primary: NavItem[] = [
   { to: 'isle', label: 'isle' },
   { to: 'inlet', label: 'inlet' },
   { to: 'quartz', label: 'quartz' },
-  { to: 'ledger', label: 'ledger' },
-  { to: 'sieve', label: 'sieve' },
-  { to: 'prism', label: 'prism' },
-  { to: 'studio', label: 'studio' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -27,6 +27,7 @@ const groups: { title: string; items: NavItem[] }[] = [
     items: [
       { to: 'vault', label: 'vault' },
       { to: 'drop', label: 'drop' },
+      { to: 'nest', label: 'nest' },
       { to: 'kiln', label: 'kiln' },
       { to: 'meadow', label: 'meadow' },
       { to: 'parcel', label: 'parcel' },
@@ -39,7 +40,6 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'relay', label: 'relay' },
       { to: 'conduit', label: 'conduit' },
       { to: 'ridge', label: 'ridge' },
-      { to: 'pebble', label: 'pebble' },
     ],
   },
   {
@@ -66,6 +66,9 @@ const groups: { title: string; items: NavItem[] }[] = [
     title: 'create',
     items: [
       { to: 'studio', label: 'studio' },
+      { to: 'opal', label: 'opal' },
+      { to: 'thorn', label: 'thorn' },
+      { to: 'marrow', label: 'marrow' },
       { to: 'notes', label: 'notes' },
       { to: 'paste', label: 'paste' },
       { to: 'markdown', label: 'markdown' },
@@ -76,10 +79,7 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'prism', label: 'prism' },
       { to: 'mosaic', label: 'mosaic' },
       { to: 'atelier', label: 'atelier' },
-      { to: 'quilt', label: 'quilt' },
-      { to: 'solace', label: 'solace' },
       { to: 'nook', label: 'nook' },
-      { to: 'isle', label: 'isle' },
     ],
   },
   {

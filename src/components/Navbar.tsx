@@ -7,13 +7,13 @@ type NavItem = { to: Route; label: string };
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
+  { to: 'prism', label: 'prism' },
+  { to: 'wisp', label: 'wisp' },
+  { to: 'mosaic', label: 'mosaic' },
   { to: 'conduit', label: 'conduit' },
   { to: 'ticker', label: 'ticker' },
   { to: 'studio', label: 'studio' },
-  { to: 'parcel', label: 'parcel' },
-  { to: 'signal', label: 'signal' },
-  { to: 'nimbus', label: 'nimbus' },
-  { to: 'orbit', label: 'orbit' },
+  { to: 'zinc', label: 'zinc' },
   { to: 'hush', label: 'hush' },
 ];
 
@@ -47,6 +47,7 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'quay', label: 'quay' },
       { to: 'zinc', label: 'zinc' },
       { to: 'lumen', label: 'lumen' },
+      { to: 'wisp', label: 'wisp' },
     ],
   },
   {
@@ -60,6 +61,8 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'helix', label: 'helix' },
       { to: 'quill', label: 'quill' },
       { to: 'loom', label: 'loom' },
+      { to: 'prism', label: 'prism' },
+      { to: 'mosaic', label: 'mosaic' },
     ],
   },
   {

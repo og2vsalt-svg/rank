@@ -14,6 +14,8 @@
     { "source": "/e/:page", "destination": "/api/embed?page=:page" },
     { "source": "/p/:page", "destination": "/api/embed?page=:page" },
     { "source": "/go/:page", "destination": "/api/embed?page=:page" },
-    { "source": "/d/:id", "destination": "/api/embed?id=:id" }
+    { "source": "/d/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/x/:page", "destination": "/api/embed?page=:page" },
+    { "source": "/link/:page", "destination": "/api/embed?page=:page" }
   ]
 }

@@ -7,14 +7,7 @@ export default function MeridianPage() {
   const [size, setSize] = useState(0);
   const stamp = useMemo(() => {
     const now = new Date();
-    const zones = [
-      'UTC',
-      'America/Los_Angeles',
-      'America/New_York',
-      'Europe/London',
-      'Europe/Berlin',
-      'Asia/Tokyo',
-    ];
+    const zones = ['UTC', 'America/Los_Angeles', 'America/New_York', 'Europe/London', 'Europe/Berlin', 'Asia/Tokyo'];
     return zones.map((z) => ({
       z,
       t: now.toLocaleString('en-GB', { timeZone: z, hour12: false }),
@@ -30,16 +23,12 @@ export default function MeridianPage() {
           <h1 className="text-3xl font-semibold tracking-tight mb-3">stamp a drop across timezones.</h1>
           <p className="text-sm text-neutral-400 mb-6">not a vault. just a receipt clock so you know when the file actually hit the tab.</p>
           <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/40 p-8 text-center transition-all duration-300">
-            <input
-              type="file"
-              className="hidden"
-              onChange={(e) => {
-                const f = e.target.files?.[0];
-                if (!f) return;
-                setName(f.name);
-                setSize(f.size);
-              }}
-            />
+            <input type="file" className="hidden" onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (!f) return;
+              setName(f.name);
+              setSize(f.size);
+            }} />
             <p className="text-white font-medium">{name || 'drop a local file'}</p>
             <p className="text-xs text-neutral-500 mt-2">no size cap. huge files just make the picker feel sleepy.</p>
           </label>

@@ -31,6 +31,9 @@
     { "source": "/reef", "destination": "/api/embed?page=reef" },
     { "source": "/pollen", "destination": "/api/embed?page=pollen" },
     { "source": "/ledge", "destination": "/api/embed?page=ledge" },
+    { "source": "/isthmus", "destination": "/api/embed?page=isthmus" },
+    { "source": "/saffron", "destination": "/api/embed?page=saffron" },
+    { "source": "/bramble", "destination": "/api/embed?page=bramble" },
     { "source": "/l/:page", "destination": "/api/embed?page=:page" }
   ],
   "headers": [

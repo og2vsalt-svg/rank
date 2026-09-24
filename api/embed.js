@@ -6,15 +6,15 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"');
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 function isBot(ua) {
   const u = (ua || '').toLowerCase();
-  return /discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|skype|linkedinbot|embed|preview|bot|crawler|spider|redditbot|applebot|discordbot|iframely|unfurl/.test(u);
+  return /discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|skype|linkedinbot|embed|preview|bot|crawler|spider|redditbot|applebot|discordbot|iframely|unfurl|valve|steam/.test(u);
 }
 
 function prettySize(n) {
@@ -56,6 +56,7 @@ function pageHtml({ title, desc, image, url, color, mime }) {
 <meta name="twitter:description" content="${esc(desc)}" />
 <meta name="twitter:image" content="${esc(safeImg)}" />
 <meta name="twitter:image:alt" content="${esc(title)}" />
+<meta name="theme-color" content="${esc(c)}" />
 <link rel="canonical" href="${esc(url)}" />
 </head>
 <body style="background:#050506;color:#f5f5f7;font-family:Inter,system-ui,sans-serif;padding:48px 24px">
@@ -94,6 +95,9 @@ const PAGE_TITLES = {
   keel: 'keel — shipping list',
   helix: 'helix — thread drop',
   zinc: 'zinc — embed preview',
+  spool: 'spool — file reel',
+  quill: 'quill — text drop',
+  lumen: 'lumen — card builder',
 };
 
 export default async function handler(req, res) {

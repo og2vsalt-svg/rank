@@ -20,12 +20,7 @@ export default function LanternPage() {
           <p className="text-[#0a84ff] text-sm mb-2">lantern</p>
           <h1 className="text-3xl font-semibold tracking-tight mb-3">preview the discord card.</h1>
           <p className="text-neutral-400 text-sm mb-6">paste a share id or /s/ link. this is not the vault — it just shows how the unfurl should look before you drop it in chat.</p>
-          <input
-            value={id}
-            onChange={(e) => setId(e.target.value)}
-            placeholder="share id or /s/abc123"
-            className="w-full rounded-2xl bg-white/[0.05] border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/50"
-          />
+          <input value={id} onChange={(e) => setId(e.target.value)} placeholder="share id or /s/abc123" className="w-full rounded-2xl bg-white/[0.05] border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/50" />
           {embed && (
             <div className="mt-6 rounded-2xl overflow-hidden border border-white/10 bg-[#2b2d31]">
               <div className="flex">

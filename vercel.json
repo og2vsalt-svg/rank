@@ -11,6 +11,7 @@
     { "source": "/s/:id", "destination": "/api/embed?id=:id" },
     { "source": "/f/:id", "destination": "/api/embed?id=:id" },
     { "source": "/embed/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/e/:page", "destination": "/api/embed?page=:page" }
+    { "source": "/e/:page", "destination": "/api/embed?page=:page" },
+    { "source": "/p/:page", "destination": "/api/embed?page=:page" }
   ]
 }

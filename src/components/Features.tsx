@@ -4,15 +4,15 @@ const items = [
   { title: 'local-first vault', body: 'files live in your browser first. nothing ships unless you flip a drop public.' },
   { title: 'studio notes', body: 'write or paste text, publish it as a public file with a discord-ready /s link.' },
   { title: 'meadow batch', body: 'drop a pile of local files straight into the share db. get embed links, skip the vault grid.' },
+  { title: 'isthmus pairs', body: 'park two public share ids next to each other and compare without opening the vault.' },
+  { title: 'saffron cards', body: 'make a warm quote card on-device. no upload unless you decide to drop the svg later.' },
+  { title: 'bramble thicket', body: 'local tagged bookmarks. not files, just a tangle of urls you want later.' },
   { title: 'lark cards', body: 'preview the exact discord unfurl before you paste a /s link in a server.' },
-  { title: 'opal palette', body: 'sample colors from a still on this machine. never leaves the tab.' },
-  { title: 'nest pack', body: 'bundle vault files into one json nest you can download and bring back later.' },
-  { title: 'thorn pins', body: 'sticky local notes with zero file upload.' },
-  { title: 'marrow listen', body: 'play a local track and park it in vault if you want to keep it.' },
   { title: 'cloud share db', body: 'public drops land in supabase, with vercel blob when a token is set.' },
-  { title: 'discord embeds', body: '/s/id and /f/id serve og tags so discord previews the filename like a real product.' },
+  { title: 'discord embeds', body: '/s/id, /f/id, /d/id and /p/page serve og tags so discord previews look finished.' },
   { title: 'no hard file cap', body: 'drop whatever size you want. we only warn when the tab might feel sleepy.' },
   { title: 'apple-soft motion', body: 'springy buttons, glass cards, blur. supposed to feel human-made.' },
+  { title: 'side desks', body: 'hearth timers, thorn pins, marrow audio, opal colors. extra rooms, not just a dump.' },
 ];
 
 export default function Features() {

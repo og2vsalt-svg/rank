@@ -98,6 +98,12 @@ const PAGE_TITLES = {
   spool: 'spool — file reel',
   quill: 'quill — text drop',
   lumen: 'lumen — card builder',
+  relay: 'relay — cloud drop',
+  pulse: 'pulse — public drops',
+  palette: 'palette — color pull',
+  loom: 'loom — thread desk',
+  conduit: 'conduit — cloud drop',
+  ticker: 'ticker — public drops',
 };
 
 export default async function handler(req, res) {

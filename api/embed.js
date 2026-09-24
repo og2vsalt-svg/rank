@@ -41,6 +41,7 @@ function pageHtml({ title, desc, image, url, color, mime }) {
     extra.push(`<meta property="og:audio:type" content="${esc(mime)}" />`);
   }
   extra.push(`<meta name="theme-color" content="${esc(c)}" />`);
+  extra.push(`<meta name="og:site_name" content="rankvault" />`);
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -52,7 +53,6 @@ function pageHtml({ title, desc, image, url, color, mime }) {
 <meta name="robots" content="noindex" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="rankvault" />
-<meta name="og:site_name" content="rankvault" />
 <meta property="og:title" content="${esc(title)}" />
 <meta property="og:description" content="${esc(desc)}" />
 <meta property="og:image" content="${esc(safeImg)}" />
@@ -114,6 +114,9 @@ const PAGE_TITLES = {
   pebble: 'pebble — stills',
   lantern: 'lantern — cards',
   sluice: 'sluice — queue',
+  reef: 'reef — link card',
+  pollen: 'pollen — stills',
+  ledge: 'ledge — scraps',
 };
 
 export default async function handler(req, res) {

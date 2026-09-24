@@ -7,6 +7,11 @@ type NavItem = { to: Route; label: string };
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
+  { to: 'vale', label: 'vale' },
+  { to: 'harbor', label: 'harbor' },
+  { to: 'wick', label: 'wick' },
+  { to: 'sable', label: 'sable' },
+  { to: 'pinion', label: 'pinion' },
   { to: 'opal', label: 'opal' },
   { to: 'nest', label: 'nest' },
   { to: 'thorn', label: 'thorn' },
@@ -14,11 +19,6 @@ const primary: NavItem[] = [
   { to: 'kiln', label: 'kiln' },
   { to: 'meadow', label: 'meadow' },
   { to: 'lark', label: 'lark' },
-  { to: 'nook', label: 'nook' },
-  { to: 'pebble', label: 'pebble' },
-  { to: 'isle', label: 'isle' },
-  { to: 'inlet', label: 'inlet' },
-  { to: 'quartz', label: 'quartz' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -27,6 +27,9 @@ const groups: { title: string; items: NavItem[] }[] = [
     items: [
       { to: 'vault', label: 'vault' },
       { to: 'drop', label: 'drop' },
+      { to: 'vale', label: 'vale' },
+      { to: 'harbor', label: 'harbor' },
+      { to: 'wick', label: 'wick' },
       { to: 'nest', label: 'nest' },
       { to: 'kiln', label: 'kiln' },
       { to: 'meadow', label: 'meadow' },
@@ -37,14 +40,12 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'relic', label: 'relic' },
       { to: 'keel', label: 'keel' },
       { to: 'spool', label: 'spool' },
-      { to: 'relay', label: 'relay' },
-      { to: 'conduit', label: 'conduit' },
-      { to: 'ridge', label: 'ridge' },
     ],
   },
   {
     title: 'share',
     items: [
+      { to: 'pinion', label: 'pinion' },
       { to: 'lark', label: 'lark' },
       { to: 'inlet', label: 'inlet' },
       { to: 'ticker', label: 'ticker' },
@@ -59,12 +60,12 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'lumen', label: 'lumen' },
       { to: 'wisp', label: 'wisp' },
       { to: 'vesper', label: 'vesper' },
-      { to: 'still', label: 'still' },
     ],
   },
   {
     title: 'create',
     items: [
+      { to: 'sable', label: 'sable' },
       { to: 'studio', label: 'studio' },
       { to: 'opal', label: 'opal' },
       { to: 'thorn', label: 'thorn' },
@@ -79,7 +80,6 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'prism', label: 'prism' },
       { to: 'mosaic', label: 'mosaic' },
       { to: 'atelier', label: 'atelier' },
-      { to: 'nook', label: 'nook' },
     ],
   },
   {

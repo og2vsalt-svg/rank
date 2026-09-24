@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"');
 }
 
 function isBot(ua) {
@@ -119,6 +119,9 @@ const PAGE_TITLES = {
   reef: 'reef — link card',
   pollen: 'pollen — stills',
   ledge: 'ledge — scraps',
+  isthmus: 'isthmus — pair two drops',
+  saffron: 'saffron — warm cards',
+  bramble: 'bramble — link thicket',
 };
 
 export default async function handler(req, res) {

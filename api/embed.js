@@ -31,9 +31,15 @@ function pageHtml({ title, desc, image, url, color, mime }) {
   const safeImg = isRemoteImg ? img : 'https://og2vsalt-svg.github.io/rank/og.png';
   const c = color || '#0A84FF';
   const imgType = mime && String(mime).startsWith('image/') ? mime : 'image/png';
-  const videoTag = mime && String(mime).startsWith('video/') && isRemoteImg && image
-    ? `<meta property="og:video" content="${esc(image)}" />\n<meta property="og:video:type" content="${esc(mime)}" />`
-    : '';
+  const extra = [];
+  if (mime && String(mime).startsWith('video/') && isRemoteImg && image) {
+    extra.push(`<meta property="og:video" content="${esc(image)}" />`);
+    extra.push(`<meta property="og:video:type" content="${esc(mime)}" />`);
+  }
+  if (mime && String(mime).startsWith('audio/') && isRemoteImg && image) {
+    extra.push(`<meta property="og:audio" content="${esc(image)}" />`);
+    extra.push(`<meta property="og:audio:type" content="${esc(mime)}" />`);
+  }
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -41,6 +47,7 @@ function pageHtml({ title, desc, image, url, color, mime }) {
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}" />
 <meta name="theme-color" content="${esc(c)}" />
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="${esc(c)}" />
 <meta name="robots" content="noindex" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="rankvault" />
@@ -55,13 +62,13 @@ function pageHtml({ title, desc, image, url, color, mime }) {
 <meta property="og:image:alt" content="${esc(title)}" />
 <meta property="og:url" content="${esc(url)}" />
 <meta property="og:locale" content="en_US" />
-${videoTag}
+${extra.join('\n')}
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="${esc(title)}" />
 <meta name="twitter:description" content="${esc(desc)}" />
 <meta name="twitter:image" content="${esc(safeImg)}" />
 <meta name="twitter:image:alt" content="${esc(title)}" />
-<meta name="theme-color" content="${esc(c)}" />
+<meta name="twitter:site" content="@rankvault" />
 <link rel="canonical" href="${esc(url)}" />
 </head>
 <body style="background:#050506;color:#f5f5f7;font-family:Inter,system-ui,sans-serif;padding:48px 24px">
@@ -115,6 +122,8 @@ const PAGE_TITLES = {
   vesper: 'vesper — evening drop',
   ridge: 'ridge — folder publish',
   still: 'still — clean image drop',
+  sieve: 'sieve — local inspect',
+  ledger: 'ledger — public drops',
 };
 
 export default async function handler(req, res) {
@@ -152,7 +161,7 @@ export default async function handler(req, res) {
     ? `${kind} · ${prettySize(row.size)}${row.author ? ' · ' + row.author : ''}${row.download_count ? ' · ' + row.download_count + ' opens' : ''} · public drop on rankvault`
     : 'a quiet file drop. open to download.';
   const mime = String((live && row.mime) || '');
-  const image = live && (mime.startsWith('image/') || mime.startsWith('video/')) && String(row.file_url || '').startsWith('http')
+  const image = live && (mime.startsWith('image/') || mime.startsWith('video/') || mime.startsWith('audio/')) && String(row.file_url || '').startsWith('http')
     ? row.file_url
     : undefined;
 

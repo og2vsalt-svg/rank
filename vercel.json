@@ -17,6 +17,7 @@
     { "source": "/rill", "destination": "/api/embed?page=rill" },
     { "source": "/solstice", "destination": "/api/embed?page=solstice" },
     { "source": "/harbor", "destination": "/api/embed?page=harbor" },
+    { "source": "/fjord", "destination": "/api/embed?page=fjord" },
     { "source": "/oxbow", "destination": "/api/embed?page=oxbow" },
     { "source": "/juniper", "destination": "/api/embed?page=juniper" },
     { "source": "/estuary", "destination": "/api/embed?page=estuary" },

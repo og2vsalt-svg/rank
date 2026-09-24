@@ -11,6 +11,8 @@ const items = [
   { title: 'discord embeds', body: '/s/id and /f/id serve og tags so discord previews the filename like a real product.' },
   { title: 'no hard file cap', body: 'drop whatever size you want. we only warn when the tab might feel sleepy.' },
   { title: 'apple-soft motion', body: 'springy buttons, glass cards, blur. supposed to feel human-made.' },
+  { title: 'atelier stills', body: 'stamp a caption on a local image and publish it as a discord-ready drop.' },
+  { title: 'nadir peek', body: 'hex glance a file on this machine before you flip it into the share db.' },
 ];
 
 export default function Features() {

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { useAuth } from './AuthContext';
 import { useRouter, type Route } from './Router';
 
@@ -188,9 +188,22 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [openGroup, setOpenGroup] = useState<string | null>('files');
+  const [query, setQuery] = useState('');
   const { user, isLoggedIn, logout } = useAuth();
   const { navigate } = useRouter();
   const userMenuRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
+
+  const filteredGroups = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return groups;
+    return groups
+      .map((g) => ({
+        ...g,
+        items: g.items.filter((i) => i.label.toLowerCase().includes(q) || i.to.toLowerCase().includes(q)),
+      }))
+      .filter((g) => g.items.length > 0);
+  }, [query]);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -203,16 +216,22 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    if (!menuOpen) return;
+    if (!menuOpen) {
+      setQuery('');
+      return;
+    }
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
+    const t = window.setTimeout(() => searchRef.current?.focus(), 120);
     return () => {
       document.body.style.overflow = prev;
+      window.clearTimeout(t);
     };
   }, [menuOpen]);
 
   const go = (to: Route) => {
     setMenuOpen(false);
+    setQuery('');
     navigate(to);
   };
 
@@ -238,13 +257,13 @@ export default function Navbar() {
                 </div>
                 <span className="hidden sm:inline text-sm text-neutral-300 max-w-[100px] truncate">{user!.username}</span>
               </button>
-              <div className={`absolute right-0 top-full mt-1 w-52 rounded-2xl glass overflow-hidden transition-all duration-200 origin-top-right ${userMenuOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}>
-                <div className="px-4 py-3 border-b border-white/5">
+              <div className={`absolute right-0 top-full mt-1.5 w-56 rounded-2xl glass border border-white/10 shadow-2xl shadow-black/40 overflow-hidden transition-all duration-200 origin-top-right ${userMenuOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}>
+                <div className="px-4 py-3 border-b border-white/8">
                   <p className="text-sm font-medium text-white truncate">{user!.username}</p>
                   <p className="text-xs text-neutral-500 truncate">{user!.email}</p>
                 </div>
-                <button onClick={() => { setUserMenuOpen(false); navigate('vault'); }} className="w-full text-left px-4 py-2.5 text-sm text-neutral-300 hover:bg-white/5">open vault</button>
-                <button onClick={() => { logout(); setUserMenuOpen(false); }} className="w-full text-left px-4 py-2.5 text-sm text-neutral-400 hover:text-red-400 hover:bg-white/5">log out</button>
+                <button onClick={() => { setUserMenuOpen(false); navigate('vault'); }} className="w-full text-left px-4 py-2.5 text-sm text-neutral-300 hover:bg-white/5 transition-colors">open vault</button>
+                <button onClick={() => { logout(); setUserMenuOpen(false); }} className="w-full text-left px-4 py-2.5 text-sm text-neutral-400 hover:text-red-400 hover:bg-white/5 transition-colors">log out</button>
               </div>
             </div>
           ) : (
@@ -262,35 +281,106 @@ export default function Navbar() {
           </button>
         </div>
       </div>
-      <div className={`border-t border-white/5 overflow-hidden transition-all duration-300 ease-out ${menuOpen ? 'max-h-[min(70vh,560px)] opacity-100' : 'max-h-0 opacity-0'}`}>
-        <div className="max-h-[min(70vh,560px)] overflow-y-auto overscroll-contain px-4 sm:px-5 py-3">
-          <div className="flex gap-2 overflow-x-auto pb-3 mb-1 -mx-1 px-1 scrollbar-none">
-            {primary.map((l) => (
-              <button key={`chip-${l.to}`} onClick={() => go(l.to)} className="shrink-0 px-3.5 py-1.5 rounded-full bg-white/8 border border-white/10 text-[13px] text-neutral-200 hover:bg-white/12 hover:text-white">{l.label}</button>
-            ))}
+
+      <div
+        className={`border-t border-white/8 overflow-hidden transition-[max-height,opacity] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          menuOpen ? 'max-h-[min(85vh,720px)] opacity-100' : 'max-h-0 opacity-0'
+        }`}
+      >
+        <div className="max-h-[min(85vh,720px)] flex flex-col">
+          <div className="shrink-0 px-4 sm:px-5 pt-3 pb-2 space-y-3 border-b border-white/5">
+            <div className="flex gap-2 overflow-x-auto pb-0.5 -mx-1 px-1 scrollbar-none">
+              {primary.map((l) => (
+                <button
+                  key={`chip-${l.to}`}
+                  onClick={() => go(l.to)}
+                  className="shrink-0 px-3.5 py-1.5 rounded-full bg-white/[0.07] border border-white/10 text-[13px] text-neutral-200 hover:bg-white/12 hover:text-white hover:border-white/20 transition-colors"
+                >
+                  {l.label}
+                </button>
+              ))}
+            </div>
+            <div className="relative">
+              <svg
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-500 pointer-events-none"
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <circle cx="11" cy="11" r="7" />
+                <path d="M20 20l-3.5-3.5" />
+              </svg>
+              <input
+                ref={searchRef}
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="search desks…"
+                className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-white/[0.05] border border-white/10 text-[13px] text-white placeholder:text-neutral-500 outline-none focus:border-[#0a84ff]/45 focus:bg-white/[0.07] transition-colors"
+              />
+            </div>
           </div>
-          <div className="space-y-1.5">
-            {groups.map((g) => {
-              const open = openGroup === g.title;
-              return (
-                <div key={g.title} className="rounded-2xl bg-white/[0.03] border border-white/5 overflow-hidden">
-                  <button onClick={() => setOpenGroup(open ? null : g.title)} className="w-full flex items-center justify-between px-3.5 py-2.5 text-left">
-                    <span className="text-[13px] font-medium text-neutral-200 capitalize">{g.title}</span>
-                    <span className="flex items-center gap-2">
-                      <span className="text-[11px] text-neutral-500">{g.items.length}</span>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`text-neutral-500 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}><path d="M6 9l6 6 6-6" /></svg>
-                    </span>
-                  </button>
-                  <div className={`overflow-hidden transition-all duration-250 ease-out ${open ? 'max-h-80 opacity-100' : 'max-h-0 opacity-0'}`}>
-                    <div className="px-2 pb-2.5 grid grid-cols-2 sm:grid-cols-3 gap-0.5">
-                      {g.items.map((l) => (
-                        <button key={l.to} onClick={() => go(l.to)} className="text-left text-[13px] text-neutral-400 hover:text-white hover:bg-white/5 rounded-xl px-2.5 py-2 transition-colors">{l.label}</button>
-                      ))}
+
+          <div className="flex-1 overflow-y-auto overscroll-contain px-4 sm:px-5 py-3 space-y-2">
+            {filteredGroups.length === 0 ? (
+              <p className="text-sm text-neutral-500 text-center py-10">no desks match “{query}”</p>
+            ) : (
+              filteredGroups.map((g) => {
+                const forceOpen = !!query.trim();
+                const open = forceOpen || openGroup === g.title;
+                return (
+                  <div key={g.title} className="rounded-2xl bg-white/[0.03] border border-white/[0.07] overflow-hidden">
+                    <button
+                      onClick={() => {
+                        if (forceOpen) return;
+                        setOpenGroup(open ? null : g.title);
+                      }}
+                      className="w-full flex items-center justify-between px-3.5 py-2.5 text-left sticky top-0 bg-[#0c0c0e]/90 backdrop-blur-md z-[1]"
+                    >
+                      <span className="text-[13px] font-medium text-neutral-200 capitalize tracking-wide">{g.title}</span>
+                      <span className="flex items-center gap-2">
+                        <span className="text-[11px] tabular-nums text-neutral-500 bg-white/5 px-1.5 py-0.5 rounded-md">{g.items.length}</span>
+                        {!forceOpen && (
+                          <svg
+                            width="14"
+                            height="14"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            className={`text-neutral-500 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+                          >
+                            <path d="M6 9l6 6 6-6" />
+                          </svg>
+                        )}
+                      </span>
+                    </button>
+                    <div
+                      className={`grid transition-[grid-template-rows] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                        open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+                      }`}
+                    >
+                      <div className="overflow-hidden min-h-0">
+                        <div className="px-2 pb-2.5 pt-0.5 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-0.5">
+                          {g.items.map((l) => (
+                            <button
+                              key={l.to}
+                              onClick={() => go(l.to)}
+                              className="text-left text-[13px] text-neutral-400 hover:text-white hover:bg-white/[0.06] rounded-xl px-2.5 py-2 transition-colors truncate"
+                              title={l.label}
+                            >
+                              {l.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })
+            )}
           </div>
         </div>
       </div>

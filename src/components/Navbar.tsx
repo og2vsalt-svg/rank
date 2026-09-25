@@ -7,12 +7,12 @@ type NavItem = { to: Route; label: string };
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
+  { to: 'kindling', label: 'kindling' },
+  { to: 'nave', label: 'nave' },
+  { to: 'spur', label: 'spur' },
   { to: 'lattice', label: 'lattice' },
   { to: 'slip', label: 'slip' },
   { to: 'relay', label: 'relay' },
-  { to: 'quilt', label: 'quilt' },
-  { to: 'pinnacle', label: 'pinnacle' },
-  { to: 'stillroom', label: 'stillroom' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -21,6 +21,8 @@ const groups: { title: string; items: NavItem[] }[] = [
     items: [
       { to: 'vault', label: 'vault' },
       { to: 'drop', label: 'drop' },
+      { to: 'kindling', label: 'kindling' },
+      { to: 'nave', label: 'nave' },
       { to: 'lattice', label: 'lattice' },
       { to: 'slip', label: 'slip' },
       { to: 'pinnacle', label: 'pinnacle' },
@@ -73,6 +75,9 @@ const groups: { title: string; items: NavItem[] }[] = [
     items: [
       { to: 'relay', label: 'relay' },
       { to: 'quilt', label: 'quilt' },
+      { to: 'kindling', label: 'kindling' },
+      { to: 'nave', label: 'nave' },
+      { to: 'spur', label: 'spur' },
       { to: 'ripple', label: 'ripple' },
       { to: 'stillroom', label: 'stillroom' },
       { to: 'hearth', label: 'hearth' },
@@ -154,6 +159,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'spur', label: 'spur' },
       { to: 'harvest', label: 'harvest' },
       { to: 'waymark', label: 'waymark' },
       { to: 'ripple', label: 'ripple' },
@@ -305,7 +311,6 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* old-style dropdown — outer panel scrolls */}
       <div
         className={`border-t border-white/5 overflow-hidden transition-all duration-300 ease-out ${
           menuOpen ? 'max-h-[min(75vh,620px)] opacity-100' : 'max-h-0 opacity-0'
@@ -349,8 +354,6 @@ export default function Navbar() {
                       </svg>
                     </span>
                   </button>
-
-                  {/* no max-h clip — expand fully; parent scrolls */}
                   <div
                     className={`overflow-hidden transition-all duration-250 ease-out ${
                       open ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'

@@ -105,6 +105,8 @@ async function loadShare(id) {
 const PAGE_TITLES = {
   vault: 'vault — rankvault',
   drop: 'drop — rankvault',
+  lattice: 'lattice — pair two files',
+  slip: 'slip — thin public drop',
   quilt: 'quilt — public board',
   relay: 'relay — handoff code',
   pinnacle: 'pinnacle — masthead file',

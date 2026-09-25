@@ -7,12 +7,12 @@ type NavItem = { to: Route; label: string };
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
+  { to: 'stillroom', label: 'stillroom' },
+  { to: 'waymark', label: 'waymark' },
+  { to: 'harvest', label: 'harvest' },
   { to: 'wellspring', label: 'wellspring' },
-  { to: 'solarium', label: 'solarium' },
-  { to: 'vestibule', label: 'vestibule' },
-  { to: 'keystone', label: 'keystone' },
   { to: 'ripple', label: 'ripple' },
-  { to: 'lintel', label: 'lintel' },
+  { to: 'aegis', label: 'aegis' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -21,6 +21,8 @@ const groups: { title: string; items: NavItem[] }[] = [
     items: [
       { to: 'vault', label: 'vault' },
       { to: 'drop', label: 'drop' },
+      { to: 'waymark', label: 'waymark' },
+      { to: 'harvest', label: 'harvest' },
       { to: 'wellspring', label: 'wellspring' },
       { to: 'solarium', label: 'solarium' },
       { to: 'vestibule', label: 'vestibule' },
@@ -67,6 +69,7 @@ const groups: { title: string; items: NavItem[] }[] = [
     title: 'share',
     items: [
       { to: 'ripple', label: 'ripple' },
+      { to: 'stillroom', label: 'stillroom' },
       { to: 'hearth', label: 'hearth' },
       { to: 'oxbow', label: 'oxbow' },
       { to: 'aegis', label: 'aegis' },
@@ -106,6 +109,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'create',
     items: [
+      { to: 'stillroom', label: 'stillroom' },
       { to: 'nook', label: 'nook' },
       { to: 'iris', label: 'iris' },
       { to: 'filament', label: 'filament' },
@@ -143,6 +147,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'harvest', label: 'harvest' },
+      { to: 'waymark', label: 'waymark' },
       { to: 'ripple', label: 'ripple' },
       { to: 'cistern', label: 'cistern' },
       { to: 'ridge', label: 'ridge' },

@@ -7,13 +7,12 @@ type NavItem = { to: Route; label: string };
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
-  { to: 'tide', label: 'tide' },
-  { to: 'halo', label: 'halo' },
-  { to: 'kite', label: 'kite' },
+  { to: 'tandem', label: 'tandem' },
+  { to: 'octave', label: 'octave' },
+  { to: 'filament', label: 'filament' },
+  { to: 'horizon', label: 'horizon' },
   { to: 'bazaar', label: 'bazaar' },
   { to: 'grove', label: 'grove' },
-  { to: 'vellum', label: 'vellum' },
-  { to: 'copper', label: 'copper' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -22,6 +21,7 @@ const groups: { title: string; items: NavItem[] }[] = [
     items: [
       { to: 'vault', label: 'vault' },
       { to: 'drop', label: 'drop' },
+      { to: 'tandem', label: 'tandem' },
       { to: 'tide', label: 'tide' },
       { to: 'convoy', label: 'convoy' },
       { to: 'portage', label: 'portage' },
@@ -46,6 +46,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'horizon', label: 'horizon' },
       { to: 'gazette', label: 'gazette' },
       { to: 'bazaar', label: 'bazaar' },
       { to: 'atoll', label: 'atoll' },
@@ -76,6 +77,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'create',
     items: [
+      { to: 'filament', label: 'filament' },
+      { to: 'octave', label: 'octave' },
       { to: 'halo', label: 'halo' },
       { to: 'sable', label: 'sable' },
       { to: 'studio', label: 'studio' },

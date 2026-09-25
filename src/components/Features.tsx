@@ -17,6 +17,11 @@ const items = [
   { title: 'cloud share db', body: 'public drops land in supabase, with vercel blob when a token is set.' },
   { title: 'discord embeds', body: '/s/id, /f/id, /d/id and /p/page serve og tags so discord previews look finished.' },
   { title: 'no hard file cap', body: 'drop whatever size you want. we only warn when the tab might feel sleepy.' },
+  { title: 'summit stats', body: 'see how heavy this vault is, by kind, without sending a byte.' },
+  { title: 'hopper rename', body: 'batch-rename a local pile and save copies. stays on device.' },
+  { title: 'varnish mark', body: 'stamp a photo with a light watermark. canvas only.' },
+  { title: 'plaza feed', body: 'latest public drops from the share db, each with a discord /s link.' },
+  { title: 'gasket seal', body: 'hash two local files and see if they are the same bytes.' },
 ];
 
 export default function Features() {

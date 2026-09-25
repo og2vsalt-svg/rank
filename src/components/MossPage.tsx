@@ -1,21 +1,30 @@
 import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { shareUrls } from '../lib/cloudShare';
 
 export default function MossPage() {
-  const [raw, setRaw] = useState(() => localStorage.getItem('rank-moss-ids') || '');
-  const [draft, setDraft] = useState('');
+  const [id, setId] = useState('');
+  const [title, setTitle] = useState('rankvault drop');
+  const [copied, setCopied] = useState('');
 
-  const ids = useMemo(() => raw.split(/[\s,]+/).map((s) => s.trim()).filter(Boolean), [raw]);
+  const links = useMemo(() => {
+    const clean = id.trim().replace(/^#?share\?f=/, '');
+    if (!clean) return null;
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    return {
+      embed: `${origin}/s/${encodeURIComponent(clean)}`,
+      page: `${origin}/p/moss`,
+      app: `${origin}/#share?f=${encodeURIComponent(clean)}`,
+    };
+  }, [id]);
 
-  const add = () => {
-    const next = [...ids, draft.trim()].filter(Boolean);
-    const uniq = Array.from(new Set(next));
-    const joined = uniq.join('\n');
-    setRaw(joined);
-    localStorage.setItem('rank-moss-ids', joined);
-    setDraft('');
+  const copy = async (v: string, label: string) => {
+    try {
+      await navigator.clipboard.writeText(v);
+      setCopied(label);
+    } catch {
+      setCopied('could not copy');
+    }
   };
 
   return (
@@ -24,24 +33,22 @@ export default function MossPage() {
       <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-8">
           <p className="text-[#0a84ff] text-sm mb-2">moss</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">a quiet list of share ids.</h1>
-          <p className="text-neutral-400 text-sm mb-6">not the vault. just the ids you want to keep handy, each with a discord embed url.</p>
-          <div className="flex gap-2 mb-6">
-            <input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="paste a share id" className="flex-1 px-4 py-2.5 rounded-full bg-white/5 border border-white/10 text-sm outline-none" />
-            <button onClick={add} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium">pin</button>
-          </div>
-          <ul className="space-y-2">
-            {ids.length === 0 && <li className="text-sm text-neutral-500">nothing pinned yet</li>}
-            {ids.map((id) => {
-              const urls = shareUrls(id);
-              return (
-                <li key={id} className="rounded-2xl bg-white/[0.03] border border-white/5 px-4 py-3">
-                  <p className="text-sm text-white mb-1">{id}</p>
-                  <p className="text-xs text-neutral-500 break-all">{urls.embed}</p>
-                </li>
-              );
-            })}
-          </ul>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">grow a discord card.</h1>
+          <p className="text-neutral-400 text-sm mb-6">paste a share id. we give you the /s/ embed url bots actually unfurl. looks like a real drop card, not a bare hash.</p>
+          <input value={id} onChange={(e) => setId(e.target.value)} placeholder="share id or #share?f=..." className="w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 text-sm text-white outline-none focus:border-[#0a84ff]/50 mb-3" />
+          <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="card title hint" className="w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 text-sm text-white outline-none focus:border-[#0a84ff]/50" />
+          {links && (
+            <div className="mt-6 space-y-3">
+              <div className="rounded-2xl bg-black/40 border border-white/8 p-4">
+                <p className="text-[11px] text-neutral-500 mb-1">preview</p>
+                <p className="text-white font-medium">{title || 'rankvault drop'}</p>
+                <p className="text-xs text-neutral-500 mt-1">public drop on rankvault · discord reads /s/</p>
+              </div>
+              <button onClick={() => copy(links.embed, 'embed')} className="w-full text-left rounded-2xl bg-white/5 px-4 py-3 text-xs text-neutral-300 break-all hover:bg-white/8">copy embed · {links.embed}</button>
+              <button onClick={() => copy(links.app, 'app')} className="w-full text-left rounded-2xl bg-white/5 px-4 py-3 text-xs text-neutral-300 break-all hover:bg-white/8">copy app · {links.app}</button>
+              {copied && <p className="text-xs text-[#0a84ff]">copied {copied}</p>}
+            </div>
+          )}
         </motion.div>
       </div>
     </div>

@@ -1,84 +1,65 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { useVault } from './VaultContext';
 
 function pretty(n: number) {
-  if (n < 1024) return `${n} b`;
-  if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} kb`;
-  if (n < 1024 * 1024 * 1024) return `${(n / 1024 / 1024).toFixed(1)} mb`;
-  return `${(n / 1024 / 1024 / 1024).toFixed(2)} gb`;
+  if (n < 1024) return n + ' b';
+  if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' kb';
+  if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(2) + ' mb';
+  return (n / (1024 * 1024 * 1024)).toFixed(2) + ' gb';
+}
+
+function guess(hex: string, mime: string) {
+  const h = hex.toLowerCase();
+  if (h.startsWith('89504e47')) return 'png';
+  if (h.startsWith('ffd8ff')) return 'jpeg';
+  if (h.startsWith('47494638')) return 'gif';
+  if (h.startsWith('25504446')) return 'pdf';
+  if (h.startsWith('504b0304')) return 'zip / office';
+  if (h.startsWith('1f8b08')) return 'gzip';
+  if (h.startsWith('7f454c46')) return 'elf';
+  if (h.startsWith('0000001866747970') || h.includes('66747970')) return 'mp4 / isobmff';
+  if (h.startsWith('52494646')) return 'riff (wav/avi/webp)';
+  if (h.startsWith('494433') || h.startsWith('fff3') || h.startsWith('fffb')) return 'mp3';
+  return mime.split('/')[1] || 'unknown';
 }
 
 export default function QuarryPage() {
-  const { files } = useVault();
-  const [q, setQ] = useState('');
+  const [card, setCard] = useState<{ name: string; size: number; type: string; hex: string; kind: string } | null>(null);
   const [warn, setWarn] = useState('');
 
-  const stats = useMemo(() => {
-    const total = files.reduce((s, f) => s + (Number(f.size) || 0), 0);
-    const kinds: Record<string, number> = {};
-    files.forEach((f) => {
-      const k = (f.type || 'unknown').split('/')[0] || 'unknown';
-      kinds[k] = (kinds[k] || 0) + 1;
-    });
-    return { total, kinds, count: files.length };
-  }, [files]);
-
-  const filtered = useMemo(() => {
-    const s = q.trim().toLowerCase();
-    return files.filter((f) => !s || f.name.toLowerCase().includes(s) || (f.type || '').toLowerCase().includes(s));
-  }, [files, q]);
+  const onFile = async (file?: File) => {
+    if (!file) return;
+    if (file.size > 40 * 1024 * 1024) setWarn('chunky stone. we only chip the first bytes so the tab should stay ok.');
+    else setWarn('');
+    const slice = file.slice(0, 24);
+    const buf = await slice.arrayBuffer();
+    const bytes = new Uint8Array(buf);
+    const hex = [...bytes].map((b) => b.toString(16).padStart(2, '0')).join('');
+    setCard({ name: file.name, size: file.size, type: file.type || 'application/octet-stream', hex, kind: guess(hex, file.type || '') });
+  };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-3xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}>
+      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-8">
           <p className="text-[#0a84ff] text-sm mb-2">quarry</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-2">inventory of what you already dropped.</h1>
-          <p className="text-neutral-400 text-sm mb-8">not a second vault. just a quiet census. huge dumps stay allowed — we only whisper if the browser might get sleepy.</p>
-
-          <div className="grid grid-cols-3 gap-3 mb-6">
-            {[
-              { k: 'files', v: String(stats.count) },
-              { k: 'weight', v: pretty(stats.total) },
-              { k: 'kinds', v: String(Object.keys(stats.kinds).length) },
-            ].map((c) => (
-              <div key={c.k} className="rounded-3xl bg-white/[0.04] border border-white/8 px-4 py-4">
-                <p className="text-[11px] text-neutral-500 mb-1">{c.k}</p>
-                <p className="text-lg font-medium tracking-tight">{c.v}</p>
-              </div>
-            ))}
-          </div>
-
-          {stats.total > 40 * 1024 * 1024 && (
-            <p className="text-xs text-amber-300/80 mb-4">this pile is chunky. previews can feel slow on older phones. nothing is blocked.</p>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">chip the first bytes.</h1>
+          <p className="text-neutral-400 text-sm mb-6">peek a local file header. stays in the tab. no upload unless you bounce to drop later.</p>
+          <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition">
+            <input type="file" className="hidden" onChange={(e) => onFile(e.target.files?.[0])} />
+            <p className="text-white font-medium">drop a stone</p>
+          </label>
+          {warn && <p className="text-xs text-amber-300/80 mt-4">{warn}</p>}
+          {card && (
+            <div className="mt-6 rounded-2xl bg-black/30 p-5 space-y-2">
+              <p className="text-white font-medium">{card.name}</p>
+              <p className="text-xs text-neutral-500">{pretty(card.size)} · {card.type}</p>
+              <p className="text-sm text-[#0a84ff]">{card.kind}</p>
+              <p className="text-[11px] text-neutral-400 break-all font-mono">{card.hex}</p>
+            </div>
           )}
-
-          <input
-            value={q}
-            onChange={(e) => {
-              setQ(e.target.value);
-              if (e.target.value.length > 80) setWarn('long filter strings are fine, just a tad laggy.');
-              else setWarn('');
-            }}
-            placeholder="filter by name or type"
-            className="w-full mb-4 rounded-2xl bg-white/[0.04] border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/50 transition-colors"
-          />
-          {warn && <p className="text-xs text-neutral-500 mb-3">{warn}</p>}
-
-          <div className="space-y-1.5">
-            {filtered.length === 0 && <p className="text-sm text-neutral-500">nothing in the vault yet. drop files first.</p>}
-            {filtered.map((f) => (
-              <div key={f.id} className="flex items-center justify-between rounded-2xl bg-white/[0.03] border border-white/5 px-4 py-3">
-                <div className="min-w-0">
-                  <p className="text-sm truncate">{f.name}</p>
-                  <p className="text-[11px] text-neutral-500">{f.type || 'file'} · {pretty(Number(f.size) || 0)}</p>
-                </div>
-              </div>
-            ))}
-          </div>
         </motion.div>
       </div>
     </div>

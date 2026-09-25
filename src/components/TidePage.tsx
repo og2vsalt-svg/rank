@@ -1,72 +1,101 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
+import { publishShare, shareUrls } from '../lib/cloudShare';
 
-type Tide = { id: string; label: string; at: number };
-const KEY = 'rankvault-tide';
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+
+function readFile(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(String(r.result || ''));
+    r.onerror = () => reject(new Error('read failed'));
+    r.readAsDataURL(file);
+  });
+}
 
 export default function TidePage() {
-  const [label, setLabel] = useState('');
-  const [when, setWhen] = useState('');
-  const [now, setNow] = useState(Date.now());
-  const [tides, setTides] = useState<Tide[]>(() => {
-    try {
-      return JSON.parse(localStorage.getItem(KEY) || '[]');
-    } catch {
-      return [];
+  const [queue, setQueue] = useState<File[]>([]);
+  const [log, setLog] = useState<string[]>([]);
+  const [busy, setBusy] = useState(false);
+  const [warn, setWarn] = useState('');
+
+  const add = (list: FileList | null) => {
+    if (!list?.length) return;
+    const next = [...queue, ...list];
+    setQueue(next);
+    const big = next.some((f) => f.size > 40 * 1024 * 1024);
+    setWarn(big ? 'one of these is huge. publishing may feel slow. no hard cap.' : '');
+  };
+
+  const run = async () => {
+    if (!queue.length || busy) return;
+    setBusy(true);
+    const lines: string[] = [];
+    for (const file of queue) {
+      try {
+        const dataUrl = await readFile(file);
+        const id = uid();
+        const res = await publishShare({
+          id,
+          name: file.name,
+          type: file.type || 'application/octet-stream',
+          size: file.size,
+          dataUrl,
+        });
+        if (res.ok) {
+          const urls = shareUrls(res.id || id);
+          lines.push(`${file.name} → ${urls.embed}`);
+        } else {
+          lines.push(`${file.name} failed: ${res.error || 'unknown'}`);
+        }
+      } catch (e: any) {
+        lines.push(`${file.name} failed: ${e?.message || 'read'}`);
+      }
+      setLog([...lines]);
     }
-  });
-
-  useEffect(() => {
-    localStorage.setItem(KEY, JSON.stringify(tides));
-  }, [tides]);
-
-  useEffect(() => {
-    const t = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(t);
-  }, []);
-
-  function add() {
-    if (!when) return;
-    setTides((t) => [{ id: crypto.randomUUID(), label: label.trim() || 'unnamed tide', at: +new Date(when) }, ...t]);
-    setLabel('');
-  }
-
-  function left(at: number) {
-    const d = at - now;
-    if (d <= 0) return 'passed';
-    const s = Math.floor(d / 1000);
-    const h = Math.floor(s / 3600);
-    const m = Math.floor((s % 3600) / 60);
-    return `${h}h ${m}m ${s % 60}s`;
-  }
+    setBusy(false);
+  };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <main className="pt-24 pb-20 px-5">
-        <div className="max-w-xl mx-auto">
-          <p className="text-xs tracking-[0.2em] uppercase text-neutral-500 mb-3">tide</p>
-          <h1 className="text-3xl font-semibold text-white tracking-tight">share timers</h1>
-          <p className="text-sm text-neutral-500 mt-2 mb-8">track when a public drop should fade. timers live here, files stay in the vault.</p>
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-3xl p-5 space-y-3">
-            <input value={label} onChange={(e) => setLabel(e.target.value)} placeholder="what expires" className="w-full bg-black/30 rounded-2xl px-4 py-3 text-sm text-white outline-none border border-white/10" />
-            <input type="datetime-local" value={when} onChange={(e) => setWhen(e.target.value)} className="w-full bg-black/30 rounded-2xl px-4 py-3 text-sm text-white outline-none border border-white/10" />
-            <motion.button whileTap={{ scale: 0.98 }} onClick={add} className="w-full rounded-full bg-white text-black text-sm font-medium py-2.5">set tide</motion.button>
-          </motion.div>
-          <ul className="mt-6 space-y-2">
-            {tides.map((t) => (
-              <li key={t.id} className="glass rounded-2xl px-4 py-3 flex items-center justify-between gap-3">
-                <div>
-                  <p className="text-sm text-white">{t.label}</p>
-                  <p className="text-xs text-neutral-500 mt-0.5">{left(t.at)}</p>
-                </div>
-                <button onClick={() => setTides((all) => all.filter((x) => x.id !== t.id))} className="text-xs text-neutral-500">clear</button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </main>
+      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-8">
+          <p className="text-[#0a84ff] text-sm mb-2">tide</p>
+          <h1 className="text-3xl font-semibold mb-3 tracking-tight">send files one by one.</h1>
+          <p className="text-neutral-400 text-sm mb-6">queue local files and publish each to the share db. discord-ready /s links come back in order. skips the vault grid.</p>
+          <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/40 p-8 text-center transition-colors">
+            <input type="file" multiple className="hidden" onChange={(e) => add(e.target.files)} />
+            <p className="text-white font-medium">add to the tide</p>
+            <p className="text-xs text-neutral-500 mt-2">{queue.length} waiting</p>
+          </label>
+          {warn && <p className="text-xs text-amber-300/80 mt-4">{warn}</p>}
+          {!!queue.length && (
+            <ul className="mt-5 space-y-1 text-sm text-neutral-400">
+              {queue.map((f, i) => (
+                <li key={i} className="truncate">{f.name}</li>
+              ))}
+            </ul>
+          )}
+          <button
+            disabled={busy || !queue.length}
+            onClick={run}
+            className="mt-6 px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40"
+          >
+            {busy ? 'sending…' : 'release'}
+          </button>
+          {!!log.length && (
+            <div className="mt-6 space-y-2 text-xs text-neutral-400 break-all">
+              {log.map((l, i) => (
+                <p key={i}>{l}</p>
+              ))}
+            </div>
+          )}
+        </motion.div>
+      </div>
     </div>
   );
 }

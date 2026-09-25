@@ -187,27 +187,23 @@ const groups: { title: string; items: NavItem[] }[] = [
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [activeGroup, setActiveGroup] = useState(groups[0].title);
+  const [openGroup, setOpenGroup] = useState<string | null>('files');
   const [query, setQuery] = useState('');
   const { user, isLoggedIn, logout } = useAuth();
   const { navigate } = useRouter();
   const userMenuRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
 
-  const q = query.trim().toLowerCase();
-  const searching = q.length > 0;
-
-  const activeItems = useMemo(() => {
-    if (searching) {
-      return groups.flatMap((g) =>
-        g.items
-          .filter((i) => i.label.toLowerCase().includes(q) || i.to.toLowerCase().includes(q))
-          .map((i) => ({ ...i, group: g.title })),
-      );
-    }
-    const g = groups.find((x) => x.title === activeGroup) || groups[0];
-    return g.items.map((i) => ({ ...i, group: g.title }));
-  }, [q, searching, activeGroup]);
+  const filteredGroups = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return groups;
+    return groups
+      .map((g) => ({
+        ...g,
+        items: g.items.filter((i) => i.label.toLowerCase().includes(q) || i.to.toLowerCase().includes(q)),
+      }))
+      .filter((g) => g.items.length > 0);
+  }, [query]);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -224,15 +220,12 @@ export default function Navbar() {
       setQuery('');
       return;
     }
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    const t = window.setTimeout(() => searchRef.current?.focus(), 100);
+    const t = window.setTimeout(() => searchRef.current?.focus(), 80);
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setMenuOpen(false);
     };
     window.addEventListener('keydown', onKey);
     return () => {
-      document.body.style.overflow = prev;
       window.clearTimeout(t);
       window.removeEventListener('keydown', onKey);
     };
@@ -245,149 +238,129 @@ export default function Navbar() {
   };
 
   return (
-    <>
-      <nav className="fixed top-0 inset-x-0 z-50 glass border-b border-white/[0.06]">
-        <div className="max-w-6xl mx-auto px-4 sm:px-5 h-14 flex items-center justify-between gap-3">
-          <button onClick={() => navigate('home')} className="text-lg font-semibold tracking-tight text-white shrink-0">
-            rank<span className="text-[#0a84ff]">vault</span>
-          </button>
+    <nav className="fixed top-0 inset-x-0 z-50 glass border-b border-white/[0.06]">
+      <div className="max-w-6xl mx-auto px-4 sm:px-5 h-14 flex items-center justify-between gap-3">
+        <button onClick={() => navigate('home')} className="text-lg font-semibold tracking-tight text-white shrink-0">
+          rank<span className="text-[#0a84ff]">vault</span>
+        </button>
 
-          <div className="hidden lg:flex items-center gap-0.5 min-w-0">
-            {primary.slice(0, 6).map((l) => (
-              <button
-                key={l.to}
-                onClick={() => navigate(l.to)}
-                className="text-[13px] text-neutral-400 hover:text-white px-2.5 py-1.5 rounded-full hover:bg-white/5 transition-colors"
-              >
-                {l.label}
-              </button>
-            ))}
-          </div>
-
-          <div className="flex items-center gap-1.5 shrink-0">
-            {isLoggedIn ? (
-              <div className="relative" ref={userMenuRef}>
-                <button
-                  onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="flex items-center gap-2 p-1.5 rounded-full hover:bg-white/5 transition-colors"
-                >
-                  <div className="w-7 h-7 rounded-full bg-[#0a84ff]/15 border border-[#0a84ff]/25 flex items-center justify-center">
-                    <span className="text-xs font-bold text-[#0a84ff]">{user!.username.charAt(0).toUpperCase()}</span>
-                  </div>
-                  <span className="hidden sm:inline text-sm text-neutral-300 max-w-[100px] truncate">{user!.username}</span>
-                </button>
-                <div
-                  className={`absolute right-0 top-full mt-1.5 w-56 rounded-2xl glass border border-white/10 shadow-2xl shadow-black/50 overflow-hidden transition-all duration-200 origin-top-right ${
-                    userMenuOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'
-                  }`}
-                >
-                  <div className="px-4 py-3 border-b border-white/8">
-                    <p className="text-sm font-medium text-white truncate">{user!.username}</p>
-                    <p className="text-xs text-neutral-500 truncate">{user!.email}</p>
-                  </div>
-                  <button
-                    onClick={() => {
-                      setUserMenuOpen(false);
-                      navigate('vault');
-                    }}
-                    className="w-full text-left px-4 py-2.5 text-sm text-neutral-300 hover:bg-white/5 transition-colors"
-                  >
-                    open vault
-                  </button>
-                  <button
-                    onClick={() => {
-                      logout();
-                      setUserMenuOpen(false);
-                    }}
-                    className="w-full text-left px-4 py-2.5 text-sm text-neutral-400 hover:text-red-400 hover:bg-white/5 transition-colors"
-                  >
-                    log out
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="flex items-center gap-1">
-                <button onClick={() => navigate('login')} className="text-[13px] text-neutral-400 hover:text-white px-2.5 py-1.5 rounded-full transition-colors">
-                  log in
-                </button>
-                <button
-                  onClick={() => navigate('signup')}
-                  className="hidden sm:inline-flex text-[13px] font-medium px-3.5 py-1.5 rounded-full bg-white text-black hover:bg-neutral-200 transition-colors"
-                >
-                  sign up
-                </button>
-              </div>
-            )}
-
+        <div className="hidden lg:flex items-center gap-0.5 min-w-0">
+          {primary.slice(0, 6).map((l) => (
             <button
-              onClick={() => setMenuOpen(!menuOpen)}
-              className={`p-1.5 rounded-full transition-colors ${
-                menuOpen ? 'bg-white/10 text-white' : 'text-neutral-400 hover:text-white hover:bg-white/5'
-              }`}
-              aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-              aria-expanded={menuOpen}
+              key={l.to}
+              onClick={() => navigate(l.to)}
+              className="text-[13px] text-neutral-400 hover:text-white px-2.5 py-1.5 rounded-full hover:bg-white/5 transition-colors"
             >
-              {menuOpen ? (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M6 6l12 12M18 6L6 18" />
-                </svg>
-              ) : (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="4" y1="7" x2="20" y2="7" />
-                  <line x1="4" y1="12" x2="20" y2="12" />
-                  <line x1="4" y1="17" x2="20" y2="17" />
-                </svg>
-              )}
+              {l.label}
             </button>
-          </div>
+          ))}
         </div>
-      </nav>
 
-      {/* full sheet */}
-      <div
-        className={`fixed inset-0 z-40 transition-opacity duration-300 ${
-          menuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-        }`}
-      >
-        <button type="button" aria-label="Close menu" className="absolute inset-0 bg-black/55 backdrop-blur-sm" onClick={() => setMenuOpen(false)} />
-
-        <div
-          className={`absolute inset-x-0 top-14 bottom-0 sm:inset-x-4 sm:top-[4.25rem] sm:bottom-6 sm:max-w-5xl sm:mx-auto flex flex-col rounded-none sm:rounded-[28px] border border-white/10 bg-[#0c0c0e]/95 backdrop-blur-2xl shadow-2xl shadow-black/60 overflow-hidden transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-            menuOpen ? 'translate-y-0' : '-translate-y-3'
-          }`}
-        >
-          {/* header */}
-          <div className="shrink-0 px-4 sm:px-6 pt-4 pb-3 border-b border-white/[0.06] space-y-3">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="text-[11px] uppercase tracking-[0.12em] text-neutral-500 font-medium">browse</p>
-                <p className="text-base font-semibold text-white tracking-tight">all desks</p>
-              </div>
+        <div className="flex items-center gap-1.5 shrink-0">
+          {isLoggedIn ? (
+            <div className="relative" ref={userMenuRef}>
               <button
-                onClick={() => setMenuOpen(false)}
-                className="hidden sm:inline-flex text-xs text-neutral-500 hover:text-white px-3 py-1.5 rounded-full hover:bg-white/5 transition-colors"
+                onClick={() => setUserMenuOpen(!userMenuOpen)}
+                className="flex items-center gap-2 p-1.5 rounded-full hover:bg-white/5 transition-colors"
               >
-                esc
+                <div className="w-7 h-7 rounded-full bg-[#0a84ff]/15 border border-[#0a84ff]/25 flex items-center justify-center">
+                  <span className="text-xs font-bold text-[#0a84ff]">{user!.username.charAt(0).toUpperCase()}</span>
+                </div>
+                <span className="hidden sm:inline text-sm text-neutral-300 max-w-[100px] truncate">{user!.username}</span>
+              </button>
+              <div
+                className={`absolute right-0 top-full mt-1.5 w-56 rounded-2xl glass border border-white/10 shadow-2xl shadow-black/50 overflow-hidden transition-all duration-200 origin-top-right ${
+                  userMenuOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'
+                }`}
+              >
+                <div className="px-4 py-3 border-b border-white/8">
+                  <p className="text-sm font-medium text-white truncate">{user!.username}</p>
+                  <p className="text-xs text-neutral-500 truncate">{user!.email}</p>
+                </div>
+                <button
+                  onClick={() => {
+                    setUserMenuOpen(false);
+                    navigate('vault');
+                  }}
+                  className="w-full text-left px-4 py-2.5 text-sm text-neutral-300 hover:bg-white/5 transition-colors"
+                >
+                  open vault
+                </button>
+                <button
+                  onClick={() => {
+                    logout();
+                    setUserMenuOpen(false);
+                  }}
+                  className="w-full text-left px-4 py-2.5 text-sm text-neutral-400 hover:text-red-400 hover:bg-white/5 transition-colors"
+                >
+                  log out
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1">
+              <button onClick={() => navigate('login')} className="text-[13px] text-neutral-400 hover:text-white px-2.5 py-1.5 rounded-full transition-colors">
+                log in
+              </button>
+              <button
+                onClick={() => navigate('signup')}
+                className="hidden sm:inline-flex text-[13px] font-medium px-3.5 py-1.5 rounded-full bg-white text-black hover:bg-neutral-200 transition-colors"
+              >
+                sign up
               </button>
             </div>
+          )}
 
-            <div className="flex gap-1.5 overflow-x-auto scrollbar-none pb-0.5">
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className={`p-1.5 rounded-full transition-colors ${
+              menuOpen ? 'bg-white/10 text-white' : 'text-neutral-400 hover:text-white hover:bg-white/5'
+            }`}
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={menuOpen}
+          >
+            {menuOpen ? (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M6 6l12 12M18 6L6 18" />
+              </svg>
+            ) : (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="4" y1="7" x2="20" y2="7" />
+                <line x1="4" y1="12" x2="20" y2="12" />
+                <line x1="4" y1="17" x2="20" y2="17" />
+              </svg>
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* outer dropdown — scrolls */}
+      <div
+        className={`border-t border-white/[0.06] overflow-hidden transition-[max-height,opacity] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          menuOpen ? 'max-h-[min(78vh,640px)] opacity-100' : 'max-h-0 opacity-0'
+        }`}
+      >
+        <div className="max-h-[min(78vh,640px)] overflow-y-auto overscroll-contain">
+          <div className="max-w-6xl mx-auto px-4 sm:px-5 py-3 space-y-3">
+            {/* quick chips */}
+            <div className="flex gap-1.5 overflow-x-auto scrollbar-none pb-0.5 -mx-0.5 px-0.5">
               {primary.map((l) => (
                 <button
-                  key={`p-${l.to}`}
+                  key={`chip-${l.to}`}
                   onClick={() => go(l.to)}
-                  className="shrink-0 px-3 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.08] text-[12.5px] text-neutral-300 hover:text-white hover:bg-white/10 hover:border-white/15 transition-colors"
+                  className="shrink-0 px-3.5 py-1.5 rounded-full bg-white/[0.06] border border-white/10 text-[12.5px] text-neutral-200 hover:bg-white/12 hover:text-white transition-colors"
                 >
                   {l.label}
                 </button>
               ))}
             </div>
 
+            {/* search */}
             <div className="relative">
               <svg
                 className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-500 pointer-events-none"
-                width="15"
-                height="15"
+                width="14"
+                height="14"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -401,63 +374,79 @@ export default function Navbar() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="search desks…"
-                className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-white/[0.04] border border-white/10 text-[13px] text-white placeholder:text-neutral-500 outline-none focus:border-[#0a84ff]/45 focus:bg-white/[0.06] transition-colors"
+                className="w-full pl-9 pr-3 py-2 rounded-xl bg-white/[0.04] border border-white/10 text-[13px] text-white placeholder:text-neutral-500 outline-none focus:border-[#0a84ff]/40 transition-colors"
               />
             </div>
-          </div>
 
-          {/* body */}
-          <div className="flex-1 min-h-0 flex flex-col sm:flex-row">
-            {/* category rail */}
-            {!searching && (
-              <div className="sm:w-44 shrink-0 border-b sm:border-b-0 sm:border-r border-white/[0.06] px-2 py-2 sm:py-3 flex sm:flex-col gap-1 overflow-x-auto sm:overflow-x-visible scrollbar-none">
-                {groups.map((g) => {
-                  const on = activeGroup === g.title;
-                  return (
-                    <button
-                      key={g.title}
-                      onClick={() => setActiveGroup(g.title)}
-                      className={`shrink-0 flex items-center justify-between gap-2 px-3 py-2 rounded-xl text-left transition-colors ${
-                        on ? 'bg-white/[0.09] text-white' : 'text-neutral-400 hover:text-white hover:bg-white/[0.04]'
-                      }`}
-                    >
-                      <span className="text-[13px] font-medium capitalize">{g.title}</span>
-                      <span className={`text-[10px] tabular-nums ${on ? 'text-neutral-400' : 'text-neutral-600'}`}>{g.items.length}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-
-            {/* items */}
-            <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 sm:px-4 py-3">
-              {activeItems.length === 0 ? (
-                <p className="text-sm text-neutral-500 text-center py-16">no desks match “{query}”</p>
+            {/* nested dropdowns */}
+            <div className="space-y-1.5 pb-1">
+              {filteredGroups.length === 0 ? (
+                <p className="text-sm text-neutral-500 text-center py-8">no desks match “{query}”</p>
               ) : (
-                <>
-                  <p className="text-[11px] uppercase tracking-[0.1em] text-neutral-500 px-1.5 mb-2">
-                    {searching ? `${activeItems.length} results` : activeGroup}
-                  </p>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-1">
-                    {activeItems.map((l) => (
+                filteredGroups.map((g) => {
+                  const forceOpen = !!query.trim();
+                  const open = forceOpen || openGroup === g.title;
+                  return (
+                    <div key={g.title} className="rounded-2xl bg-white/[0.03] border border-white/[0.07] overflow-hidden">
                       <button
-                        key={`${l.group}-${l.to}`}
-                        onClick={() => go(l.to)}
-                        className="group text-left rounded-xl px-3 py-2.5 hover:bg-white/[0.06] transition-colors"
+                        type="button"
+                        onClick={() => {
+                          if (forceOpen) return;
+                          setOpenGroup(open ? null : g.title);
+                        }}
+                        className="w-full flex items-center justify-between px-3.5 py-2.5 text-left hover:bg-white/[0.03] transition-colors"
                       >
-                        <span className="block text-[13px] text-neutral-300 group-hover:text-white truncate transition-colors">{l.label}</span>
-                        {searching && (
-                          <span className="block text-[10px] text-neutral-600 capitalize mt-0.5">{l.group}</span>
-                        )}
+                        <span className="text-[13px] font-medium text-neutral-200 capitalize">{g.title}</span>
+                        <span className="flex items-center gap-2">
+                          <span className="text-[11px] tabular-nums text-neutral-500 bg-white/5 px-1.5 py-0.5 rounded-md">
+                            {g.items.length}
+                          </span>
+                          {!forceOpen && (
+                            <svg
+                              width="14"
+                              height="14"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              className={`text-neutral-500 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+                            >
+                              <path d="M6 9l6 6 6-6" />
+                            </svg>
+                          )}
+                        </span>
                       </button>
-                    ))}
-                  </div>
-                </>
+
+                      {/* inner dropdown — all items, no clip */}
+                      <div
+                        className={`grid transition-[grid-template-rows] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                          open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+                        }`}
+                      >
+                        <div className="overflow-hidden min-h-0">
+                          <div className="px-2 pb-2.5 pt-0.5 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-0.5">
+                            {g.items.map((l) => (
+                              <button
+                                key={l.to}
+                                type="button"
+                                onClick={() => go(l.to)}
+                                className="text-left text-[13px] text-neutral-400 hover:text-white hover:bg-white/[0.06] rounded-xl px-2.5 py-2 transition-colors truncate"
+                                title={l.label}
+                              >
+                                {l.label}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
               )}
             </div>
           </div>
         </div>
       </div>
-    </>
+    </nav>
   );
 }

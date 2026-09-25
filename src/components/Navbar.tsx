@@ -187,7 +187,6 @@ const groups: { title: string; items: NavItem[] }[] = [
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [openGroup, setOpenGroup] = useState<string | null>('files');
   const [query, setQuery] = useState('');
   const { user, isLoggedIn, logout } = useAuth();
   const { navigate } = useRouter();
@@ -222,7 +221,7 @@ export default function Navbar() {
     }
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    const t = window.setTimeout(() => searchRef.current?.focus(), 120);
+    const t = window.setTimeout(() => searchRef.current?.focus(), 80);
     return () => {
       document.body.style.overflow = prev;
       window.clearTimeout(t);
@@ -236,75 +235,105 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="fixed top-0 inset-x-0 z-50 glass">
-      <div className="max-w-6xl mx-auto px-4 sm:px-5 h-14 flex items-center justify-between gap-3">
-        <button onClick={() => navigate('home')} className="text-lg font-semibold tracking-tight text-white shrink-0">
-          rank<span className="text-[#0a84ff]">vault</span>
-        </button>
-        <div className="hidden lg:flex items-center gap-1 min-w-0">
-          {primary.slice(0, 8).map((l) => (
-            <button key={l.to} onClick={() => navigate(l.to)} className="text-[13px] text-neutral-400 hover:text-white px-2.5 py-1.5 rounded-full hover:bg-white/5 transition-colors">
-              {l.label}
-            </button>
-          ))}
-        </div>
-        <div className="flex items-center gap-1.5 shrink-0">
-          {isLoggedIn ? (
-            <div className="relative" ref={userMenuRef}>
-              <button onClick={() => setUserMenuOpen(!userMenuOpen)} className="flex items-center gap-2 p-1.5 rounded-full hover:bg-white/5 transition-colors">
-                <div className="w-7 h-7 rounded-full bg-[#0a84ff]/15 border border-[#0a84ff]/25 flex items-center justify-center">
-                  <span className="text-xs font-bold text-[#0a84ff]">{user!.username.charAt(0).toUpperCase()}</span>
-                </div>
-                <span className="hidden sm:inline text-sm text-neutral-300 max-w-[100px] truncate">{user!.username}</span>
-              </button>
-              <div className={`absolute right-0 top-full mt-1.5 w-56 rounded-2xl glass border border-white/10 shadow-2xl shadow-black/40 overflow-hidden transition-all duration-200 origin-top-right ${userMenuOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}>
-                <div className="px-4 py-3 border-b border-white/8">
-                  <p className="text-sm font-medium text-white truncate">{user!.username}</p>
-                  <p className="text-xs text-neutral-500 truncate">{user!.email}</p>
-                </div>
-                <button onClick={() => { setUserMenuOpen(false); navigate('vault'); }} className="w-full text-left px-4 py-2.5 text-sm text-neutral-300 hover:bg-white/5 transition-colors">open vault</button>
-                <button onClick={() => { logout(); setUserMenuOpen(false); }} className="w-full text-left px-4 py-2.5 text-sm text-neutral-400 hover:text-red-400 hover:bg-white/5 transition-colors">log out</button>
-              </div>
-            </div>
-          ) : (
-            <div className="flex items-center gap-1">
-              <button onClick={() => navigate('login')} className="text-[13px] text-neutral-400 hover:text-white px-2.5 py-1.5 rounded-full transition-colors">log in</button>
-              <button onClick={() => navigate('signup')} className="hidden sm:inline-flex text-[13px] font-medium px-3.5 py-1.5 rounded-full bg-white text-black hover:bg-neutral-200 transition-colors">sign up</button>
-            </div>
-          )}
-          <button onClick={() => setMenuOpen(!menuOpen)} className="text-neutral-400 hover:text-white p-1.5 rounded-full hover:bg-white/5 ml-0.5" aria-label={menuOpen ? 'Close menu' : 'Open menu'} aria-expanded={menuOpen}>
-            {menuOpen ? (
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 6l12 12M18 6L6 18" /></svg>
-            ) : (
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="4" y1="7" x2="20" y2="7" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="17" x2="20" y2="17" /></svg>
-            )}
+    <nav className="fixed top-0 inset-x-0 z-50">
+      <div className="glass border-b border-white/[0.06]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-5 h-14 flex items-center justify-between gap-3">
+          <button onClick={() => navigate('home')} className="text-lg font-semibold tracking-tight text-white shrink-0">
+            rank<span className="text-[#0a84ff]">vault</span>
           </button>
+          <div className="hidden lg:flex items-center gap-0.5 min-w-0">
+            {primary.slice(0, 8).map((l) => (
+              <button
+                key={l.to}
+                onClick={() => navigate(l.to)}
+                className="text-[13px] text-neutral-400 hover:text-white px-2.5 py-1.5 rounded-full hover:bg-white/5 transition-colors"
+              >
+                {l.label}
+              </button>
+            ))}
+          </div>
+          <div className="flex items-center gap-1.5 shrink-0">
+            {isLoggedIn ? (
+              <div className="relative" ref={userMenuRef}>
+                <button onClick={() => setUserMenuOpen(!userMenuOpen)} className="flex items-center gap-2 p-1.5 rounded-full hover:bg-white/5 transition-colors">
+                  <div className="w-7 h-7 rounded-full bg-[#0a84ff]/15 border border-[#0a84ff]/25 flex items-center justify-center">
+                    <span className="text-xs font-bold text-[#0a84ff]">{user!.username.charAt(0).toUpperCase()}</span>
+                  </div>
+                  <span className="hidden sm:inline text-sm text-neutral-300 max-w-[100px] truncate">{user!.username}</span>
+                </button>
+                <div
+                  className={`absolute right-0 top-full mt-1.5 w-56 rounded-2xl glass border border-white/10 shadow-2xl shadow-black/50 overflow-hidden transition-all duration-200 origin-top-right ${
+                    userMenuOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'
+                  }`}
+                >
+                  <div className="px-4 py-3 border-b border-white/8">
+                    <p className="text-sm font-medium text-white truncate">{user!.username}</p>
+                    <p className="text-xs text-neutral-500 truncate">{user!.email}</p>
+                  </div>
+                  <button onClick={() => { setUserMenuOpen(false); navigate('vault'); }} className="w-full text-left px-4 py-2.5 text-sm text-neutral-300 hover:bg-white/5 transition-colors">
+                    open vault
+                  </button>
+                  <button onClick={() => { logout(); setUserMenuOpen(false); }} className="w-full text-left px-4 py-2.5 text-sm text-neutral-400 hover:text-red-400 hover:bg-white/5 transition-colors">
+                    log out
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center gap-1">
+                <button onClick={() => navigate('login')} className="text-[13px] text-neutral-400 hover:text-white px-2.5 py-1.5 rounded-full transition-colors">
+                  log in
+                </button>
+                <button onClick={() => navigate('signup')} className="hidden sm:inline-flex text-[13px] font-medium px-3.5 py-1.5 rounded-full bg-white text-black hover:bg-neutral-200 transition-colors">
+                  sign up
+                </button>
+              </div>
+            )}
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className={`p-1.5 rounded-full transition-colors ${menuOpen ? 'bg-white/10 text-white' : 'text-neutral-400 hover:text-white hover:bg-white/5'}`}
+              aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={menuOpen}
+            >
+              {menuOpen ? (
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M6 6l12 12M18 6L6 18" />
+                </svg>
+              ) : (
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="4" y1="7" x2="20" y2="7" />
+                  <line x1="4" y1="12" x2="20" y2="12" />
+                  <line x1="4" y1="17" x2="20" y2="17" />
+                </svg>
+              )}
+            </button>
+          </div>
         </div>
       </div>
 
+      {/* mega panel */}
       <div
-        className={`border-t border-white/8 overflow-hidden transition-[max-height,opacity] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-          menuOpen ? 'max-h-[min(85vh,720px)] opacity-100' : 'max-h-0 opacity-0'
+        className={`overflow-hidden transition-[max-height,opacity] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          menuOpen ? 'max-h-[min(88vh,760px)] opacity-100' : 'max-h-0 opacity-0'
         }`}
       >
-        <div className="max-h-[min(85vh,720px)] flex flex-col">
-          <div className="shrink-0 px-4 sm:px-5 pt-3 pb-2 space-y-3 border-b border-white/5">
-            <div className="flex gap-2 overflow-x-auto pb-0.5 -mx-1 px-1 scrollbar-none">
+        <div className="glass border-b border-white/[0.06] max-h-[min(88vh,760px)] flex flex-col">
+          <div className="shrink-0 px-4 sm:px-6 pt-3.5 pb-3 space-y-3 border-b border-white/[0.05]">
+            <div className="flex gap-1.5 overflow-x-auto scrollbar-none -mx-1 px-1">
               {primary.map((l) => (
                 <button
                   key={`chip-${l.to}`}
                   onClick={() => go(l.to)}
-                  className="shrink-0 px-3.5 py-1.5 rounded-full bg-white/[0.07] border border-white/10 text-[13px] text-neutral-200 hover:bg-white/12 hover:text-white hover:border-white/20 transition-colors"
+                  className="shrink-0 px-3.5 py-1.5 rounded-full bg-white/[0.06] border border-white/10 text-[12.5px] text-neutral-200 hover:bg-white/12 hover:text-white hover:border-white/20 transition-colors"
                 >
                   {l.label}
                 </button>
               ))}
             </div>
-            <div className="relative">
+            <div className="relative max-w-md">
               <svg
                 className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-500 pointer-events-none"
-                width="15"
-                height="15"
+                width="14"
+                height="14"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -318,72 +347,50 @@ export default function Navbar() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="search desks…"
-                className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-white/[0.05] border border-white/10 text-[13px] text-white placeholder:text-neutral-500 outline-none focus:border-[#0a84ff]/45 focus:bg-white/[0.07] transition-colors"
+                className="w-full pl-9 pr-3 py-2 rounded-xl bg-white/[0.04] border border-white/10 text-[13px] text-white placeholder:text-neutral-500 outline-none focus:border-[#0a84ff]/40 focus:bg-white/[0.06] transition-colors"
               />
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto overscroll-contain px-4 sm:px-5 py-3 space-y-2">
+          <div className="flex-1 overflow-y-auto overscroll-contain px-3 sm:px-5 py-3">
             {filteredGroups.length === 0 ? (
-              <p className="text-sm text-neutral-500 text-center py-10">no desks match “{query}”</p>
+              <p className="text-sm text-neutral-500 text-center py-12">no desks match “{query}”</p>
             ) : (
-              filteredGroups.map((g) => {
-                const forceOpen = !!query.trim();
-                const open = forceOpen || openGroup === g.title;
-                return (
-                  <div key={g.title} className="rounded-2xl bg-white/[0.03] border border-white/[0.07] overflow-hidden">
-                    <button
-                      onClick={() => {
-                        if (forceOpen) return;
-                        setOpenGroup(open ? null : g.title);
-                      }}
-                      className="w-full flex items-center justify-between px-3.5 py-2.5 text-left sticky top-0 bg-[#0c0c0e]/90 backdrop-blur-md z-[1]"
-                    >
-                      <span className="text-[13px] font-medium text-neutral-200 capitalize tracking-wide">{g.title}</span>
-                      <span className="flex items-center gap-2">
-                        <span className="text-[11px] tabular-nums text-neutral-500 bg-white/5 px-1.5 py-0.5 rounded-md">{g.items.length}</span>
-                        {!forceOpen && (
-                          <svg
-                            width="14"
-                            height="14"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            className={`text-neutral-500 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
-                          >
-                            <path d="M6 9l6 6 6-6" />
-                          </svg>
-                        )}
-                      </span>
-                    </button>
-                    <div
-                      className={`grid transition-[grid-template-rows] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-                        open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
-                      }`}
-                    >
-                      <div className="overflow-hidden min-h-0">
-                        <div className="px-2 pb-2.5 pt-0.5 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-0.5">
-                          {g.items.map((l) => (
-                            <button
-                              key={l.to}
-                              onClick={() => go(l.to)}
-                              className="text-left text-[13px] text-neutral-400 hover:text-white hover:bg-white/[0.06] rounded-xl px-2.5 py-2 transition-colors truncate"
-                              title={l.label}
-                            >
-                              {l.label}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                {filteredGroups.map((g) => (
+                  <div key={g.title} className="min-w-0">
+                    <div className="flex items-center justify-between px-2 pb-2 sticky top-0 z-[1] bg-[#0a0a0c]/85 backdrop-blur-md">
+                      <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-500">{g.title}</span>
+                      <span className="text-[10px] tabular-nums text-neutral-600">{g.items.length}</span>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-1 gap-px">
+                      {g.items.map((l) => (
+                        <button
+                          key={l.to}
+                          onClick={() => go(l.to)}
+                          className="text-left text-[13px] text-neutral-400 hover:text-white hover:bg-white/[0.06] rounded-lg px-2.5 py-1.5 transition-colors truncate"
+                          title={l.label}
+                        >
+                          {l.label}
+                        </button>
+                      ))}
                     </div>
                   </div>
-                );
-              })
+                ))}
+              </div>
             )}
           </div>
         </div>
       </div>
+
+      {menuOpen && (
+        <button
+          type="button"
+          aria-label="Close menu"
+          className="fixed inset-0 top-14 z-[-1] bg-black/40 backdrop-blur-[2px]"
+          onClick={() => setMenuOpen(false)}
+        />
+      )}
     </nav>
   );
 }

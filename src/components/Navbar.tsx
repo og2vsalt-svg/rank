@@ -7,10 +7,10 @@ type NavItem = { to: Route; label: string };
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
-  { to: 'willow', label: 'willow' },
-  { to: 'glacier', label: 'glacier' },
-  { to: 'lichen', label: 'lichen' },
-  { to: 'gully', label: 'gully' },
+  { to: 'quarry', label: 'quarry' },
+  { to: 'spire', label: 'spire' },
+  { to: 'moss', label: 'moss' },
+  { to: 'lagoon', label: 'lagoon' },
   { to: 'bazaar', label: 'bazaar' },
   { to: 'grove', label: 'grove' },
 ];
@@ -44,6 +44,9 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'pollen', label: 'pollen' },
       { to: 'gully', label: 'gully' },
       { to: 'glacier', label: 'glacier' },
+      { to: 'quarry', label: 'quarry' },
+      { to: 'spire', label: 'spire' },
+      { to: 'lagoon', label: 'lagoon' },
     ],
   },
   {
@@ -77,6 +80,7 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'lantern', label: 'lantern' },
       { to: 'reef', label: 'reef' },
       { to: 'lichen', label: 'lichen' },
+      { to: 'moss', label: 'moss' },
     ],
   },
   {
@@ -135,6 +139,7 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'atrium', label: 'atrium' },
       { to: 'glacier', label: 'glacier' },
       { to: 'gully', label: 'gully' },
+      { to: 'quarry', label: 'quarry' },
     ],
   },
 ];

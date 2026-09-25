@@ -105,6 +105,9 @@ async function loadShare(id) {
 const PAGE_TITLES = {
   vault: 'vault — rankvault',
   drop: 'drop — rankvault',
+  vestibule: 'vestibule — leave files at the door',
+  keystone: 'keystone — featured drop',
+  ripple: 'ripple — recent drops',
   silo: 'silo — vault weight',
   ridge: 'ridge — clean names',
   hearth: 'hearth — note plus file',

@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"');
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 function isBot(ua) {
@@ -38,6 +38,8 @@ function pageHtml({ title, desc, image, url, color, mime }) {
   extra.push('<meta name="theme-color" content="' + esc(c) + '" />');
   extra.push('<meta property="og:site_name" content="rankvault" />');
   extra.push('<meta name="twitter:card" content="summary_large_image" />');
+  extra.push('<meta name="twitter:site" content="@rankvault" />');
+  extra.push('<meta property="og:determiner" content="" />');
   if (mime && String(mime).startsWith('video/') && isRemoteImg && image) {
     extra.push('<meta property="og:video" content="' + esc(image) + '" />');
     extra.push('<meta property="og:video:type" content="' + esc(mime) + '" />');
@@ -156,6 +158,12 @@ const PAGE_TITLES = {
   spire: 'spire — stack files',
   moss: 'moss — discord card',
   lagoon: 'lagoon — hold then grab',
+  cistern: 'cistern — inspect then share',
+  oxbow: 'oxbow — rankvault',
+  plinth: 'plinth — rankvault',
+  rookery: 'rookery — rankvault',
+  solace: 'solace — rankvault',
+  keepsake: 'keepsake — rankvault',
 };
 
 export default async function handler(req, res) {

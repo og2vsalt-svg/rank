@@ -22,6 +22,7 @@
     { "source": "/aegis", "destination": "/api/embed?page=aegis" },
     { "source": "/scrip", "destination": "/api/embed?page=scrip" },
     { "source": "/vault", "destination": "/api/embed?page=vault" },
+    { "source": "/cistern", "destination": "/api/embed?page=cistern" },
     { "source": "/l/:page", "destination": "/api/embed?page=:page" },
     { "source": "/:page", "destination": "/api/embed?page=:page" }
   ],

@@ -7,10 +7,10 @@ type NavItem = { to: Route; label: string };
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
-  { to: 'quarry', label: 'quarry' },
-  { to: 'spire', label: 'spire' },
+  { to: 'hearth', label: 'hearth' },
+  { to: 'silo', label: 'silo' },
+  { to: 'ridge', label: 'ridge' },
   { to: 'moss', label: 'moss' },
-  { to: 'lagoon', label: 'lagoon' },
   { to: 'bazaar', label: 'bazaar' },
   { to: 'grove', label: 'grove' },
 ];
@@ -21,6 +21,8 @@ const groups: { title: string; items: NavItem[] }[] = [
     items: [
       { to: 'vault', label: 'vault' },
       { to: 'drop', label: 'drop' },
+      { to: 'silo', label: 'silo' },
+      { to: 'ridge', label: 'ridge' },
       { to: 'pallet', label: 'pallet' },
       { to: 'tandem', label: 'tandem' },
       { to: 'tide', label: 'tide' },
@@ -52,6 +54,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'hearth', label: 'hearth' },
       { to: 'horizon', label: 'horizon' },
       { to: 'mirage', label: 'mirage' },
       { to: 'gazette', label: 'gazette' },
@@ -121,6 +124,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'ridge', label: 'ridge' },
+      { to: 'silo', label: 'silo' },
       { to: 'copper', label: 'copper' },
       { to: 'quartz', label: 'quartz' },
       { to: 'nadir', label: 'nadir' },

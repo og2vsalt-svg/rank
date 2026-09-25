@@ -15,6 +15,8 @@
     { "source": "/keepsake", "destination": "/api/embed?page=keepsake" },
     { "source": "/slate", "destination": "/api/embed?page=slate" },
     { "source": "/drop", "destination": "/api/embed?page=drop" },
+    { "source": "/lattice", "destination": "/api/embed?page=lattice" },
+    { "source": "/slip", "destination": "/api/embed?page=slip" },
     { "source": "/lintel", "destination": "/api/embed?page=lintel" },
     { "source": "/terrace", "destination": "/api/embed?page=terrace" },
     { "source": "/sundial", "destination": "/api/embed?page=sundial" },

@@ -8,7 +8,8 @@ import { fetchShare, shareUrls, type CloudMeta } from '../lib/cloudShare';
 function formatBytes(n: number) {
   if (n < 1024) return n + ' b';
   if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' kb';
-  return (n / (1024 * 1024)).toFixed(2) + ' mb';
+  if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(2) + ' mb';
+  return (n / (1024 * 1024 * 1024)).toFixed(2) + ' gb';
 }
 
 export default function SharePage() {
@@ -66,7 +67,7 @@ export default function SharePage() {
           name: local.name,
           type: local.type,
           size: local.size,
-          url: local.dataUrl,
+          url: local.url,
           lockPass: local.lockPass,
           expiresAt: local.expiresAt,
           downloads: local.downloads,

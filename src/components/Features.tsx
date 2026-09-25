@@ -2,6 +2,9 @@ import { motion } from 'framer-motion';
 
 const items = [
   { title: 'local-first vault', body: 'files live in your browser first. nothing ships unless you flip a drop public.' },
+  { title: 'emberline grade', body: 'warm a photo on canvas, then publish the jpeg to the share db with a discord /s card.' },
+  { title: 'driftwood hold', body: 'set a pause, drop a local file, wait, then let it go public. not a vault grid.' },
+  { title: 'hinterland log', body: 'pin public share ids with a note. stays in this browser, links stay discord-ready.' },
   { title: 'solarium desk', body: 'one local file plus a caption, published to the share db. discord /s card, no vault grid.' },
   { title: 'wellspring receipt', body: 'one local file in, a discord /s card out. not a vault grid — just a receipt desk.' },
   { title: 'tide queue', body: 'line up local files and publish them one by one to the share db. discord /s links come back in order.' },

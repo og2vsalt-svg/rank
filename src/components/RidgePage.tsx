@@ -1,46 +1,37 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
 
-function parseHeaders(buf: ArrayBuffer) {
-  const bytes = new Uint8Array(buf.slice(0, 16));
-  const hex = [...bytes].map((b) => b.toString(16).padStart(2, '0')).join(' ');
-  const ascii = [...bytes].map((b) => (b >= 32 && b < 127 ? String.fromCharCode(b) : '.')).join('');
-  let kind = 'unknown';
-  const s = hex.replace(/ /g, '');
-  if (s.startsWith('89504e47')) kind = 'png';
-  else if (s.startsWith('ffd8ff')) kind = 'jpeg';
-  else if (s.startsWith('47494638')) kind = 'gif';
-  else if (s.startsWith('25504446')) kind = 'pdf';
-  else if (s.startsWith('504b0304')) kind = 'zip / office';
-  else if (s.startsWith('1a45dfa3')) kind = 'webm / mkv';
-  else if (s.startsWith('000000') && s.includes('66747970')) kind = 'mp4';
-  return { hex, ascii, kind, bytes: bytes.length };
+function cleanName(name: string) {
+  const parts = name.split('.');
+  const ext = parts.length > 1 ? parts.pop() : '';
+  const base = parts.join('.')
+    .normalize('NFKD')
+    .replace(/[^\w\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .toLowerCase()
+    .slice(0, 80) || 'file';
+  return ext ? `${base}.${ext.toLowerCase()}` : base;
 }
 
 export default function RidgePage() {
-  const [name, setName] = useState('');
-  const [size, setSize] = useState(0);
-  const [type, setType] = useState('');
-  const [info, setInfo] = useState<{ hex: string; ascii: string; kind: string; bytes: number } | null>(null);
+  const [rows, setRows] = useState<{ from: string; to: string; size: number }[]>([]);
   const [warn, setWarn] = useState('');
 
-  const onFile = async (file?: File) => {
-    if (!file) return;
-    setName(file.name);
-    setSize(file.size);
-    setType(file.type || 'application/octet-stream');
-    setWarn(file.size > 80 * 1024 * 1024 ? 'huge file. sniffing the first 16 bytes only so the tab stays chill.' : '');
-    const slice = await file.slice(0, 16).arrayBuffer();
-    setInfo(parseHeaders(slice));
+  const onFiles = (list: FileList | null) => {
+    if (!list?.length) return;
+    const next = [...list].map((f) => ({ from: f.name, to: cleanName(f.name), size: f.size }));
+    setRows(next);
+    const big = next.some((r) => r.size > 40 * 1024 * 1024);
+    setWarn(big ? 'one of these is huge. renaming is instant, uploading later might lag.' : '');
   };
 
-  const pretty = useMemo(() => {
-    if (size < 1024) return size + ' b';
-    if (size < 1024 * 1024) return (size / 1024).toFixed(1) + ' kb';
-    if (size < 1024 * 1024 * 1024) return (size / (1024 * 1024)).toFixed(2) + ' mb';
-    return (size / (1024 * 1024 * 1024)).toFixed(2) + ' gb';
-  }, [size]);
+  const copy = async () => {
+    const text = rows.map((r) => `${r.from} -> ${r.to}`).join('\n');
+    try { await navigator.clipboard.writeText(text); } catch {}
+  };
 
   return (
     <div className="mesh min-h-screen">
@@ -48,25 +39,27 @@ export default function RidgePage() {
       <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-[32px] p-8">
           <p className="text-[#0a84ff] text-sm mb-2">ridge</p>
-          <h1 className="text-3xl font-semibold mb-3">sniff a local file.</h1>
-          <p className="text-neutral-400 text-sm mb-6">magic bytes, size, mime. stays on this machine. no upload unless you hop to drop.</p>
-          <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition mb-6">
-            <input type="file" className="hidden" onChange={(e) => onFile(e.target.files?.[0])} />
-            <p className="text-white font-medium">pick a file to inspect</p>
-            <p className="text-xs text-neutral-500 mt-2">no cap. we only read the header.</p>
+          <h1 className="text-3xl font-semibold mb-3">flatten messy filenames.</h1>
+          <p className="text-neutral-400 text-sm mb-6">drop files locally. we only tidy the names. nothing leaves this tab.</p>
+          <label
+            className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition"
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => { e.preventDefault(); onFiles(e.dataTransfer.files); }}
+          >
+            <input type="file" multiple className="hidden" onChange={(e) => onFiles(e.target.files)} />
+            <p className="text-white font-medium">drop files to rename</p>
+            <p className="text-xs text-neutral-500 mt-2">no upload. no limit. just a clean slug.</p>
           </label>
-          {warn && <p className="text-xs text-amber-300/80 mb-4">{warn}</p>}
-          {name && (
-            <div className="space-y-3 text-sm">
-              <p className="text-white">{name}</p>
-              <p className="text-neutral-400">{pretty} · {type || 'no mime'}</p>
-              {info && (
-                <>
-                  <p className="text-neutral-300">guess: {info.kind}</p>
-                  <p className="font-mono text-[12px] text-neutral-500 break-all">{info.hex}</p>
-                  <p className="font-mono text-[12px] text-neutral-600">{info.ascii}</p>
-                </>
-              )}
+          {warn && <p className="text-xs text-amber-300/80 mt-4">{warn}</p>}
+          {rows.length > 0 && (
+            <div className="mt-6 space-y-2">
+              {rows.map((r) => (
+                <div key={r.from} className="rounded-2xl bg-white/[0.03] border border-white/5 px-4 py-3">
+                  <p className="text-xs text-neutral-500 truncate">{r.from}</p>
+                  <p className="text-sm text-white truncate">{r.to}</p>
+                </div>
+              ))}
+              <button onClick={copy} className="mt-3 px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium">copy map</button>
             </div>
           )}
         </motion.div>

@@ -1,77 +1,77 @@
-import { useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
 import { useVault } from './VaultContext';
-import { useAuth } from './AuthContext';
 import { useRouter } from './Router';
 
-function fmt(n: number) {
+function pretty(n: number) {
   if (n < 1024) return n + ' b';
   if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' kb';
-  return (n / (1024 * 1024)).toFixed(2) + ' mb';
+  if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(1) + ' mb';
+  return (n / (1024 * 1024 * 1024)).toFixed(2) + ' gb';
 }
 
 export default function SiloPage() {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const { addFiles, files } = useVault();
-  const { isLoggedIn } = useAuth();
+  const vault = useVault() as any;
   const { navigate } = useRouter();
-  const [warn, setWarn] = useState('');
-  const [busy, setBusy] = useState(false);
-  const [last, setLast] = useState(0);
+  const [filter, setFilter] = useState('');
+  const files = (vault?.files || vault?.items || []) as any[];
+  const list = Array.isArray(files) ? files : [];
 
-  const onPick = async (list: FileList | null) => {
-    if (!list || !list.length) return;
-    if (!isLoggedIn) {
-      navigate('login');
-      return;
-    }
-    const arr = Array.from(list);
-    const total = arr.reduce((s, f) => s + f.size, 0);
-    setWarn(total > 40 * 1024 * 1024 ? 'big batch. the tab may feel slow while it lands. no hard cap though.' : '');
-    setBusy(true);
-    try {
-      await addFiles(arr);
-      setLast(arr.length);
-    } finally {
-      setBusy(false);
-    }
-  };
+  const stats = useMemo(() => {
+    const total = list.reduce((s, f) => s + (Number(f.size) || 0), 0);
+    const heavy = list.filter((f) => (Number(f.size) || 0) > 40 * 1024 * 1024);
+    return { total, count: list.length, heavy: heavy.length };
+  }, [list]);
+
+  const shown = list.filter((f) => {
+    const q = filter.trim().toLowerCase();
+    if (!q) return true;
+    return String(f.name || '').toLowerCase().includes(q);
+  });
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          className="glass rounded-[32px] p-8"
-        >
+      <div className="pt-28 pb-20 px-5 max-w-3xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-[32px] p-8">
           <p className="text-[#0a84ff] text-sm mb-2">silo</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">dump a pile at once.</h1>
-          <p className="text-neutral-400 text-sm mb-6">bulk drop into the vault. no file limit. just a heads up if the batch is chunky.</p>
-
-          <button
-            onClick={() => inputRef.current?.click()}
-            disabled={busy}
-            className="w-full rounded-[28px] border border-dashed border-white/15 bg-white/[0.03] px-6 py-16 text-center hover:bg-white/[0.05] transition-colors"
-          >
-            <p className="text-white text-sm">{busy ? 'landing files…' : 'click or drop a whole folder vibe'}</p>
-            <p className="text-xs text-neutral-500 mt-2">{files.length} already in vault</p>
-          </button>
+          <h1 className="text-3xl font-semibold mb-3">how heavy is this vault.</h1>
+          <p className="text-neutral-400 text-sm mb-6">no cap on size. just a glance so you know when the tab might start dragging.</p>
+          <div className="grid grid-cols-3 gap-3 mb-6">
+            {[
+              { k: 'files', v: String(stats.count) },
+              { k: 'held', v: pretty(stats.total) },
+              { k: 'chunky', v: String(stats.heavy) },
+            ].map((c) => (
+              <div key={c.k} className="rounded-2xl bg-white/5 border border-white/8 px-4 py-4">
+                <p className="text-[11px] text-neutral-500 uppercase tracking-wide">{c.k}</p>
+                <p className="text-xl font-semibold mt-1">{c.v}</p>
+              </div>
+            ))}
+          </div>
+          {stats.heavy > 0 && (
+            <p className="text-xs text-amber-300/80 mb-4">a few files are over 40mb. preview and encode can feel slow. still allowed.</p>
+          )}
           <input
-            ref={inputRef}
-            type="file"
-            multiple
-            className="hidden"
-            onChange={(e) => onPick(e.target.files)}
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            placeholder="filter by name"
+            className="w-full mb-4 bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/50"
           />
-          {warn && <p className="text-xs text-amber-400/80 mt-4">{warn}</p>}
-          {last > 0 && <p className="text-xs text-neutral-500 mt-3">last batch: {last} file{last === 1 ? '' : 's'}</p>}
-          <div className="mt-6 flex gap-2">
-            <button onClick={() => navigate('vault')} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium">open vault</button>
-            <button onClick={() => navigate('halo')} className="px-5 py-2.5 rounded-full bg-white/5 text-sm">share health</button>
+          <div className="space-y-2 max-h-[420px] overflow-y-auto">
+            {shown.length === 0 && <p className="text-sm text-neutral-500">nothing in the silo yet. drop something first.</p>}
+            {shown.slice(0, 80).map((f) => (
+              <div key={f.id || f.name} className="flex items-center justify-between gap-3 rounded-2xl bg-white/[0.03] border border-white/5 px-4 py-3">
+                <div className="min-w-0">
+                  <p className="text-sm truncate">{f.name || 'untitled'}</p>
+                  <p className="text-[11px] text-neutral-500">{pretty(Number(f.size) || 0)}{f.public ? ' · public' : ''}</p>
+                </div>
+                {f.id && (
+                  <button onClick={() => navigate('share', f.id)} className="text-xs text-[#0a84ff] shrink-0">open</button>
+                )}
+              </div>
+            ))}
           </div>
         </motion.div>
       </div>

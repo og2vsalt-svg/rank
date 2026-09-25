@@ -55,6 +55,10 @@
     { "source": "/halo", "destination": "/api/embed?page=halo" },
     { "source": "/kite", "destination": "/api/embed?page=kite" },
     { "source": "/tide", "destination": "/api/embed?page=tide" },
+    { "source": "/nook", "destination": "/api/embed?page=nook" },
+    { "source": "/iris", "destination": "/api/embed?page=iris" },
+    { "source": "/pallet", "destination": "/api/embed?page=pallet" },
+    { "source": "/mirage", "destination": "/api/embed?page=mirage" },
     { "source": "/l/:page", "destination": "/api/embed?page=:page" }
   ],
   "headers": [

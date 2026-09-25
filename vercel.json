@@ -3,47 +3,16 @@
     { "source": "/s/:id", "destination": "/api/embed?id=:id" },
     { "source": "/f/:id", "destination": "/api/embed?id=:id" },
     { "source": "/d/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/g/:id", "destination": "/api/embed?id=:id" },
     { "source": "/p/:page", "destination": "/api/embed?page=:page" },
-    { "source": "/embed/:id", "destination": "/api/embed?id=:id&embed=1" },
-    { "source": "/share/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/quilt", "destination": "/api/embed?page=quilt" },
-    { "source": "/relay", "destination": "/api/embed?page=relay" },
-    { "source": "/pinnacle", "destination": "/api/embed?page=pinnacle" },
-    { "source": "/wellspring", "destination": "/api/embed?page=wellspring" },
-    { "source": "/solace", "destination": "/api/embed?page=solace" },
-    { "source": "/keepsake", "destination": "/api/embed?page=keepsake" },
-    { "source": "/slate", "destination": "/api/embed?page=slate" },
-    { "source": "/drop", "destination": "/api/embed?page=drop" },
-    { "source": "/lattice", "destination": "/api/embed?page=lattice" },
-    { "source": "/slip", "destination": "/api/embed?page=slip" },
-    { "source": "/lintel", "destination": "/api/embed?page=lintel" },
-    { "source": "/terrace", "destination": "/api/embed?page=terrace" },
-    { "source": "/sundial", "destination": "/api/embed?page=sundial" },
-    { "source": "/vestibule", "destination": "/api/embed?page=vestibule" },
-    { "source": "/keystone", "destination": "/api/embed?page=keystone" },
-    { "source": "/ripple", "destination": "/api/embed?page=ripple" },
-    { "source": "/hatch", "destination": "/api/embed?page=hatch" },
-    { "source": "/radar", "destination": "/api/embed?page=radar" },
-    { "source": "/tome", "destination": "/api/embed?page=tome" },
-    { "source": "/warden", "destination": "/api/embed?page=warden" },
-    { "source": "/zenith", "destination": "/api/embed?page=zenith" },
-    { "source": "/silo", "destination": "/api/embed?page=silo" },
-    { "source": "/ridge", "destination": "/api/embed?page=ridge" },
-    { "source": "/hearth", "destination": "/api/embed?page=hearth" },
-    { "source": "/aegis", "destination": "/api/embed?page=aegis" },
-    { "source": "/scrip", "destination": "/api/embed?page=scrip" },
-    { "source": "/vault", "destination": "/api/embed?page=vault" },
-    { "source": "/cistern", "destination": "/api/embed?page=cistern" },
-    { "source": "/l/:page", "destination": "/api/embed?page=:page" },
-    { "source": "/:page", "destination": "/api/embed?page=:page" }
+    { "source": "/embed/:id", "destination": "/api/embed?id=:id" }
   ],
   "headers": [
     {
       "source": "/api/(.*)",
       "headers": [
         { "key": "Access-Control-Allow-Origin", "value": "*" },
-        { "key": "Access-Control-Allow-Methods", "value": "GET,POST,OPTIONS" }
+        { "key": "Access-Control-Allow-Methods", "value": "GET,POST,OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type" }
       ]
     }
   ]

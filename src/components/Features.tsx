@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 
 const items = [
   { title: 'local-first vault', body: 'files live in your browser first. nothing ships unless you flip a drop public.' },
+  { title: 'wellspring receipt', body: 'one local file in, a discord /s card out. not a vault grid — just a receipt desk.' },
   { title: 'tide queue', body: 'line up local files and publish them one by one to the share db. discord /s links come back in order.' },
   { title: 'halo crop', body: 'circle-crop a photo on device. never hits the vault unless you drop the png later.' },
   { title: 'kite timer', body: 'park a share link and watch a countdown. no upload, just a clock.' },

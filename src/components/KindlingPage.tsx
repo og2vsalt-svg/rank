@@ -16,36 +16,37 @@ function readAsDataUrl(file: File) {
   });
 }
 
-export default function NavePage() {
+export default function KindlingPage() {
   const [busy, setBusy] = useState(false);
-  const [author, setAuthor] = useState('');
+  const [note, setNote] = useState('');
+  const [file, setFile] = useState<File | null>(null);
   const [warn, setWarn] = useState('');
   const [err, setErr] = useState('');
   const [embed, setEmbed] = useState('');
   const [app, setApp] = useState('');
-  const [name, setName] = useState('');
 
-  const onFile = async (file: File | undefined) => {
-    if (!file) return;
-    setName(file.name);
+  const go = async () => {
+    if (!file) {
+      setErr('pick a local file first');
+      return;
+    }
     setErr('');
-    setEmbed('');
-    setApp('');
-    setWarn(file.size > 40 * 1024 * 1024 ? 'huge file. browser may wheeze. no cap.' : '');
+    setWarn(file.size > 40 * 1024 * 1024 ? 'big file. encoding might lag. still no cap.' : '');
     setBusy(true);
     try {
       const dataUrl = await readAsDataUrl(file);
       const id = uid();
+      const name = note.trim() ? `${note.trim().slice(0, 40)} — ${file.name}` : file.name;
       const res = await publishShare({
         id,
-        name: file.name,
+        name,
         type: file.type || 'application/octet-stream',
         size: file.size,
         dataUrl,
-        author: author.trim() || undefined,
+        author: note.trim() || undefined,
       });
       if (!res.ok) {
-        setErr(res.error || 'nave drop failed');
+        setErr(res.error || 'kindling failed');
         return;
       }
       if (res.warn) setWarn(res.warn);
@@ -56,7 +57,7 @@ export default function NavePage() {
         await navigator.clipboard.writeText(urls.embed);
       } catch {}
     } catch (e: any) {
-      setErr(e?.message || 'nave drop failed');
+      setErr(e?.message || 'kindling failed');
     } finally {
       setBusy(false);
     }
@@ -69,33 +70,42 @@ export default function NavePage() {
         <motion.div
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.52, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
           className="glass rounded-[32px] p-8"
         >
-          <p className="text-[#0a84ff] text-sm mb-2">nave</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">a quiet aisle for one public file.</h1>
+          <p className="text-[#0a84ff] text-sm mb-2">kindling</p>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">note plus a file, then spark a public drop.</h1>
           <p className="text-neutral-400 text-sm mb-6">
-            sign it if you want, then drop a local file into the share db. discord unfurls /s like a product card.
+            not a vault grid. the note rides as author metadata. discord gets a clean /s card.
           </p>
-          <input
-            value={author}
-            onChange={(e) => setAuthor(e.target.value)}
-            placeholder="optional name on the drop"
-            className="w-full mb-4 rounded-full bg-white/[0.04] border border-white/10 px-4 py-2.5 text-sm text-white placeholder:text-neutral-600 outline-none focus:border-[#0a84ff]/40"
-          />
-          <label
-            className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition-all duration-300"
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => {
-              e.preventDefault();
-              onFile(e.dataTransfer.files?.[0]);
-            }}
-          >
-            <input type="file" className="hidden" onChange={(e) => onFile(e.target.files?.[0])} />
-            <p className="text-white font-medium">{busy ? 'walking it down the aisle…' : 'drop a file'}</p>
-            <p className="text-xs text-neutral-500 mt-2">unlimited size. warnings only if it might feel slow.</p>
+          <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-8 text-center transition-all duration-300 mb-4">
+            <input
+              type="file"
+              className="hidden"
+              onChange={(e) => {
+                const f = e.target.files?.[0] || null;
+                setFile(f);
+                setEmbed('');
+                setApp('');
+              }}
+            />
+            <p className="text-white font-medium">{file ? file.name : 'drop or pick a file'}</p>
+            <p className="text-xs text-neutral-500 mt-2">no hard limit. we only warn when the tab might stall.</p>
           </label>
-          {name && <p className="text-xs text-neutral-500 mt-4 truncate">{name}</p>}
+          <textarea
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            rows={3}
+            placeholder="optional spark note"
+            className="w-full rounded-2xl bg-white/[0.04] border border-white/10 px-4 py-3 text-sm text-white placeholder:text-neutral-600 outline-none focus:border-[#0a84ff]/40"
+          />
+          <button
+            onClick={go}
+            disabled={busy}
+            className="mt-4 w-full rounded-full bg-white text-black py-2.5 text-sm font-medium hover:bg-neutral-200 disabled:opacity-50 transition-colors"
+          >
+            {busy ? 'sparking…' : 'publish drop'}
+          </button>
           {warn && <p className="text-xs text-amber-300/80 mt-3">{warn}</p>}
           {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
           {embed && (

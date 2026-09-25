@@ -59,6 +59,10 @@
     { "source": "/iris", "destination": "/api/embed?page=iris" },
     { "source": "/pallet", "destination": "/api/embed?page=pallet" },
     { "source": "/mirage", "destination": "/api/embed?page=mirage" },
+    { "source": "/quarry", "destination": "/api/embed?page=quarry" },
+    { "source": "/spire", "destination": "/api/embed?page=spire" },
+    { "source": "/moss", "destination": "/api/embed?page=moss" },
+    { "source": "/lagoon", "destination": "/api/embed?page=lagoon" },
     { "source": "/l/:page", "destination": "/api/embed?page=:page" }
   ],
   "headers": [

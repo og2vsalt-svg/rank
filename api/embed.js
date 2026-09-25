@@ -149,6 +149,10 @@ const PAGE_TITLES = {
   glacier: 'glacier — file fingerprint',
   lichen: 'lichen — preview card',
   gully: 'gully — split a file',
+  quarry: 'quarry — file header',
+  spire: 'spire — stack files',
+  moss: 'moss — discord card',
+  lagoon: 'lagoon — hold then grab',
 };
 
 export default async function handler(req, res) {

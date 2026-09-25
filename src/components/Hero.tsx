@@ -16,16 +16,15 @@ export default function Hero() {
         </motion.h1>
 
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.12 }} className="text-neutral-400 text-lg leading-relaxed max-w-xl mb-8">
-          a quiet vault for clips, docs, and dumps. preview in place, sort into folders, flip a file public when you need a link. no size lock. just a heads up if the tab might lag. new desks: quarry, spire, moss, lagoon.
+          a quiet vault for clips, docs, and dumps. preview in place, sort into folders, flip a file public when you need a link. no size lock. just a heads up if the tab might lag. new desks: solace, keepsake.
         </motion.p>
 
         <div className="flex flex-wrap gap-3 mb-12">
           <button onClick={() => navigate('vault')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black font-medium text-sm hover:bg-neutral-200 transition">open vault</button>
           <button onClick={() => navigate('drop')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">public drop</button>
-          <button onClick={() => navigate('quarry')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">quarry</button>
-          <button onClick={() => navigate('spire')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">spire</button>
+          <button onClick={() => navigate('solace')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">solace</button>
+          <button onClick={() => navigate('keepsake')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">keepsake</button>
           <button onClick={() => navigate('moss')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">moss</button>
-          <button onClick={() => navigate('lagoon')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">lagoon</button>
           <a href="#features" className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">see features</a>
         </div>
       </div>

@@ -1,6 +1,9 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'kindling desk', body: 'attach a spark note to a local file, publish it to the share db, copy the discord /s card.' },
+  { title: 'nave aisle', body: 'sign a drop if you want, then send one local file public. not another vault grid.' },
+  { title: 'spur peek', body: 'look up a live share id and get metadata plus the embed url without opening the bytes.' },
   { title: 'local-first vault', body: 'files live in your browser first. nothing ships unless you flip a drop public.' },
   { title: 'emberline grade', body: 'warm a photo on canvas, then publish the jpeg to the share db with a discord /s card.' },
   { title: 'driftwood hold', body: 'set a pause, drop a local file, wait, then let it go public. not a vault grid.' },
@@ -47,7 +50,7 @@ export default function Features() {
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.04, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ delay: Math.min(i, 12) * 0.04, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
               className="glass rounded-3xl p-6 hover:-translate-y-0.5"
             >
               <h3 className="text-white font-medium mb-2">{item.title}</h3>

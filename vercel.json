@@ -48,6 +48,9 @@
     { "source": "/chapel", "destination": "/api/embed?page=chapel" },
     { "source": "/observatory", "destination": "/api/embed?page=observatory" },
     { "source": "/atrium", "destination": "/api/embed?page=atrium" },
+    { "source": "/halo", "destination": "/api/embed?page=halo" },
+    { "source": "/kite", "destination": "/api/embed?page=kite" },
+    { "source": "/tide", "destination": "/api/embed?page=tide" },
     { "source": "/l/:page", "destination": "/api/embed?page=:page" }
   ],
   "headers": [

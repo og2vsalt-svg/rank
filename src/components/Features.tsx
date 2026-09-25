@@ -2,14 +2,14 @@ import { motion } from 'framer-motion';
 
 const items = [
   { title: 'local-first vault', body: 'files live in your browser first. nothing ships unless you flip a drop public.' },
+  { title: 'tide queue', body: 'line up local files and publish them one by one to the share db. discord /s links come back in order.' },
+  { title: 'halo crop', body: 'circle-crop a photo on device. never hits the vault unless you drop the png later.' },
+  { title: 'kite timer', body: 'park a share link and watch a countdown. no upload, just a clock.' },
   { title: 'studio notes', body: 'write or paste text, publish it as a public file with a discord-ready /s link.' },
   { title: 'meadow batch', body: 'drop a pile of local files straight into the share db. get embed links, skip the vault grid.' },
   { title: 'grove stands', body: 'bundle public share ids into named clumps that stay in this browser.' },
   { title: 'vellum desk', body: 'open a local text file, edit it, export a copy. never hits the vault unless you drop it later.' },
   { title: 'copper check', body: 'sha-256 two local files side by side so you know a download matches.' },
-  { title: 'isthmus pairs', body: 'park two public share ids next to each other and compare without opening the vault.' },
-  { title: 'saffron cards', body: 'make a warm quote card on-device. no upload unless you decide to drop the svg later.' },
-  { title: 'bramble thicket', body: 'local tagged bookmarks. not files, just a tangle of urls you want later.' },
   { title: 'cloud share db', body: 'public drops land in supabase, with vercel blob when a token is set.' },
   { title: 'discord embeds', body: '/s/id, /f/id, /d/id and /p/page serve og tags so discord previews look finished.' },
   { title: 'no hard file cap', body: 'drop whatever size you want. we only warn when the tab might feel sleepy.' },

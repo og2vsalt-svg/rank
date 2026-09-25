@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"');
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 function isBot(ua) {
@@ -32,16 +32,20 @@ function pageHtml({ title, desc, image, url, color, mime }) {
   const c = color || '#0A84FF';
   const imgType = mime && String(mime).startsWith('image/') ? mime : 'image/png';
   const extra = [];
+  extra.push('<meta name="og:image:width" content="1200" />');
+  extra.push('<link rel="image_src" href="' + esc(safeImg) + '" />');
+  extra.push('<meta name="msapplication-TileColor" content="' + esc(c) + '" />');
   if (mime && String(mime).startsWith('video/') && isRemoteImg && image) {
-    extra.push(`<meta property="og:video" content="${esc(image)}" />`);
-    extra.push(`<meta property="og:video:type" content="${esc(mime)}" />`);
+    extra.push('<meta property="og:video" content="' + esc(image) + '" />');
+    extra.push('<meta property="og:video:type" content="' + esc(mime) + '" />');
+    extra.push('<meta property="og:type" content="video.other" />');
   }
   if (mime && String(mime).startsWith('audio/') && isRemoteImg && image) {
-    extra.push(`<meta property="og:audio" content="${esc(image)}" />`);
-    extra.push(`<meta property="og:audio:type" content="${esc(mime)}" />`);
+    extra.push('<meta property="og:audio" content="' + esc(image) + '" />');
+    extra.push('<meta property="og:audio:type" content="' + esc(mime) + '" />');
   }
-  extra.push(`<meta name="theme-color" content="${esc(c)}" />`);
-  extra.push(`<meta property="og:site_name" content="rankvault" />`);
+  extra.push('<meta name="theme-color" content="' + esc(c) + '" />');
+  extra.push('<meta property="og:site_name" content="rankvault" />');
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -103,6 +107,10 @@ const PAGE_TITLES = {
   convoy: 'convoy — pack a drop',
   bazaar: 'bazaar — browse public files',
   atoll: 'atoll — embed card',
+  tandem: 'tandem — pair two files',
+  octave: 'octave — listen desk',
+  filament: 'filament — text to file',
+  horizon: 'horizon — link card',
   opal: 'opal — color pull',
   nest: 'nest — pack files',
   thorn: 'thorn — sticky pins',

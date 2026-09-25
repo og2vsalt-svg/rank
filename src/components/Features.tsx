@@ -22,6 +22,11 @@ const items = [
   { title: 'varnish mark', body: 'stamp a photo with a light watermark. canvas only.' },
   { title: 'plaza feed', body: 'latest public drops from the share db, each with a discord /s link.' },
   { title: 'gasket seal', body: 'hash two local files and see if they are the same bytes.' },
+  { title: 'hatch drop', body: 'one file in, discord embed url out. same vault + cloud db as drop.' },
+  { title: 'radar pulse', body: 'live counts of files, public links, folders, and recent vault activity.' },
+  { title: 'tome notes', body: 'a writing desk that saves .txt straight into the vault instead of a file picker.' },
+  { title: 'warden inspect', body: 'paste a share id and read metadata from the db without opening the file.' },
+  { title: 'zenith board', body: 'a map of the rooms that are not just another vault grid.' },
 ];
 
 export default function Features() {

@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"');
 }
 
 function isBot(ua) {
@@ -35,6 +35,9 @@ function pageHtml({ title, desc, image, url, color, mime }) {
   extra.push('<meta name="og:image:width" content="1200" />');
   extra.push('<link rel="image_src" href="' + esc(safeImg) + '" />');
   extra.push('<meta name="msapplication-TileColor" content="' + esc(c) + '" />');
+  extra.push('<meta name="theme-color" content="' + esc(c) + '" />');
+  extra.push('<meta property="og:site_name" content="rankvault" />');
+  extra.push('<meta name="twitter:card" content="summary_large_image" />');
   if (mime && String(mime).startsWith('video/') && isRemoteImg && image) {
     extra.push('<meta property="og:video" content="' + esc(image) + '" />');
     extra.push('<meta property="og:video:type" content="' + esc(mime) + '" />');
@@ -44,8 +47,6 @@ function pageHtml({ title, desc, image, url, color, mime }) {
     extra.push('<meta property="og:audio" content="' + esc(image) + '" />');
     extra.push('<meta property="og:audio:type" content="' + esc(mime) + '" />');
   }
-  extra.push('<meta name="theme-color" content="' + esc(c) + '" />');
-  extra.push('<meta property="og:site_name" content="rankvault" />');
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -144,6 +145,10 @@ const PAGE_TITLES = {
   halo: 'halo — circle crop',
   kite: 'kite — share timer',
   tide: 'tide — send one by one',
+  willow: 'willow — strip photo tags',
+  glacier: 'glacier — file fingerprint',
+  lichen: 'lichen — preview card',
+  gully: 'gully — split a file',
 };
 
 export default async function handler(req, res) {

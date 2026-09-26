@@ -1,134 +1,93 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { useAuth } from './AuthContext';
-import { publishShare, shareUrls } from '../lib/cloudShare';
+import { fetchShare, shareUrls, type CloudMeta } from '../lib/cloudShare';
 
-function rid() {
-  return Math.random().toString(36).slice(2, 8) + Date.now().toString(36).slice(-4);
+function pretty(n: number) {
+  if (n < 1024) return n + ' b';
+  if (n < 1024 * 1024) return Math.round(n / 1024) + ' kb';
+  return (n / (1024 * 1024)).toFixed(1) + ' mb';
 }
 
-function formatBytes(n: number) {
-  if (n < 1024) return n + ' b';
-  if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' kb';
-  if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(2) + ' mb';
-  return (n / (1024 * 1024 * 1024)).toFixed(2) + ' gb';
+function Card({ label, meta, err }: { label: string; meta: CloudMeta | null; err: string }) {
+  return (
+    <div className="rounded-2xl bg-white/[0.04] border border-white/8 p-5 min-h-[160px]">
+      <p className="text-[11px] uppercase tracking-wide text-neutral-500 mb-2">{label}</p>
+      {err && <p className="text-xs text-red-400">{err}</p>}
+      {!err && !meta && <p className="text-xs text-neutral-500">nothing loaded yet</p>}
+      {meta && (
+        <div className="space-y-1">
+          <p className="text-sm text-white truncate">{meta.name}</p>
+          <p className="text-xs text-neutral-400">{pretty(meta.size)} · {meta.type || 'file'}</p>
+          <p className="text-xs text-neutral-500">{meta.downloads || 0} opens{meta.author ? ' · ' + meta.author : ''}</p>
+          <p className="text-[11px] text-[#0a84ff] break-all">{shareUrls(meta.id).embed}</p>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function ValePage() {
-  const { user } = useAuth();
-  const [files, setFiles] = useState<File[]>([]);
+  const [a, setA] = useState('');
+  const [b, setB] = useState('');
+  const [left, setLeft] = useState<CloudMeta | null>(null);
+  const [right, setRight] = useState<CloudMeta | null>(null);
+  const [errA, setErrA] = useState('');
+  const [errB, setErrB] = useState('');
   const [busy, setBusy] = useState(false);
-  const [warn, setWarn] = useState('');
-  const [err, setErr] = useState('');
-  const [links, setLinks] = useState<{ name: string; embed: string; app: string }[]>([]);
 
-  const onPick = (list: FileList | null) => {
-    if (!list?.length) return;
-    const next = [...files, ...Array.from(list)];
-    setFiles(next);
-    const chunky = next.some((f) => f.size > 20 * 1024 * 1024);
-    setWarn(chunky ? 'one of these is heavy. publish still runs, tab might nap for a sec. no cap.' : '');
-    setErr('');
-  };
-
-  const publishAll = async () => {
-    if (!files.length) return;
+  const look = async () => {
     setBusy(true);
-    setErr('');
-    const out: { name: string; embed: string; app: string }[] = [];
+    setErrA('');
+    setErrB('');
     try {
-      for (const file of files) {
-        const dataUrl = await new Promise<string>((resolve, reject) => {
-          const r = new FileReader();
-          r.onload = () => resolve(String(r.result || ''));
-          r.onerror = () => reject(new Error('could not read ' + file.name));
-          r.readAsDataURL(file);
-        });
-        const id = rid();
-        const res = await publishShare({
-          id,
-          name: file.name,
-          type: file.type || 'application/octet-stream',
-          size: file.size,
-          dataUrl,
-          author: user?.username,
-        });
-        if (!res.ok) {
-          setErr(res.error || 'one file stalled');
-          continue;
-        }
-        if (res.warn) setWarn(res.warn);
-        const urls = shareUrls(res.id || id);
-        out.push({ name: file.name, embed: urls.embed, app: urls.app });
+      if (a.trim()) {
+        const m = await fetchShare(a.trim());
+        setLeft(m);
+        if (!m) setErrA('left id is missing or expired');
+      } else {
+        setLeft(null);
+        setErrA('need an id on the left');
       }
-      setLinks(out);
-    } catch (e: any) {
-      setErr(e?.message || 'batch failed');
+      if (b.trim()) {
+        const m = await fetchShare(b.trim());
+        setRight(m);
+        if (!m) setErrB('right id is missing or expired');
+      } else {
+        setRight(null);
+        setErrB('need an id on the right');
+      }
     } finally {
       setBusy(false);
     }
   };
 
+  const same = left && right && left.size === right.size && left.name === right.name;
+
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
+      <div className="pt-28 pb-20 px-5 max-w-3xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          className="glass rounded-[28px] p-8"
+          className="glass rounded-[32px] p-8"
         >
           <p className="text-[#0a84ff] text-sm mb-2">vale</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-2">batch drop a whole folder vibe</h1>
-          <p className="text-sm text-neutral-500 mb-6">
-            pick a pile of local files, park each one in the db, get discord-ready links back. vault stays where it is.
-          </p>
-
-          <label
-            className="block cursor-pointer rounded-2xl border border-dashed border-white/15 bg-white/[0.03] px-6 py-10 text-center hover:border-white/30"
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => {
-              e.preventDefault();
-              onPick(e.dataTransfer.files);
-            }}
-          >
-            <input type="file" multiple className="hidden" onChange={(e) => onPick(e.target.files)} />
-            <p className="text-white text-sm">{files.length ? files.length + ' files staged' : 'drop a handful'}</p>
-            <p className="text-xs text-neutral-500 mt-2">no hard limit. slowness warning only.</p>
-          </label>
-
-          {files.length > 0 && (
-            <ul className="mt-4 space-y-1 text-xs text-neutral-400">
-              {files.slice(0, 12).map((f) => (
-                <li key={f.name + f.size}>{f.name} · {formatBytes(f.size)}</li>
-              ))}
-              {files.length > 12 && <li>+{files.length - 12} more</li>}
-            </ul>
-          )}
-
-          {warn && <p className="text-xs text-amber-300/80 mt-3">{warn}</p>}
-
-          <button
-            disabled={!files.length || busy}
-            onClick={publishAll}
-            className="mt-5 px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40"
-          >
-            {busy ? 'publishing…' : 'publish all to db'}
-          </button>
-
-          {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
-
-          {links.length > 0 && (
-            <div className="mt-6 space-y-3">
-              {links.map((l) => (
-                <div key={l.embed} className="rounded-2xl bg-white/[0.03] border border-white/5 p-3">
-                  <p className="text-sm text-white truncate">{l.name}</p>
-                  <p className="text-xs text-[#0a84ff] break-all mt-1">{l.embed}</p>
-                </div>
-              ))}
-            </div>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">two share ids, one look.</h1>
+          <p className="text-neutral-400 text-sm mb-6">not a vault. just a quiet compare of two public drops sitting in the db.</p>
+          <div className="grid sm:grid-cols-2 gap-3 mb-4">
+            <input value={a} onChange={(e) => setA(e.target.value)} placeholder="left share id" className="rounded-2xl bg-black/30 border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/50" />
+            <input value={b} onChange={(e) => setB(e.target.value)} placeholder="right share id" className="rounded-2xl bg-black/30 border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/50" />
+          </div>
+          <button onClick={look} disabled={busy} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40">{busy ? 'looking…' : 'compare'}</button>
+          <div className="grid sm:grid-cols-2 gap-3 mt-6">
+            <Card label="left" meta={left} err={errA} />
+            <Card label="right" meta={right} err={errB} />
+          </div>
+          {left && right && (
+            <p className="text-xs text-neutral-500 mt-4">{same ? 'same name and size. could be twins.' : 'different cards. keep both embeds if you want.'}</p>
           )}
         </motion.div>
       </div>

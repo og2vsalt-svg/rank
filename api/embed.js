@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"');
 }
 
 function isBot(ua) {
@@ -42,7 +42,7 @@ function pageHtml({ title, desc, image, url, color, mime }) {
   extra.push('<meta property="og:determiner" content="" />');
   if (mime && String(mime).startsWith('video/') && isRemoteImg && image) {
     extra.push('<meta property="og:video" content="' + esc(image) + '" />');
-  extra.push('<meta property="og:video:type" content="' + esc(mime) + '" />');
+    extra.push('<meta property="og:video:type" content="' + esc(mime) + '" />');
     extra.push('<meta property="og:type" content="video.other" />');
   }
   if (mime && String(mime).startsWith('audio/') && isRemoteImg && image) {
@@ -105,6 +105,9 @@ async function loadShare(id) {
 const PAGE_TITLES = {
   vault: 'vault — rankvault',
   drop: 'drop — rankvault',
+  tarn: 'tarn — sit with a share',
+  weir: 'weir — sequential drops',
+  ketch: 'ketch — caption a drop',
   wake: 'wake — tag a drop',
   flume: 'flume — sequential drops',
   corrie: 'corrie — sit with a share',

@@ -7,41 +7,43 @@ function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
 
-export default function CiderPage() {
-  const [title, setTitle] = useState('note.txt');
-  const [body, setBody] = useState('');
+function prettySize(n: number) {
+  if (n < 1024) return n + ' b';
+  if (n < 1024 * 1024) return Math.max(1, Math.round(n / 1024)) + ' kb';
+  if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(1) + ' mb';
+  return (n / (1024 * 1024 * 1024)).toFixed(2) + ' gb';
+}
+
+export default function MerlonPage() {
+  const [file, setFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
   const [warn, setWarn] = useState('');
   const [links, setLinks] = useState<{ app: string; embed: string; id: string } | null>(null);
 
   const send = async () => {
-    const text = body.trim();
-    if (!text) return;
+    if (!file) return;
     setBusy(true);
     setErr('');
-    setWarn('');
+    setWarn(file.size > 8 * 1024 * 1024 ? 'chunky file. host or tab might lag. still sending — no hard cap.' : '');
     setLinks(null);
     try {
-      const name = (title.trim() || 'note.txt').replace(/\s+/g, '-');
-      const fileName = name.endsWith('.txt') || name.endsWith('.md') ? name : name + '.txt';
-      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
       const dataUrl = await new Promise<string>((resolve, reject) => {
         const r = new FileReader();
         r.onload = () => resolve(String(r.result || ''));
-        r.onerror = () => reject(new Error('could not read note'));
-        r.readAsDataURL(blob);
+        r.onerror = () => reject(new Error('could not read file'));
+        r.readAsDataURL(file);
       });
       const id = uid();
       const res = await publishShare({
         id,
-        name: fileName,
-        type: 'text/plain',
-        size: blob.size,
+        name: file.name,
+        type: file.type || 'application/octet-stream',
+        size: file.size,
         dataUrl,
       });
       if (!res.ok) {
-        setErr(res.error || 'cider did not pour');
+        setErr(res.error || 'merlon would not hold');
         return;
       }
       if (res.warn) setWarn(res.warn);
@@ -49,7 +51,7 @@ export default function CiderPage() {
       setLinks({ ...urls, id: res.id || id });
       try { await navigator.clipboard.writeText(urls.embed); } catch {}
     } catch (e: any) {
-      setErr(e?.message || 'cider went flat');
+      setErr(e?.message || 'battlement slipped');
     } finally {
       setBusy(false);
     }
@@ -65,31 +67,17 @@ export default function CiderPage() {
           transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
           className="glass rounded-[32px] p-8"
         >
-          <p className="text-[#0a84ff] text-sm mb-2">cider</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">pour a note into the share db.</h1>
+          <p className="text-[#0a84ff] text-sm mb-2">merlon</p>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">stand one file on the wall and share it.</h1>
           <p className="text-neutral-400 text-sm mb-6">
-            not the vault. just text that becomes a public drop. discord card copies itself. big notes may feel slow — no hard cap.
+            local file goes straight to the share db. copies the discord embed. different from the vault grid — one drop, one card.
           </p>
-          <input
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="w-full rounded-2xl bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white outline-none focus:border-[#0a84ff]/50 mb-3"
-            placeholder="filename"
-          />
-          <textarea
-            value={body}
-            onChange={(e) => setBody(e.target.value)}
-            rows={10}
-            className="w-full rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-white outline-none focus:border-[#0a84ff]/50 mb-4 resize-y min-h-[160px]"
-            placeholder="write something quiet"
-          />
-          <button
-            type="button"
-            onClick={send}
-            disabled={busy || !body.trim()}
-            className="px-5 py-2.5 rounded-2xl bg-white text-black text-sm font-medium hover:bg-neutral-200 transition disabled:opacity-50"
-          >
-            {busy ? 'pouring…' : 'share note'}
+          <label className="block rounded-[24px] border border-dashed border-white/15 bg-white/[0.03] px-5 py-10 text-center cursor-pointer hover:border-[#0a84ff]/40 transition mb-4">
+            <input type="file" className="hidden" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+            <span className="text-sm text-neutral-300">{file ? `${file.name} · ${prettySize(file.size)}` : 'pick a local file'}</span>
+          </label>
+          <button type="button" onClick={send} disabled={busy || !file} className="px-5 py-2.5 rounded-2xl bg-white text-black text-sm font-medium hover:bg-neutral-200 transition disabled:opacity-50">
+            {busy ? 'raising…' : 'share file'}
           </button>
           {warn && <p className="text-xs text-amber-300/80 mt-3">{warn}</p>}
           {err && <p className="text-xs text-red-400 mt-3">{err}</p>}

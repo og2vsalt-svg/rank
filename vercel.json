@@ -27,11 +27,13 @@
     { "source": "/tarn/:id", "destination": "/api/embed?id=:id" },
     { "source": "/weir/:id", "destination": "/api/embed?id=:id" },
     { "source": "/ketch/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/harvest/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/sundial/:id", "destination": "/api/embed?id=:id" },
     { "source": "/p/:page", "destination": "/api/embed?page=:page" }
   ],
   "headers": [
     {
-      "source": "/(s|f|d|u|v|c|e|x|g|link|drop|wake|share|card|file|open|flint|stills|gauge|kiln|ledger|furrow|tarn|weir|ketch)/(.*)",
+      "source": "/(s|f|d|u|v|c|e|x|g|link|drop|wake|share|card|file|open|flint|stills|gauge|kiln|ledger|furrow|tarn|weir|ketch|harvest|sundial)/(.*)",
       "headers": [
         { "key": "Cache-Control", "value": "public, s-maxage=60, stale-while-revalidate=300" }
       ]

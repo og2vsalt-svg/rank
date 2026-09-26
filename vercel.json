@@ -36,11 +36,13 @@
     { "source": "/satin/:id", "destination": "/api/embed?id=:id" },
     { "source": "/palette/:id", "destination": "/api/embed?id=:id" },
     { "source": "/meridian/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/vale/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/driftglass/:id", "destination": "/api/embed?id=:id" },
     { "source": "/p/:page", "destination": "/api/embed?page=:page" }
   ],
   "headers": [
     {
-      "source": "/(s|f|d|u|v|c|e|x|g|link|drop|wake|share|card|file|open|flint|stills|gauge|kiln|ledger|furrow|tarn|weir|ketch|harvest|sundial|relay|spool|lantern|pulse|satin|palette|meridian)/(.*)",
+      "source": "/(s|f|d|u|v|c|e|x|g|link|drop|wake|share|card|file|open|flint|stills|gauge|kiln|ledger|furrow|tarn|weir|ketch|harvest|sundial|relay|spool|lantern|pulse|satin|palette|meridian|vale|driftglass)/(.*)",
       "headers": [
         { "key": "Cache-Control", "value": "public, s-maxage=60, stale-while-revalidate=300" }
       ]

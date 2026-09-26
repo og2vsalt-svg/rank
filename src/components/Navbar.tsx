@@ -7,11 +7,11 @@ type NavItem = { to: Route; label: string };
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
+  { to: 'relay', label: 'relay' },
+  { to: 'spool', label: 'spool' },
   { to: 'harvest', label: 'harvest' },
   { to: 'sundial', label: 'sundial' },
   { to: 'tarn', label: 'tarn' },
-  { to: 'weir', label: 'weir' },
-  { to: 'ketch', label: 'ketch' },
   { to: 'ledger', label: 'ledger' },
 ];
 
@@ -21,6 +21,7 @@ const groups: { title: string; items: NavItem[] }[] = [
     items: [
       { to: 'vault', label: 'vault' },
       { to: 'drop', label: 'drop' },
+      { to: 'relay', label: 'relay' },
       { to: 'harvest', label: 'harvest' },
       { to: 'harbor', label: 'harbor' },
       { to: 'gauge', label: 'gauge' },
@@ -41,6 +42,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'spool', label: 'spool' },
+      { to: 'lantern', label: 'lantern' },
       { to: 'sieve', label: 'sieve' },
       { to: 'lodestone', label: 'lodestone' },
       { to: 'ledger', label: 'ledger' },
@@ -77,6 +80,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'lantern', label: 'lantern' },
       { to: 'flint', label: 'flint' },
       { to: 'gauge', label: 'gauge' },
       { to: 'kiln', label: 'kiln' },

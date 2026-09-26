@@ -8,11 +8,11 @@ const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
   { to: 'relay', label: 'relay' },
-  { to: 'spool', label: 'spool' },
+  { to: 'vale', label: 'vale' },
   { to: 'harvest', label: 'harvest' },
   { to: 'sundial', label: 'sundial' },
   { to: 'pulse', label: 'pulse' },
-  { to: 'satin', label: 'satin' },
+  { to: 'driftglass', label: 'driftglass' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -37,6 +37,7 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'keepsake', label: 'keepsake' },
       { to: 'oriel', label: 'oriel' },
       { to: 'nimbus', label: 'nimbus' },
+      { to: 'driftglass', label: 'driftglass' },
     ],
   },
   {
@@ -60,6 +61,7 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'wicket', label: 'wicket' },
       { to: 'scrip', label: 'scrip' },
       { to: 'pulse', label: 'pulse' },
+      { to: 'vale', label: 'vale' },
     ],
   },
   {
@@ -79,6 +81,7 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'wick', label: 'wick' },
       { to: 'scrip', label: 'scrip' },
       { to: 'ketch', label: 'ketch' },
+      { to: 'driftglass', label: 'driftglass' },
     ],
   },
   {
@@ -98,6 +101,7 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'lintel', label: 'lintel' },
       { to: 'pulse', label: 'pulse' },
       { to: 'palette', label: 'palette' },
+      { to: 'vale', label: 'vale' },
     ],
   },
 ];

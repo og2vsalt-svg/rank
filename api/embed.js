@@ -105,6 +105,7 @@ async function loadShare(id) {
 const PAGE_TITLES = {
   vault: 'vault — rankvault',
   drop: 'drop — rankvault',
+  pier: 'pier — ship a file',
   loft: 'loft — park files first',
   gnomon: 'gnomon — file clock',
   laneway: 'laneway — short names',

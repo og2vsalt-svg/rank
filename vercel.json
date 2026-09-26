@@ -39,11 +39,14 @@
     { "source": "/meridian/:id", "destination": "/api/embed?id=:id" },
     { "source": "/vale/:id", "destination": "/api/embed?id=:id" },
     { "source": "/driftglass/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/loom/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/quill/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/harbor/:id", "destination": "/api/embed?id=:id" },
     { "source": "/p/:page", "destination": "/api/embed?page=:page" }
   ],
   "headers": [
     {
-      "source": "/(s|f|d|u|v|c|e|x|g|link|drop|wake|share|card|file|open|solstice|flint|stills|gauge|kiln|ledger|furrow|tarn|weir|ketch|harvest|sundial|relay|spool|lantern|pulse|satin|palette|meridian|vale|driftglass)/(.*)",
+      "source": "/(s|f|d|u|v|c|e|x|g|link|drop|wake|share|card|file|open|solstice|flint|stills|gauge|kiln|ledger|furrow|tarn|weir|ketch|harvest|sundial|relay|spool|lantern|pulse|satin|palette|meridian|vale|driftglass|loom|quill|harbor)/(.*)",
       "headers": [
         { "key": "Cache-Control", "value": "public, s-maxage=60, stale-while-revalidate=300" }
       ]

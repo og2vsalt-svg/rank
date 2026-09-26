@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"');
 }
 
 function isBot(ua) {
@@ -43,6 +43,7 @@ function pageHtml({ title, desc, image, url, color, mime }) {
   extra.push('<meta property="og:determiner" content="" />');
   extra.push('<meta name="og:image:width" content="1200" />');
   extra.push('<meta name="og:image:height" content="630" />');
+  extra.push('<meta name="og:image:alt" content="' + esc(title) + '" />');
   if (mime && String(mime).startsWith('video/') && isRemoteImg && image) {
     extra.push('<meta property="og:video" content="' + esc(image) + '" />');
     extra.push('<meta property="og:video:type" content="' + esc(mime) + '" />');
@@ -117,6 +118,9 @@ const PAGE_TITLES = {
   meridian: 'meridian — expiry clock',
   vale: 'vale — compare two drops',
   driftglass: 'driftglass — polish a drop',
+  loom: 'loom — share thread',
+  quill: 'quill — drop notes',
+  harbor: 'harbor — incoming shares',
 };
 
 export default async function handler(req, res) {

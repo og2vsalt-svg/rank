@@ -1,71 +1,61 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { useRouter } from './Router';
 import { publishShare, shareUrls } from '../lib/cloudShare';
 
-function formatBytes(n: number) {
-  if (n < 1024) return n + ' b';
-  if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' kb';
-  return (n / (1024 * 1024)).toFixed(2) + ' mb';
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+
+async function sha256(buf: ArrayBuffer) {
+  const hash = await crypto.subtle.digest('SHA-256', buf);
+  return [...new Uint8Array(hash)].map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
 export default function FlintPage() {
-  const { navigate } = useRouter();
-  const [file, setFile] = useState<File | null>(null);
-  const [busy, setBusy] = useState(false);
+  const [name, setName] = useState('');
+  const [digest, setDigest] = useState('');
+  const [size, setSize] = useState(0);
   const [warn, setWarn] = useState('');
-  const [err, setErr] = useState('');
   const [link, setLink] = useState('');
-  const [embed, setEmbed] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState('');
 
-  const pick = (f: File | null) => {
-    setFile(f);
+  const onFile = async (file?: File) => {
+    if (!file) return;
     setErr('');
     setLink('');
-    setEmbed('');
-    if (!f) {
-      setWarn('');
-      return;
-    }
-    setWarn(
-      f.size > 20 * 1024 * 1024
-        ? 'heavy file. no cap, but the browser and host can feel slow.'
-        : f.size > 8 * 1024 * 1024
-          ? 'decent size. upload may take a beat.'
-          : '',
-    );
-  };
-
-  const send = async () => {
-    if (!file) return;
+    setName(file.name);
+    setSize(file.size);
+    setWarn(file.size > 40 * 1024 * 1024 ? 'chunky flint. hashing then encoding may lag. no cap.' : '');
     setBusy(true);
-    setErr('');
     try {
+      const buf = await file.arrayBuffer();
+      const hex = await sha256(buf);
+      setDigest(hex);
+      const blob = new Blob([`flint\n${file.name}\n${file.type || 'file'}\n${file.size}\nsha256 ${hex}\n`], { type: 'text/plain' });
       const dataUrl = await new Promise<string>((resolve, reject) => {
         const r = new FileReader();
         r.onload = () => resolve(String(r.result || ''));
-        r.onerror = () => reject(new Error('could not read file'));
-        r.readAsDataURL(file);
+        r.onerror = () => reject(new Error('read failed'));
+        r.readAsDataURL(blob);
       });
-      const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+      const id = uid();
       const res = await publishShare({
         id,
-        name: file.name,
-        type: file.type || 'application/octet-stream',
-        size: file.size,
+        name: `${file.name}.flint.txt`,
+        type: 'text/plain',
+        size: blob.size,
         dataUrl,
       });
       if (!res.ok) {
-        setErr(res.error || 'could not land this in the share db');
+        setErr(res.error || 'could not publish fingerprint');
         return;
       }
-      const urls = shareUrls(res.id || id);
-      setLink(urls.app);
-      setEmbed(urls.embed);
-      if (res.warn) setWarn(res.warn);
+      setLink(shareUrls(id).embed);
+      try { await navigator.clipboard.writeText(shareUrls(id).embed); } catch {}
     } catch (e: any) {
-      setErr(e?.message || 'upload failed');
+      setErr(e?.message || 'flint missed');
     } finally {
       setBusy(false);
     }
@@ -75,32 +65,19 @@ export default function FlintPage() {
     <div className="mesh min-h-screen">
       <Navbar />
       <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-8">
+        <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-8">
           <p className="text-[#0a84ff] text-sm mb-2">flint</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">spark a public drop from a local file.</h1>
-          <p className="text-neutral-400 text-sm mb-6">lands in the share database. discord picks up the /s/ link with a proper embed. no hard size cap.</p>
-          <label className="block rounded-2xl border border-dashed border-white/15 px-5 py-12 text-center text-sm text-neutral-400 cursor-pointer hover:border-white/30 transition-colors mb-5">
-            {file ? `${file.name} · ${formatBytes(file.size)}` : 'pick a local file'}
-            <input type="file" className="hidden" onChange={(e) => pick(e.target.files?.[0] || null)} />
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">strike a hash, keep the spark.</h1>
+          <p className="text-neutral-400 text-sm mb-6">not a vault. hashes the file in this tab then publishes a tiny fingerprint card so discord can unfurl /s.</p>
+          <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition" onDragOver={(e) => e.preventDefault()} onDrop={(e) => { e.preventDefault(); onFile(e.dataTransfer.files?.[0]); }}>
+            <input type="file" className="hidden" onChange={(e) => onFile(e.target.files?.[0])} />
+            <p className="text-white font-medium">{busy ? 'striking…' : 'drop a file to fingerprint'}</p>
           </label>
-          {warn && <p className="text-xs text-amber-400/90 mb-4">{warn}</p>}
-          {err && <p className="text-xs text-red-400 mb-4">{err}</p>}
-          <button
-            disabled={!file || busy}
-            onClick={send}
-            className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40"
-          >
-            {busy ? 'sending…' : 'publish drop'}
-          </button>
-          {link && (
-            <div className="mt-6 space-y-2 text-sm">
-              <p className="text-neutral-500">app link</p>
-              <button onClick={() => navigator.clipboard.writeText(link)} className="block w-full text-left text-[#0a84ff] truncate">{link}</button>
-              <p className="text-neutral-500 pt-2">discord embed link</p>
-              <button onClick={() => navigator.clipboard.writeText(embed)} className="block w-full text-left text-[#0a84ff] truncate">{embed}</button>
-              <button onClick={() => navigate('share', (embed.split('/s/')[1] || ''))} className="mt-3 px-4 py-2 rounded-full bg-white/5 text-sm">open share page</button>
-            </div>
-          )}
+          {name && <p className="text-xs text-neutral-400 mt-4">{name} · {size.toLocaleString()} bytes</p>}
+          {digest && <p className="text-[11px] text-neutral-500 mt-2 break-all font-mono">sha256 {digest}</p>}
+          {warn && <p className="text-xs text-amber-300/80 mt-3">{warn}</p>}
+          {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
+          {link && <p className="text-xs text-neutral-400 mt-3 break-all">discord card copied: {link}</p>}
         </motion.div>
       </div>
     </div>

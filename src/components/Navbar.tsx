@@ -7,12 +7,12 @@ type NavItem = { to: Route; label: string };
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
+  { to: 'catalog', label: 'catalog' },
+  { to: 'gauge', label: 'gauge' },
   { to: 'loft', label: 'loft' },
   { to: 'gnomon', label: 'gnomon' },
   { to: 'laneway', label: 'laneway' },
   { to: 'thimble', label: 'thimble' },
-  { to: 'kindling', label: 'kindling' },
-  { to: 'nave', label: 'nave' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -21,6 +21,7 @@ const groups: { title: string; items: NavItem[] }[] = [
     items: [
       { to: 'vault', label: 'vault' },
       { to: 'drop', label: 'drop' },
+      { to: 'gauge', label: 'gauge' },
       { to: 'loft', label: 'loft' },
       { to: 'gnomon', label: 'gnomon' },
       { to: 'thimble', label: 'thimble' },
@@ -78,6 +79,7 @@ const groups: { title: string; items: NavItem[] }[] = [
     items: [
       { to: 'relay', label: 'relay' },
       { to: 'quilt', label: 'quilt' },
+      { to: 'catalog', label: 'catalog' },
       { to: 'laneway', label: 'laneway' },
       { to: 'kindling', label: 'kindling' },
       { to: 'nave', label: 'nave' },
@@ -164,6 +166,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'catalog', label: 'catalog' },
+      { to: 'gauge', label: 'gauge' },
       { to: 'gnomon', label: 'gnomon' },
       { to: 'laneway', label: 'laneway' },
       { to: 'spur', label: 'spur' },

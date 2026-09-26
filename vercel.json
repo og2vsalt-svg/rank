@@ -13,7 +13,11 @@
     { "source": "/share/:id", "destination": "/api/embed?id=:id" },
     { "source": "/card/:id", "destination": "/api/embed?id=:id" },
     { "source": "/p/:page", "destination": "/api/embed?page=:page" },
-    { "source": "/embed/:id", "destination": "/api/embed?id=:id" }
+    { "source": "/embed/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/cider/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/tarn/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/merlon/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/ferrule/:id", "destination": "/api/embed?id=:id" }
   ],
   "headers": [
     {

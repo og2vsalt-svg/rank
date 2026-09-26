@@ -1,6 +1,9 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'wake stamp', body: 'tag a local file with a short phrase, publish it, copy the discord /s card. not a vault grid.' },
+  { title: 'flume run', body: 'feed a pile through in order. each file gets its own public drop and embed.' },
+  { title: 'corrie look', body: 'look up a live share id, sit with the facts, copy the discord card. quiet hollow, not a feed.' },
   { title: 'skiff dock', body: 'one local file onto the share db. discord /s card comes back. not a vault grid.' },
   { title: 'jetty pile', body: 'tie a pile of local files to the dock. each one gets its own public drop and embed.' },
   { title: 'cloister read', body: 'look up a live share id and sit with the metadata. quiet room, not a feed.' },
@@ -19,7 +22,7 @@ const items = [
   { title: 'spur peek', body: 'look up a live share id and get metadata plus the embed url without opening the bytes.' },
   { title: 'local-first vault', body: 'files live in your browser first. nothing ships unless you flip a drop public.' },
   { title: 'cloud share db', body: 'public drops land in supabase, with vercel blob when a token is set.' },
-  { title: 'discord embeds', body: '/s/id, /f/id, /d/id, /u/id, /share/id, /card/id and /p/page serve og tags so discord previews look finished.' },
+  { title: 'discord embeds', body: '/s/id, /f/id, /d/id, /u/id, /v/id, /c/id, /link/id, /drop/id, /wake/id, /share/id, /card/id and /p/page serve og tags so discord previews look finished.' },
   { title: 'no hard file cap', body: 'drop whatever size you want. we only warn when the tab might feel sleepy.' },
   { title: 'quay dock', body: 'drop a pile at once. each file gets its own discord /s embed from the share db.' },
   { title: 'relay slip', body: 'attach a note to a local file and hand it across as a public drop.' },

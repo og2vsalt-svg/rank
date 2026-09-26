@@ -1,83 +1,61 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishShare, shareUrls } from '../lib/cloudShare';
-import { useAuth } from './AuthContext';
-
-function uid() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-}
+import { useVault } from './VaultContext';
+import { useRouter } from './Router';
+import { shareUrls } from '../lib/cloudShare';
 
 function pretty(n: number) {
   if (n < 1024) return n + ' b';
-  if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' kb';
-  return (n / (1024 * 1024)).toFixed(1) + ' mb';
+  if (n < 1024 * 1024) return Math.round(n / 1024) + ' kb';
+  if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(1) + ' mb';
+  return (n / (1024 * 1024 * 1024)).toFixed(2) + ' gb';
 }
 
-function parts(ms: number) {
-  const s = Math.max(0, Math.floor(ms / 1000));
-  return {
-    d: Math.floor(s / 86400),
-    h: Math.floor((s % 86400) / 3600),
-    m: Math.floor((s % 3600) / 60),
-    s: s % 60,
-  };
+async function sha256(file: File) {
+  const buf = await file.arrayBuffer();
+  const hash = await crypto.subtle.digest('SHA-256', buf);
+  return [...new Uint8Array(hash)].map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
 export default function SolsticePage() {
-  const { user } = useAuth();
-  const input = useRef<HTMLInputElement>(null);
-  const [when, setWhen] = useState(() => {
-    const d = new Date(Date.now() + 7 * 86400000);
-    d.setMinutes(0, 0, 0);
-    return d.toISOString().slice(0, 16);
-  });
-  const [label, setLabel] = useState('handoff');
-  const [file, setFile] = useState<File | null>(null);
-  const [now, setNow] = useState(Date.now());
+  const { addFiles, togglePublic } = useVault();
+  const { navigate } = useRouter();
+  const [info, setInfo] = useState<{ name: string; type: string; size: number; hash: string } | null>(null);
   const [busy, setBusy] = useState(false);
   const [warn, setWarn] = useState('');
   const [err, setErr] = useState('');
-  const [done, setDone] = useState<string | null>(null);
+  const [lastId, setLastId] = useState<string | null>(null);
+  const [link, setLink] = useState('');
 
-  useEffect(() => {
-    const t = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(t);
-  }, []);
-
-  const target = useMemo(() => +new Date(when), [when]);
-  const left = parts(target - now);
-
-  const publish = async () => {
+  const run = async (list: FileList | null) => {
+    const file = list?.[0];
     if (!file) return;
     setBusy(true);
     setErr('');
-    if (file.size > 8 * 1024 * 1024) setWarn('chunky drop. still going. may feel slow.');
+    setLink('');
+    setLastId(null);
+    setWarn(file.size > 40 * 1024 * 1024 ? 'heavy file. hashing plus encode might feel sleepy. no hard cap.' : '');
     try {
-      const dataUrl = await new Promise<string>((resolve, reject) => {
-        const r = new FileReader();
-        r.onload = () => resolve(String(r.result || ''));
-        r.onerror = () => reject(new Error('read failed'));
-        r.readAsDataURL(file);
-      });
-      const id = uid();
-      const res = await publishShare({
-        id,
-        name: file.name,
-        type: file.type || 'application/octet-stream',
-        size: file.size,
-        dataUrl,
-        expiresAt: new Date(when).toISOString(),
-        author: user?.username,
-      });
-      if (!res.ok) {
-        setErr(res.error || 'could not schedule');
+      const hash = await sha256(file);
+      setInfo({ name: file.name, type: file.type || 'application/octet-stream', size: file.size, hash });
+      const result = await addFiles([file], 'solstice');
+      if (!result.ok || !result.ids?.[0]) {
+        setErr(result.error || 'could not keep the file');
         return;
       }
-      if (res.warn) setWarn(res.warn);
-      setDone(shareUrls(res.id || id).embed);
+      const pub = await togglePublic(result.ids[0]);
+      if (!pub.ok) {
+        setErr(pub.error || 'saved but publish failed');
+        setLastId(result.ids[0]);
+        return;
+      }
+      setLastId(result.ids[0]);
+      const urls = shareUrls(result.ids[0]);
+      setLink(urls.embed);
+      try { await navigator.clipboard.writeText(urls.embed); } catch {}
     } catch (e: any) {
-      setErr(e?.message || 'failed');
+      setErr(e?.message || 'solstice missed');
     } finally {
       setBusy(false);
     }
@@ -87,63 +65,37 @@ export default function SolsticePage() {
     <div className="mesh min-h-screen">
       <Navbar />
       <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          className="glass rounded-[32px] p-8"
-        >
+        <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-8">
           <p className="text-[#0a84ff] text-sm mb-2">solstice</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">time a drop.</h1>
-          <p className="text-neutral-400 text-sm mb-6">
-            attach a file to a moment. share expires at that timestamp. not a locker — just a timed handoff.
-          </p>
-          <input
-            value={label}
-            onChange={(e) => setLabel(e.target.value)}
-            className="w-full mb-3 px-4 py-2.5 rounded-full bg-white/5 border border-white/10 text-sm outline-none"
-            placeholder="label"
-          />
-          <input
-            type="datetime-local"
-            value={when}
-            onChange={(e) => setWhen(e.target.value)}
-            className="w-full mb-6 px-4 py-2.5 rounded-full bg-white/5 border border-white/10 text-sm outline-none"
-          />
-          <div className="grid grid-cols-4 gap-2 mb-6">
-            {(
-              [
-                [left.d, 'days'],
-                [left.h, 'hrs'],
-                [left.m, 'min'],
-                [left.s, 'sec'],
-              ] as const
-            ).map(([v, l]) => (
-              <div key={l} className="rounded-2xl bg-white/[0.04] border border-white/8 p-3 text-center">
-                <p className="text-xl font-medium tabular-nums">{v}</p>
-                <p className="text-[11px] text-neutral-500">{l}</p>
+          <h1 className="text-3xl font-semibold mb-3 tracking-tight">hash, then hand off.</h1>
+          <p className="text-neutral-400 text-sm mb-6">fingerprint a local file with sha-256, keep it, then publish to the share db. discord card is /s. not another vault grid.</p>
+          <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition"
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => { e.preventDefault(); run(e.dataTransfer.files); }}>
+            <input type="file" className="hidden" onChange={(e) => run(e.target.files)} />
+            <p className="text-white font-medium">{busy ? 'marking the longest day…' : 'drop one file'}</p>
+            <p className="text-xs text-neutral-500 mt-2">no size lock. only a lag warning if it is huge.</p>
+          </label>
+          {info && (
+            <div className="mt-6 space-y-3 text-sm">
+              <div className="rounded-2xl bg-white/[0.04] p-4"><p className="text-neutral-500 text-xs">name</p><p className="text-white break-all">{info.name}</p></div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="rounded-2xl bg-white/[0.04] p-4"><p className="text-neutral-500 text-xs">type</p><p className="text-white break-all">{info.type}</p></div>
+                <div className="rounded-2xl bg-white/[0.04] p-4"><p className="text-neutral-500 text-xs">size</p><p className="text-white">{pretty(info.size)}</p></div>
               </div>
-            ))}
-          </div>
-          <input ref={input} type="file" className="hidden" onChange={(e) => setFile(e.target.files?.[0] || null)} />
-          <button
-            onClick={() => input.current?.click()}
-            className="w-full rounded-2xl border border-dashed border-white/15 py-8 text-sm text-neutral-400 mb-4"
-          >
-            {file ? `${file.name} · ${pretty(file.size)}` : 'attach a file'}
-          </button>
-          {warn && <p className="text-xs text-amber-300/80 mb-3">{warn}</p>}
-          {err && <p className="text-xs text-red-400 mb-3">{err}</p>}
-          <motion.button
-            whileTap={{ scale: 0.97 }}
-            disabled={!file || busy}
-            onClick={publish}
-            className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40"
-          >
-            {busy ? 'sending…' : `schedule ${label || 'drop'}`}
-          </motion.button>
-          {done && (
-            <p className="mt-4 text-xs text-[#0a84ff] break-all">{done}</p>
+              <div className="rounded-2xl bg-white/[0.04] p-4"><p className="text-neutral-500 text-xs">sha-256</p><p className="text-white break-all font-mono text-xs">{info.hash}</p></div>
+            </div>
+          )}
+          {warn && <p className="text-xs text-amber-300/80 mt-4">{warn}</p>}
+          {err && <p className="text-xs text-red-400 mt-4">{err}</p>}
+          {lastId && !err && (
+            <div className="mt-6 space-y-3">
+              {link && <p className="text-xs text-neutral-400 break-all">discord card copied: {link}</p>}
+              <div className="flex flex-wrap gap-2">
+                <button onClick={() => navigate('share', lastId)} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium">open share</button>
+                <button onClick={() => navigate('vault')} className="px-5 py-2.5 rounded-full bg-white/5 text-sm">vault</button>
+              </div>
+            </div>
           )}
         </motion.div>
       </div>

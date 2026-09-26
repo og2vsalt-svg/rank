@@ -1,58 +1,44 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { useRouter } from './Router';
-import { publishShare, fetchShare, shareUrls } from '../lib/cloudShare';
-
-function uid() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-}
-
-function fileToDataUrl(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result || ''));
-    reader.onerror = () => reject(new Error('read failed'));
-    reader.readAsDataURL(file);
-  });
-}
+import { useVault } from './VaultContext';
+import { shareUrls } from '../lib/cloudShare';
 
 export default function RelayPage() {
-  const { navigate } = useRouter();
-  const [code, setCode] = useState('');
+  const { addFiles, togglePublic } = useVault();
+  const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
   const [warn, setWarn] = useState('');
   const [err, setErr] = useState('');
-  const [link, setLink] = useState('');
-  const [lookup, setLookup] = useState('');
+  const [embed, setEmbed] = useState('');
+  const [app, setApp] = useState('');
+  const [picked, setPicked] = useState('');
 
   const send = async (list: FileList | null) => {
-    const file = list?.[0];
-    if (!file) return;
-    setBusy(true);
+    if (!list?.length) return;
+    const f = list[0];
+    setPicked(f.name);
+    setWarn(f.size > 40 * 1024 * 1024 ? 'big file. no cap, the tab might feel sleepy while it encodes.' : '');
     setErr('');
-    setWarn(file.size > 40 * 1024 * 1024 ? 'huge file. encoding this locally can make the tab crawl. still gonna try.' : '');
+    setBusy(true);
     try {
-      const id = 'relay-' + uid();
-      const dataUrl = await fileToDataUrl(file);
-      const res = await publishShare({
-        id,
-        name: file.name,
-        type: file.type || 'application/octet-stream',
-        size: file.size,
-        dataUrl,
-        author: 'relay',
-      });
-      if (!res.ok) {
-        setErr(res.error || 'could not publish the handoff');
+      const stamped = note.trim()
+        ? new File([f], `${f.name.replace(/\.[^.]+$/, '')} — ${note.trim().slice(0, 40)}${f.name.includes('.') ? f.name.slice(f.name.lastIndexOf('.')) : ''}`, { type: f.type })
+        : f;
+      const result = await addFiles([stamped], 'relay');
+      if (!result.ok || !result.ids?.[0]) {
+        setErr(result.error || 'could not save — log in first');
         return;
       }
-      if (res.warn) setWarn(res.warn);
-      setCode(id);
-      setLink(shareUrls(id).embed);
-      try {
-        await navigator.clipboard.writeText(shareUrls(id).embed);
-      } catch {}
+      const pub = await togglePublic(result.ids[0]);
+      if (!pub.ok) {
+        setErr(pub.error || 'saved locally, cloud publish missed');
+        return;
+      }
+      const urls = shareUrls(result.ids[0]);
+      setApp(urls.app);
+      setEmbed(urls.embed);
+      try { await navigator.clipboard.writeText(urls.embed); } catch {}
     } catch (e: any) {
       setErr(e?.message || 'relay failed');
     } finally {
@@ -60,56 +46,54 @@ export default function RelayPage() {
     }
   };
 
-  const grab = async () => {
-    const id = lookup.trim();
-    if (!id) return;
-    setBusy(true);
-    setErr('');
-    const meta = await fetchShare(id);
-    setBusy(false);
-    if (!meta) {
-      setErr('no live handoff for that code');
-      return;
-    }
-    navigate('share', meta.id);
-  };
-
   return (
     <div className="mesh min-h-screen">
       <Navbar />
       <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-8">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          className="glass rounded-[32px] p-8"
+        >
           <p className="text-[#0a84ff] text-sm mb-2">relay</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">hand a file across the room.</h1>
-          <p className="text-neutral-400 text-sm mb-6">upload from this machine, get a code plus a discord-ready embed link. the other person types the code and picks it up. no vault required.</p>
-          <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/40 p-10 text-center transition">
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">hand a file across with a note on it.</h1>
+          <p className="text-neutral-400 text-sm mb-6">
+            write a short slip, attach a local file, publish to the share db. discord gets the same /s embed as every other public link.
+          </p>
+          <textarea
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            rows={3}
+            placeholder="optional note that rides on the filename"
+            className="w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 text-sm text-white placeholder:text-neutral-600 outline-none focus:border-[#0a84ff]/50 mb-4"
+          />
+          <label
+            className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition-all duration-300"
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => {
+              e.preventDefault();
+              send(e.dataTransfer.files);
+            }}
+          >
             <input type="file" className="hidden" onChange={(e) => send(e.target.files)} />
-            <p className="text-white font-medium">{busy ? 'sending…' : 'drop one file to start a relay'}</p>
-            <p className="text-xs text-neutral-500 mt-2">no hard cap. just a slowness note if it is massive.</p>
+            <p className="text-white font-medium">{busy ? 'relaying…' : picked || 'drop or click a file'}</p>
+            <p className="text-xs text-neutral-500 mt-2">no size cap. only a slowness warning.</p>
           </label>
-          {warn && <p className="text-xs text-amber-300/80 mt-4">{warn}</p>}
-          {err && <p className="text-xs text-red-400 mt-4">{err}</p>}
-          {code && (
-            <div className="mt-6 rounded-2xl bg-white/[0.04] border border-white/10 p-4">
-              <p className="text-[11px] text-neutral-500 mb-1">handoff code</p>
-              <p className="text-lg font-medium tracking-tight break-all">{code}</p>
-              {link && <p className="text-xs text-neutral-500 mt-3 break-all">discord embed: {link}</p>}
-              <button onClick={() => navigate('share', code)} className="mt-4 px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium">open the drop</button>
+          {warn && <p className="text-amber-300/80 text-xs mt-4">{warn}</p>}
+          {err && <p className="text-red-400 text-xs mt-4">{err}</p>}
+          {embed && (
+            <div className="mt-6 space-y-3">
+              <div className="rounded-2xl bg-black/30 p-4">
+                <p className="text-[11px] uppercase tracking-wide text-neutral-500 mb-1">discord embed</p>
+                <p className="text-sm break-all text-[#0a84ff]">{embed}</p>
+              </div>
+              <div className="rounded-2xl bg-black/30 p-4">
+                <p className="text-[11px] uppercase tracking-wide text-neutral-500 mb-1">app link</p>
+                <p className="text-sm break-all text-neutral-300">{app}</p>
+              </div>
             </div>
           )}
-          <div className="mt-8 pt-6 border-t border-white/5">
-            <p className="text-sm text-neutral-300 mb-3">already have a code?</p>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                grab();
-              }}
-              className="flex gap-2"
-            >
-              <input value={lookup} onChange={(e) => setLookup(e.target.value)} placeholder="relay-…" className="flex-1 px-4 py-2.5 rounded-full bg-white/5 border border-white/10 text-sm outline-none" />
-              <button type="submit" className="px-5 py-2.5 rounded-full bg-white/10 text-sm">pick up</button>
-            </form>
-          </div>
         </motion.div>
       </div>
     </div>

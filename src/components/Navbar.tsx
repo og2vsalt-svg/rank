@@ -7,11 +7,11 @@ type NavItem = { to: Route; label: string };
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
-  { to: 'saddle', label: 'saddle' },
-  { to: 'emberglass', label: 'emberglass' },
-  { to: 'driftnet', label: 'driftnet' },
+  { to: 'skiff', label: 'skiff' },
+  { to: 'jetty', label: 'jetty' },
+  { to: 'cloister', label: 'cloister' },
+  { to: 'mullion', label: 'mullion' },
   { to: 'folio', label: 'folio' },
-  { to: 'mason', label: 'mason' },
   { to: 'gilt', label: 'gilt' },
 ];
 
@@ -21,6 +21,9 @@ const groups: { title: string; items: NavItem[] }[] = [
     items: [
       { to: 'vault', label: 'vault' },
       { to: 'drop', label: 'drop' },
+      { to: 'skiff', label: 'skiff' },
+      { to: 'jetty', label: 'jetty' },
+      { to: 'mullion', label: 'mullion' },
       { to: 'saddle', label: 'saddle' },
       { to: 'emberglass', label: 'emberglass' },
       { to: 'driftnet', label: 'driftnet' },
@@ -84,6 +87,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'cloister', label: 'cloister' },
+      { to: 'skiff', label: 'skiff' },
+      { to: 'jetty', label: 'jetty' },
       { to: 'gilt', label: 'gilt' },
       { to: 'saddle', label: 'saddle' },
       { to: 'emberglass', label: 'emberglass' },
@@ -140,6 +146,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'create',
     items: [
+      { to: 'mullion', label: 'mullion' },
       { to: 'thimble', label: 'thimble' },
       { to: 'stillroom', label: 'stillroom' },
       { to: 'nook', label: 'nook' },
@@ -179,6 +186,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'cloister', label: 'cloister' },
       { to: 'whet', label: 'whet' },
       { to: 'rafter', label: 'rafter' },
       { to: 'gilt', label: 'gilt' },

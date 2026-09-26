@@ -1,6 +1,9 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'gnomon desk', body: 'read last-modified, type, and size of a local file, then publish it to the share db with a discord /s card.' },
+  { title: 'laneway aliases', body: 'pin short names to live share ids. stays in this browser. discord still uses /s/id.' },
+  { title: 'thimble note', body: 'type a tiny thing, drop it as a public .txt. not a vault grid.' },
   { title: 'kindling desk', body: 'attach a spark note to a local file, publish it to the share db, copy the discord /s card.' },
   { title: 'nave aisle', body: 'sign a drop if you want, then send one local file public. not another vault grid.' },
   { title: 'spur peek', body: 'look up a live share id and get metadata plus the embed url without opening the bytes.' },

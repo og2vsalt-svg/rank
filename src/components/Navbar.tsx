@@ -8,11 +8,11 @@ const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
   { to: 'loft', label: 'loft' },
+  { to: 'gnomon', label: 'gnomon' },
+  { to: 'laneway', label: 'laneway' },
+  { to: 'thimble', label: 'thimble' },
   { to: 'kindling', label: 'kindling' },
   { to: 'nave', label: 'nave' },
-  { to: 'spur', label: 'spur' },
-  { to: 'lattice', label: 'lattice' },
-  { to: 'slip', label: 'slip' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -22,6 +22,8 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'vault', label: 'vault' },
       { to: 'drop', label: 'drop' },
       { to: 'loft', label: 'loft' },
+      { to: 'gnomon', label: 'gnomon' },
+      { to: 'thimble', label: 'thimble' },
       { to: 'kindling', label: 'kindling' },
       { to: 'nave', label: 'nave' },
       { to: 'lattice', label: 'lattice' },
@@ -76,6 +78,7 @@ const groups: { title: string; items: NavItem[] }[] = [
     items: [
       { to: 'relay', label: 'relay' },
       { to: 'quilt', label: 'quilt' },
+      { to: 'laneway', label: 'laneway' },
       { to: 'kindling', label: 'kindling' },
       { to: 'nave', label: 'nave' },
       { to: 'spur', label: 'spur' },
@@ -122,6 +125,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'create',
     items: [
+      { to: 'thimble', label: 'thimble' },
       { to: 'stillroom', label: 'stillroom' },
       { to: 'nook', label: 'nook' },
       { to: 'iris', label: 'iris' },
@@ -160,6 +164,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'gnomon', label: 'gnomon' },
+      { to: 'laneway', label: 'laneway' },
       { to: 'spur', label: 'spur' },
       { to: 'harvest', label: 'harvest' },
       { to: 'waymark', label: 'waymark' },

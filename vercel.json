@@ -25,7 +25,11 @@
     { "source": "/lintel/:id", "destination": "/api/embed?id=:id" },
     { "source": "/flitch/:id", "destination": "/api/embed?id=:id" },
     { "source": "/sconce/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/truss/:id", "destination": "/api/embed?id=:id" }
+    { "source": "/truss/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/kestrel/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/harbor/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/lumen/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/meadow/:id", "destination": "/api/embed?id=:id" }
   ],
   "headers": [
     {

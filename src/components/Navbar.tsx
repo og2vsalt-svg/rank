@@ -7,12 +7,12 @@ type NavItem = { to: Route; label: string };
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
+  { to: 'nexus', label: 'nexus' },
+  { to: 'ledger', label: 'ledger' },
   { to: 'kestrel', label: 'kestrel' },
   { to: 'harbor', label: 'harbor' },
-  { to: 'lumen', label: 'lumen' },
-  { to: 'meadow', label: 'meadow' },
+  { to: 'moss', label: 'moss' },
   { to: 'skiff', label: 'skiff' },
-  { to: 'gilt', label: 'gilt' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -21,6 +21,8 @@ const groups: { title: string; items: NavItem[] }[] = [
     items: [
       { to: 'vault', label: 'vault' },
       { to: 'drop', label: 'drop' },
+      { to: 'nexus', label: 'nexus' },
+      { to: 'ledger', label: 'ledger' },
       { to: 'kestrel', label: 'kestrel' },
       { to: 'harbor', label: 'harbor' },
       { to: 'skiff', label: 'skiff' },
@@ -35,9 +37,9 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'cloister', label: 'cloister' },
       { to: 'lumen', label: 'lumen' },
       { to: 'meadow', label: 'meadow' },
+      { to: 'moss', label: 'moss' },
       { to: 'gilt', label: 'gilt' },
       { to: 'inlet', label: 'inlet' },
-      { to: 'moss', label: 'moss' },
       { to: 'quay', label: 'quay' },
       { to: 'loom', label: 'loom' },
     ],

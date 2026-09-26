@@ -8,6 +8,8 @@
     { "source": "/u/:id", "destination": "/api/embed?id=:id" },
     { "source": "/v/:id", "destination": "/api/embed?id=:id" },
     { "source": "/c/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/x/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/g/:id", "destination": "/api/embed?id=:id" },
     { "source": "/link/:id", "destination": "/api/embed?id=:id" },
     { "source": "/drop/:id", "destination": "/api/embed?id=:id" },
     { "source": "/wake/:id", "destination": "/api/embed?id=:id" },
@@ -16,11 +18,14 @@
     { "source": "/file/:id", "destination": "/api/embed?id=:id" },
     { "source": "/e/:id", "destination": "/api/embed?id=:id" },
     { "source": "/open/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/flint/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/stills/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/gauge/:id", "destination": "/api/embed?id=:id" },
     { "source": "/p/:page", "destination": "/api/embed?page=:page" }
   ],
   "headers": [
     {
-      "source": "/(s|f|d|u|v|c|e|link|drop|wake|share|card|file|open)/(.*)",
+      "source": "/(s|f|d|u|v|c|e|x|g|link|drop|wake|share|card|file|open|flint|stills|gauge)/(.*)",
       "headers": [
         { "key": "Cache-Control", "value": "public, s-maxage=60, stale-while-revalidate=300" }
       ]

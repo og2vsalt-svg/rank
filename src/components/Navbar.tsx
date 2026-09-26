@@ -7,10 +7,10 @@ type NavItem = { to: Route; label: string };
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
-  { to: 'sieve', label: 'sieve' },
-  { to: 'lodestone', label: 'lodestone' },
-  { to: 'meridian', label: 'meridian' },
-  { to: 'foyer', label: 'foyer' },
+  { to: 'flint', label: 'flint' },
+  { to: 'stills', label: 'stills' },
+  { to: 'gauge', label: 'gauge' },
+  { to: 'harbor', label: 'harbor' },
   { to: 'moss', label: 'moss' },
   { to: 'wicket', label: 'wicket' },
 ];
@@ -21,11 +21,10 @@ const groups: { title: string; items: NavItem[] }[] = [
     items: [
       { to: 'vault', label: 'vault' },
       { to: 'drop', label: 'drop' },
-      { to: 'meridian', label: 'meridian' },
-      { to: 'nexus', label: 'nexus' },
-      { to: 'ledger', label: 'ledger' },
-      { to: 'kestrel', label: 'kestrel' },
       { to: 'harbor', label: 'harbor' },
+      { to: 'gauge', label: 'gauge' },
+      { to: 'stills', label: 'stills' },
+      { to: 'flint', label: 'flint' },
       { to: 'skiff', label: 'skiff' },
       { to: 'jetty', label: 'jetty' },
       { to: 'folio', label: 'folio' },
@@ -69,14 +68,14 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
-      { to: 'kestrel', label: 'kestrel' },
+      { to: 'flint', label: 'flint' },
+      { to: 'gauge', label: 'gauge' },
       { to: 'hash', label: 'hash' },
       { to: 'convert', label: 'convert' },
       { to: 'qr', label: 'qr' },
       { to: 'diff', label: 'diff' },
       { to: 'nacre', label: 'nacre' },
       { to: 'lintel', label: 'lintel' },
-      { to: 'nimbus', label: 'nimbus' },
     ],
   },
 ];

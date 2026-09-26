@@ -1,43 +1,16 @@
 {
   "rewrites": [
+    { "source": "/api/share", "destination": "/api/share" },
+    { "source": "/api/embed", "destination": "/api/embed" },
     { "source": "/s/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/f/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/d/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/u/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/go/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/v/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/c/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/link/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/drop/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/wake/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/share/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/card/:id", "destination": "/api/embed?id=:id" },
     { "source": "/p/:page", "destination": "/api/embed?page=:page" },
-    { "source": "/embed/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/cider/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/tarn/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/merlon/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/ferrule/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/loom/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/quay/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/nacre/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/wick/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/lintel/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/flitch/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/sconce/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/truss/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/kestrel/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/harbor/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/lumen/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/meadow/:id", "destination": "/api/embed?id=:id" }
+    { "source": "/file/:id", "destination": "/api/embed?id=:id" }
   ],
   "headers": [
     {
-      "source": "/api/(.*)",
+      "source": "/s/(.*)",
       "headers": [
-        { "key": "Access-Control-Allow-Origin", "value": "*" },
-        { "key": "Access-Control-Allow-Methods", "value": "GET,POST,OPTIONS" },
-        { "key": "Access-Control-Allow-Headers", "value": "Content-Type" }
+        { "key": "Cache-Control", "value": "public, s-maxage=60, stale-while-revalidate=300" }
       ]
     }
   ]

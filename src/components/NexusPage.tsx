@@ -1,114 +1,102 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishShare, shareUrls } from '../lib/cloudShare';
+import { useVault } from './VaultContext';
+import { useRouter } from './Router';
+import { listPublicShares, shareUrls, type CloudMeta } from '../lib/cloudShare';
 
-function uid() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+function pretty(n: number) {
+  if (n < 1024) return n + ' b';
+  if (n < 1024 * 1024) return Math.max(1, Math.round(n / 1024)) + ' kb';
+  if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(1) + ' mb';
+  return (n / (1024 * 1024 * 1024)).toFixed(2) + ' gb';
 }
-
-function readAsDataUrl(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const r = new FileReader();
-    r.onload = () => resolve(String(r.result || ''));
-    r.onerror = () => reject(r.error || new Error('read failed'));
-    r.readAsDataURL(file);
-  });
-}
-
-type Item = {
-  id: string;
-  name: string;
-  size: number;
-  embed?: string;
-  app?: string;
-  error?: string;
-  warn?: string;
-};
 
 export default function NexusPage() {
+  const { addFiles, togglePublic } = useVault();
+  const { navigate } = useRouter();
+  const [rows, setRows] = useState<CloudMeta[]>([]);
   const [busy, setBusy] = useState(false);
-  const [items, setItems] = useState<Item[]>([]);
   const [warn, setWarn] = useState('');
+  const [err, setErr] = useState('');
+  const [link, setLink] = useState('');
+
+  const refresh = async () => {
+    const list = await listPublicShares(36);
+    setRows(list);
+  };
+
+  useEffect(() => {
+    refresh();
+  }, []);
 
   const onFiles = async (list: FileList | null) => {
     if (!list?.length) return;
-    const files = [...list];
-    setWarn(files.some((f) => f.size > 40 * 1024 * 1024) ? 'at least one file is huge. encoding may lag. still no cap.' : '');
+    const big = [...list].some((f) => f.size > 40 * 1024 * 1024);
+    setWarn(big ? 'chunky file. the tab might hitch while it encodes. no hard cap.' : '');
+    setErr('');
     setBusy(true);
-    const next: Item[] = [];
-    for (const file of files) {
-      const id = uid();
-      try {
-        const dataUrl = await readAsDataUrl(file);
-        const res = await publishShare({
-          id,
-          name: file.name,
-          type: file.type || 'application/octet-stream',
-          size: file.size,
-          dataUrl,
-        });
-        const urls = shareUrls(id);
-        next.push({
-          id,
-          name: file.name,
-          size: file.size,
-          embed: res.ok ? urls.embed : undefined,
-          app: res.ok ? urls.app : undefined,
-          error: res.ok ? undefined : res.error,
-          warn: res.warn,
-        });
-      } catch (e: any) {
-        next.push({ id, name: file.name, size: file.size, error: e?.message || 'failed' });
+    try {
+      const result = await addFiles(list, 'inbox');
+      if (!result.ok) {
+        setErr(result.error || 'could not save');
+        return;
       }
-      setItems([...next]);
+      const id = result.ids?.[0];
+      if (!id) return;
+      const pub = await togglePublic(id);
+      if (!pub.ok) {
+        setErr(pub.error || 'cloud publish failed');
+        return;
+      }
+      const urls = shareUrls(id);
+      setLink(urls.embed);
+      try { await navigator.clipboard.writeText(urls.embed); } catch {}
+      await refresh();
+    } catch (e: any) {
+      setErr(e?.message || 'drop failed');
+    } finally {
+      setBusy(false);
     }
-    setBusy(false);
   };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          className="glass rounded-[32px] p-8"
-        >
+      <div className="pt-28 pb-20 px-5 max-w-5xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}>
           <p className="text-[#0a84ff] text-sm mb-2">nexus</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">batch drop to the share db.</h1>
-          <p className="text-neutral-400 text-sm mb-6">
-            not another vault grid. pick a pile of local files, we publish each one and hand back discord /s cards.
-          </p>
+          <h1 className="text-4xl font-semibold tracking-tight mb-3">one desk for public drops.</h1>
+          <p className="text-neutral-400 text-sm mb-8 max-w-xl">upload a local file, land it in the db, grab the discord embed url. browse recent public shares without living in the vault.</p>
+
           <label
-            className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition-all duration-300"
+            className="block cursor-pointer rounded-[28px] glass p-8 mb-8 border border-dashed border-white/12 hover:border-[#0a84ff]/40 transition"
             onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => {
-              e.preventDefault();
-              onFiles(e.dataTransfer.files);
-            }}
+            onDrop={(e) => { e.preventDefault(); onFiles(e.dataTransfer.files); }}
           >
             <input type="file" multiple className="hidden" onChange={(e) => onFiles(e.target.files)} />
-            <p className="text-white font-medium">{busy ? 'publishing the pile…' : 'drop a pile here'}</p>
-            <p className="text-xs text-neutral-500 mt-2">unlimited count. we only warn if the browser might stall.</p>
+            <p className="text-white font-medium">{busy ? 'publishing…' : 'drop files here'}</p>
+            <p className="text-xs text-neutral-500 mt-2">publishes to supabase. huge files just warn about slowness.</p>
           </label>
-          {warn && <p className="text-xs text-amber-300/80 mt-4">{warn}</p>}
-          <AnimatePresence>
-            {items.map((it) => (
-              <motion.div
-                key={it.id}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mt-4 rounded-2xl bg-white/[0.04] border border-white/8 px-4 py-3"
+
+          {warn && <p className="text-xs text-amber-300/80 mb-4">{warn}</p>}
+          {err && <p className="text-xs text-red-400 mb-4">{err}</p>}
+          {link && <p className="text-xs text-neutral-400 mb-6 break-all">discord embed copied: {link}</p>}
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {rows.map((r) => (
+              <button
+                key={r.id}
+                onClick={() => navigate('share', r.id)}
+                className="text-left rounded-[22px] bg-white/[0.04] border border-white/8 p-4 hover:bg-white/[0.07] transition"
               >
-                <p className="text-sm text-white truncate">{it.name}</p>
-                {it.error && <p className="text-xs text-red-400 mt-1">{it.error}</p>}
-                {it.warn && <p className="text-xs text-amber-300/80 mt-1">{it.warn}</p>}
-                {it.embed && <p className="text-xs text-neutral-400 break-all mt-1">{it.embed}</p>}
-              </motion.div>
+                <p className="text-sm text-white truncate">{r.name}</p>
+                <p className="text-[11px] text-neutral-500 mt-1">{pretty(r.size)} · {(r.type || 'file').split(';')[0]}</p>
+                <p className="text-[11px] text-neutral-600 mt-2 truncate">/s/{r.id}</p>
+              </button>
             ))}
-          </AnimatePresence>
+          </div>
+          {!rows.length && <p className="text-sm text-neutral-500">no public drops yet, or the db is quiet.</p>}
         </motion.div>
       </div>
     </div>

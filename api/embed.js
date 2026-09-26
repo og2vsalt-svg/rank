@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"');
 }
 
 function isBot(ua) {
@@ -36,10 +36,13 @@ function pageHtml({ title, desc, image, url, color, mime }) {
   extra.push('<link rel="image_src" href="' + esc(safeImg) + '" />');
   extra.push('<meta name="msapplication-TileColor" content="' + esc(c) + '" />');
   extra.push('<meta name="theme-color" content="' + esc(c) + '" />');
+  extra.push('<meta name="theme-color" media="(prefers-color-scheme: dark)" content="' + esc(c) + '" />');
   extra.push('<meta property="og:site_name" content="rankvault" />');
   extra.push('<meta name="twitter:card" content="summary_large_image" />');
   extra.push('<meta name="twitter:site" content="@rankvault" />');
   extra.push('<meta property="og:determiner" content="" />');
+  extra.push('<meta name="og:image:width" content="1200" />');
+  extra.push('<meta name="og:image:height" content="630" />');
   if (mime && String(mime).startsWith('video/') && isRemoteImg && image) {
     extra.push('<meta property="og:video" content="' + esc(image) + '" />');
     extra.push('<meta property="og:video:type" content="' + esc(mime) + '" />');
@@ -108,6 +111,10 @@ const PAGE_TITLES = {
   harvest: 'harvest — batch publish',
   sundial: 'sundial — expiry planner',
   share: 'share — rankvault',
+  pulse: 'pulse — live share check',
+  satin: 'satin — share card studio',
+  palette: 'palette — color from file',
+  meridian: 'meridian — expiry clock',
 };
 
 export default async function handler(req, res) {

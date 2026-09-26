@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"');
 }
 
 function isBot(ua) {
@@ -106,6 +106,9 @@ const PAGE_TITLES = {
   vault: 'vault — rankvault',
   drop: 'drop — rankvault',
   loft: 'loft — park files first',
+  gnomon: 'gnomon — file clock',
+  laneway: 'laneway — short names',
+  thimble: 'thimble — tiny notes',
   lattice: 'lattice — pair two files',
   slip: 'slip — thin public drop',
   quilt: 'quilt — public board',

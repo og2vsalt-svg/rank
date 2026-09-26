@@ -4,9 +4,9 @@ import Navbar from './Navbar';
 import { useVault } from './VaultContext';
 import { shareUrls } from '../lib/cloudShare';
 
-export default function WicketPage() {
+export default function OrielPage() {
   const { addFiles, togglePublic } = useVault();
-  const [phrase, setPhrase] = useState('');
+  const [preview, setPreview] = useState('');
   const [busy, setBusy] = useState(false);
   const [warn, setWarn] = useState('');
   const [err, setErr] = useState('');
@@ -15,16 +15,17 @@ export default function WicketPage() {
   const onFiles = async (list: FileList | null) => {
     if (!list?.length) return;
     const file = list[0];
-    setWarn(file.size > 40 * 1024 * 1024 ? 'heavy gate. encoding may lag. no cap.' : '');
+    if (file.type.startsWith('image/')) {
+      setPreview(URL.createObjectURL(file));
+    } else {
+      setPreview('');
+    }
+    setWarn(file.size > 40 * 1024 * 1024 ? 'big still. preview might stutter. no cap.' : '');
     setErr('');
     setEmbed('');
     setBusy(true);
     try {
-      const hint = phrase.trim() ? `gate:${phrase.trim()}\n` : '';
-      const wrapped = new File([hint, file], file.name, { type: file.type || 'application/octet-stream' });
-      const dt = new DataTransfer();
-      dt.items.add(wrapped);
-      const result = await addFiles(dt.files, 'inbox');
+      const result = await addFiles(list, 'inbox');
       if (!result.ok) {
         setErr(result.error || 'could not save');
         return;
@@ -40,7 +41,7 @@ export default function WicketPage() {
       setEmbed(urls.embed);
       try { await navigator.clipboard.writeText(urls.embed); } catch {}
     } catch (e: any) {
-      setErr(e?.message || 'wicket failed');
+      setErr(e?.message || 'oriel failed');
     } finally {
       setBusy(false);
     }
@@ -51,13 +52,17 @@ export default function WicketPage() {
       <Navbar />
       <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-8">
-          <p className="text-[#0a84ff] text-sm mb-2">wicket</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">small gate, one file.</h1>
-          <p className="text-neutral-400 text-sm mb-6">optional phrase rides with the drop as a hint. still a public /s card for discord.</p>
-          <input value={phrase} onChange={(e) => setPhrase(e.target.value)} placeholder="soft passphrase hint" className="w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 text-sm text-white outline-none focus:border-[#0a84ff]/50 mb-4" />
+          <p className="text-[#0a84ff] text-sm mb-2">oriel</p>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">frame a still, then ship it.</h1>
+          <p className="text-neutral-400 text-sm mb-6">window seat for one image. public drop + discord card. not a vault grid.</p>
+          {preview && (
+            <div className="mb-6 rounded-[28px] overflow-hidden border border-white/10 bg-black/40">
+              <img src={preview} alt="" className="w-full max-h-80 object-contain" />
+            </div>
+          )}
           <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition" onDragOver={(e) => e.preventDefault()} onDrop={(e) => { e.preventDefault(); onFiles(e.dataTransfer.files); }}>
-            <input type="file" className="hidden" onChange={(e) => onFiles(e.target.files)} />
-            <p className="text-white font-medium">{busy ? 'opening the gate…' : 'drop a file through'}</p>
+            <input type="file" accept="image/*" className="hidden" onChange={(e) => onFiles(e.target.files)} />
+            <p className="text-white font-medium">{busy ? 'framing…' : 'drop a still'}</p>
           </label>
           {warn && <p className="text-xs text-amber-300/80 mt-4">{warn}</p>}
           {err && <p className="text-xs text-red-400 mt-4">{err}</p>}

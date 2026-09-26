@@ -2,41 +2,49 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
 
-function pickColors(img: HTMLImageElement, n = 6) {
-  const c = document.createElement('canvas');
-  const w = (c.width = 48);
-  const h = (c.height = 48);
-  const ctx = c.getContext('2d')!;
-  ctx.drawImage(img, 0, 0, w, h);
-  const data = ctx.getImageData(0, 0, w, h).data;
-  const buckets = new Map<string, number>();
-  for (let i = 0; i < data.length; i += 4) {
-    const r = data[i] & 0xf0;
-    const g = data[i + 1] & 0xf0;
-    const b = data[i + 2] & 0xf0;
-    const key = `${r},${g},${b}`;
-    buckets.set(key, (buckets.get(key) || 0) + 1);
+function sample(data: ImageData) {
+  const map = new Map<string, number>();
+  const step = 16;
+  for (let i = 0; i < data.data.length; i += 4 * step) {
+    const r = data.data[i];
+    const g = data.data[i + 1];
+    const b = data.data[i + 2];
+    const a = data.data[i + 3];
+    if (a < 80) continue;
+    const key = `${Math.round(r / 16) * 16},${Math.round(g / 16) * 16},${Math.round(b / 16) * 16}`;
+    map.set(key, (map.get(key) || 0) + 1);
   }
-  return [...buckets.entries()]
+  return [...map.entries()]
     .sort((a, b) => b[1] - a[1])
-    .slice(0, n)
-    .map(([k]) => {
-      const [r, g, b] = k.split(',').map(Number);
-      return '#' + [r, g, b].map((x) => x.toString(16).padStart(2, '0')).join('');
-    });
+    .slice(0, 6)
+    .map(([k]) => `rgb(${k})`);
 }
 
 export default function PalettePage() {
   const [colors, setColors] = useState<string[]>([]);
-  const [preview, setPreview] = useState('');
+  const [warn, setWarn] = useState('');
 
   const onFile = (file?: File) => {
-    if (!file || !file.type.startsWith('image/')) return;
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setWarn('needs an image file. other types stay in the vault.');
+      return;
+    }
+    if (file.size > 40 * 1024 * 1024) setWarn('huge image. decode might feel slow. no hard cap.');
+    else setWarn('');
     const url = URL.createObjectURL(file);
     const img = new Image();
     img.onload = () => {
-      setPreview(url);
-      setColors(pickColors(img));
+      const c = document.createElement('canvas');
+      const w = Math.min(160, img.width);
+      const h = Math.max(1, Math.round((img.height / img.width) * w));
+      c.width = w;
+      c.height = h;
+      const ctx = c.getContext('2d');
+      if (!ctx) return;
+      ctx.drawImage(img, 0, 0, w, h);
+      setColors(sample(ctx.getImageData(0, 0, w, h)));
+      URL.revokeObjectURL(url);
     };
     img.src = url;
   };
@@ -44,26 +52,21 @@ export default function PalettePage() {
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
+      <div className="pt-28 pb-20 px-5 max-w-xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-[32px] p-8">
-          <p className="text-[#0a84ff] text-sm mb-2">palette desk</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">steal colors from a still.</h1>
-          <p className="text-neutral-400 text-sm mb-6">separate from hosting. drop a png or jpg, grab the muted swatches.</p>
-          <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center">
+          <p className="text-[#0a84ff] text-sm mb-2">palette</p>
+          <h1 className="text-3xl font-semibold mb-3">pull colors from a local file</h1>
+          <p className="text-neutral-400 text-sm mb-6">stays on this device. handy before you theme a public drop.</p>
+          <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 p-10 text-center">
             <input type="file" accept="image/*" className="hidden" onChange={(e) => onFile(e.target.files?.[0])} />
-            <p className="text-white font-medium">drop an image</p>
+            <span className="text-sm">drop an image</span>
           </label>
-          {preview && <img src={preview} alt="" className="mt-6 w-full rounded-2xl" />}
-          {!!colors.length && (
-            <div className="mt-5 grid grid-cols-3 gap-2">
-              {colors.map((c) => (
-                <button key={c} onClick={() => navigator.clipboard.writeText(c)} className="rounded-2xl overflow-hidden text-left">
-                  <div className="h-16" style={{ background: c }} />
-                  <p className="text-xs px-2 py-2 text-neutral-400">{c}</p>
-                </button>
-              ))}
-            </div>
-          )}
+          {warn && <p className="text-xs text-amber-300/80 mt-4">{warn}</p>}
+          <div className="flex gap-2 mt-6 flex-wrap">
+            {colors.map((c) => (
+              <button key={c} onClick={() => navigator.clipboard.writeText(c)} className="w-14 h-14 rounded-2xl border border-white/10" style={{ background: c }} title={c} />
+            ))}
+          </div>
         </motion.div>
       </div>
     </div>

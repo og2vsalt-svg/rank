@@ -10,9 +10,9 @@ const primary: NavItem[] = [
   { to: 'flint', label: 'flint' },
   { to: 'stills', label: 'stills' },
   { to: 'gauge', label: 'gauge' },
-  { to: 'harbor', label: 'harbor' },
-  { to: 'moss', label: 'moss' },
-  { to: 'wicket', label: 'wicket' },
+  { to: 'kiln', label: 'kiln' },
+  { to: 'ledger', label: 'ledger' },
+  { to: 'furrow', label: 'furrow' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -25,6 +25,8 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'gauge', label: 'gauge' },
       { to: 'stills', label: 'stills' },
       { to: 'flint', label: 'flint' },
+      { to: 'kiln', label: 'kiln' },
+      { to: 'furrow', label: 'furrow' },
       { to: 'skiff', label: 'skiff' },
       { to: 'jetty', label: 'jetty' },
       { to: 'folio', label: 'folio' },
@@ -38,6 +40,7 @@ const groups: { title: string; items: NavItem[] }[] = [
     items: [
       { to: 'sieve', label: 'sieve' },
       { to: 'lodestone', label: 'lodestone' },
+      { to: 'ledger', label: 'ledger' },
       { to: 'foyer', label: 'foyer' },
       { to: 'cloister', label: 'cloister' },
       { to: 'lumen', label: 'lumen' },
@@ -70,6 +73,7 @@ const groups: { title: string; items: NavItem[] }[] = [
     items: [
       { to: 'flint', label: 'flint' },
       { to: 'gauge', label: 'gauge' },
+      { to: 'kiln', label: 'kiln' },
       { to: 'hash', label: 'hash' },
       { to: 'convert', label: 'convert' },
       { to: 'qr', label: 'qr' },

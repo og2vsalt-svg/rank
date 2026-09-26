@@ -1,6 +1,11 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'folio cover', body: 'give a drop a title, publish one local file to the share db, copy the discord /s card.' },
+  { title: 'whet names', body: 'preview cleaned filenames on device. no upload. tidy cards before you share.' },
+  { title: 'mason bricks', body: 'publish a pile as separate public drops. each brick gets its own /s embed.' },
+  { title: 'rafter glance', body: 'see how heavy this origin is. no cap, just a slowness warning when storage is stuffed.' },
+  { title: 'gilt card', body: 'look up a live share id and copy a discord-ready /s link with metadata.' },
   { title: 'gnomon desk', body: 'read last-modified, type, and size of a local file, then publish it to the share db with a discord /s card.' },
   { title: 'laneway aliases', body: 'pin short names to live share ids. stays in this browser. discord still uses /s/id.' },
   { title: 'thimble note', body: 'type a tiny thing, drop it as a public .txt. not a vault grid.' },

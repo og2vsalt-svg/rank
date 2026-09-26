@@ -1,48 +1,94 @@
 import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
+import { useVault } from './VaultContext';
+import { shareUrls } from '../lib/cloudShare';
 
 export default function MeridianPage() {
-  const [name, setName] = useState('');
-  const [size, setSize] = useState(0);
-  const stamp = useMemo(() => {
-    const now = new Date();
-    const zones = ['UTC', 'America/Los_Angeles', 'America/New_York', 'Europe/London', 'Europe/Berlin', 'Asia/Tokyo'];
-    return zones.map((z) => ({
-      z,
-      t: now.toLocaleString('en-GB', { timeZone: z, hour12: false }),
-    }));
-  }, [name, size]);
+  const { addFiles, togglePublic } = useVault();
+  const [busy, setBusy] = useState(false);
+  const [warn, setWarn] = useState('');
+  const [err, setErr] = useState('');
+  const [link, setLink] = useState('');
+  const [note, setNote] = useState('');
+  const zones = useMemo(
+    () =>
+      [
+        'Pacific/Honolulu',
+        'America/Los_Angeles',
+        'America/New_York',
+        'Europe/London',
+        'Europe/Berlin',
+        'Asia/Tokyo',
+        'Australia/Sydney',
+      ].map((z) => ({
+        z,
+        t: new Intl.DateTimeFormat('en', { timeZone: z, hour: '2-digit', minute: '2-digit', weekday: 'short' }).format(new Date()),
+      })),
+    [],
+  );
+
+  const onFiles = async (list: FileList | null) => {
+    if (!list?.length) return;
+    const big = [...list].some((f) => f.size > 40 * 1024 * 1024);
+    setWarn(big ? 'chunky file. encoding might feel slow. no hard cap.' : '');
+    setErr('');
+    setLink('');
+    setBusy(true);
+    try {
+      const result = await addFiles(list, 'inbox');
+      if (!result.ok) {
+        setErr(result.error || 'need to be logged in');
+        return;
+      }
+      const id = result.ids?.[0];
+      if (!id) return;
+      const pub = await togglePublic(id);
+      if (!pub.ok) {
+        setErr(pub.error || 'publish failed');
+        return;
+      }
+      setLink(shareUrls(id).embed);
+      try {
+        await navigator.clipboard.writeText(shareUrls(id).embed);
+      } catch {}
+    } catch (e: any) {
+      setErr(e?.message || 'failed');
+    } finally {
+      setBusy(false);
+    }
+  };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
       <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-8">
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-[32px] p-8">
           <p className="text-[#0a84ff] text-sm mb-2">meridian</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">stamp a drop across timezones.</h1>
-          <p className="text-sm text-neutral-400 mb-6">not a vault. just a receipt clock so you know when the file actually hit the tab.</p>
-          <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/40 p-8 text-center transition-all duration-300">
-            <input type="file" className="hidden" onChange={(e) => {
-              const f = e.target.files?.[0];
-              if (!f) return;
-              setName(f.name);
-              setSize(f.size);
-            }} />
-            <p className="text-white font-medium">{name || 'drop a local file'}</p>
-            <p className="text-xs text-neutral-500 mt-2">no size cap. huge files just make the picker feel sleepy.</p>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">drop against the clock.</h1>
+          <p className="text-neutral-400 text-sm mb-6">see a few timezones, leave a caption, send one local file to the share db.</p>
+          <div className="grid grid-cols-2 gap-2 mb-6">
+            {zones.map((z) => (
+              <div key={z.z} className="rounded-2xl bg-white/[0.03] border border-white/5 px-3 py-3">
+                <p className="text-[11px] text-neutral-500 truncate">{z.z.split('/')[1]?.replace('_', ' ')}</p>
+                <p className="text-sm text-white">{z.t}</p>
+              </div>
+            ))}
+          </div>
+          <textarea
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="optional caption (stays on this page)"
+            className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm outline-none min-h-[80px] mb-4"
+          />
+          <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-8 text-center">
+            <input type="file" className="hidden" onChange={(e) => onFiles(e.target.files)} />
+            <p className="text-white text-sm">{busy ? 'publishing…' : 'drop one file'}</p>
+            <p className="text-[11px] text-neutral-500 mt-1">no file cap. just a slowness warning.</p>
           </label>
-          {name && (
-            <div className="mt-6 space-y-2">
-              <p className="text-xs text-neutral-500">{name} · {(size / 1024 / 1024).toFixed(2)} mb</p>
-              {stamp.map((s) => (
-                <div key={s.z} className="flex items-center justify-between rounded-2xl bg-white/[0.03] px-4 py-3">
-                  <span className="text-sm text-neutral-300">{s.z}</span>
-                  <span className="text-sm text-white tabular-nums">{s.t}</span>
-                </div>
-              ))}
-            </div>
-          )}
+          {warn && <p className="text-xs text-amber-300/80 mt-4">{warn}</p>}
+          {err && <p className="text-xs text-red-400 mt-4">{err}</p>}
+          {link && <p className="text-xs text-neutral-400 mt-4 break-all">discord card copied: {link}</p>}
         </motion.div>
       </div>
     </div>

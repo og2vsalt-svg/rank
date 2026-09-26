@@ -1,89 +1,89 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
+import { listPublicShares, shareUrls, type CloudMeta } from '../lib/cloudShare';
+import { useRouter } from './Router';
 
-type Row = {
-  name: string;
-  size: number;
-  type: string;
-  lastModified: number;
-  sha?: string;
-  warn?: string;
-};
+function kind(m: CloudMeta) {
+  const t = (m.type || '').toLowerCase();
+  if (t.startsWith('image/')) return 'image';
+  if (t.startsWith('video/')) return 'video';
+  if (t.startsWith('audio/')) return 'audio';
+  if (t.includes('pdf') || t.includes('text') || t.includes('json')) return 'text';
+  return 'other';
+}
 
 function pretty(n: number) {
   if (n < 1024) return n + ' b';
   if (n < 1024 * 1024) return Math.round(n / 1024) + ' kb';
-  if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(1) + ' mb';
-  return (n / (1024 * 1024 * 1024)).toFixed(2) + ' gb';
-}
-
-async function sha256(file: File) {
-  if (!crypto?.subtle) return undefined;
-  const buf = await file.arrayBuffer();
-  const hash = await crypto.subtle.digest('SHA-256', buf);
-  return [...new Uint8Array(hash)].map((b) => b.toString(16).padStart(2, '0')).join('');
+  return (n / (1024 * 1024)).toFixed(1) + ' mb';
 }
 
 export default function SievePage() {
-  const [rows, setRows] = useState<Row[]>([]);
-  const [busy, setBusy] = useState(false);
+  const { navigate } = useRouter();
+  const [rows, setRows] = useState<CloudMeta[]>([]);
+  const [q, setQ] = useState('');
+  const [filter, setFilter] = useState('all');
+  const [busy, setBusy] = useState(true);
 
-  const onFiles = async (list: FileList | null) => {
-    if (!list?.length) return;
-    setBusy(true);
-    const next: Row[] = [];
-    for (const file of [...list]) {
-      const warn = file.size > 40 * 1024 * 1024 ? 'chunky file. hashing may take a sec.' : undefined;
-      let sha: string | undefined;
-      try {
-        sha = await sha256(file);
-      } catch {
-        sha = undefined;
-      }
-      next.push({
-        name: file.name,
-        size: file.size,
-        type: file.type || 'unknown',
-        lastModified: file.lastModified,
-        sha,
-        warn,
-      });
-    }
-    setRows(next);
-    setBusy(false);
-  };
+  useEffect(() => {
+    listPublicShares(80).then((r) => {
+      setRows(r);
+      setBusy(false);
+    });
+  }, []);
+
+  const shown = useMemo(() => {
+    return rows.filter((r) => {
+      if (filter !== 'all' && kind(r) !== filter) return false;
+      if (q && !r.name.toLowerCase().includes(q.toLowerCase())) return false;
+      return true;
+    });
+  }, [rows, q, filter]);
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-8">
+      <div className="pt-28 pb-20 px-5 max-w-3xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-8">
           <p className="text-[#0a84ff] text-sm mb-2">sieve</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">inspect a file. stay local.</h1>
-          <p className="text-neutral-400 text-sm mb-6">name, size, type, and sha-256. nothing leaves the tab. not a vault, just a check.</p>
-          <label
-            className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition-all duration-300"
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => {
-              e.preventDefault();
-              onFiles(e.dataTransfer.files);
-            }}
-          >
-            <input type="file" multiple className="hidden" onChange={(e) => onFiles(e.target.files)} />
-            <p className="text-white font-medium">{busy ? 'reading…' : 'drop files to sift'}</p>
-            <p className="text-xs text-neutral-500 mt-2">no upload cap. big ones just feel slower.</p>
-          </label>
-          <div className="mt-6 space-y-2">
-            {rows.map((r) => (
-              <div key={r.name + r.size} className="rounded-2xl bg-white/[0.03] border border-white/5 px-4 py-3">
-                <div className="flex items-center justify-between gap-3">
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">sift public drops.</h1>
+          <p className="text-neutral-400 text-sm mb-6">not a vault. just a filter over whatever is already live in the share db.</p>
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="name contains…"
+            className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/50 mb-4"
+          />
+          <div className="flex flex-wrap gap-2 mb-6">
+            {['all', 'image', 'video', 'audio', 'text', 'other'].map((k) => (
+              <button
+                key={k}
+                onClick={() => setFilter(k)}
+                className={`px-3.5 py-1.5 rounded-full text-[13px] transition ${filter === k ? 'bg-white text-black' : 'bg-white/5 text-neutral-300'}`}
+              >
+                {k}
+              </button>
+            ))}
+          </div>
+          {busy && <p className="text-neutral-500 text-sm">listening…</p>}
+          {!busy && shown.length === 0 && <p className="text-neutral-500 text-sm">nothing matches yet.</p>}
+          <div className="space-y-2">
+            {shown.map((r) => (
+              <div key={r.id} className="rounded-2xl bg-white/[0.03] border border-white/5 px-4 py-3 flex items-center justify-between gap-3">
+                <div className="min-w-0">
                   <p className="text-sm text-white truncate">{r.name}</p>
-                  <span className="text-[11px] text-neutral-500 shrink-0">{pretty(r.size)}</span>
+                  <p className="text-[11px] text-neutral-500">{kind(r)} · {pretty(r.size)}</p>
                 </div>
-                <p className="text-[11px] text-neutral-500 mt-1">{r.type || 'unknown'} · {new Date(r.lastModified).toLocaleString()}</p>
-                {r.sha && <p className="text-[11px] text-neutral-400 mt-1 break-all font-mono">{r.sha}</p>}
-                {r.warn && <p className="text-[11px] text-amber-300/80 mt-1">{r.warn}</p>}
+                <div className="flex gap-2 shrink-0">
+                  <button onClick={() => navigate('share', r.id)} className="text-[12px] px-3 py-1.5 rounded-full bg-white text-black">open</button>
+                  <button
+                    onClick={() => navigator.clipboard.writeText(shareUrls(r.id).embed)}
+                    className="text-[12px] px-3 py-1.5 rounded-full bg-white/8 text-neutral-300"
+                  >
+                    /s card
+                  </button>
+                </div>
               </div>
             ))}
           </div>

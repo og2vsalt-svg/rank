@@ -17,7 +17,15 @@
     { "source": "/cider/:id", "destination": "/api/embed?id=:id" },
     { "source": "/tarn/:id", "destination": "/api/embed?id=:id" },
     { "source": "/merlon/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/ferrule/:id", "destination": "/api/embed?id=:id" }
+    { "source": "/ferrule/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/loom/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/quay/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/nacre/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/wick/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/lintel/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/flitch/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/sconce/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/truss/:id", "destination": "/api/embed?id=:id" }
   ],
   "headers": [
     {

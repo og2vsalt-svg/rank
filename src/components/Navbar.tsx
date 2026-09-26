@@ -39,6 +39,10 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'gilt', label: 'gilt' },
       { to: 'inlet', label: 'inlet' },
       { to: 'moss', label: 'moss' },
+      { to: 'quay', label: 'quay' },
+      { to: 'loom', label: 'loom' },
+      { to: 'flitch', label: 'flitch' },
+      { to: 'truss', label: 'truss' },
     ],
   },
   {
@@ -49,6 +53,10 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'notes', label: 'notes' },
       { to: 'paste', label: 'paste' },
       { to: 'prism', label: 'prism' },
+      { to: 'loom', label: 'loom' },
+      { to: 'wick', label: 'wick' },
+      { to: 'flitch', label: 'flitch' },
+      { to: 'sconce', label: 'sconce' },
     ],
   },
   {
@@ -60,6 +68,10 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'convert', label: 'convert' },
       { to: 'qr', label: 'qr' },
       { to: 'diff', label: 'diff' },
+      { to: 'nacre', label: 'nacre' },
+      { to: 'lintel', label: 'lintel' },
+      { to: 'truss', label: 'truss' },
+      { to: 'sconce', label: 'sconce' },
     ],
   },
 ];

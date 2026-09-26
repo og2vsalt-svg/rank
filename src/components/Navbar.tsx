@@ -7,12 +7,12 @@ type NavItem = { to: Route; label: string };
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
+  { to: 'folio', label: 'folio' },
+  { to: 'mason', label: 'mason' },
+  { to: 'gilt', label: 'gilt' },
+  { to: 'whet', label: 'whet' },
+  { to: 'rafter', label: 'rafter' },
   { to: 'catalog', label: 'catalog' },
-  { to: 'gauge', label: 'gauge' },
-  { to: 'loft', label: 'loft' },
-  { to: 'gnomon', label: 'gnomon' },
-  { to: 'laneway', label: 'laneway' },
-  { to: 'thimble', label: 'thimble' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -21,6 +21,10 @@ const groups: { title: string; items: NavItem[] }[] = [
     items: [
       { to: 'vault', label: 'vault' },
       { to: 'drop', label: 'drop' },
+      { to: 'folio', label: 'folio' },
+      { to: 'mason', label: 'mason' },
+      { to: 'whet', label: 'whet' },
+      { to: 'rafter', label: 'rafter' },
       { to: 'gauge', label: 'gauge' },
       { to: 'loft', label: 'loft' },
       { to: 'gnomon', label: 'gnomon' },
@@ -77,6 +81,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'gilt', label: 'gilt' },
+      { to: 'folio', label: 'folio' },
+      { to: 'mason', label: 'mason' },
       { to: 'relay', label: 'relay' },
       { to: 'quilt', label: 'quilt' },
       { to: 'catalog', label: 'catalog' },
@@ -166,6 +173,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'whet', label: 'whet' },
+      { to: 'rafter', label: 'rafter' },
+      { to: 'gilt', label: 'gilt' },
       { to: 'catalog', label: 'catalog' },
       { to: 'gauge', label: 'gauge' },
       { to: 'gnomon', label: 'gnomon' },

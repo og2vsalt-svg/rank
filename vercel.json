@@ -3,12 +3,22 @@
     { "source": "/api/share", "destination": "/api/share" },
     { "source": "/api/embed", "destination": "/api/embed" },
     { "source": "/s/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/p/:page", "destination": "/api/embed?page=:page" },
-    { "source": "/file/:id", "destination": "/api/embed?id=:id" }
+    { "source": "/f/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/d/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/u/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/v/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/c/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/link/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/drop/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/wake/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/share/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/card/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/file/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/p/:page", "destination": "/api/embed?page=:page" }
   ],
   "headers": [
     {
-      "source": "/s/(.*)",
+      "source": "/(s|f|d|u|v|c|link|drop|wake|share|card|file)/(.*)",
       "headers": [
         { "key": "Cache-Control", "value": "public, s-maxage=60, stale-while-revalidate=300" }
       ]

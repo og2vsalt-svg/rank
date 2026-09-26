@@ -7,12 +7,12 @@ type NavItem = { to: Route; label: string };
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
-  { to: 'nexus', label: 'nexus' },
-  { to: 'ledger', label: 'ledger' },
-  { to: 'kestrel', label: 'kestrel' },
-  { to: 'harbor', label: 'harbor' },
+  { to: 'foyer', label: 'foyer' },
+  { to: 'nimbus', label: 'nimbus' },
+  { to: 'oriel', label: 'oriel' },
+  { to: 'scrip', label: 'scrip' },
+  { to: 'wicket', label: 'wicket' },
   { to: 'moss', label: 'moss' },
-  { to: 'skiff', label: 'skiff' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -29,11 +29,14 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'jetty', label: 'jetty' },
       { to: 'folio', label: 'folio' },
       { to: 'keepsake', label: 'keepsake' },
+      { to: 'oriel', label: 'oriel' },
+      { to: 'nimbus', label: 'nimbus' },
     ],
   },
   {
     title: 'share',
     items: [
+      { to: 'foyer', label: 'foyer' },
       { to: 'cloister', label: 'cloister' },
       { to: 'lumen', label: 'lumen' },
       { to: 'meadow', label: 'meadow' },
@@ -42,6 +45,8 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'inlet', label: 'inlet' },
       { to: 'quay', label: 'quay' },
       { to: 'loom', label: 'loom' },
+      { to: 'wicket', label: 'wicket' },
+      { to: 'scrip', label: 'scrip' },
     ],
   },
   {
@@ -55,6 +60,7 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'prism', label: 'prism' },
       { to: 'loom', label: 'loom' },
       { to: 'wick', label: 'wick' },
+      { to: 'scrip', label: 'scrip' },
     ],
   },
   {
@@ -67,6 +73,7 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'diff', label: 'diff' },
       { to: 'nacre', label: 'nacre' },
       { to: 'lintel', label: 'lintel' },
+      { to: 'nimbus', label: 'nimbus' },
     ],
   },
 ];
@@ -122,7 +129,7 @@ export default function Navbar() {
                 <div className="px-4 py-3 border-b border-white/5">
                   <p className="text-sm font-medium text-white truncate">{user!.username}</p>
                 </div>
-                <button onClick={() => { setUserMenuOpen(false); navigate('vault'); }} className="w-full text-left px-4 py-2.5 text-sm text-neutral-300 hover:bg-white/5">open vault</button>
+                <button onClick={() => { setUserMenuOpen(false); navigate('vault'); }} className="w-full text-left px-4 py-3 text-sm text-neutral-300 hover:bg-white/5">open vault</button>
                 <button onClick={() => { logout(); setUserMenuOpen(false); }} className="w-full text-left px-4 py-2.5 text-sm text-neutral-400 hover:text-red-400 hover:bg-white/5">log out</button>
               </div>
             </div>

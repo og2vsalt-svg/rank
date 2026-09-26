@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"');
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 function isBot(ua) {
@@ -115,6 +115,8 @@ const PAGE_TITLES = {
   satin: 'satin — share card studio',
   palette: 'palette — color from file',
   meridian: 'meridian — expiry clock',
+  vale: 'vale — compare two drops',
+  driftglass: 'driftglass — polish a drop',
 };
 
 export default async function handler(req, res) {

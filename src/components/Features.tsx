@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'pier dock', body: 'ship one local file straight into the share db. discord /s card comes back. not a vault grid.' },
   { title: 'folio cover', body: 'give a drop a title, publish one local file to the share db, copy the discord /s card.' },
   { title: 'whet names', body: 'preview cleaned filenames on device. no upload. tidy cards before you share.' },
   { title: 'mason bricks', body: 'publish a pile as separate public drops. each brick gets its own /s embed.' },
@@ -31,7 +32,7 @@ const items = [
   { title: 'lichen card', body: 'paint a 1200x630 png from a line of text. built for discord previews.' },
   { title: 'gully split', body: 'carve a local file into parts you can stash separately. no hard size cap.' },
   { title: 'cloud share db', body: 'public drops land in supabase, with vercel blob when a token is set.' },
-  { title: 'discord embeds', body: '/s/id, /f/id, /d/id and /p/page serve og tags so discord previews look finished.' },
+  { title: 'discord embeds', body: '/s/id, /f/id, /d/id, /u/id and /p/page serve og tags so discord previews look finished.' },
   { title: 'no hard file cap', body: 'drop whatever size you want. we only warn when the tab might feel sleepy.' },
   { title: 'summit stats', body: 'see how heavy this vault is, by kind, without sending a byte.' },
   { title: 'hopper rename', body: 'batch-rename a local pile and save copies. stays on device.' },

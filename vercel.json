@@ -49,11 +49,13 @@
     { "source": "/loom/:id", "destination": "/api/embed?id=:id" },
     { "source": "/quill/:id", "destination": "/api/embed?id=:id" },
     { "source": "/harbor/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/islet/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/pumice/:id", "destination": "/api/embed?id=:id" },
     { "source": "/p/:page", "destination": "/api/embed?page=:page" }
   ],
   "headers": [
     {
-      "source": "/(s|f|d|u|v|c|e|x|g|link|drop|wake|share|card|file|open|lanyard|parcel|lattice|marquee|signal|keyring|trace|solstice|flint|stills|gauge|kiln|ledger|furrow|tarn|weir|ketch|harvest|sundial|relay|spool|lantern|pulse|satin|palette|meridian|vale|driftglass|loom|quill|harbor)/(.*)",
+      "source": "/(s|f|d|u|v|c|e|x|g|link|drop|wake|share|card|file|open|lanyard|parcel|lattice|marquee|signal|keyring|trace|solstice|flint|stills|gauge|kiln|ledger|furrow|tarn|weir|ketch|harvest|sundial|relay|spool|lantern|pulse|satin|palette|meridian|vale|driftglass|loom|quill|harbor|islet|pumice)/(.*)",
       "headers": [
         { "key": "Cache-Control", "value": "public, s-maxage=60, stale-while-revalidate=300" }
       ]

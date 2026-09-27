@@ -13,6 +13,7 @@ const primary: NavItem[] = [
   { to: 'spindle', label: 'spindle' },
   { to: 'quarry', label: 'quarry' },
   { to: 'thresh', label: 'thresh' },
+  { to: 'lookout', label: 'lookout' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -54,6 +55,9 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'driftglass', label: 'driftglass' },
       { to: 'islet', label: 'islet' },
       { to: 'pumice', label: 'pumice' },
+      { to: 'ballast', label: 'ballast' },
+      { to: 'windlass', label: 'windlass' },
+      { to: 'flotsam', label: 'flotsam' },
     ],
   },
   {
@@ -86,6 +90,10 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'scrip', label: 'scrip' },
       { to: 'pulse', label: 'pulse' },
       { to: 'vale', label: 'vale' },
+      { to: 'lookout', label: 'lookout' },
+      { to: 'capstan', label: 'capstan' },
+      { to: 'flotsam', label: 'flotsam' },
+      { to: 'windlass', label: 'windlass' },
     ],
   },
   {
@@ -144,6 +152,9 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'pulse', label: 'pulse' },
       { to: 'palette', label: 'palette' },
       { to: 'vale', label: 'vale' },
+      { to: 'ballast', label: 'ballast' },
+      { to: 'lookout', label: 'lookout' },
+      { to: 'capstan', label: 'capstan' },
     ],
   },
 ];

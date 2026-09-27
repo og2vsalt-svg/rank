@@ -7,12 +7,12 @@ type NavItem = { to: Route; label: string };
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
+  { to: 'mason', label: 'mason' },
+  { to: 'glaze', label: 'glaze' },
+  { to: 'orchard', label: 'orchard' },
+  { to: 'ridge', label: 'ridge' },
   { to: 'parcel', label: 'parcel' },
   { to: 'keel', label: 'keel' },
-  { to: 'slipway', label: 'slipway' },
-  { to: 'emberwake', label: 'emberwake' },
-  { to: 'keystone', label: 'keystone' },
-  { to: 'vellum', label: 'vellum' },
   { to: 'lookout', label: 'lookout' },
 ];
 
@@ -22,6 +22,9 @@ const groups: { title: string; items: NavItem[] }[] = [
     items: [
       { to: 'vault', label: 'vault' },
       { to: 'drop', label: 'drop' },
+      { to: 'mason', label: 'mason' },
+      { to: 'orchard', label: 'orchard' },
+      { to: 'ridge', label: 'ridge' },
       { to: 'parcel', label: 'parcel' },
       { to: 'keel', label: 'keel' },
       { to: 'slipway', label: 'slipway' },
@@ -65,6 +68,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'glaze', label: 'glaze' },
+      { to: 'mason', label: 'mason' },
       { to: 'emberwake', label: 'emberwake' },
       { to: 'velvet', label: 'velvet' },
       { to: 'well', label: 'well' },
@@ -102,6 +107,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'create',
     items: [
+      { to: 'glaze', label: 'glaze' },
       { to: 'vellum', label: 'vellum' },
       { to: 'gossamer', label: 'gossamer' },
       { to: 'rivulet', label: 'rivulet' },
@@ -129,6 +135,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'ridge', label: 'ridge' },
+      { to: 'orchard', label: 'orchard' },
+      { to: 'mason', label: 'mason' },
       { to: 'keel', label: 'keel' },
       { to: 'slipway', label: 'slipway' },
       { to: 'emberwake', label: 'emberwake' },

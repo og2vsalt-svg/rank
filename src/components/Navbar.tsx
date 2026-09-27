@@ -23,6 +23,7 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'drop', label: 'drop' },
       { to: 'parcel', label: 'parcel' },
       { to: 'hearth', label: 'hearth' },
+      { to: 'relic', label: 'relic' },
       { to: 'gable', label: 'gable' },
       { to: 'narthex', label: 'narthex' },
       { to: 'solace', label: 'solace' },
@@ -113,6 +114,7 @@ const groups: { title: string; items: NavItem[] }[] = [
     title: 'tools',
     items: [
       { to: 'well', label: 'well' },
+      { to: 'relic', label: 'relic' },
       { to: 'narthex', label: 'narthex' },
       { to: 'gable', label: 'gable' },
       { to: 'solace', label: 'solace' },

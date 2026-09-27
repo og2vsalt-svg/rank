@@ -7,11 +7,10 @@ type NavItem = { to: Route; label: string };
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
-  { to: 'mason', label: 'mason' },
-  { to: 'glaze', label: 'glaze' },
-  { to: 'orchard', label: 'orchard' },
-  { to: 'ridge', label: 'ridge' },
   { to: 'parcel', label: 'parcel' },
+  { to: 'gazette', label: 'gazette' },
+  { to: 'ingress', label: 'ingress' },
+  { to: 'mirror', label: 'mirror' },
   { to: 'keel', label: 'keel' },
   { to: 'lookout', label: 'lookout' },
 ];
@@ -22,10 +21,13 @@ const groups: { title: string; items: NavItem[] }[] = [
     items: [
       { to: 'vault', label: 'vault' },
       { to: 'drop', label: 'drop' },
+      { to: 'parcel', label: 'parcel' },
+      { to: 'gazette', label: 'gazette' },
+      { to: 'ingress', label: 'ingress' },
+      { to: 'mirror', label: 'mirror' },
       { to: 'mason', label: 'mason' },
       { to: 'orchard', label: 'orchard' },
       { to: 'ridge', label: 'ridge' },
-      { to: 'parcel', label: 'parcel' },
       { to: 'keel', label: 'keel' },
       { to: 'slipway', label: 'slipway' },
       { to: 'pebble', label: 'pebble' },
@@ -69,6 +71,9 @@ const groups: { title: string; items: NavItem[] }[] = [
     title: 'share',
     items: [
       { to: 'glaze', label: 'glaze' },
+      { to: 'gazette', label: 'gazette' },
+      { to: 'ingress', label: 'ingress' },
+      { to: 'mirror', label: 'mirror' },
       { to: 'mason', label: 'mason' },
       { to: 'emberwake', label: 'emberwake' },
       { to: 'velvet', label: 'velvet' },
@@ -108,6 +113,8 @@ const groups: { title: string; items: NavItem[] }[] = [
     title: 'create',
     items: [
       { to: 'glaze', label: 'glaze' },
+      { to: 'gazette', label: 'gazette' },
+      { to: 'ingress', label: 'ingress' },
       { to: 'vellum', label: 'vellum' },
       { to: 'gossamer', label: 'gossamer' },
       { to: 'rivulet', label: 'rivulet' },
@@ -135,6 +142,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'mirror', label: 'mirror' },
       { to: 'ridge', label: 'ridge' },
       { to: 'orchard', label: 'orchard' },
       { to: 'mason', label: 'mason' },

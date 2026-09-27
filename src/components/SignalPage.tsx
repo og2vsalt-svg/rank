@@ -1,39 +1,41 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { fetchShare, shareUrls } from '../lib/cloudShare';
+import { fetchShare } from '../lib/cloudShare';
+
+type Ping = { id: string; at: string; name: string; ok: boolean; note: string };
 
 export default function SignalPage() {
-  const [raw, setRaw] = useState('');
-  const [status, setStatus] = useState('');
-  const [detail, setDetail] = useState('');
+  const [id, setId] = useState('');
   const [busy, setBusy] = useState(false);
-
-  const probe = async () => {
-    const id = raw.trim().replace(/^.*[?&#]f=/, '').replace(/^.*\/s\//, '').replace(/[^a-zA-Z0-9_-]/g, '');
-    if (!id) {
-      setStatus('need an id');
-      setDetail('');
-      return;
-    }
-    setBusy(true);
-    setStatus('listening…');
-    setDetail('');
+  const [log, setLog] = useState<Ping[]>(() => {
     try {
-      const meta = await fetchShare(id);
-      if (!meta) {
-        setStatus('quiet');
-        setDetail('no live public drop for that id. expired, private, or never published.');
-      } else {
-        setStatus('live');
-        setDetail(`${meta.name} · ${meta.type} · ${meta.size} bytes\n${shareUrls(id).embed}`);
-      }
-    } catch (e: any) {
-      setStatus('broken');
-      setDetail(e?.message || 'network hiccup');
-    } finally {
-      setBusy(false);
+      return JSON.parse(localStorage.getItem('rv-signal') || '[]');
+    } catch {
+      return [];
     }
+  });
+
+  useEffect(() => {
+    localStorage.setItem('rv-signal', JSON.stringify(log.slice(0, 80)));
+  }, [log]);
+
+  const ping = async () => {
+    const clean = id.trim();
+    if (!clean) return;
+    setBusy(true);
+    const meta = await fetchShare(clean);
+    setLog((prev) => [
+      {
+        id: clean,
+        at: new Date().toISOString(),
+        name: meta?.name || 'missing',
+        ok: !!meta,
+        note: meta ? `${meta.type} · ${meta.size}b` : 'not live or expired',
+      },
+      ...prev,
+    ]);
+    setBusy(false);
   };
 
   return (
@@ -42,13 +44,24 @@ export default function SignalPage() {
       <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-[32px] p-8">
           <p className="text-[#0a84ff] text-sm mb-2">signal</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-2">is this drop still breathing?</h1>
-          <p className="text-neutral-400 text-sm mb-6">paste a share id or /s/ link. we ping the db, no extra tools.</p>
-          <input value={raw} onChange={(e) => setRaw(e.target.value)} placeholder="id or https://…/s/…" className="w-full mb-4 bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/50 transition" />
-          <button onClick={probe} disabled={busy} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-50 hover:scale-[1.02] active:scale-[0.98] transition-transform">{busy ? 'pinging…' : 'check signal'}</button>
-          {status && <p className="mt-5 text-sm text-white">{status}</p>}
-          {detail && <pre className="mt-2 text-xs text-neutral-400 whitespace-pre-wrap break-all">{detail}</pre>}
+          <h1 className="text-3xl font-semibold mb-3">tap a drop and see if it still breathes.</h1>
+          <p className="text-neutral-400 text-sm mb-6">health check for public shares. no file cap, just a lag note if you spam it.</p>
+          <div className="flex gap-2">
+            <input value={id} onChange={(e) => setId(e.target.value)} className="flex-1 bg-white/5 rounded-full px-4 py-2.5 text-sm outline-none" placeholder="share id" />
+            <button onClick={ping} disabled={busy} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium">{busy ? 'ping…' : 'ping'}</button>
+          </div>
         </motion.div>
+        <div className="mt-5 space-y-2">
+          {log.map((p, i) => (
+            <div key={p.at + i} className="glass rounded-2xl px-4 py-3 flex items-center justify-between gap-3">
+              <div>
+                <p className="text-sm">{p.name}</p>
+                <p className="text-[11px] text-neutral-500">{p.id} · {p.note}</p>
+              </div>
+              <span className={`text-xs ${p.ok ? 'text-emerald-400' : 'text-amber-300'}`}>{p.ok ? 'live' : 'quiet'}</span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

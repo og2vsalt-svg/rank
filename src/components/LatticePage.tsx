@@ -1,99 +1,82 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { useVault } from './VaultContext';
 import { useRouter } from './Router';
 import { shareUrls } from '../lib/cloudShare';
 
-export default function LatticePage() {
-  const { addFiles, togglePublic } = useVault();
-  const { navigate } = useRouter();
-  const [a, setA] = useState<File | null>(null);
-  const [b, setB] = useState<File | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [warn, setWarn] = useState('');
-  const [err, setErr] = useState('');
-  const [ids, setIds] = useState<string[]>([]);
+type Pack = { id: string; title: string; ids: string[]; note: string };
 
-  const take = (which: 'a' | 'b', list: FileList | null) => {
-    const f = list?.[0];
-    if (!f) return;
-    if (which === 'a') setA(f);
-    else setB(f);
-    const size = f.size + (which === 'a' ? b?.size || 0 : a?.size || 0);
-    setWarn(size > 40 * 1024 * 1024 ? 'this lattice is heavy. publish may lag. no hard cap.' : '');
-    setErr('');
+function load(): Pack[] {
+  try {
+    return JSON.parse(localStorage.getItem('rv-lattice') || '[]');
+  } catch {
+    return [];
+  }
+}
+
+export default function LatticePage() {
+  const { navigate } = useRouter();
+  const [packs, setPacks] = useState<Pack[]>(load);
+  const [title, setTitle] = useState('quiet set');
+  const [raw, setRaw] = useState('');
+  const [note, setNote] = useState('');
+
+  const persist = (next: Pack[]) => {
+    setPacks(next);
+    localStorage.setItem('rv-lattice', JSON.stringify(next));
   };
 
-  const publish = async () => {
-    if (!a || !b) return;
-    setBusy(true);
-    setErr('');
-    setIds([]);
-    try {
-      const result = await addFiles([a, b] as unknown as FileList, 'inbox');
-      if (!result.ok) {
-        setErr(result.error || 'need a session to weave this lattice');
-        return;
-      }
-      const next = result.ids || [];
-      const live: string[] = [];
-      for (const id of next) {
-        const pub = await togglePublic(id);
-        if (pub.ok) live.push(id);
-      }
-      if (!live.length) {
-        setErr('saved locally but cloud publish failed');
-        return;
-      }
-      setIds(live);
-      try { await navigator.clipboard.writeText(live.map((id) => shareUrls(id).embed).join('\n')); } catch {}
-    } catch (e: any) {
-      setErr(e?.message || 'lattice failed');
-    } finally {
-      setBusy(false);
-    }
+  const parsed = useMemo(
+    () =>
+      raw
+        .split(/[\s,]+/)
+        .map((s) => s.replace(/^.*[?&]f=/, '').replace(/\/#share.*/, '').trim())
+        .filter(Boolean),
+    [raw],
+  );
+
+  const add = () => {
+    if (!parsed.length) return;
+    persist([{ id: Date.now().toString(36), title: title || 'set', ids: parsed, note }, ...packs].slice(0, 40));
+    setRaw('');
+    setNote('');
   };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-8">
+      <div className="pt-28 pb-20 px-5 max-w-3xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-[32px] p-8">
           <p className="text-[#0a84ff] text-sm mb-2">lattice</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">two files, one weave.</h1>
-          <p className="text-neutral-400 text-sm mb-6">not a vault dump. pick two local files, publish both, copy both discord /s/ links. pair a still with a note, or a clip with a sidecar.</p>
-          <div className="grid sm:grid-cols-2 gap-3 mb-6">
-            {(['a', 'b'] as const).map((slot) => {
-              const file = slot === 'a' ? a : b;
-              return (
-                <label
-                  key={slot}
-                  className="cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-8 text-center transition-all duration-300"
-                  onDragOver={(e) => e.preventDefault()}
-                  onDrop={(e) => { e.preventDefault(); take(slot, e.dataTransfer.files); }}
-                >
-                  <input type="file" className="hidden" onChange={(e) => take(slot, e.target.files)} />
-                  <p className="text-xs text-neutral-500 mb-1">slot {slot}</p>
-                  <p className="text-white text-sm font-medium break-all">{file ? file.name : 'drop a file'}</p>
-                </label>
-              );
-            })}
-          </div>
-          <button onClick={publish} disabled={busy || !a || !b} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40 active:scale-[0.98] transition-transform">
-            {busy ? 'weaving…' : 'publish both shares'}
-          </button>
-          {warn && <p className="text-xs text-amber-300/80 mt-4">{warn}</p>}
-          {err && <p className="text-xs text-red-400 mt-4">{err}</p>}
-          {ids.length > 0 && (
-            <div className="mt-6 space-y-2">
-              {ids.map((id) => (
-                <p key={id} className="text-xs text-neutral-400 break-all">{shareUrls(id).embed}</p>
-              ))}
-              <button onClick={() => navigate('share', ids[0])} className="px-4 py-2 rounded-full bg-white/10 text-sm">open first share</button>
-            </div>
-          )}
+          <h1 className="text-3xl font-semibold mb-3">bundle share ids into a set.</h1>
+          <p className="text-neutral-400 text-sm mb-6">not a vault. just a little tray of public drops you already made.</p>
+          <input value={title} onChange={(e) => setTitle(e.target.value)} className="w-full mb-3 bg-white/5 rounded-2xl px-4 py-3 text-sm outline-none" placeholder="set name" />
+          <textarea value={raw} onChange={(e) => setRaw(e.target.value)} rows={4} className="w-full mb-3 bg-white/5 rounded-2xl px-4 py-3 text-sm outline-none" placeholder="paste share ids or #share?f= links" />
+          <input value={note} onChange={(e) => setNote(e.target.value)} className="w-full mb-4 bg-white/5 rounded-2xl px-4 py-3 text-sm outline-none" placeholder="optional note" />
+          <p className="text-xs text-neutral-500 mb-4">{parsed.length} ids ready. huge lists can feel slow to open later.</p>
+          <button onClick={add} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium">save set</button>
         </motion.div>
+        <div className="mt-6 space-y-3">
+          {packs.map((p) => (
+            <div key={p.id} className="glass rounded-[24px] p-5">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="font-medium">{p.title}</p>
+                  <p className="text-xs text-neutral-500 mt-1">{p.ids.length} drops · {p.note || 'no note'}</p>
+                </div>
+                <button onClick={() => persist(packs.filter((x) => x.id !== p.id))} className="text-xs text-neutral-500">forget</button>
+              </div>
+              <div className="flex flex-wrap gap-2 mt-4">
+                {p.ids.slice(0, 12).map((id) => (
+                  <button key={id} onClick={() => navigate('share', id)} className="px-3 py-1.5 rounded-full bg-white/5 text-xs text-neutral-300">
+                    {id.slice(0, 10)}
+                  </button>
+                ))}
+              </div>
+              <p className="text-[11px] text-neutral-600 mt-3 break-all">{p.ids.map((id) => shareUrls(id).embed).join('  ')}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

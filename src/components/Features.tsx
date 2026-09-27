@@ -1,6 +1,10 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'linnet bookmark', body: 'turn any url into a tiny public html drop. discord still gets a /s card.' },
+  { title: 'feldspar hash', body: 'sha-256 a local file in the tab, then ship it to the share db. no hard cap, just a slowness warning.' },
+  { title: 'sash preview', body: 'look at image, video, or audio first. if it feels right, publish. not another vault grid.' },
+  { title: 'oxeye shore', body: 'recent public drops from the db. copy /s embeds without opening bytes.' },
   { title: 'keel weigh', body: 'see size and type of a local file, then launch it to the share db. discord gets a /s card.' },
   { title: 'slipway pile', body: 'slide a pile of local files into the water. each one is its own public drop and embed.' },
   { title: 'emberwake look', body: 'sit with a live share id after it cooled. copy the discord card without opening bytes.' },

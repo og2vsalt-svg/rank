@@ -11,8 +11,8 @@ const primary: NavItem[] = [
   { to: 'lanyard', label: 'lanyard' },
   { to: 'marquee', label: 'marquee' },
   { to: 'lattice', label: 'lattice' },
-  { to: 'signal', label: 'signal' },
-  { to: 'keyring', label: 'keyring' },
+  { to: 'islet', label: 'islet' },
+  { to: 'pumice', label: 'pumice' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -42,6 +42,8 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'oriel', label: 'oriel' },
       { to: 'nimbus', label: 'nimbus' },
       { to: 'driftglass', label: 'driftglass' },
+      { to: 'islet', label: 'islet' },
+      { to: 'pumice', label: 'pumice' },
     ],
   },
   {

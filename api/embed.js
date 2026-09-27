@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"');
 }
 
 function isBot(ua) {
@@ -32,7 +32,6 @@ function pageHtml({ title, desc, image, url, color, mime }) {
   const c = color || '#0A84FF';
   const imgType = mime && String(mime).startsWith('image/') ? mime : 'image/png';
   const extra = [];
-  extra.push('<meta name="og:image:width" content="1200" />');
   extra.push('<link rel="image_src" href="' + esc(safeImg) + '" />');
   extra.push('<meta name="msapplication-TileColor" content="' + esc(c) + '" />');
   extra.push('<meta name="theme-color" content="' + esc(c) + '" />');
@@ -41,9 +40,6 @@ function pageHtml({ title, desc, image, url, color, mime }) {
   extra.push('<meta name="twitter:card" content="summary_large_image" />');
   extra.push('<meta name="twitter:site" content="@rankvault" />');
   extra.push('<meta property="og:determiner" content="" />');
-  extra.push('<meta name="og:image:width" content="1200" />');
-  extra.push('<meta name="og:image:height" content="630" />');
-  extra.push('<meta name="og:image:alt" content="' + esc(title) + '" />');
   if (mime && String(mime).startsWith('video/') && isRemoteImg && image) {
     extra.push('<meta property="og:video" content="' + esc(image) + '" />');
     extra.push('<meta property="og:video:type" content="' + esc(mime) + '" />');
@@ -123,6 +119,7 @@ const PAGE_TITLES = {
   harbor: 'harbor — incoming shares',
   lanyard: 'lanyard — discord card',
   parcel: 'parcel — local to share db',
+  pebble: 'pebble — stamp then share',
 };
 
 export default async function handler(req, res) {

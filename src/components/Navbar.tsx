@@ -8,10 +8,10 @@ const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
   { to: 'parcel', label: 'parcel' },
+  { to: 'fathom', label: 'fathom' },
+  { to: 'portico', label: 'portico' },
+  { to: 'stillwater', label: 'stillwater' },
   { to: 'nightjar', label: 'nightjar' },
-  { to: 'veranda', label: 'veranda' },
-  { to: 'oarlock', label: 'oarlock' },
-  { to: 'tinder', label: 'tinder' },
   { to: 'lookout', label: 'lookout' },
 ];
 
@@ -22,6 +22,9 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'vault', label: 'vault' },
       { to: 'drop', label: 'drop' },
       { to: 'parcel', label: 'parcel' },
+      { to: 'fathom', label: 'fathom' },
+      { to: 'portico', label: 'portico' },
+      { to: 'stillwater', label: 'stillwater' },
       { to: 'nightjar', label: 'nightjar' },
       { to: 'tinder', label: 'tinder' },
       { to: 'oarlock', label: 'oarlock' },
@@ -77,6 +80,9 @@ const groups: { title: string; items: NavItem[] }[] = [
     title: 'share',
     items: [
       { to: 'parcel', label: 'parcel' },
+      { to: 'fathom', label: 'fathom' },
+      { to: 'portico', label: 'portico' },
+      { to: 'stillwater', label: 'stillwater' },
       { to: 'nightjar', label: 'nightjar' },
       { to: 'veranda', label: 'veranda' },
       { to: 'oarlock', label: 'oarlock' },
@@ -125,6 +131,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'create',
     items: [
+      { to: 'portico', label: 'portico' },
       { to: 'veranda', label: 'veranda' },
       { to: 'halo', label: 'halo' },
       { to: 'locket', label: 'locket' },
@@ -158,6 +165,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'fathom', label: 'fathom' },
+      { to: 'stillwater', label: 'stillwater' },
       { to: 'tinder', label: 'tinder' },
       { to: 'oarlock', label: 'oarlock' },
       { to: 'nightjar', label: 'nightjar' },

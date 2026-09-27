@@ -8,10 +8,10 @@ const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
   { to: 'parcel', label: 'parcel' },
-  { to: 'sash', label: 'sash' },
-  { to: 'linnet', label: 'linnet' },
-  { to: 'feldspar', label: 'feldspar' },
-  { to: 'oxeye', label: 'oxeye' },
+  { to: 'aurora', label: 'aurora' },
+  { to: 'sundeck', label: 'sundeck' },
+  { to: 'cinderbox', label: 'cinderbox' },
+  { to: 'loomcard', label: 'loomcard' },
   { to: 'lookout', label: 'lookout' },
 ];
 
@@ -22,6 +22,8 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'vault', label: 'vault' },
       { to: 'drop', label: 'drop' },
       { to: 'parcel', label: 'parcel' },
+      { to: 'aurora', label: 'aurora' },
+      { to: 'cinderbox', label: 'cinderbox' },
       { to: 'sash', label: 'sash' },
       { to: 'feldspar', label: 'feldspar' },
       { to: 'fathom', label: 'fathom' },
@@ -82,6 +84,9 @@ const groups: { title: string; items: NavItem[] }[] = [
     title: 'share',
     items: [
       { to: 'parcel', label: 'parcel' },
+      { to: 'aurora', label: 'aurora' },
+      { to: 'sundeck', label: 'sundeck' },
+      { to: 'loomcard', label: 'loomcard' },
       { to: 'linnet', label: 'linnet' },
       { to: 'oxeye', label: 'oxeye' },
       { to: 'sash', label: 'sash' },
@@ -173,6 +178,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'cinderbox', label: 'cinderbox' },
+      { to: 'loomcard', label: 'loomcard' },
+      { to: 'sundeck', label: 'sundeck' },
       { to: 'feldspar', label: 'feldspar' },
       { to: 'oxeye', label: 'oxeye' },
       { to: 'sash', label: 'sash' },

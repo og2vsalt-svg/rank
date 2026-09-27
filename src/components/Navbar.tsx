@@ -7,11 +7,11 @@ type NavItem = { to: Route; label: string };
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
+  { to: 'tidepool', label: 'tidepool' },
+  { to: 'kindling', label: 'kindling' },
+  { to: 'waypoint', label: 'waypoint' },
   { to: 'parcel', label: 'parcel' },
-  { to: 'packhorse', label: 'packhorse' },
   { to: 'afterglow', label: 'afterglow' },
-  { to: 'skylight', label: 'skylight' },
-  { to: 'aurora', label: 'aurora' },
   { to: 'lookout', label: 'lookout' },
 ];
 
@@ -19,6 +19,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'files',
     items: [
+      { to: 'tidepool', label: 'tidepool' },
       { to: 'vault', label: 'vault' },
       { to: 'drop', label: 'drop' },
       { to: 'parcel', label: 'parcel' },
@@ -84,6 +85,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'tidepool', label: 'tidepool' },
+      { to: 'kindling', label: 'kindling' },
+      { to: 'waypoint', label: 'waypoint' },
       { to: 'parcel', label: 'parcel' },
       { to: 'packhorse', label: 'packhorse' },
       { to: 'afterglow', label: 'afterglow' },
@@ -146,6 +150,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'create',
     items: [
+      { to: 'kindling', label: 'kindling' },
       { to: 'linnet', label: 'linnet' },
       { to: 'sash', label: 'sash' },
       { to: 'portico', label: 'portico' },
@@ -182,6 +187,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'waypoint', label: 'waypoint' },
       { to: 'skylight', label: 'skylight' },
       { to: 'afterglow', label: 'afterglow' },
       { to: 'cinderbox', label: 'cinderbox' },

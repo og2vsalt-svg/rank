@@ -8,10 +8,10 @@ const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
   { to: 'parcel', label: 'parcel' },
-  { to: 'locket', label: 'locket' },
-  { to: 'halo', label: 'halo' },
-  { to: 'whetstone', label: 'whetstone' },
-  { to: 'keel', label: 'keel' },
+  { to: 'nightjar', label: 'nightjar' },
+  { to: 'veranda', label: 'veranda' },
+  { to: 'oarlock', label: 'oarlock' },
+  { to: 'tinder', label: 'tinder' },
   { to: 'lookout', label: 'lookout' },
 ];
 
@@ -22,6 +22,9 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'vault', label: 'vault' },
       { to: 'drop', label: 'drop' },
       { to: 'parcel', label: 'parcel' },
+      { to: 'nightjar', label: 'nightjar' },
+      { to: 'tinder', label: 'tinder' },
+      { to: 'oarlock', label: 'oarlock' },
       { to: 'locket', label: 'locket' },
       { to: 'halo', label: 'halo' },
       { to: 'whetstone', label: 'whetstone' },
@@ -73,9 +76,13 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'parcel', label: 'parcel' },
+      { to: 'nightjar', label: 'nightjar' },
+      { to: 'veranda', label: 'veranda' },
+      { to: 'oarlock', label: 'oarlock' },
+      { to: 'tinder', label: 'tinder' },
       { to: 'locket', label: 'locket' },
       { to: 'halo', label: 'halo' },
-      { to: 'parcel', label: 'parcel' },
       { to: 'glaze', label: 'glaze' },
       { to: 'gazette', label: 'gazette' },
       { to: 'ingress', label: 'ingress' },
@@ -118,6 +125,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'create',
     items: [
+      { to: 'veranda', label: 'veranda' },
       { to: 'halo', label: 'halo' },
       { to: 'locket', label: 'locket' },
       { to: 'glaze', label: 'glaze' },
@@ -150,6 +158,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'tinder', label: 'tinder' },
+      { to: 'oarlock', label: 'oarlock' },
+      { to: 'nightjar', label: 'nightjar' },
       { to: 'whetstone', label: 'whetstone' },
       { to: 'halo', label: 'halo' },
       { to: 'mirror', label: 'mirror' },

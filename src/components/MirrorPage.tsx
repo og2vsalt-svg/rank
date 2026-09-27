@@ -1,70 +1,57 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { fetchShare, publishShare, shareUrls } from '../lib/cloudShare';
+import { shareUrls } from '../lib/cloudShare';
 
-function rid() {
-  return Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+function pretty(n: number) {
+  if (n < 1024) return n + ' b';
+  if (n < 1024 * 1024) return Math.round(n / 1024) + ' kb';
+  return (n / (1024 * 1024)).toFixed(1) + ' mb';
 }
 
 export default function MirrorPage() {
-  const [src, setSrc] = useState('');
+  const [url, setUrl] = useState('');
   const [busy, setBusy] = useState(false);
-  const [err, setErr] = useState('');
   const [warn, setWarn] = useState('');
-  const [done, setDone] = useState<{ embed: string; app: string } | null>(null);
+  const [err, setErr] = useState('');
+  const [link, setLink] = useState('');
+  const [embed, setEmbed] = useState('');
+  const [meta, setMeta] = useState('');
 
-  const parseId = (raw: string) => {
-    const t = raw.trim();
-    const m = t.match(/(?:[#?&]f=|\/s\/|\/file\/)([A-Za-z0-9_-]+)/);
-    return m ? m[1] : t;
-  };
-
-  const run = async () => {
-    setBusy(true);
+  const pull = async () => {
     setErr('');
-    setDone(null);
+    setBusy(true);
     try {
-      const id = parseId(src);
-      if (!id) {
-        setErr('need a share id or /s/ link');
-        return;
-      }
-      const meta = await fetchShare(id);
-      if (!meta) {
-        setErr('could not find that drop');
-        return;
-      }
-      if (meta.size > 8 * 1024 * 1024) {
-        setWarn('chunky source. remirror still runs, tab might feel sleepy. no hard cap.');
-      }
-      let dataUrl = meta.url;
-      if (!dataUrl.startsWith('data:')) {
-        const blob = await fetch(meta.url).then((r) => r.blob());
-        dataUrl = await new Promise<string>((resolve, reject) => {
-          const r = new FileReader();
-          r.onload = () => resolve(String(r.result || ''));
-          r.onerror = () => reject(new Error('read failed'));
-          r.readAsDataURL(blob);
-        });
-      }
-      const nid = rid();
-      const res = await publishShare({
-        id: nid,
-        name: meta.name,
-        type: meta.type,
-        size: meta.size,
-        dataUrl,
+      const src = url.trim();
+      if (!/^https?:\/\//i.test(src)) throw new Error('needs an http(s) url');
+      const r = await fetch(src);
+      if (!r.ok) throw new Error(`fetch ${r.status}`);
+      const blob = await r.blob();
+      const type = blob.type || 'application/octet-stream';
+      const guess = decodeURIComponent(src.split('?')[0].split('/').pop() || 'mirror.bin').slice(0, 180);
+      const name = guess.includes('.') ? guess : `${guess || 'mirror'}.bin`;
+      setMeta(`${name} · ${pretty(blob.size)} · ${type}`);
+      if (blob.size > 40 * 1024 * 1024) setWarn('big mirror. encoding might drag. still no cap.');
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const fr = new FileReader();
+        fr.onload = () => resolve(String(fr.result || ''));
+        fr.onerror = () => reject(new Error('could not read remote bytes'));
+        fr.readAsDataURL(blob);
       });
-      if (!res.ok) {
-        setErr(res.error || 'mirror failed');
-        return;
-      }
-      if (res.warn) setWarn(res.warn);
-      const urls = shareUrls(res.id || nid);
-      setDone({ embed: urls.embed, app: urls.app });
+      const res = await fetch('/api/share', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, type, size: blob.size, dataUrl }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json?.ok) throw new Error(json?.error || 'mirror failed');
+      const urls = shareUrls(json.id);
+      setLink(urls.app);
+      setEmbed(urls.embed);
+      try { await navigator.clipboard.writeText(urls.embed); } catch {}
+      if (json.warn) setWarn(json.warn);
     } catch (e: any) {
-      setErr(e?.message || 'mirror failed');
+      setErr(e?.message || 'mirror failed — remote host may block cors');
     } finally {
       setBusy(false);
     }
@@ -74,19 +61,35 @@ export default function MirrorPage() {
     <div className="mesh min-h-screen">
       <Navbar />
       <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[28px] p-8">
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          className="glass rounded-[32px] p-8"
+        >
           <p className="text-[#0a84ff] text-sm mb-2">mirror</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-2">clone a live drop</h1>
-          <p className="text-sm text-neutral-500 mb-6">paste an id or discord /s/ url. we copy it into a fresh share so you can hand out a new embed.</p>
-          <input value={src} onChange={(e) => setSrc(e.target.value)} placeholder="id or https://…/s/abc" className="w-full px-4 py-2.5 rounded-full bg-white/5 border border-white/10 text-sm outline-none" />
-          <button disabled={busy} onClick={run} className="mt-4 px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40">{busy ? 'mirroring…' : 'make a copy'}</button>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">pull a public url into our share db.</h1>
+          <p className="text-neutral-400 text-sm mb-6">only works when the other host lets the browser read the bytes. if cors says no, download it locally and use parcel.</p>
+          <input
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            className="w-full mb-4 rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/50"
+            placeholder="https://…"
+          />
+          <button
+            onClick={pull}
+            disabled={busy || !url.trim()}
+            className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40"
+          >
+            {busy ? 'mirroring…' : 'rehost'}
+          </button>
+          {meta && <p className="text-xs text-neutral-500 mt-4">{meta}</p>}
           {warn && <p className="text-xs text-amber-300/80 mt-3">{warn}</p>}
           {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
-          {done && (
-            <div className="mt-6 text-sm space-y-1">
-              <p className="text-neutral-400 break-all">{done.app}</p>
-              <p className="text-[#0a84ff] break-all">{done.embed}</p>
-              <button onClick={() => navigator.clipboard.writeText(done.embed)} className="mt-2 px-4 py-2 rounded-full bg-white/5 text-sm">copy discord link</button>
+          {embed && (
+            <div className="mt-6 space-y-2">
+              <p className="text-xs text-neutral-400 break-all">discord: {embed}</p>
+              <p className="text-xs text-neutral-500 break-all">app: {link}</p>
             </div>
           )}
         </motion.div>

@@ -1,84 +1,101 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { useVault } from './VaultContext';
 import { shareUrls } from '../lib/cloudShare';
 
-type Row = { name: string; id?: string; link?: string; embed?: string; error?: string; warn?: string };
+function pretty(n: number) {
+  if (n < 1024) return n + ' b';
+  if (n < 1024 * 1024) return Math.round(n / 1024) + ' kb';
+  if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(1) + ' mb';
+  return (n / (1024 * 1024 * 1024)).toFixed(2) + ' gb';
+}
+
+function readAsDataUrl(file: File) {
+  return new Promise<string>((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(String(r.result || ''));
+    r.onerror = () => reject(new Error('could not read file'));
+    r.readAsDataURL(file);
+  });
+}
 
 export default function ParcelPage() {
-  const { addFiles, togglePublic } = useVault();
-  const [rows, setRows] = useState<Row[]>([]);
   const [busy, setBusy] = useState(false);
   const [warn, setWarn] = useState('');
+  const [err, setErr] = useState('');
+  const [meta, setMeta] = useState<{ name: string; size: number; type: string } | null>(null);
+  const [link, setLink] = useState('');
+  const [embed, setEmbed] = useState('');
 
-  const onFiles = async (list: FileList | null) => {
-    if (!list?.length) return;
-    const files = [...list];
-    if (files.some((f) => f.size > 40 * 1024 * 1024)) setWarn('at least one file is chunky. expect lag, no hard cap.');
-    else setWarn('');
+  const send = async (file: File | undefined) => {
+    if (!file) return;
+    setErr('');
+    setLink('');
+    setEmbed('');
+    setMeta({ name: file.name, size: file.size, type: file.type || 'application/octet-stream' });
+    setWarn(file.size > 40 * 1024 * 1024 ? 'no cap, but this size can make the tab feel sleepy while it encodes.' : '');
     setBusy(true);
-    const next: Row[] = [];
-    for (const file of files) {
-      try {
-        const fake = {
-          0: file,
-          length: 1,
-          item: (i: number) => (i === 0 ? file : null),
-          [Symbol.iterator]: function* () { yield file; },
-        } as unknown as FileList;
-        const result = await addFiles(fake, 'parcel');
-        if (!result.ok || !result.ids?.[0]) {
-          next.push({ name: file.name, error: result.error || 'save failed' });
-          continue;
-        }
-        const id = result.ids[0];
-        const pub = await togglePublic(id);
-        const urls = shareUrls(id);
-        next.push({
+    try {
+      const dataUrl = await readAsDataURL(file);
+      const r = await fetch('/api/share', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           name: file.name,
-          id,
-          link: urls.app,
-          embed: urls.embed,
-          error: pub.ok ? undefined : pub.error,
-          warn: result.warn,
-        });
-      } catch (e: any) {
-        next.push({ name: file.name, error: e?.message || 'failed' });
-      }
+          type: file.type || 'application/octet-stream',
+          size: file.size,
+          dataUrl,
+        }),
+      });
+      const json = await r.json();
+      if (!r.ok || !json?.ok) throw new Error(json?.error || 'share failed');
+      const urls = shareUrls(json.id);
+      setLink(urls.app);
+      setEmbed(urls.embed || `${window.location.origin}/s/${json.id}`);
+      try { await navigator.clipboard.writeText(urls.embed || urls.app); } catch {}
+      if (json.warn) setWarn(json.warn);
+    } catch (e: any) {
+      setErr(e?.message || 'parcel failed');
+    } finally {
+      setBusy(false);
     }
-    setRows(next);
-    setBusy(false);
-  };
-
-  const copyAll = async () => {
-    const text = rows.filter((r) => r.embed).map((r) => `${r.name}\n${r.embed}`).join('\n\n');
-    try { await navigator.clipboard.writeText(text); } catch {}
   };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
       <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-[32px] p-8">
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          className="glass rounded-[32px] p-8"
+        >
           <p className="text-[#0a84ff] text-sm mb-2">parcel</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-2">one pile, many discord links.</h1>
-          <p className="text-neutral-400 text-sm mb-6">batch publish local files. each one gets its own /s/ embed card.</p>
-          <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition">
-            <input type="file" multiple className="hidden" onChange={(e) => onFiles(e.target.files)} />
-            <p className="text-white font-medium">{busy ? 'packing…' : 'drop a handful of files'}</p>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">local file, straight into the share db.</h1>
+          <p className="text-neutral-400 text-sm mb-6">
+            skips the vault grid. one file becomes a public drop with a discord /s card.
+          </p>
+          <label
+            className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition"
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => { e.preventDefault(); send(e.dataTransfer.files?.[0]); }}
+          >
+            <input type="file" className="hidden" onChange={(e) => send(e.target.files?.[0])} />
+            <p className="text-white font-medium">{busy ? 'shipping…' : 'drop one file'}</p>
+            <p className="text-xs text-neutral-500 mt-2">no hard limit. we only warn when it might feel slow.</p>
           </label>
-          {warn && <p className="text-xs text-amber-300/80 mt-4">{warn}</p>}
-          {rows.length > 0 && (
-            <div className="mt-6 space-y-3">
-              <button onClick={copyAll} className="px-4 py-2 rounded-full bg-white text-black text-sm font-medium">copy embed links</button>
-              {rows.map((r) => (
-                <div key={r.name + (r.id || '')} className="rounded-2xl bg-white/[0.04] border border-white/8 px-4 py-3">
-                  <p className="text-sm text-white truncate">{r.name}</p>
-                  {r.embed && <p className="text-xs text-neutral-500 break-all mt-1">{r.embed}</p>}
-                  {r.error && <p className="text-xs text-red-400 mt-1">{r.error}</p>}
-                </div>
-              ))}
+          {meta && (
+            <p className="text-xs text-neutral-500 mt-4">
+              {meta.name} · {pretty(meta.size)} · {meta.type || 'unknown'}
+            </p>
+          )}
+          {warn && <p className="text-xs text-amber-300/80 mt-3">{warn}</p>}
+          {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
+          {embed && (
+            <div className="mt-6 space-y-2">
+              <p className="text-xs text-neutral-400 break-all">discord: {embed}</p>
+              <p className="text-xs text-neutral-500 break-all">app: {link}</p>
             </div>
           )}
         </motion.div>

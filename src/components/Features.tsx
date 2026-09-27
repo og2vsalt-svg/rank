@@ -30,6 +30,11 @@ const items = [
   { title: 'quay dock', body: 'drop a pile at once. each file gets its own discord /s embed from the share db.' },
   { title: 'relay slip', body: 'attach a note to a local file and hand it across as a public drop.' },
   { title: 'zenith board', body: 'a map of the rooms that are not just another vault grid.' },
+  { title: 'ballast scale', body: 'weigh two local files with sha-256. stays in the tab.' },
+  { title: 'lookout card', body: 'preview the discord embed for a share id before you paste it in a server.' },
+  { title: 'windlass hoist', body: 'pick a vault file, optional lock, publish to the share db.' },
+  { title: 'flotsam shore', body: 'public drops from the db as cards. copy /s embeds without opening bytes.' },
+  { title: 'capstan links', body: 'spin /s /f /e and markdown off one id so every unfurl looks finished.' },
 ];
 
 export default function Features() {

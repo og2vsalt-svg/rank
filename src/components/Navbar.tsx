@@ -8,9 +8,9 @@ const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
   { to: 'parcel', label: 'parcel' },
-  { to: 'gazette', label: 'gazette' },
-  { to: 'ingress', label: 'ingress' },
-  { to: 'mirror', label: 'mirror' },
+  { to: 'locket', label: 'locket' },
+  { to: 'halo', label: 'halo' },
+  { to: 'whetstone', label: 'whetstone' },
   { to: 'keel', label: 'keel' },
   { to: 'lookout', label: 'lookout' },
 ];
@@ -22,6 +22,9 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'vault', label: 'vault' },
       { to: 'drop', label: 'drop' },
       { to: 'parcel', label: 'parcel' },
+      { to: 'locket', label: 'locket' },
+      { to: 'halo', label: 'halo' },
+      { to: 'whetstone', label: 'whetstone' },
       { to: 'gazette', label: 'gazette' },
       { to: 'ingress', label: 'ingress' },
       { to: 'mirror', label: 'mirror' },
@@ -70,6 +73,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'locket', label: 'locket' },
+      { to: 'halo', label: 'halo' },
+      { to: 'parcel', label: 'parcel' },
       { to: 'glaze', label: 'glaze' },
       { to: 'gazette', label: 'gazette' },
       { to: 'ingress', label: 'ingress' },
@@ -112,6 +118,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'create',
     items: [
+      { to: 'halo', label: 'halo' },
+      { to: 'locket', label: 'locket' },
       { to: 'glaze', label: 'glaze' },
       { to: 'gazette', label: 'gazette' },
       { to: 'ingress', label: 'ingress' },
@@ -142,6 +150,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'whetstone', label: 'whetstone' },
+      { to: 'halo', label: 'halo' },
       { to: 'mirror', label: 'mirror' },
       { to: 'ridge', label: 'ridge' },
       { to: 'orchard', label: 'orchard' },

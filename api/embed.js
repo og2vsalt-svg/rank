@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"');
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 function isBot(ua) {
@@ -40,6 +40,7 @@ function pageHtml({ title, desc, image, url, color, mime }) {
   extra.push('<meta name="twitter:card" content="summary_large_image" />');
   extra.push('<meta name="twitter:site" content="@rankvault" />');
   extra.push('<meta property="og:determiner" content="" />');
+  extra.push('<meta name="og:image:width" content="1200" />');
   if (mime && String(mime).startsWith('video/') && isRemoteImg && image) {
     extra.push('<meta property="og:video" content="' + esc(image) + '" />');
     extra.push('<meta property="og:video:type" content="' + esc(mime) + '" />');
@@ -120,6 +121,11 @@ const PAGE_TITLES = {
   lanyard: 'lanyard — discord card',
   parcel: 'parcel — local to share db',
   pebble: 'pebble — stamp then share',
+  keystone: 'keystone — pin a live drop',
+  vellum: 'vellum — text to public file',
+  spindle: 'spindle — split then share',
+  quarry: 'quarry — peek local bytes',
+  thresh: 'thresh — pick by size then share',
 };
 
 export default async function handler(req, res) {

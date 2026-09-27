@@ -1,37 +1,69 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { useVault } from './VaultContext';
-import { useRouter } from './Router';
+import { publishShare, shareUrls } from '../lib/cloudShare';
+
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+
+function pretty(n: number) {
+  if (n < 1024) return n + ' b';
+  if (n < 1024 * 1024) return Math.round(n / 1024) + ' kb';
+  if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(1) + ' mb';
+  return (n / (1024 * 1024 * 1024)).toFixed(2) + ' gb';
+}
+
+function readAsDataUrl(file: File) {
+  return new Promise<string>((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(String(r.result || ''));
+    r.onerror = () => reject(new Error('could not read file'));
+    r.readAsDataURL(file);
+  });
+}
 
 export default function KeelPage() {
-  const vault = useVault() as any;
-  const { navigate } = useRouter();
-  const files = vault.files || [];
-  const [picked, setPicked] = useState<string[]>([]);
+  const [busy, setBusy] = useState(false);
+  const [warn, setWarn] = useState('');
+  const [err, setErr] = useState('');
+  const [stats, setStats] = useState<{ name: string; size: number; type: string } | null>(null);
+  const [embed, setEmbed] = useState('');
+  const [app, setApp] = useState('');
 
-  const selected = useMemo(() => files.filter((f: any) => picked.includes(f.id)), [files, picked]);
-  const total = selected.reduce((n: number, f: any) => n + (f.size || 0), 0);
-  const huge = total > 80 * 1024 * 1024;
-
-  const toggle = (id: string) => {
-    setPicked((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
-  };
-
-  const manifesto = selected
-    .map((f: any) => `${f.name}\t${f.size || 0}\t${f.type || 'file'}\t${f.id}\t${f.public ? 'public' : 'local'}`)
-    .join('\n');
-
-  const copy = async () => {
-    const header = 'name\tsize\tmime\tid\tstate\n';
+  const send = async (list: FileList | null) => {
+    const file = list?.[0];
+    if (!file) return;
+    setErr('');
+    setEmbed('');
+    setApp('');
+    setStats({ name: file.name, size: file.size, type: file.type || 'application/octet-stream' });
+    setWarn(file.size > 40 * 1024 * 1024 ? 'heavy keel. encoding might feel sleepy. no hard cap.' : '');
+    setBusy(true);
     try {
-      await navigator.clipboard.writeText(header + manifesto);
-    } catch {}
-  };
-
-  const save = async () => {
-    const body = `# keel manifest\n${new Date().toISOString()}\n\n${manifesto || '(empty)'}\n`;
-    await vault.addText?.(`keel-${Date.now()}.txt`, body, 'keel');
+      const dataUrl = await readAsDataUrl(file);
+      const id = uid();
+      const res = await publishShare({
+        id,
+        name: file.name,
+        type: file.type || 'application/octet-stream',
+        size: file.size,
+        dataUrl,
+      });
+      if (!res.ok) {
+        setErr(res.error || 'keel would not take water');
+        return;
+      }
+      if (res.warn) setWarn(res.warn);
+      const urls = shareUrls(id);
+      setEmbed(urls.embed);
+      setApp(urls.app);
+      try { await navigator.clipboard.writeText(urls.embed); } catch {}
+    } catch (e: any) {
+      setErr(e?.message || 'keel stayed dry');
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -45,31 +77,33 @@ export default function KeelPage() {
           className="glass rounded-[32px] p-8"
         >
           <p className="text-[#0a84ff] text-sm mb-2">keel</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">pack a shipping list.</h1>
-          <p className="text-neutral-400 text-sm mb-6">tick files, get a manifest. not a vault grid — just the receipt you send with a drop.</p>
-          {huge && <p className="text-xs text-amber-300/80 mb-4">this pile is chunky. listing is fine, the tab might feel sleepy if you preview all of it.</p>}
-          {files.length === 0 && <p className="text-sm text-neutral-500 mb-4">vault is empty. drop something first.</p>}
-          <ul className="space-y-2 max-h-72 overflow-auto mb-6">
-            {files.slice(0, 80).map((f: any) => (
-              <li key={f.id}>
-                <button
-                  onClick={() => toggle(f.id)}
-                  className={`w-full text-left rounded-2xl px-4 py-3 border transition ${
-                    picked.includes(f.id) ? 'bg-white/10 border-[#0a84ff]/40' : 'bg-white/[0.03] border-white/5'
-                  }`}
-                >
-                  <p className="text-sm text-white truncate">{f.name}</p>
-                  <p className="text-xs text-neutral-500">{((f.size || 0) / 1024).toFixed(1)} kb</p>
-                </button>
-              </li>
-            ))}
-          </ul>
-          <p className="text-xs text-neutral-500 mb-4">{selected.length} picked · {(total / 1024).toFixed(1)} kb</p>
-          <div className="flex flex-wrap gap-2">
-            <button onClick={copy} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium">copy list</button>
-            <button onClick={save} className="px-5 py-2.5 rounded-full bg-white/5 text-sm">save as file</button>
-            <button onClick={() => navigate('drop')} className="px-5 py-2.5 rounded-full bg-white/5 text-sm">go drop</button>
-          </div>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">weigh a local file, then launch it.</h1>
+          <p className="text-neutral-400 text-sm mb-6">
+            see size and type first. then it lands on the share db. discord gets the /s card.
+          </p>
+          <label
+            className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition"
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => { e.preventDefault(); send(e.dataTransfer.files); }}
+          >
+            <input type="file" className="hidden" onChange={(e) => send(e.target.files)} />
+            <p className="text-white font-medium">{busy ? 'setting the keel…' : 'drop one file on the keel'}</p>
+            <p className="text-xs text-neutral-500 mt-2">no size lock. we only tap you if the tab might lag.</p>
+          </label>
+          {stats && (
+            <div className="mt-5 rounded-2xl bg-white/[0.03] border border-white/8 px-4 py-3 text-sm text-neutral-300">
+              <p>{stats.name}</p>
+              <p className="text-xs text-neutral-500 mt-1">{pretty(stats.size)} · {stats.type}</p>
+            </div>
+          )}
+          {warn && <p className="text-xs text-amber-300/80 mt-3">{warn}</p>}
+          {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
+          {embed && (
+            <div className="mt-6 space-y-2">
+              <p className="text-xs text-neutral-400 break-all">discord embed (copied): {embed}</p>
+              <p className="text-xs text-neutral-500 break-all">app link: {app}</p>
+            </div>
+          )}
         </motion.div>
       </div>
     </div>

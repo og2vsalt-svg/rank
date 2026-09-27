@@ -8,10 +8,10 @@ const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
   { to: 'parcel', label: 'parcel' },
+  { to: 'solace', label: 'solace' },
+  { to: 'velvet', label: 'velvet' },
   { to: 'vesper', label: 'vesper' },
-  { to: 'willow', label: 'willow' },
   { to: 'lanyard', label: 'lanyard' },
-  { to: 'marquee', label: 'marquee' },
   { to: 'lattice', label: 'lattice' },
 ];
 
@@ -22,6 +22,7 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'vault', label: 'vault' },
       { to: 'drop', label: 'drop' },
       { to: 'parcel', label: 'parcel' },
+      { to: 'solace', label: 'solace' },
       { to: 'vesper', label: 'vesper' },
       { to: 'willow', label: 'willow' },
       { to: 'trace', label: 'trace' },
@@ -51,6 +52,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'velvet', label: 'velvet' },
       { to: 'lanyard', label: 'lanyard' },
       { to: 'marquee', label: 'marquee' },
       { to: 'signal', label: 'signal' },
@@ -101,6 +103,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'solace', label: 'solace' },
       { to: 'signal', label: 'signal' },
       { to: 'solstice', label: 'solstice' },
       { to: 'lantern', label: 'lantern' },

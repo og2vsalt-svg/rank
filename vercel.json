@@ -55,11 +55,14 @@
     { "source": "/willow/:id", "destination": "/api/embed?id=:id" },
     { "source": "/solace/:id", "destination": "/api/embed?id=:id" },
     { "source": "/velvet/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/gable/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/narthex/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/rivulet/:id", "destination": "/api/embed?id=:id" },
     { "source": "/p/:page", "destination": "/api/embed?page=:page" }
   ],
   "headers": [
     {
-      "source": "/(s|f|d|u|v|c|e|x|g|link|drop|wake|share|card|file|open|lanyard|parcel|lattice|marquee|signal|keyring|trace|solstice|flint|stills|gauge|kiln|ledger|furrow|tarn|weir|ketch|harvest|sundial|relay|spool|lantern|pulse|satin|palette|meridian|vale|driftglass|loom|quill|harbor|islet|pumice|vesper|willow|solace|velvet)/(.*)",
+      "source": "/(s|f|d|u|v|c|e|x|g|link|drop|wake|share|card|file|open|lanyard|parcel|lattice|marquee|signal|keyring|trace|solstice|flint|stills|gauge|kiln|ledger|furrow|tarn|weir|ketch|harvest|sundial|relay|spool|lantern|pulse|satin|palette|meridian|vale|driftglass|loom|quill|harbor|islet|pumice|vesper|willow|solace|velvet|gable|narthex|rivulet)/(.*)",
       "headers": [
         { "key": "Cache-Control", "value": "public, s-maxage=60, stale-while-revalidate=300" }
       ]

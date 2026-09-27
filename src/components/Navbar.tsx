@@ -8,11 +8,11 @@ const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
   { to: 'parcel', label: 'parcel' },
-  { to: 'pebble', label: 'pebble' },
-  { to: 'hearth', label: 'hearth' },
-  { to: 'well', label: 'well' },
-  { to: 'lanyard', label: 'lanyard' },
-  { to: 'velvet', label: 'velvet' },
+  { to: 'keystone', label: 'keystone' },
+  { to: 'vellum', label: 'vellum' },
+  { to: 'spindle', label: 'spindle' },
+  { to: 'quarry', label: 'quarry' },
+  { to: 'thresh', label: 'thresh' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -24,6 +24,8 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'parcel', label: 'parcel' },
       { to: 'pebble', label: 'pebble' },
       { to: 'hearth', label: 'hearth' },
+      { to: 'spindle', label: 'spindle' },
+      { to: 'thresh', label: 'thresh' },
       { to: 'relic', label: 'relic' },
       { to: 'gable', label: 'gable' },
       { to: 'narthex', label: 'narthex' },
@@ -59,9 +61,10 @@ const groups: { title: string; items: NavItem[] }[] = [
     items: [
       { to: 'velvet', label: 'velvet' },
       { to: 'well', label: 'well' },
+      { to: 'keystone', label: 'keystone' },
+      { to: 'lanyard', label: 'lanyard' },
       { to: 'gossamer', label: 'gossamer' },
       { to: 'rivulet', label: 'rivulet' },
-      { to: 'lanyard', label: 'lanyard' },
       { to: 'marquee', label: 'marquee' },
       { to: 'signal', label: 'signal' },
       { to: 'spool', label: 'spool' },
@@ -88,6 +91,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'create',
     items: [
+      { to: 'vellum', label: 'vellum' },
       { to: 'gossamer', label: 'gossamer' },
       { to: 'rivulet', label: 'rivulet' },
       { to: 'narthex', label: 'narthex' },
@@ -114,6 +118,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'quarry', label: 'quarry' },
+      { to: 'thresh', label: 'thresh' },
+      { to: 'spindle', label: 'spindle' },
       { to: 'well', label: 'well' },
       { to: 'pebble', label: 'pebble' },
       { to: 'relic', label: 'relic' },

@@ -1,6 +1,9 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'keel weigh', body: 'see size and type of a local file, then launch it to the share db. discord gets a /s card.' },
+  { title: 'slipway pile', body: 'slide a pile of local files into the water. each one is its own public drop and embed.' },
+  { title: 'emberwake look', body: 'sit with a live share id after it cooled. copy the discord card without opening bytes.' },
   { title: 'tarn look', body: 'peek a live share id, sit with the facts, copy the discord /s card. quiet water, not a feed.' },
   { title: 'weir run', body: 'feed a pile through in order. each file gets a numbered name, a public drop, and its own embed.' },
   { title: 'ketch sail', body: 'caption a local file, publish it, copy the discord /s card. not a vault grid.' },

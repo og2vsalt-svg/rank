@@ -8,11 +8,11 @@ const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
   { to: 'parcel', label: 'parcel' },
-  { to: 'gable', label: 'gable' },
-  { to: 'narthex', label: 'narthex' },
-  { to: 'rivulet', label: 'rivulet' },
-  { to: 'velvet', label: 'velvet' },
+  { to: 'hearth', label: 'hearth' },
+  { to: 'well', label: 'well' },
+  { to: 'gossamer', label: 'gossamer' },
   { to: 'lanyard', label: 'lanyard' },
+  { to: 'velvet', label: 'velvet' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -22,6 +22,7 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'vault', label: 'vault' },
       { to: 'drop', label: 'drop' },
       { to: 'parcel', label: 'parcel' },
+      { to: 'hearth', label: 'hearth' },
       { to: 'gable', label: 'gable' },
       { to: 'narthex', label: 'narthex' },
       { to: 'solace', label: 'solace' },
@@ -55,6 +56,8 @@ const groups: { title: string; items: NavItem[] }[] = [
     title: 'share',
     items: [
       { to: 'velvet', label: 'velvet' },
+      { to: 'well', label: 'well' },
+      { to: 'gossamer', label: 'gossamer' },
       { to: 'rivulet', label: 'rivulet' },
       { to: 'lanyard', label: 'lanyard' },
       { to: 'marquee', label: 'marquee' },
@@ -83,6 +86,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'create',
     items: [
+      { to: 'gossamer', label: 'gossamer' },
       { to: 'rivulet', label: 'rivulet' },
       { to: 'narthex', label: 'narthex' },
       { to: 'keyring', label: 'keyring' },
@@ -108,6 +112,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'well', label: 'well' },
       { to: 'narthex', label: 'narthex' },
       { to: 'gable', label: 'gable' },
       { to: 'solace', label: 'solace' },

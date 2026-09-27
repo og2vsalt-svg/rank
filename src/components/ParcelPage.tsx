@@ -36,7 +36,7 @@ export default function ParcelPage() {
     setWarn(file.size > 40 * 1024 * 1024 ? 'no cap, but this size can make the tab feel sleepy while it encodes.' : '');
     setBusy(true);
     try {
-      const dataUrl = await readAsDataURL(file);
+      const dataUrl = await readAsDataUrl(file);
       const r = await fetch('/api/share', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

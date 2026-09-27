@@ -10,26 +10,6 @@ function pretty(n: number) {
   return (n / (1024 * 1024 * 1024)).toFixed(2) + ' gb';
 }
 
-function hexHead(buf: ArrayBuffer, bytes = 64) {
-  const u = new Uint8Array(buf.slice(0, bytes));
-  return Array.from(u)
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join(' ');
-}
-
-function entropy(buf: ArrayBuffer) {
-  const u = new Uint8Array(buf.slice(0, Math.min(buf.byteLength, 65536)));
-  const counts = new Array(256).fill(0);
-  for (let i = 0; i < u.length; i++) counts[u[i]]++;
-  let h = 0;
-  for (const c of counts) {
-    if (!c) continue;
-    const p = c / u.length;
-    h -= p * Math.log2(p);
-  }
-  return h;
-}
-
 function readAsDataUrl(file: File) {
   return new Promise<string>((resolve, reject) => {
     const r = new FileReader();
@@ -39,33 +19,28 @@ function readAsDataUrl(file: File) {
   });
 }
 
-export default function FathomPage() {
+export default function PorticoPage() {
   const [busy, setBusy] = useState(false);
   const [warn, setWarn] = useState('');
   const [err, setErr] = useState('');
-  const [peek, setPeek] = useState<{ name: string; size: number; type: string; hex: string; bits: string } | null>(null);
   const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState('');
+  const [note, setNote] = useState('');
   const [link, setLink] = useState('');
   const [embed, setEmbed] = useState('');
 
-  const inspect = async (f: File | undefined) => {
+  const hold = async (f: File | undefined) => {
     if (!f) return;
     setErr('');
     setLink('');
     setEmbed('');
     setFile(f);
-    setWarn(f.size > 40 * 1024 * 1024 ? 'no cap. a file this heavy can make the tab lag while it encodes.' : '');
-    try {
-      const buf = await f.slice(0, 65536).arrayBuffer();
-      setPeek({
-        name: f.name,
-        size: f.size,
-        type: f.type || 'application/octet-stream',
-        hex: hexHead(buf),
-        bits: entropy(buf).toFixed(2) + ' bits / byte',
-      });
-    } catch (e: any) {
-      setErr(e?.message || 'could not peek');
+    setWarn(f.size > 40 * 1024 * 1024 ? 'no cap. encoding this much can stall the tab for a bit.' : '');
+    if (f.type.startsWith('image/')) {
+      const url = URL.createObjectURL(f);
+      setPreview(url);
+    } else {
+      setPreview('');
     }
   };
 
@@ -76,9 +51,10 @@ export default function FathomPage() {
     try {
       const dataUrl = await readAsDataUrl(file);
       const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+      const name = note.trim() ? `${note.trim()} — ${file.name}` : file.name;
       const res = await publishShare({
         id,
-        name: file.name,
+        name,
         type: file.type || 'application/octet-stream',
         size: file.size,
         dataUrl,
@@ -90,7 +66,7 @@ export default function FathomPage() {
       try { await navigator.clipboard.writeText(urls.embed); } catch {}
       if (res.warn) setWarn(res.warn);
     } catch (e: any) {
-      setErr(e?.message || 'fathom failed');
+      setErr(e?.message || 'portico failed');
     } finally {
       setBusy(false);
     }
@@ -106,33 +82,40 @@ export default function FathomPage() {
           transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
           className="glass rounded-[32px] p-8"
         >
-          <p className="text-[#0a84ff] text-sm mb-2">fathom</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">peek the first bytes, then send it live.</h1>
+          <p className="text-[#0a84ff] text-sm mb-2">portico</p>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">stand in the doorway, then step out.</h1>
           <p className="text-neutral-400 text-sm mb-6">
-            not the vault. a depth check on a local file, then a public drop with a discord card.
+            dress a local file as a card before it becomes a public share. discord unfurls the /s link.
           </p>
           <label
             className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition"
             onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => { e.preventDefault(); inspect(e.dataTransfer.files?.[0]); }}
+            onDrop={(e) => { e.preventDefault(); hold(e.dataTransfer.files?.[0]); }}
           >
-            <input type="file" className="hidden" onChange={(e) => inspect(e.target.files?.[0])} />
-            <p className="text-white font-medium">drop a file to sound it</p>
+            <input type="file" className="hidden" onChange={(e) => hold(e.target.files?.[0])} />
+            <p className="text-white font-medium">{file ? file.name : 'leave a file on the step'}</p>
             <p className="text-xs text-neutral-500 mt-2">no hard limit. we only warn when it might feel slow.</p>
           </label>
-          {peek && (
-            <div className="mt-6 space-y-3">
-              <p className="text-sm text-white">{peek.name}</p>
-              <p className="text-xs text-neutral-500">{pretty(peek.size)} · {peek.type} · {peek.bits}</p>
-              <pre className="text-[11px] leading-5 text-neutral-400 bg-black/30 rounded-2xl p-4 overflow-x-auto whitespace-pre-wrap">{peek.hex}</pre>
+          {file && (
+            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mt-6">
+              {preview && (
+                <img src={preview} alt="" className="w-full max-h-56 object-cover rounded-[22px] mb-4" />
+              )}
+              <p className="text-xs text-neutral-500 mb-3">{pretty(file.size)} · {file.type || 'unknown'}</p>
+              <input
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                placeholder="optional porch note"
+                className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/40 mb-4"
+              />
               <button
                 onClick={send}
                 disabled={busy}
                 className="w-full rounded-full bg-white text-black py-3 text-sm font-medium hover:bg-neutral-200 transition disabled:opacity-50"
               >
-                {busy ? 'sending…' : 'publish drop'}
+                {busy ? 'stepping out…' : 'open the door'}
               </button>
-            </div>
+            </motion.div>
           )}
           {warn && <p className="text-xs text-amber-300/80 mt-3">{warn}</p>}
           {err && <p className="text-xs text-red-400 mt-3">{err}</p>}

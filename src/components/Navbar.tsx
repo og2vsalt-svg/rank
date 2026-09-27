@@ -8,10 +8,10 @@ const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
   { to: 'parcel', label: 'parcel' },
-  { to: 'fathom', label: 'fathom' },
-  { to: 'portico', label: 'portico' },
-  { to: 'stillwater', label: 'stillwater' },
-  { to: 'nightjar', label: 'nightjar' },
+  { to: 'sash', label: 'sash' },
+  { to: 'linnet', label: 'linnet' },
+  { to: 'feldspar', label: 'feldspar' },
+  { to: 'oxeye', label: 'oxeye' },
   { to: 'lookout', label: 'lookout' },
 ];
 
@@ -22,6 +22,8 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'vault', label: 'vault' },
       { to: 'drop', label: 'drop' },
       { to: 'parcel', label: 'parcel' },
+      { to: 'sash', label: 'sash' },
+      { to: 'feldspar', label: 'feldspar' },
       { to: 'fathom', label: 'fathom' },
       { to: 'portico', label: 'portico' },
       { to: 'stillwater', label: 'stillwater' },
@@ -80,6 +82,10 @@ const groups: { title: string; items: NavItem[] }[] = [
     title: 'share',
     items: [
       { to: 'parcel', label: 'parcel' },
+      { to: 'linnet', label: 'linnet' },
+      { to: 'oxeye', label: 'oxeye' },
+      { to: 'sash', label: 'sash' },
+      { to: 'feldspar', label: 'feldspar' },
       { to: 'fathom', label: 'fathom' },
       { to: 'portico', label: 'portico' },
       { to: 'stillwater', label: 'stillwater' },
@@ -131,6 +137,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'create',
     items: [
+      { to: 'linnet', label: 'linnet' },
+      { to: 'sash', label: 'sash' },
       { to: 'portico', label: 'portico' },
       { to: 'veranda', label: 'veranda' },
       { to: 'halo', label: 'halo' },
@@ -165,6 +173,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'feldspar', label: 'feldspar' },
+      { to: 'oxeye', label: 'oxeye' },
+      { to: 'sash', label: 'sash' },
       { to: 'fathom', label: 'fathom' },
       { to: 'stillwater', label: 'stillwater' },
       { to: 'tinder', label: 'tinder' },

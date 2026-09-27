@@ -3,47 +3,64 @@ import { motion } from 'framer-motion';
 import Navbar from './Navbar';
 import { publishShare, shareUrls } from '../lib/cloudShare';
 
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+
+function pretty(n: number) {
+  if (n < 1024) return n + ' b';
+  if (n < 1024 * 1024) return Math.round(n / 1024) + ' kb';
+  if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(1) + ' mb';
+  return (n / (1024 * 1024 * 1024)).toFixed(2) + ' gb';
+}
+
+function readAsDataUrl(file: File) {
+  return new Promise<string>((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(String(r.result || ''));
+    r.onerror = () => reject(new Error('could not read file'));
+    r.readAsDataURL(file);
+  });
+}
+
 export default function RivuletPage() {
-  const [lines, setLines] = useState<string[]>([]);
-  const [draft, setDraft] = useState('');
   const [busy, setBusy] = useState(false);
-  const [embed, setEmbed] = useState('');
+  const [warn, setWarn] = useState('');
   const [err, setErr] = useState('');
+  const [note, setNote] = useState('');
+  const [embed, setEmbed] = useState('');
+  const [app, setApp] = useState('');
 
-  const add = () => {
-    const t = draft.trim();
-    if (!t) return;
-    setLines((prev) => [...prev, `${new Date().toISOString()}  ${t}`]);
-    setDraft('');
-  };
-
-  const ship = async () => {
-    if (!lines.length) return;
-    setBusy(true);
+  const send = async (list: FileList | null) => {
+    const file = list?.[0];
+    if (!file) return;
     setErr('');
+    setEmbed('');
+    setApp('');
+    setWarn(file.size > 40 * 1024 * 1024 ? 'wide stream. no cap — the tab might just breathe a second.' : '');
+    setBusy(true);
     try {
-      const body = lines.join('\n') + '\n';
-      const blob = new Blob([body], { type: 'text/plain' });
-      const dataUrl = await new Promise<string>((resolve, reject) => {
-        const r = new FileReader();
-        r.onload = () => resolve(String(r.result || ''));
-        r.onerror = () => reject(new Error('read failed'));
-        r.readAsDataURL(blob);
-      });
-      const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+      const dataUrl = await readAsDataUrl(file);
+      const id = uid();
+      const name = note.trim() ? `${note.trim()} — ${file.name}` : file.name;
       const res = await publishShare({
         id,
-        name: 'rivulet.txt',
-        type: 'text/plain',
-        size: blob.size,
+        name,
+        type: file.type || 'application/octet-stream',
+        size: file.size,
         dataUrl,
       });
-      if (!res.ok) throw new Error(res.error || 'publish missed');
-      const urls = shareUrls(res.id || id);
+      if (!res.ok) {
+        setErr(res.error || 'the rivulet dried up');
+        return;
+      }
+      if (res.warn) setWarn(res.warn);
+      const urls = shareUrls(id);
       setEmbed(urls.embed);
+      setApp(urls.app);
       try { await navigator.clipboard.writeText(urls.embed); } catch {}
     } catch (e: any) {
-      setErr(e?.message || 'rivulet failed');
+      setErr(e?.message || 'could not send the file downstream');
     } finally {
       setBusy(false);
     }
@@ -54,38 +71,39 @@ export default function RivuletPage() {
       <Navbar />
       <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
+          initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
           className="glass rounded-[32px] p-8"
         >
           <p className="text-[#0a84ff] text-sm mb-2">rivulet</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">a thin stream of notes.</h1>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">name a drop, then let it run.</h1>
           <p className="text-neutral-400 text-sm mb-6">
-            not a vault. stack lines locally, then pour them into one public .txt with a discord /s card.
+            local file goes to the share db. discord cards use the /s link. no hard size lock.
           </p>
-          <div className="flex gap-2">
-            <input
-              value={draft}
-              onChange={(e) => setDraft(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter') add(); }}
-              placeholder="add a line"
-              className="flex-1 bg-white/[0.04] border border-white/10 rounded-full px-4 py-2 text-sm text-white outline-none focus:border-[#0a84ff]/50"
-            />
-            <button onClick={add} className="text-[13px] px-4 py-2 rounded-full bg-white/10 text-white">add</button>
-          </div>
-          <div className="mt-5 min-h-[120px] rounded-2xl bg-black/30 border border-white/5 px-4 py-3 font-mono text-[12px] text-neutral-300 whitespace-pre-wrap">
-            {lines.length ? lines.join('\n') : 'empty stream'}
-          </div>
-          <button
-            onClick={ship}
-            disabled={busy || !lines.length}
-            className="mt-4 text-[13px] font-medium px-4 py-2 rounded-full bg-white text-black disabled:opacity-40"
+          <input
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="optional label for the current"
+            className="w-full mb-4 px-4 py-2.5 rounded-full bg-white/5 border border-white/10 text-sm outline-none focus:border-[#0a84ff]/50"
+          />
+          <label
+            className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition"
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => { e.preventDefault(); send(e.dataTransfer.files); }}
           >
-            {busy ? 'shipping…' : 'publish stream'}
-          </button>
+            <input type="file" className="hidden" onChange={(e) => send(e.target.files)} />
+            <p className="text-white font-medium">{busy ? 'the water is moving…' : 'drop a file into the rivulet'}</p>
+            <p className="text-xs text-neutral-500 mt-2">warnings only if encoding might lag.</p>
+          </label>
+          {warn && <p className="text-xs text-amber-300/80 mt-3">{warn}</p>}
           {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
-          {embed && <p className="text-xs text-neutral-400 mt-3 break-all">discord: {embed}</p>}
+          {embed && (
+            <div className="mt-6 space-y-2">
+              <p className="text-xs text-neutral-400 break-all">discord embed (copied): {embed}</p>
+              <p className="text-xs text-neutral-500 break-all">app link: {app}</p>
+            </div>
+          )}
         </motion.div>
       </div>
     </div>

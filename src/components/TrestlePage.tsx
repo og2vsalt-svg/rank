@@ -1,69 +1,91 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
+import { publishShare, shareUrls } from '../lib/cloudShare';
 
-type Meta = { name: string; type: string; size: number; last: string };
-
-function pretty(n: number) {
-  if (n < 1024) return n + ' b';
-  if (n < 1024 * 1024) return Math.round(n / 1024) + ' kb';
-  return (n / (1024 * 1024)).toFixed(2) + ' mb';
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
 
-function readMeta(file?: File): Meta | null {
-  if (!file) return null;
-  return { name: file.name, type: file.type || 'unknown', size: file.size, last: file.lastModified ? new Date(file.lastModified).toLocaleString() : '—' };
+function readAsDataUrl(file: File) {
+  return new Promise<string>((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(String(r.result || ''));
+    r.onerror = () => reject(new Error('could not read file'));
+    r.readAsDataURL(file);
+  });
 }
+
+type Row = { name: string; embed?: string; err?: string };
 
 export default function TrestlePage() {
-  const [a, setA] = useState<Meta | null>(null);
-  const [b, setB] = useState<Meta | null>(null);
+  const [busy, setBusy] = useState(false);
   const [warn, setWarn] = useState('');
+  const [rows, setRows] = useState<Row[]>([]);
 
-  const grab = (side: 'a' | 'b', file?: File) => {
-    if (!file) return;
-    if (file.size > 80 * 1024 * 1024) setWarn('huge file. we only read metadata so it should still be fine.');
-    else setWarn('');
-    const m = readMeta(file);
-    if (side === 'a') setA(m);
-    else setB(m);
+  const send = async (list: FileList | null) => {
+    if (!list || !list.length) return;
+    const files = Array.from(list);
+    const heavy = files.some((f) => f.size > 40 * 1024 * 1024);
+    setWarn(heavy ? 'one of these spans is chunky. no cap, just a slowness tap.' : '');
+    setBusy(true);
+    const out: Row[] = [];
+    for (const file of files) {
+      try {
+        const dataUrl = await readAsDataUrl(file);
+        const id = uid();
+        const res = await publishShare({
+          id,
+          name: file.name,
+          type: file.type || 'application/octet-stream',
+          size: file.size,
+          dataUrl,
+        });
+        if (!res.ok) out.push({ name: file.name, err: res.error || 'fell off the trestle' });
+        else out.push({ name: file.name, embed: shareUrls(id).embed });
+      } catch (e: any) {
+        out.push({ name: file.name, err: e?.message || 'failed' });
+      }
+    }
+    setRows(out);
+    const first = out.find((r) => r.embed)?.embed;
+    if (first) {
+      try { await navigator.clipboard.writeText(first); } catch {}
+    }
+    setBusy(false);
   };
-
-  const row = (label: string, left?: string, right?: string) => (
-    <div className="grid grid-cols-3 gap-3 py-3 border-b border-white/5 text-sm">
-      <p className="text-neutral-500">{label}</p>
-      <p className="truncate text-neutral-200">{left || '—'}</p>
-      <p className="truncate text-neutral-200">{right || '—'}</p>
-    </div>
-  );
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-3xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}>
+      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          className="glass rounded-[32px] p-8"
+        >
           <p className="text-[#0a84ff] text-sm mb-2">trestle</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">compare two local files. no upload.</h1>
-          <p className="text-neutral-400 text-sm mb-6">names, types, sizes, dates. nothing leaves the tab.</p>
-          <div className="grid sm:grid-cols-2 gap-3 mb-6">
-            {(['a', 'b'] as const).map((side) => (
-              <label key={side} className="cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-6 text-center transition">
-                <input type="file" className="hidden" onChange={(e) => grab(side, e.target.files?.[0])} />
-                <p className="text-sm text-neutral-300">file {side}</p>
-              </label>
-            ))}
-          </div>
-          {warn && <p className="text-xs text-amber-300/80 mb-3">{warn}</p>}
-          <div className="glass rounded-[28px] p-5">
-            {row('name', a?.name, b?.name)}
-            {row('type', a?.type, b?.type)}
-            {row('size', a ? pretty(a.size) : undefined, b ? pretty(b.size) : undefined)}
-            {row('modified', a?.last, b?.last)}
-            {a && b && (
-              <p className="text-xs text-neutral-500 mt-4">
-                {a.size === b.size && a.name === b.name ? 'same name and size' : `size delta ${pretty(Math.abs(a.size - b.size))}`}
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">walk several files across at once.</h1>
+          <p className="text-neutral-400 text-sm mb-6">
+            multi-select local files. each one lands on the share db with its own discord /s card.
+          </p>
+          <label
+            className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition"
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => { e.preventDefault(); send(e.dataTransfer.files); }}
+          >
+            <input type="file" multiple className="hidden" onChange={(e) => send(e.target.files)} />
+            <p className="text-white font-medium">{busy ? 'laying the spans…' : 'drop a handful on the trestle'}</p>
+            <p className="text-xs text-neutral-500 mt-2">no file count cap. just patience if the pile is huge.</p>
+          </label>
+          {warn && <p className="text-xs text-amber-300/80 mt-3">{warn}</p>}
+          <div className="mt-5 space-y-2">
+            {rows.map((r, i) => (
+              <p key={i} className="text-xs text-neutral-400 break-all">
+                {r.name} — {r.embed || r.err}
               </p>
-            )}
+            ))}
           </div>
         </motion.div>
       </div>

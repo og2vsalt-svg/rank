@@ -134,6 +134,10 @@ const PAGE_TITLES = {
   spar: 'spar — inspect a local file',
   trestle: 'trestle — several files across',
   copse: 'copse — a stand of rooms',
+  nightjar: 'nightjar — preview then share',
+  veranda: 'veranda — porch note',
+  oarlock: 'oarlock — lock and tide',
+  tinder: 'tinder — fingerprint then share',
 };
 
 export default async function handler(req, res) {

@@ -8,6 +8,7 @@ const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
   { to: 'parcel', label: 'parcel' },
+  { to: 'wellhead', label: 'wellhead' },
   { to: 'keystone', label: 'keystone' },
   { to: 'spool', label: 'spool' },
   { to: 'whetstone', label: 'whetstone' },
@@ -23,6 +24,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'files',
     items: [
+      { to: 'wellhead', label: 'wellhead' },
       { to: 'keystone', label: 'keystone' },
       { to: 'spool', label: 'spool' },
       { to: 'whetstone', label: 'whetstone' },
@@ -56,6 +58,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'wellhead', label: 'wellhead' },
       { to: 'keystone', label: 'keystone' },
       { to: 'harbor', label: 'harbor' },
       { to: 'spool', label: 'spool' },
@@ -86,6 +89,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'create',
     items: [
+      { to: 'wellhead', label: 'wellhead' },
       { to: 'keystone', label: 'keystone' },
       { to: 'spool', label: 'spool' },
       { to: 'whetstone', label: 'whetstone' },
@@ -110,6 +114,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'wellhead', label: 'wellhead' },
       { to: 'harbor', label: 'harbor' },
       { to: 'whetstone', label: 'whetstone' },
       { to: 'meridian', label: 'meridian' },

@@ -21,6 +21,9 @@
     { "source": "/tinderbox", "destination": "/api/embed?page=tinderbox" },
     { "source": "/keystone", "destination": "/api/embed?page=keystone" },
     { "source": "/wellhead", "destination": "/api/embed?page=wellhead" },
-    { "source": "/windlass", "destination": "/api/embed?page=windlass" }
+    { "source": "/windlass", "destination": "/api/embed?page=windlass" },
+    { "source": "/pilotage", "destination": "/api/embed?page=pilotage" },
+    { "source": "/share/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/drop/:id", "destination": "/api/embed?id=:id" }
   ]
 }

@@ -9,59 +9,52 @@ function pretty(n: number) {
   return (n / (1024 * 1024)).toFixed(1) + ' mb';
 }
 
-function readAsDataUrl(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const r = new FileReader();
-    r.onload = () => resolve(String(r.result || ''));
-    r.onerror = () => reject(new Error('could not read file'));
-    r.readAsDataURL(file);
-  });
+function hexDump(buf: ArrayBuffer, max = 256) {
+  const bytes = new Uint8Array(buf.slice(0, max));
+  const lines: string[] = [];
+  for (let i = 0; i < bytes.length; i += 16) {
+    const slice = bytes.slice(i, i + 16);
+    const hex = Array.from(slice).map((b) => b.toString(16).padStart(2, '0')).join(' ');
+    const ascii = Array.from(slice).map((b) => (b >= 32 && b < 127 ? String.fromCharCode(b) : '.')).join('');
+    lines.push(`${i.toString(16).padStart(4, '0')}  ${hex.padEnd(47, ' ')}  ${ascii}`);
+  }
+  return lines.join('\n');
 }
 
-export default function GasketPage() {
-  const [note, setNote] = useState('');
+export default function PewterPage() {
+  const [dump, setDump] = useState('');
   const [busy, setBusy] = useState(false);
   const [warn, setWarn] = useState('');
   const [err, setErr] = useState('');
   const [embed, setEmbed] = useState('');
   const [link, setLink] = useState('');
-  const [meta, setMeta] = useState<{ name: string; size: number } | null>(null);
+  const [meta, setMeta] = useState<{ name: string; size: number; type: string } | null>(null);
 
   const send = async (file?: File) => {
     if (!file) return;
     setErr('');
     setEmbed('');
     setLink('');
-    setMeta({ name: file.name, size: file.size });
-    setWarn(file.size > 24 * 1024 * 1024 ? 'no cap. wrapping a large file can make the tab feel slow.' : '');
+    setDump('');
+    setMeta({ name: file.name, size: file.size, type: file.type || 'application/octet-stream' });
+    setWarn(file.size > 40 * 1024 * 1024 ? 'no cap. encoding this size can make the tab feel sleepy.' : '');
     setBusy(true);
     try {
-      const dataUrl = await readAsDataUrl(file);
-      const envelope = {
-        kind: 'rankvault-gasket',
-        note: note.trim() || null,
+      const head = await file.slice(0, 256).arrayBuffer();
+      setDump(hexDump(head));
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = () => resolve(String(r.result || ''));
+        r.onerror = () => reject(new Error('could not read file'));
+        r.readAsDataURL(file);
+      });
+      const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+      const res = await publishShare({
+        id,
         name: file.name,
         type: file.type || 'application/octet-stream',
         size: file.size,
-        packedAt: new Date().toISOString(),
-        file: dataUrl,
-      };
-      const blob = new Blob([JSON.stringify(envelope, null, 2)], { type: 'application/json' });
-      const packed = await new Promise<string>((resolve, reject) => {
-        const r = new FileReader();
-        r.onload = () => resolve(String(r.result || ''));
-        r.onerror = () => reject(new Error('wrap failed'));
-        r.readAsDataURL(blob);
-      });
-      const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-      const name = file.name.replace(/\.[^.]+$/, '') + '.gasket.json';
-      const res = await publishShare({
-        id,
-        name,
-        type: 'application/json',
-        size: blob.size,
-        dataUrl: packed,
-        author: note.trim() ? 'gasket' : undefined,
+        dataUrl,
       });
       if (!res.ok) throw new Error(res.error || 'share failed');
       const urls = shareUrls(res.id || id);
@@ -70,7 +63,7 @@ export default function GasketPage() {
       try { await navigator.clipboard.writeText(urls.embed); } catch {}
       if (res.warn) setWarn(res.warn);
     } catch (e: any) {
-      setErr(e?.message || 'gasket failed');
+      setErr(e?.message || 'pewter failed');
     } finally {
       setBusy(false);
     }
@@ -86,27 +79,26 @@ export default function GasketPage() {
           transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
           className="glass rounded-[32px] p-8"
         >
-          <p className="text-[#0a84ff] text-sm mb-2">gasket</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">wrap a local file in a json envelope.</h1>
+          <p className="text-[#0a84ff] text-sm mb-2">pewter</p>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">peek the first 256 bytes, then share.</h1>
           <p className="text-neutral-400 text-sm mb-6">
-            the note rides with the bytes. published as a public json drop — not another vault slot.
+            a quiet hex desk. the file still goes to the public share db with a discord /s card.
           </p>
-          <textarea
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            placeholder="optional note sealed in the gasket"
-            className="w-full mb-4 min-h-[88px] rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-white outline-none focus:border-[#0a84ff]/50"
-          />
           <label
             className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center"
             onDragOver={(e) => e.preventDefault()}
             onDrop={(e) => { e.preventDefault(); send(e.dataTransfer.files?.[0]); }}
           >
             <input type="file" className="hidden" onChange={(e) => send(e.target.files?.[0])} />
-            <p className="text-white font-medium">{busy ? 'sealing…' : 'drop a file to wrap'}</p>
-            <p className="text-xs text-neutral-500 mt-2">no hard limit. we only warn when it may feel slow.</p>
+            <p className="text-white font-medium">{busy ? 'pouring…' : 'drop a file'}</p>
+            <p className="text-xs text-neutral-500 mt-2">no hard limit. only a slowness warning.</p>
           </label>
-          {meta && <p className="text-xs text-neutral-500 mt-4">{meta.name} · {pretty(meta.size)}</p>}
+          {meta && <p className="text-xs text-neutral-500 mt-4">{meta.name} · {pretty(meta.size)} · {meta.type}</p>}
+          {dump && (
+            <pre className="mt-4 text-[11px] leading-5 text-neutral-300 overflow-x-auto bg-black/30 rounded-2xl p-4">
+              {dump}
+            </pre>
+          )}
           {warn && <p className="text-xs text-amber-300/80 mt-3">{warn}</p>}
           {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
           {embed && (

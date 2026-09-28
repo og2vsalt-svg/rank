@@ -191,5 +191,6 @@ export function shareUrls(id: string) {
     yarrow: `${origin}/y/${id}`,
     quoin: `${origin}/q/${id}`,
     lanyard: `${origin}/l/${id}`,
+    nook: `${origin}/n/${id}`,
   };
 }

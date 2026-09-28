@@ -16,15 +16,15 @@ export default function Hero() {
         </motion.h1>
 
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.12 }} className="text-neutral-400 text-lg leading-relaxed max-w-xl mb-8">
-          a quiet vault for clips, docs, and dumps. preview in place, sort into folders, flip a file public when you need a link. no size lock. just a heads up if the tab might lag. new desks: sparrow hands you a pickup code, rainshadow dries a drop out, nightwatch sits with open counts.
+          a quiet vault for clips, docs, and dumps. preview in place, sort into folders, flip a file public when you need a link. no size lock. just a heads up if the tab might lag. new desks: lanyard tags a drop, oxbow reminds you later, quoin captions a card, yarrow ships the lightest file.
         </motion.p>
 
         <div className="flex flex-wrap gap-3 mb-12">
           <button onClick={() => navigate('vault')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black font-medium text-sm hover:bg-neutral-200 transition">open vault</button>
           <button onClick={() => navigate('drop')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">public drop</button>
-          <button onClick={() => navigate('sparrow')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">sparrow</button>
-          <button onClick={() => navigate('rainshadow')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">rainshadow</button>
-          <button onClick={() => navigate('nightwatch')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">nightwatch</button>
+          <button onClick={() => navigate('lanyard')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">lanyard</button>
+          <button onClick={() => navigate('oxbow')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">oxbow</button>
+          <button onClick={() => navigate('yarrow')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">yarrow</button>
           <a href="#features" className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">see features</a>
         </div>
       </div>

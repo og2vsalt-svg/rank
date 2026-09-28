@@ -8,17 +8,21 @@ const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
   { to: 'parcel', label: 'parcel' },
-  { to: 'stillroom', label: 'stillroom' },
-  { to: 'coppice', label: 'coppice' },
-  { to: 'postcard', label: 'postcard' },
+  { to: 'lumenbox', label: 'lumenbox' },
+  { to: 'hourglass', label: 'hourglass' },
+  { to: 'manifest', label: 'manifest' },
+  { to: 'whisper', label: 'whisper' },
   { to: 'tidepool', label: 'tidepool' },
-  { to: 'lanternwick', label: 'lanternwick' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'files',
     items: [
+      { to: 'lumenbox', label: 'lumenbox' },
+      { to: 'hourglass', label: 'hourglass' },
+      { to: 'manifest', label: 'manifest' },
+      { to: 'whisper', label: 'whisper' },
       { to: 'stillroom', label: 'stillroom' },
       { to: 'coppice', label: 'coppice' },
       { to: 'saltbox', label: 'saltbox' },
@@ -101,6 +105,10 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'hourglass', label: 'hourglass' },
+      { to: 'manifest', label: 'manifest' },
+      { to: 'whisper', label: 'whisper' },
+      { to: 'lumenbox', label: 'lumenbox' },
       { to: 'stillroom', label: 'stillroom' },
       { to: 'coppice', label: 'coppice' },
       { to: 'saltbox', label: 'saltbox' },
@@ -181,6 +189,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'create',
     items: [
+      { to: 'lumenbox', label: 'lumenbox' },
+      { to: 'whisper', label: 'whisper' },
       { to: 'lanternwick', label: 'lanternwick' },
       { to: 'palimpsest', label: 'palimpsest' },
       { to: 'inkwell', label: 'inkwell' },
@@ -224,6 +234,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'manifest', label: 'manifest' },
+      { to: 'hourglass', label: 'hourglass' },
       { to: 'dewpoint', label: 'dewpoint' },
       { to: 'mullion', label: 'mullion' },
       { to: 'magnet', label: 'magnet' },

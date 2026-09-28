@@ -8,19 +8,22 @@ const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
   { to: 'parcel', label: 'parcel' },
+  { to: 'spool', label: 'spool' },
+  { to: 'whetstone', label: 'whetstone' },
+  { to: 'harbor', label: 'harbor' },
   { to: 'kiln', label: 'kiln' },
   { to: 'lodestone', label: 'lodestone' },
   { to: 'meridian', label: 'meridian' },
   { to: 'nook', label: 'nook' },
-  { to: 'gauge', label: 'gauge' },
-  { to: 'helix', label: 'helix' },
-  { to: 'plumb', label: 'plumb' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'files',
     items: [
+      { to: 'spool', label: 'spool' },
+      { to: 'whetstone', label: 'whetstone' },
+      { to: 'harbor', label: 'harbor' },
       { to: 'kiln', label: 'kiln' },
       { to: 'lodestone', label: 'lodestone' },
       { to: 'meridian', label: 'meridian' },
@@ -49,6 +52,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'harbor', label: 'harbor' },
+      { to: 'spool', label: 'spool' },
+      { to: 'whetstone', label: 'whetstone' },
       { to: 'nook', label: 'nook' },
       { to: 'lodestone', label: 'lodestone' },
       { to: 'plumb', label: 'plumb' },
@@ -74,6 +80,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'create',
     items: [
+      { to: 'spool', label: 'spool' },
+      { to: 'whetstone', label: 'whetstone' },
       { to: 'kiln', label: 'kiln' },
       { to: 'lodestone', label: 'lodestone' },
       { to: 'apron', label: 'apron' },
@@ -95,6 +103,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'harbor', label: 'harbor' },
+      { to: 'whetstone', label: 'whetstone' },
       { to: 'meridian', label: 'meridian' },
       { to: 'nook', label: 'nook' },
       { to: 'gauge', label: 'gauge' },

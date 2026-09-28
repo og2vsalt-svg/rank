@@ -1,98 +1,67 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { useVault } from './VaultContext';
-import { useRouter } from './Router';
-import { shareUrls } from '../lib/cloudShare';
+import { fetchShare, shareUrls } from '../lib/cloudShare';
 
-function pretty(n: number) {
+function formatBytes(n: number) {
   if (n < 1024) return n + ' b';
-  if (n < 1024 * 1024) return Math.round(n / 1024) + ' kb';
-  if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(1) + ' mb';
-  return (n / (1024 * 1024 * 1024)).toFixed(2) + ' gb';
+  if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' kb';
+  return (n / (1024 * 1024)).toFixed(2) + ' mb';
 }
 
 export default function VestibulePage() {
-  const { addFiles, togglePublic } = useVault();
-  const { navigate } = useRouter();
+  const [id, setId] = useState('');
   const [busy, setBusy] = useState(false);
-  const [warn, setWarn] = useState('');
   const [err, setErr] = useState('');
-  const [rows, setRows] = useState<{ name: string; size: number; id: string; embed: string }[]>([]);
+  const [row, setRow] = useState<Awaited<ReturnType<typeof fetchShare>>>(null);
 
-  const take = async (list: FileList | null) => {
-    if (!list || !list.length) return;
-    const files = Array.from(list);
-    const fat = files.some((f) => f.size > 40 * 1024 * 1024);
-    setWarn(fat ? 'one or more files are huge. publish can feel slow. still no hard cap.' : '');
-    setErr('');
+  const look = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const needle = id.trim();
+    if (!needle) return;
     setBusy(true);
+    setErr('');
+    setRow(null);
     try {
-      const result = await addFiles(list, 'vestibule');
-      if (!result.ok) {
-        setErr(result.error || 'need a session to park files');
+      const meta = await fetchShare(needle);
+      if (!meta) {
+        setErr('nothing public lives at that id.');
         return;
       }
-      const next: typeof rows = [];
-      for (const id of result.ids || []) {
-        const pub = await togglePublic(id);
-        if (!pub.ok) {
-          setErr(pub.error || 'vault ok, cloud publish missed on one file');
-          continue;
-        }
-        const urls = shareUrls(id);
-        const match = files[next.length];
-        next.push({
-          name: match?.name || id,
-          size: match?.size || 0,
-          id,
-          embed: urls.embed,
-        });
-      }
-      setRows(next);
-      if (next[0]) {
-        try { await navigator.clipboard.writeText(next[0].embed); } catch {}
-      }
-    } catch (e: any) {
-      setErr(e?.message || 'vestibule drop failed');
+      setRow(meta);
+    } catch (er: any) {
+      setErr(er?.message || 'lookup failed');
     } finally {
       setBusy(false);
     }
   };
 
+  const urls = row ? shareUrls(row.id) : null;
+
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-8">
+      <main className="pt-24 pb-20 px-5">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }} className="max-w-xl mx-auto">
           <p className="text-[#0a84ff] text-sm mb-2">vestibule</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">leave files at the door.</h1>
-          <p className="text-neutral-400 text-sm mb-6">batch drop from your machine into the public share table. discord unfurls hit /s/id. not a vault grid.</p>
-          <label
-            className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition-all duration-300"
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => { e.preventDefault(); take(e.dataTransfer.files); }}
-          >
-            <input type="file" multiple className="hidden" onChange={(e) => take(e.target.files)} />
-            <p className="text-white font-medium">{busy ? 'publishing…' : 'drop one or many files'}</p>
-            <p className="text-xs text-neutral-500 mt-2">unlimited size. lag warning only if a file is chunky.</p>
-          </label>
-          {warn && <p className="text-xs text-amber-300/80 mt-4">{warn}</p>}
-          {err && <p className="text-xs text-red-400 mt-4">{err}</p>}
-          {rows.length > 0 && (
-            <div className="mt-6 space-y-2">
-              {rows.map((r) => (
-                <div key={r.id} className="rounded-2xl bg-white/[0.04] px-4 py-3">
-                  <p className="text-sm text-white truncate">{r.name}</p>
-                  <p className="text-xs text-neutral-500">{pretty(r.size)}</p>
-                  <p className="text-[11px] text-neutral-500 break-all mt-1">{r.embed}</p>
-                  <button onClick={() => navigate('share', r.id)} className="mt-2 text-xs text-[#0a84ff]">open share</button>
-                </div>
-              ))}
+          <h1 className="text-4xl font-semibold tracking-tight text-white mb-3">stand in the doorway and ask for a drop.</h1>
+          <p className="text-neutral-400 text-sm mb-8">look up a public share id. copy the discord card. nothing is stored here.</p>
+          <form onSubmit={look} className="flex gap-2 mb-6">
+            <input value={id} onChange={(e) => setId(e.target.value)} placeholder="share id" className="flex-1 bg-white/5 border border-white/10 rounded-full px-4 py-2.5 text-sm text-white outline-none" />
+            <button disabled={busy} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40">{busy ? '…' : 'ask'}</button>
+          </form>
+          {err && <p className="text-red-400 text-sm">{err}</p>}
+          {row && urls && (
+            <div className="glass rounded-3xl p-6">
+              <p className="text-white text-lg">{row.name}</p>
+              <p className="text-neutral-500 text-sm mt-1">{formatBytes(row.size)} · {row.type}</p>
+              {row.type.startsWith('image/') && <img src={row.url} alt="" className="mt-4 rounded-2xl w-full" />}
+              <p className="text-[#0a84ff] text-xs mt-4 break-all">{urls.embed}</p>
+              <button onClick={() => navigator.clipboard.writeText(urls.embed)} className="mt-4 px-4 py-2 rounded-full bg-white/8 text-sm text-white">copy discord embed</button>
             </div>
           )}
         </motion.div>
-      </div>
+      </main>
     </div>
   );
 }

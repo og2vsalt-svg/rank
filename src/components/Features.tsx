@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'windlass', body: 'count 64kb turns on a local file, then haul up a coil ticket or the original. discord unfurls /s.' },
   { title: 'wellhead', body: 'surface a local file with a field note. ship a tiny ticket or the original. discord unfurls /s.' },
   { title: 'spool', body: 'wind several local notes into one thread, then publish a single .txt drop with a discord /s card.' },
   { title: 'whetstone', body: 'hone a filename locally, keep the bytes, ship a tidy public drop.' },
@@ -18,7 +19,7 @@ const items = [
   { title: 'locket + relay', body: 'frame one still, or hand a file across with a clock. both mint discord cards.' },
   { title: 'local-first vault', body: 'files live in your browser first. nothing ships unless you flip a drop public.' },
   { title: 'cloud share db', body: 'public drops land in supabase, with vercel blob when a token is set.' },
-  { title: 'discord embeds', body: '/s/id plus /f /x /d /go /open /card /link /v /y /q /l /embed /n /k /w all serve og tags so previews look finished.' },
+  { title: 'discord embeds', body: '/s/id plus /f /x /d /go /open /card /link /v /y /q /l /embed /n /k /w /u all serve og tags so previews look finished.' },
   { title: 'no hard file cap', body: 'drop whatever size you want. we only warn when the tab might feel sleepy.' },
   { title: 'lanyard', body: 'hang a tag on a file and mint a named discord card.' },
   { title: 'oxbow', body: 'local reminder loop. no upload. come back when the bend is due.' },

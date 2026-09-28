@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"');
 }
 
 function isBot(ua) {
@@ -153,6 +153,10 @@ const PAGE_TITLES = {
   dewpoint: 'dewpoint — slowness meter',
   mullion: 'mullion — two pane share',
   lanternwick: 'lanternwick — discord unfurl',
+  lumenbox: 'lumenbox — color card',
+  hourglass: 'hourglass — timed drop',
+  manifest: 'manifest — hashed pile list',
+  whisper: 'whisper — sealed note',
 };
 
 export default async function handler(req, res) {

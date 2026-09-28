@@ -75,58 +75,23 @@ export default function StillroomPage() {
     <div className="mesh min-h-screen">
       <Navbar />
       <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          className="glass rounded-[32px] p-8"
-        >
+        <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-8">
           <p className="text-[#0a84ff] text-sm mb-2">stillroom</p>
           <h1 className="text-3xl font-semibold tracking-tight mb-3">look at a file, then send it public.</h1>
-          <p className="text-neutral-400 text-sm mb-6">
-            preview images, audio, or video locally. when you are ready it hits the share db and you get a discord /s card.
-          </p>
-          <label
-            className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition"
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => {
-              e.preventDefault();
-              pick(e.dataTransfer.files?.[0]);
-            }}
-          >
+          <p className="text-neutral-400 text-sm mb-6">preview images, audio, or video locally. when you are ready it hits the share db and you get a discord /s card.</p>
+          <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition" onDragOver={(e) => e.preventDefault()} onDrop={(e) => { e.preventDefault(); pick(e.dataTransfer.files?.[0]); }}>
             <input type="file" className="hidden" onChange={(e) => pick(e.target.files?.[0] || undefined)} />
             <p className="text-white font-medium">{file ? file.name : 'drop one file'}</p>
             <p className="text-xs text-neutral-500 mt-2">no hard limit. we only warn when it might feel slow.</p>
           </label>
-          {file && (
-            <p className="text-xs text-neutral-500 mt-4">
-              {pretty(file.size)} · {file.type || 'unknown'}
-            </p>
-          )}
-          {preview && file?.type.startsWith('image/') && (
-            <img src={preview} alt="" className="mt-5 w-full max-h-72 object-contain rounded-2xl bg-black/30" />
-          )}
-          {preview && file?.type.startsWith('audio/') && (
-            <audio src={preview} controls className="mt-5 w-full" />
-          )}
-          {preview && file?.type.startsWith('video/') && (
-            <video src={preview} controls className="mt-5 w-full rounded-2xl max-h-72 bg-black/40" />
-          )}
-          <button
-            onClick={ship}
-            disabled={busy || !file}
-            className="mt-6 px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-50"
-          >
-            {busy ? 'distilling…' : 'publish drop'}
-          </button>
+          {file && <p className="text-xs text-neutral-500 mt-4">{pretty(file.size)} · {file.type || 'unknown'}</p>}
+          {preview && file?.type.startsWith('image/') && <img src={preview} alt="" className="mt-5 w-full max-h-72 object-contain rounded-2xl bg-black/30" />}
+          {preview && file?.type.startsWith('audio/') && <audio src={preview} controls className="mt-5 w-full" />}
+          {preview && file?.type.startsWith('video/') && <video src={preview} controls className="mt-5 w-full rounded-2xl max-h-72 bg-black/40" />}
+          <button onClick={ship} disabled={busy || !file} className="mt-6 px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-50">{busy ? 'distilling…' : 'publish drop'}</button>
           {warn && <p className="text-xs text-amber-300/80 mt-3">{warn}</p>}
           {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
-          {embed && (
-            <div className="mt-6 space-y-2">
-              <p className="text-xs text-neutral-400 break-all">discord: {embed}</p>
-              <p className="text-xs text-neutral-500 break-all">app: {app}</p>
-            </div>
-          )}
+          {embed && <div className="mt-6 space-y-2"><p className="text-xs text-neutral-400 break-all">discord: {embed}</p><p className="text-xs text-neutral-500 break-all">app: {app}</p></div>}
         </motion.div>
       </div>
     </div>

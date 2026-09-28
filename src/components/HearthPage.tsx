@@ -1,13 +1,20 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { shareUrls } from '../lib/cloudShare';
+import { useRouter } from './Router';
+import { fetchShare, publishShare, shareUrls } from '../lib/cloudShare';
 
-function pretty(n: number) {
+function roomCode() {
+  const alphabet = 'abcdefghjkmnpqrstuvwxyz23456789';
+  let s = '';
+  for (let i = 0; i < 5; i++) s += alphabet[Math.floor(Math.random() * alphabet.length)];
+  return s;
+}
+
+function formatBytes(n: number) {
   if (n < 1024) return n + ' b';
-  if (n < 1024 * 1024) return Math.round(n / 1024) + ' kb';
-  if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(1) + ' mb';
-  return (n / (1024 * 1024 * 1024)).toFixed(2) + ' gb';
+  if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' kb';
+  return (n / (1024 * 1024)).toFixed(2) + ' mb';
 }
 
 function readAsDataUrl(file: File) {
@@ -19,48 +26,66 @@ function readAsDataUrl(file: File) {
   });
 }
 
-type Row = { name: string; size: number; embed: string; app: string; warn?: string; err?: string };
-
 export default function HearthPage() {
+  const { navigate } = useRouter();
+  const [code, setCode] = useState(roomCode);
+  const [join, setJoin] = useState('');
   const [busy, setBusy] = useState(false);
-  const [rows, setRows] = useState<Row[]>([]);
   const [warn, setWarn] = useState('');
+  const [err, setErr] = useState('');
+  const [link, setLink] = useState('');
+  const [found, setFound] = useState<{ name: string; size: number; type: string; url: string; id: string } | null>(null);
 
-  const sendMany = async (list: FileList | null) => {
-    if (!list?.length) return;
-    const files = [...list];
-    setWarn(files.some((f) => f.size > 40 * 1024 * 1024) ? 'one of these is huge. no cap, tab might nap while encoding.' : '');
+  const send = async (list: FileList | null) => {
+    const file = list?.[0];
+    if (!file) return;
+    setErr('');
+    setWarn(file.size > 12 * 1024 * 1024 ? 'chunky file. the tab may lag while it encodes. no hard cap.' : '');
     setBusy(true);
-    const next: Row[] = [];
-    for (const file of files) {
-      try {
-        const dataUrl = await readAsDataUrl(file);
-        const r = await fetch('/api/share', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name: file.name,
-            type: file.type || 'application/octet-stream',
-            size: file.size,
-            dataUrl,
-          }),
-        });
-        const json = await r.json();
-        if (!r.ok || !json?.ok) throw new Error(json?.error || 'share failed');
-        const urls = shareUrls(json.id);
-        next.push({
-          name: file.name,
-          size: file.size,
-          embed: urls.embed,
-          app: urls.app,
-          warn: json.warn,
-        });
-      } catch (e: any) {
-        next.push({ name: file.name, size: file.size, embed: '', app: '', err: e?.message || 'failed' });
+    try {
+      const dataUrl = await readAsDataUrl(file);
+      const id = `hearth-${code}`;
+      const res = await publishShare({
+        id,
+        name: file.name,
+        type: file.type || 'application/octet-stream',
+        size: file.size,
+        dataUrl,
+        author: 'hearth',
+      });
+      if (!res.ok) {
+        setErr(res.error || 'could not publish to the share db');
+        return;
       }
+      if (res.warn) setWarn(res.warn);
+      const urls = shareUrls(id);
+      setLink(urls.embed);
+      try { await navigator.clipboard.writeText(urls.embed); } catch {}
+    } catch (e: any) {
+      setErr(e?.message || 'send failed');
+    } finally {
+      setBusy(false);
     }
-    setRows(next);
-    setBusy(false);
+  };
+
+  const pull = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const id = `hearth-${join.trim().toLowerCase()}`;
+    setErr('');
+    setFound(null);
+    setBusy(true);
+    try {
+      const meta = await fetchShare(id);
+      if (!meta) {
+        setErr('nothing on that hearth yet.');
+        return;
+      }
+      setFound({ id: meta.id, name: meta.name, size: meta.size, type: meta.type, url: meta.url });
+    } catch {
+      setErr('could not reach the share db.');
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -74,30 +99,39 @@ export default function HearthPage() {
           className="glass rounded-[32px] p-8"
         >
           <p className="text-[#0a84ff] text-sm mb-2">hearth</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">warm a pile of files into public drops.</h1>
-          <p className="text-neutral-400 text-sm mb-6">
-            batch ship local files to the share db. each one gets a discord /s card. vault stays out of it.
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">hand a file across devices.</h1>
+          <p className="text-neutral-400 text-sm mb-8">
+            not a vault grid. one code, one drop in the share database. discord unfurls the /s card.
           </p>
-          <label
-            className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition"
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => { e.preventDefault(); sendMany(e.dataTransfer.files); }}
-          >
-            <input type="file" multiple className="hidden" onChange={(e) => sendMany(e.target.files)} />
-            <p className="text-white font-medium">{busy ? 'warming…' : 'drop a few files'}</p>
-            <p className="text-xs text-neutral-500 mt-2">no hard limit. only a slowness warning.</p>
-          </label>
-          {warn && <p className="text-xs text-amber-300/80 mt-4">{warn}</p>}
-          {rows.length > 0 && (
-            <ul className="mt-6 space-y-3">
-              {rows.map((row) => (
-                <li key={row.name + row.size} className="rounded-2xl bg-white/[0.03] border border-white/5 px-4 py-3">
-                  <p className="text-sm text-white">{row.name} · {pretty(row.size)}</p>
-                  {row.err && <p className="text-xs text-red-400 mt-1">{row.err}</p>}
-                  {row.embed && <p className="text-xs text-neutral-400 mt-1 break-all">{row.embed}</p>}
-                </li>
-              ))}
-            </ul>
+          <div className="rounded-3xl bg-white/[0.04] border border-white/10 p-6 mb-6">
+            <p className="text-xs text-neutral-500 mb-2">this hearth</p>
+            <p className="text-4xl font-semibold tracking-[0.18em] uppercase mb-4">{code}</p>
+            <div className="flex flex-wrap gap-2 mb-5">
+              <button type="button" onClick={() => { setCode(roomCode()); setLink(''); }} className="px-4 py-2 rounded-full bg-white/5 text-sm">new code</button>
+              <button type="button" onClick={() => navigator.clipboard.writeText(code).catch(() => {})} className="px-4 py-2 rounded-full bg-white/5 text-sm">copy code</button>
+            </div>
+            <label className="block cursor-pointer rounded-[22px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-8 text-center" onDragOver={(e) => e.preventDefault()} onDrop={(e) => { e.preventDefault(); send(e.dataTransfer.files); }}>
+              <input type="file" className="hidden" onChange={(e) => send(e.target.files)} />
+              <p className="text-white font-medium">{busy ? 'warming the hearth…' : 'drop a file on this code'}</p>
+              <p className="text-xs text-neutral-500 mt-2">no file limit. just a slowness ping if it is huge.</p>
+            </label>
+          </div>
+          <form onSubmit={pull} className="flex gap-2 mb-4">
+            <input value={join} onChange={(e) => setJoin(e.target.value.toLowerCase())} placeholder="enter a code" className="flex-1 px-4 py-2.5 rounded-full bg-white/5 border border-white/10 text-sm outline-none" maxLength={8} />
+            <button type="submit" className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium">pull</button>
+          </form>
+          {warn && <p className="text-xs text-amber-300/80 mb-3">{warn}</p>}
+          {err && <p className="text-xs text-red-400 mb-3">{err}</p>}
+          {link && <p className="text-xs text-neutral-500 mb-3 break-all">discord embed copied: {link}</p>}
+          {found && (
+            <div className="rounded-2xl bg-black/30 p-4">
+              <p className="text-sm text-white mb-1">{found.name}</p>
+              <p className="text-xs text-neutral-500 mb-3">{formatBytes(found.size)} · {found.type || 'file'}</p>
+              <div className="flex flex-wrap gap-2">
+                <a href={found.url} download={found.name} className="px-4 py-2 rounded-full bg-white text-black text-sm font-medium">download</a>
+                <button onClick={() => navigate('share', found.id)} className="px-4 py-2 rounded-full bg-white/5 text-sm">open share</button>
+              </div>
+            </div>
           )}
         </motion.div>
       </div>

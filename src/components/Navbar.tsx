@@ -7,11 +7,11 @@ type NavItem = { to: Route; label: string };
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
-  { to: 'inkwell', label: 'inkwell' },
-  { to: 'postcard', label: 'postcard' },
-  { to: 'waybill', label: 'waybill' },
-  { to: 'palimpsest', label: 'palimpsest' },
-  { to: 'foghorn', label: 'foghorn' },
+  { to: 'saltbox', label: 'saltbox' },
+  { to: 'dewpoint', label: 'dewpoint' },
+  { to: 'mullion', label: 'mullion' },
+  { to: 'lanternwick', label: 'lanternwick' },
+  { to: 'parcel', label: 'parcel' },
   { to: 'tidepool', label: 'tidepool' },
 ];
 
@@ -19,6 +19,10 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'files',
     items: [
+      { to: 'saltbox', label: 'saltbox' },
+      { to: 'dewpoint', label: 'dewpoint' },
+      { to: 'mullion', label: 'mullion' },
+      { to: 'lanternwick', label: 'lanternwick' },
       { to: 'inkwell', label: 'inkwell' },
       { to: 'postcard', label: 'postcard' },
       { to: 'waybill', label: 'waybill' },
@@ -95,6 +99,10 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'saltbox', label: 'saltbox' },
+      { to: 'dewpoint', label: 'dewpoint' },
+      { to: 'mullion', label: 'mullion' },
+      { to: 'lanternwick', label: 'lanternwick' },
       { to: 'postcard', label: 'postcard' },
       { to: 'waybill', label: 'waybill' },
       { to: 'inkwell', label: 'inkwell' },
@@ -169,6 +177,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'create',
     items: [
+      { to: 'lanternwick', label: 'lanternwick' },
       { to: 'palimpsest', label: 'palimpsest' },
       { to: 'inkwell', label: 'inkwell' },
       { to: 'foghorn', label: 'foghorn' },
@@ -211,6 +220,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'dewpoint', label: 'dewpoint' },
+      { to: 'mullion', label: 'mullion' },
       { to: 'magnet', label: 'magnet' },
       { to: 'spire', label: 'spire' },
       { to: 'frostline', label: 'frostline' },

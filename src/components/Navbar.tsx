@@ -8,11 +8,11 @@ const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
   { to: 'parcel', label: 'parcel' },
-  { to: 'pontoon', label: 'pontoon' },
-  { to: 'silt', label: 'silt' },
-  { to: 'latch', label: 'latch' },
-  { to: 'gasket', label: 'gasket' },
-  { to: 'coda', label: 'coda' },
+  { to: 'quay', label: 'quay' },
+  { to: 'mosaic', label: 'mosaic' },
+  { to: 'ledger', label: 'ledger' },
+  { to: 'locket', label: 'locket' },
+  { to: 'relay', label: 'relay' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -42,6 +42,11 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'quay', label: 'quay' },
+      { to: 'mosaic', label: 'mosaic' },
+      { to: 'ledger', label: 'ledger' },
+      { to: 'locket', label: 'locket' },
+      { to: 'relay', label: 'relay' },
       { to: 'pontoon', label: 'pontoon' },
       { to: 'silt', label: 'silt' },
       { to: 'latch', label: 'latch' },
@@ -58,6 +63,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'create',
     items: [
+      { to: 'mosaic', label: 'mosaic' },
+      { to: 'locket', label: 'locket' },
       { to: 'latch', label: 'latch' },
       { to: 'coda', label: 'coda' },
       { to: 'whisper', label: 'whisper' },
@@ -71,6 +78,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'ledger', label: 'ledger' },
+      { to: 'relay', label: 'relay' },
       { to: 'silt', label: 'silt' },
       { to: 'dewpoint', label: 'dewpoint' },
       { to: 'hash', label: 'hash' },

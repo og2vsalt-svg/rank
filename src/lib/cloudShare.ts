@@ -188,5 +188,8 @@ export function shareUrls(id: string) {
     go: `${origin}/go/${id}`,
     link: `${origin}/link/${id}`,
     raw: `${origin}/x/${id}`,
+    yarrow: `${origin}/y/${id}`,
+    quoin: `${origin}/q/${id}`,
+    lanyard: `${origin}/l/${id}`,
   };
 }

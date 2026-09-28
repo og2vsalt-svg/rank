@@ -5,6 +5,7 @@
     { "source": "/x/:id", "destination": "/api/embed?id=:id" },
     { "source": "/d/:id", "destination": "/api/embed?id=:id" },
     { "source": "/k/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/w/:id", "destination": "/api/embed?id=:id" },
     { "source": "/go/:id", "destination": "/api/embed?id=:id" },
     { "source": "/open/:id", "destination": "/api/embed?id=:id" },
     { "source": "/card/:id", "destination": "/api/embed?id=:id" },
@@ -17,6 +18,7 @@
     { "source": "/embed/:id", "destination": "/api/embed?id=:id" },
     { "source": "/p/:page", "destination": "/api/embed?page=:page" },
     { "source": "/tinderbox", "destination": "/api/embed?page=tinderbox" },
-    { "source": "/keystone", "destination": "/api/embed?page=keystone" }
+    { "source": "/keystone", "destination": "/api/embed?page=keystone" },
+    { "source": "/wellhead", "destination": "/api/embed?page=wellhead" }
   ]
 }

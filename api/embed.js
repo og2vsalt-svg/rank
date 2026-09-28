@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"');
 }
 
 function isBot(ua) {
@@ -42,6 +42,7 @@ function pageHtml({ title, desc, image, url, color, mime }) {
   extra.push('<meta property="og:image:height" content="630" />');
   extra.push('<meta property="og:image:alt" content="' + esc(title) + '" />');
   extra.push('<meta name="twitter:image:alt" content="' + esc(title) + '" />');
+  extra.push('<meta name="og:description" content="' + esc(desc) + '" />');
   if (mime && String(mime).startsWith('video/') && isRemoteImg && image) {
     extra.push('<meta property="og:video" content="' + esc(image) + '" />');
     extra.push('<meta property="og:video:type" content="' + esc(mime) + '" />');
@@ -104,6 +105,7 @@ const PAGE_TITLES = {
   drop: 'drop — rankvault',
   share: 'share — rankvault',
   parcel: 'parcel — local to share db',
+  keystone: 'keystone — weigh then pin a receipt',
   pontoon: 'pontoon — pile across the water',
   silt: 'silt — sieve then share',
   latch: 'latch — optional pass drop',

@@ -8,20 +8,21 @@ const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
   { to: 'parcel', label: 'parcel' },
+  { to: 'gauge', label: 'gauge' },
+  { to: 'helix', label: 'helix' },
+  { to: 'plumb', label: 'plumb' },
+  { to: 'apron', label: 'apron' },
+  { to: 'ledger', label: 'ledger' },
   { to: 'quay', label: 'quay' },
   { to: 'mosaic', label: 'mosaic' },
-  { to: 'ledger', label: 'ledger' },
-  { to: 'locket', label: 'locket' },
-  { to: 'relay', label: 'relay' },
-  { to: 'oscillo', label: 'oscillo' },
-  { to: 'docket', label: 'docket' },
-  { to: 'linotype', label: 'linotype' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'files',
     items: [
+      { to: 'gauge', label: 'gauge' },
+      { to: 'helix', label: 'helix' },
       { to: 'pontoon', label: 'pontoon' },
       { to: 'silt', label: 'silt' },
       { to: 'latch', label: 'latch' },
@@ -45,6 +46,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'plumb', label: 'plumb' },
+      { to: 'helix', label: 'helix' },
       { to: 'quay', label: 'quay' },
       { to: 'mosaic', label: 'mosaic' },
       { to: 'ledger', label: 'ledger' },
@@ -66,6 +69,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'create',
     items: [
+      { to: 'apron', label: 'apron' },
       { to: 'mosaic', label: 'mosaic' },
       { to: 'locket', label: 'locket' },
       { to: 'latch', label: 'latch' },
@@ -84,6 +88,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'gauge', label: 'gauge' },
+      { to: 'plumb', label: 'plumb' },
+      { to: 'helix', label: 'helix' },
       { to: 'ledger', label: 'ledger' },
       { to: 'relay', label: 'relay' },
       { to: 'silt', label: 'silt' },

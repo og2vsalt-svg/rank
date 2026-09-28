@@ -19,6 +19,10 @@ const items = [
   { title: 'oscillo', body: 'decode audio in the tab and print a wave still for discord.' },
   { title: 'docket', body: 'label a local file, tag who filed it, ship it to the share db.' },
   { title: 'linotype', body: 'set a short notice as a 1200×630 card and publish the still.' },
+  { title: 'gauge', body: 'inspect name, type, and size locally. nothing leaves the device.' },
+  { title: 'helix', body: 'sha-256 a file in the tab, then publish only the receipt to the share db.' },
+  { title: 'apron', body: 'a local scratch pad. no upload, no vault grid.' },
+  { title: 'plumb', body: 'look up a public drop id and copy the discord /s card.' },
 ];
 
 export default function Features() {

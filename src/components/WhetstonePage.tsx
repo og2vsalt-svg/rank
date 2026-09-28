@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { shareUrls } from '../lib/cloudShare';
+import { publishShare, shareUrls } from '../lib/cloudShare';
 
 function pretty(n: number) {
   if (n < 1024) return n + ' b';
@@ -9,68 +9,72 @@ function pretty(n: number) {
   return (n / (1024 * 1024)).toFixed(1) + ' mb';
 }
 
-async function sha256(buf: ArrayBuffer) {
-  const hash = await crypto.subtle.digest('SHA-256', buf);
-  return Array.from(new Uint8Array(hash)).map((b) => b.toString(16).padStart(2, '0')).join('');
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
 
-function toDataUrl(type: string, buf: ArrayBuffer) {
-  const bytes = new Uint8Array(buf);
-  let bin = '';
-  for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
-  return `data:${type || 'application/octet-stream'};base64,${btoa(bin)}`;
+function hone(name: string) {
+  const raw = name.normalize('NFKD').replace(/[^\w.\- ]+/g, '').trim();
+  const parts = raw.split('.');
+  const ext = parts.length > 1 ? '.' + parts.pop()!.toLowerCase() : '';
+  const stem = parts.join('.').replace(/\s+/g, '-').replace(/-+/g, '-').toLowerCase() || 'file';
+  return stem.slice(0, 80) + ext.slice(0, 12);
+}
+
+function readAsDataUrl(file: File) {
+  return new Promise<string>((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(String(r.result || ''));
+    r.onerror = () => reject(new Error('read failed'));
+    r.readAsDataURL(file);
+  });
 }
 
 export default function WhetstonePage() {
-  const [info, setInfo] = useState<{ name: string; size: number; type: string; hash: string } | null>(null);
   const [file, setFile] = useState<File | null>(null);
+  const [name, setName] = useState('');
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
-  const [warn, setWarn] = useState('');
   const [embed, setEmbed] = useState('');
-  const [link, setLink] = useState('');
+  const [app, setApp] = useState('');
+  const [warn, setWarn] = useState('');
 
-  const inspect = async (f?: File) => {
+  const pick = (list: FileList | null) => {
+    const f = list?.[0];
     if (!f) return;
     setFile(f);
+    setName(hone(f.name));
     setErr('');
     setEmbed('');
-    setWarn(f.size > 40 * 1024 * 1024 ? 'hashing a chunky file can stall the tab. still no hard stop.' : '');
-    try {
-      const buf = await f.arrayBuffer();
-      const hash = await sha256(buf);
-      setInfo({ name: f.name, size: f.size, type: f.type || 'application/octet-stream', hash });
-    } catch (e: any) {
-      setErr(e?.message || 'could not inspect');
-    }
+    setWarn(f.size > 8 * 1024 * 1024 ? 'large file. preview clients may feel slow. no hard cap.' : '');
   };
 
-  const send = async () => {
-    if (!file) return;
+  const ship = async () => {
+    if (!file) {
+      setErr('put a file on the stone first.');
+      return;
+    }
     setBusy(true);
     setErr('');
     try {
-      const buf = await file.arrayBuffer();
-      const dataUrl = toDataUrl(file.type, buf);
-      const r = await fetch('/api/share', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: file.name,
-          type: file.type || 'application/octet-stream',
-          size: file.size,
-          dataUrl,
-          author: info?.hash.slice(0, 12),
-        }),
+      const dataUrl = await readAsDataUrl(file);
+      const id = uid();
+      const res = await publishShare({
+        id,
+        name: name || hone(file.name),
+        type: file.type || 'application/octet-stream',
+        size: file.size,
+        dataUrl,
+        author: 'whetstone',
       });
-      const json = await r.json();
-      if (!r.ok || !json?.ok) throw new Error(json?.error || 'share failed');
-      const urls = shareUrls(json.id);
-      setLink(urls.app);
-      setEmbed(urls.embed || `${window.location.origin}/s/${json.id}`);
-      try { await navigator.clipboard.writeText(urls.embed || urls.app); } catch {}
+      if (!res.ok) throw new Error(res.error || 'whetstone failed');
+      const urls = shareUrls(res.id || id);
+      setEmbed(urls.embed);
+      setApp(urls.app);
+      setWarn(res.warn || warn);
+      try { await navigator.clipboard.writeText(urls.embed); } catch {}
     } catch (e: any) {
-      setErr(e?.message || 'share failed');
+      setErr(e?.message || 'could not ship');
     } finally {
       setBusy(false);
     }
@@ -81,38 +85,42 @@ export default function WhetstonePage() {
       <Navbar />
       <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 14 }}
+          initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
           className="glass rounded-[32px] p-8"
         >
           <p className="text-[#0a84ff] text-sm mb-2">whetstone</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">sharpen a file into facts, then optionally ship it.</h1>
-          <p className="text-neutral-400 text-sm mb-6">local sha-256 + mime peek. share is opt-in so it stays a tool, not another vault clone.</p>
-          <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center">
-            <input type="file" className="hidden" onChange={(e) => inspect(e.target.files?.[0])} />
-            <p className="text-white font-medium">drop a file to inspect</p>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">hone a name, then let the file go.</h1>
+          <p className="text-neutral-400 text-sm mb-6">
+            not a vault. tidy a local filename, keep the bytes, publish a discord-ready /s card.
+          </p>
+          <label className="block rounded-2xl border border-dashed border-white/15 bg-black/20 px-5 py-8 text-center cursor-pointer hover:border-[#0a84ff]/40 transition">
+            <input type="file" className="hidden" onChange={(e) => pick(e.target.files)} />
+            <span className="text-sm text-neutral-300">{file ? file.name : 'lay a file on the stone'}</span>
           </label>
-          {info && (
-            <div className="mt-6 space-y-1 text-sm text-neutral-300">
-              <p>{info.name}</p>
-              <p className="text-neutral-500 text-xs">{pretty(info.size)} · {info.type}</p>
-              <p className="text-[11px] break-all text-neutral-500 font-mono">{info.hash}</p>
-              <button
-                onClick={send}
-                disabled={busy}
-                className="mt-4 px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-50"
-              >
-                {busy ? 'sending…' : 'share after the grind'}
-              </button>
+          {file && (
+            <div className="mt-5 space-y-3">
+              <p className="text-xs text-neutral-500">{file.type || 'unknown type'} · {pretty(file.size)}</p>
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full rounded-2xl bg-black/30 border border-white/10 text-sm text-neutral-200 px-4 py-3 outline-none focus:border-[#0a84ff]/50"
+              />
+              <button onClick={() => setName(hone(file.name))} className="text-xs text-neutral-500">reset to honed name</button>
             </div>
           )}
+          <div className="mt-5">
+            <button onClick={ship} disabled={busy} className="px-4 py-2 rounded-full bg-white text-black text-sm font-medium">
+              {busy ? 'honing…' : 'publish drop'}
+            </button>
+          </div>
           {warn && <p className="text-xs text-amber-300/80 mt-3">{warn}</p>}
           {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
           {embed && (
-            <div className="mt-6 space-y-2">
+            <div className="mt-5 space-y-1">
               <p className="text-xs text-neutral-400 break-all">discord: {embed}</p>
-              <p className="text-xs text-neutral-500 break-all">app: {link}</p>
+              <p className="text-xs text-neutral-500 break-all">app: {app}</p>
             </div>
           )}
         </motion.div>

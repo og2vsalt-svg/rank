@@ -4,9 +4,13 @@ const items = [
   { title: 'pontoon pile', body: 'float several local files across. each one becomes its own public drop and discord /s card.' },
   { title: 'silt sieve', body: 'filter a pile by image, video, audio, or text, then settle one file into the share db.' },
   { title: 'latch phrase', body: 'optional pass on a public drop. friends need the phrase. discord still unfurls /s.' },
+  { title: 'quay line', body: 'queue several locals and ship them one after another, each with its own embed path.' },
+  { title: 'mosaic card', body: 'tile stills into a single jpeg, then drop that card into the share db.' },
+  { title: 'ledger', body: 'read what already landed in supabase. not a vault — just the public log.' },
+  { title: 'locket + relay', body: 'frame one still, or hand a file across with a clock. both mint discord cards.' },
   { title: 'local-first vault', body: 'files live in your browser first. nothing ships unless you flip a drop public.' },
   { title: 'cloud share db', body: 'public drops land in supabase, with vercel blob when a token is set.' },
-  { title: 'discord embeds', body: '/s/id and the rest of the short paths serve og tags so discord previews look finished.' },
+  { title: 'discord embeds', body: '/s/id plus /f /x /d /go /open /card /link /v all serve og tags so previews look finished.' },
   { title: 'no hard file cap', body: 'drop whatever size you want. we only warn when the tab might feel sleepy.' },
 ];
 

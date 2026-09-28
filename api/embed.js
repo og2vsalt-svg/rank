@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"');
 }
 
 function isBot(ua) {
@@ -34,6 +34,7 @@ function pageHtml({ title, desc, image, url, color, mime }) {
   const extra = [];
   extra.push('<link rel="image_src" href="' + esc(safeImg) + '" />');
   extra.push('<meta name="theme-color" content="' + esc(c) + '" />');
+  extra.push('<meta property="og:locale" content="en_US" />');
   extra.push('<meta property="og:site_name" content="rankvault" />');
   extra.push('<meta name="twitter:card" content="summary_large_image" />');
   extra.push('<meta property="og:image:width" content="1200" />');
@@ -112,6 +113,9 @@ const PAGE_TITLES = {
   ledger: 'ledger — public drop log',
   locket: 'locket — framed still',
   relay: 'relay — one-shot handoff',
+  oscillo: 'oscillo — wave card',
+  docket: 'docket — labeled intake',
+  linotype: 'linotype — typeset notice',
 };
 
 export default async function handler(req, res) {

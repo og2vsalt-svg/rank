@@ -1,6 +1,9 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'spool', body: 'wind several local notes into one thread, then publish a single .txt drop with a discord /s card.' },
+  { title: 'whetstone', body: 'hone a filename locally, keep the bytes, ship a tidy public drop.' },
+  { title: 'harbor', body: 'tie a pile to the dock and send each file out as its own share-db drop.' },
   { title: 'kiln', body: 'fire loose text until extra space falls away, then optionally publish a .txt drop with a discord /s card.' },
   { title: 'lodestone', body: 'paint a 1200×630 card from a local file. only the card goes to the share db so discord unfurls cleanly.' },
   { title: 'meridian', body: 'lay two locals on a line and see which cut is heavier. nothing uploads.' },

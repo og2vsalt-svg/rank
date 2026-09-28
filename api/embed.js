@@ -106,6 +106,7 @@ const PAGE_TITLES = {
   share: 'share — rankvault',
   parcel: 'parcel — local to share db',
   keystone: 'keystone — weigh then pin a receipt',
+  wellhead: 'wellhead — field note then surface',
   pontoon: 'pontoon — pile across the water',
   silt: 'silt — sieve then share',
   latch: 'latch — optional pass drop',

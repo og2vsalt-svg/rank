@@ -10,12 +10,15 @@ const items = [
   { title: 'locket + relay', body: 'frame one still, or hand a file across with a clock. both mint discord cards.' },
   { title: 'local-first vault', body: 'files live in your browser first. nothing ships unless you flip a drop public.' },
   { title: 'cloud share db', body: 'public drops land in supabase, with vercel blob when a token is set.' },
-  { title: 'discord embeds', body: '/s/id plus /f /x /d /go /open /card /link /v /y /q /l all serve og tags so previews look finished.' },
+  { title: 'discord embeds', body: '/s/id plus /f /x /d /go /open /card /link /v /y /q /l /embed all serve og tags so previews look finished.' },
   { title: 'no hard file cap', body: 'drop whatever size you want. we only warn when the tab might feel sleepy.' },
   { title: 'lanyard', body: 'hang a tag on a file and mint a named discord card.' },
   { title: 'oxbow', body: 'local reminder loop. no upload. come back when the bend is due.' },
   { title: 'quoin', body: 'wedge a caption under a file and ship it straight to the share db.' },
   { title: 'yarrow', body: 'cast a pile, keep the smallest stalk, publish only that one.' },
+  { title: 'oscillo', body: 'decode audio in the tab and print a wave still for discord.' },
+  { title: 'docket', body: 'label a local file, tag who filed it, ship it to the share db.' },
+  { title: 'linotype', body: 'set a short notice as a 1200×630 card and publish the still.' },
 ];
 
 export default function Features() {

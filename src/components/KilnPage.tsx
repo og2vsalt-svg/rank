@@ -3,59 +3,67 @@ import { motion } from 'framer-motion';
 import Navbar from './Navbar';
 import { publishShare, shareUrls } from '../lib/cloudShare';
 
+function pretty(n: number) {
+  if (n < 1024) return n + ' b';
+  if (n < 1024 * 1024) return Math.round(n / 1024) + ' kb';
+  return (n / (1024 * 1024)).toFixed(1) + ' mb';
+}
+
 function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
 
-function readAsDataUrl(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const r = new FileReader();
-    r.onload = () => resolve(String(r.result || ''));
-    r.onerror = () => reject(new Error('could not read file'));
-    r.readAsDataURL(file);
-  });
+function fireText(raw: string) {
+  return raw
+    .replace(/\r\n/g, '\n')
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .replace(/[ \t]{2,}/g, ' ')
+    .trim();
 }
 
 export default function KilnPage() {
+  const [raw, setRaw] = useState('');
+  const [fired, setFired] = useState('');
   const [busy, setBusy] = useState(false);
-  const [warn, setWarn] = useState('');
   const [err, setErr] = useState('');
   const [embed, setEmbed] = useState('');
   const [app, setApp] = useState('');
-  const [preview, setPreview] = useState('');
-  const [note, setNote] = useState('');
+  const [warn, setWarn] = useState('');
 
-  const send = async (list: FileList | null) => {
-    const file = list?.[0];
-    if (!file) return;
+  const bake = () => {
+    setFired(fireText(raw));
     setErr('');
-    setEmbed('');
-    setApp('');
-    setWarn(file.size > 40 * 1024 * 1024 ? 'chunky file. encoding might feel sleepy. no hard cap.' : '');
+  };
+
+  const ship = async () => {
+    const body = fired || fireText(raw);
+    if (!body) {
+      setErr('nothing to fire.');
+      return;
+    }
     setBusy(true);
+    setErr('');
     try {
-      const dataUrl = await readAsDataUrl(file);
-      setPreview(file.type.startsWith('image/') ? dataUrl : '');
-      const name = note.trim() ? `${note.trim().slice(0, 40)}-${file.name}` : file.name;
+      const blob = new Blob([body], { type: 'text/plain' });
+      const dataUrl = `data:text/plain;base64,${btoa(unescape(encodeURIComponent(body)))}`;
       const id = uid();
       const res = await publishShare({
         id,
-        name,
-        type: file.type || 'application/octet-stream',
-        size: file.size,
+        name: `kiln-${id}.txt`,
+        type: 'text/plain',
+        size: blob.size,
         dataUrl,
+        author: 'kiln',
       });
-      if (!res.ok) {
-        setErr(res.error || 'publish failed');
-        return;
-      }
-      if (res.warn) setWarn(res.warn);
-      const urls = shareUrls(id);
+      if (!res.ok) throw new Error(res.error || 'kiln failed');
+      const urls = shareUrls(res.id || id);
       setEmbed(urls.embed);
       setApp(urls.app);
+      setWarn(res.warn || (blob.size > 40 * 1024 * 1024 ? 'large note. preview clients may feel slow.' : ''));
       try { await navigator.clipboard.writeText(urls.embed); } catch {}
     } catch (e: any) {
-      setErr(e?.message || 'kiln stayed cold');
+      setErr(e?.message || 'could not ship');
     } finally {
       setBusy(false);
     }
@@ -72,34 +80,37 @@ export default function KilnPage() {
           className="glass rounded-[32px] p-8"
         >
           <p className="text-[#0a84ff] text-sm mb-2">kiln</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">warm a file, then ship it.</h1>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">fire loose text until it sits still.</h1>
           <p className="text-neutral-400 text-sm mb-6">
-            peek a still if it is an image, stamp a short name if you want, then drop it on the share db. discord gets /s.
+            not a vault. collapse extra space locally, then optionally publish a .txt drop with a discord /s card.
           </p>
-          <input
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            placeholder="optional stamp"
-            className="w-full mb-4 bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white outline-none focus:border-[#0a84ff]/40"
+          <textarea
+            value={raw}
+            onChange={(e) => setRaw(e.target.value)}
+            rows={8}
+            placeholder="paste notes, dumps, lyrics…"
+            className="w-full rounded-2xl bg-black/30 border border-white/10 text-sm text-neutral-200 p-4 outline-none focus:border-[#0a84ff]/50 transition"
           />
-          <label
-            className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition"
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => { e.preventDefault(); send(e.dataTransfer.files); }}
-          >
-            <input type="file" className="hidden" onChange={(e) => send(e.target.files)} />
-            <p className="text-white font-medium">{busy ? 'firing…' : 'drop one file on the kiln'}</p>
-            <p className="text-xs text-neutral-500 mt-2">no size lock. we only tap you if the tab might lag.</p>
-          </label>
-          {preview && (
-            <img src={preview} alt="" className="mt-5 rounded-2xl max-h-56 object-contain mx-auto" />
+          <div className="flex flex-wrap gap-2 mt-4">
+            <button onClick={bake} className="px-4 py-2 rounded-full bg-white text-black text-sm font-medium">fire locally</button>
+            <button onClick={ship} disabled={busy} className="px-4 py-2 rounded-full glass text-sm text-neutral-200">
+              {busy ? 'shipping…' : 'publish drop'}
+            </button>
+          </div>
+          {fired && (
+            <pre className="mt-5 text-xs text-neutral-400 whitespace-pre-wrap break-words">{fired}</pre>
+          )}
+          {(raw || fired) && (
+            <p className="text-xs text-neutral-500 mt-3">
+              raw {pretty(raw.length)} · fired {pretty((fired || fireText(raw)).length)}
+            </p>
           )}
           {warn && <p className="text-xs text-amber-300/80 mt-3">{warn}</p>}
           {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
           {embed && (
-            <div className="mt-6 space-y-2">
-              <p className="text-xs text-neutral-400 break-all">discord embed (copied): {embed}</p>
-              <p className="text-xs text-neutral-500 break-all">app link: {app}</p>
+            <div className="mt-5 space-y-1">
+              <p className="text-xs text-neutral-400 break-all">discord: {embed}</p>
+              <p className="text-xs text-neutral-500 break-all">app: {app}</p>
             </div>
           )}
         </motion.div>

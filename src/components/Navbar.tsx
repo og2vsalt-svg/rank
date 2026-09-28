@@ -7,18 +7,20 @@ type NavItem = { to: Route; label: string };
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
-  { to: 'saltbox', label: 'saltbox' },
-  { to: 'dewpoint', label: 'dewpoint' },
-  { to: 'mullion', label: 'mullion' },
-  { to: 'lanternwick', label: 'lanternwick' },
   { to: 'parcel', label: 'parcel' },
+  { to: 'stillroom', label: 'stillroom' },
+  { to: 'coppice', label: 'coppice' },
+  { to: 'postcard', label: 'postcard' },
   { to: 'tidepool', label: 'tidepool' },
+  { to: 'lanternwick', label: 'lanternwick' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'files',
     items: [
+      { to: 'stillroom', label: 'stillroom' },
+      { to: 'coppice', label: 'coppice' },
       { to: 'saltbox', label: 'saltbox' },
       { to: 'dewpoint', label: 'dewpoint' },
       { to: 'mullion', label: 'mullion' },
@@ -99,6 +101,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'stillroom', label: 'stillroom' },
+      { to: 'coppice', label: 'coppice' },
       { to: 'saltbox', label: 'saltbox' },
       { to: 'dewpoint', label: 'dewpoint' },
       { to: 'mullion', label: 'mullion' },

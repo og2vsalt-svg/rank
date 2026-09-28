@@ -15,6 +15,7 @@ const primary: NavItem[] = [
   { to: 'lodestone', label: 'lodestone' },
   { to: 'meridian', label: 'meridian' },
   { to: 'nook', label: 'nook' },
+  { to: 'tinderbox', label: 'tinderbox' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -47,6 +48,7 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'keel', label: 'keel' },
       { to: 'slipway', label: 'slipway' },
       { to: 'mason', label: 'mason' },
+      { to: 'tinderbox', label: 'tinderbox' },
     ],
   },
   {
@@ -75,6 +77,7 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'lookout', label: 'lookout' },
       { to: 'capstan', label: 'capstan' },
       { to: 'flotsam', label: 'flotsam' },
+      { to: 'tinderbox', label: 'tinderbox' },
     ],
   },
   {

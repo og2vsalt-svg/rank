@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"');
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 function isBot(ua) {
@@ -107,6 +107,11 @@ const PAGE_TITLES = {
   whisper: 'whisper — sealed note',
   hourglass: 'hourglass — timed drop',
   lumenbox: 'lumenbox — color card',
+  quay: 'quay — sequential drops',
+  mosaic: 'mosaic — stills into one card',
+  ledger: 'ledger — public drop log',
+  locket: 'locket — framed still',
+  relay: 'relay — one-shot handoff',
 };
 
 export default async function handler(req, res) {

@@ -7,36 +7,14 @@
     { "source": "/go/:id", "destination": "/api/embed?id=:id" },
     { "source": "/open/:id", "destination": "/api/embed?id=:id" },
     { "source": "/card/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/link/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/v/:id", "destination": "/api/embed?id=:id" },
     { "source": "/p/:page", "destination": "/api/embed?page=:page" },
     { "source": "/e/:page", "destination": "/api/embed?page=:page" }
   ],
   "headers": [
     {
-      "source": "/s/(.*)",
-      "headers": [{ "key": "Cache-Control", "value": "public, s-maxage=60, stale-while-revalidate=300" }]
-    },
-    {
-      "source": "/f/(.*)",
-      "headers": [{ "key": "Cache-Control", "value": "public, s-maxage=60, stale-while-revalidate=300" }]
-    },
-    {
-      "source": "/x/(.*)",
-      "headers": [{ "key": "Cache-Control", "value": "public, s-maxage=60, stale-while-revalidate=300" }]
-    },
-    {
-      "source": "/d/(.*)",
-      "headers": [{ "key": "Cache-Control", "value": "public, s-maxage=60, stale-while-revalidate=300" }]
-    },
-    {
-      "source": "/go/(.*)",
-      "headers": [{ "key": "Cache-Control", "value": "public, s-maxage=60, stale-while-revalidate=300" }]
-    },
-    {
-      "source": "/open/(.*)",
-      "headers": [{ "key": "Cache-Control", "value": "public, s-maxage=60, stale-while-revalidate=300" }]
-    },
-    {
-      "source": "/card/(.*)",
+      "source": "/(s|f|x|d|go|open|card|link|v)/(.*)",
       "headers": [{ "key": "Cache-Control", "value": "public, s-maxage=60, stale-while-revalidate=300" }]
     }
   ]

@@ -11,6 +11,10 @@ const tiles = [
   { to: 'warden', title: 'warden', blurb: 'inspect a share id' },
   { to: 'plaza', title: 'plaza', blurb: 'public board from the db' },
   { to: 'share', title: 'share', blurb: 'open a file by id' },
+  { to: 'kettle', title: 'kettle', blurb: 'batch local files to public db' },
+  { to: 'scribe', title: 'scribe', blurb: 'markdown note as a drop' },
+  { to: 'rivet', title: 'rivet', blurb: 'bundle many files into one card' },
+  { to: 'gesso', title: 'gesso', blurb: 'mark a still then publish' },
 ];
 
 export default function ZenithPage() {
@@ -22,7 +26,7 @@ export default function ZenithPage() {
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}>
           <p className="text-[#0a84ff] text-sm mb-2">zenith</p>
           <h1 className="text-4xl font-semibold tracking-tight mb-3">everything that is not just a vault.</h1>
-          <p className="text-neutral-400 mb-10 max-w-xl">file hosting stays the center. these rooms sit around it. no boost stuff. no fake caps. just tools.</p>
+          <p className="text-neutral-400 mb-10 max-w-xl">file hosting stays the center. these rooms sit around it. no fake caps. just tools.</p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {tiles.map((t, i) => (
               <motion.button

@@ -7,18 +7,22 @@ type NavItem = { to: Route; label: string };
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
-  { to: 'parcel', label: 'parcel' },
+  { to: 'inkwell', label: 'inkwell' },
+  { to: 'postcard', label: 'postcard' },
+  { to: 'waybill', label: 'waybill' },
+  { to: 'palimpsest', label: 'palimpsest' },
   { to: 'foghorn', label: 'foghorn' },
-  { to: 'magnet', label: 'magnet' },
   { to: 'tidepool', label: 'tidepool' },
-  { to: 'frostline', label: 'frostline' },
-  { to: 'nook', label: 'nook' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'files',
     items: [
+      { to: 'inkwell', label: 'inkwell' },
+      { to: 'postcard', label: 'postcard' },
+      { to: 'waybill', label: 'waybill' },
+      { to: 'palimpsest', label: 'palimpsest' },
       { to: 'foghorn', label: 'foghorn' },
       { to: 'magnet', label: 'magnet' },
       { to: 'frostline', label: 'frostline' },
@@ -91,6 +95,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'postcard', label: 'postcard' },
+      { to: 'waybill', label: 'waybill' },
+      { to: 'inkwell', label: 'inkwell' },
       { to: 'foghorn', label: 'foghorn' },
       { to: 'magnet', label: 'magnet' },
       { to: 'frostline', label: 'frostline' },
@@ -162,6 +169,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'create',
     items: [
+      { to: 'palimpsest', label: 'palimpsest' },
+      { to: 'inkwell', label: 'inkwell' },
       { to: 'foghorn', label: 'foghorn' },
       { to: 'nook', label: 'nook' },
       { to: 'wreath', label: 'wreath' },

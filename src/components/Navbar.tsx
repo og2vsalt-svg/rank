@@ -13,6 +13,9 @@ const primary: NavItem[] = [
   { to: 'ledger', label: 'ledger' },
   { to: 'locket', label: 'locket' },
   { to: 'relay', label: 'relay' },
+  { to: 'oscillo', label: 'oscillo' },
+  { to: 'docket', label: 'docket' },
+  { to: 'linotype', label: 'linotype' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -73,6 +76,9 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'paste', label: 'paste' },
       { to: 'quill', label: 'quill' },
       { to: 'vellum', label: 'vellum' },
+      { to: 'linotype', label: 'linotype' },
+      { to: 'oscillo', label: 'oscillo' },
+      { to: 'docket', label: 'docket' },
     ],
   },
   {
@@ -88,6 +94,9 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'diff', label: 'diff' },
       { to: 'pulse', label: 'pulse' },
       { to: 'lookout', label: 'lookout' },
+      { to: 'oscillo', label: 'oscillo' },
+      { to: 'docket', label: 'docket' },
+      { to: 'linotype', label: 'linotype' },
     ],
   },
 ];

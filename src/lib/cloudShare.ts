@@ -192,5 +192,7 @@ export function shareUrls(id: string) {
     quoin: `${origin}/q/${id}`,
     lanyard: `${origin}/l/${id}`,
     nook: `${origin}/n/${id}`,
+    keystone: `${origin}/k/${id}`,
+    drop: `${origin}/d/${id}`,
   };
 }

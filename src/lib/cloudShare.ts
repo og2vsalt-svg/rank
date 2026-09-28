@@ -197,5 +197,6 @@ export function shareUrls(id: string) {
     windlass: `${origin}/u/${id}`,
     drop: `${origin}/d/${id}`,
     hearth: `${origin}/h/${id}`,
+    lantern: `${origin}/r/${id}`,
   };
 }

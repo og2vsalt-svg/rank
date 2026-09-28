@@ -126,6 +126,9 @@ const PAGE_TITLES = {
   lodestone: 'lodestone — file card for discord',
   meridian: 'meridian — weigh two locals',
   nook: 'nook — pocket of live ids',
+  spool: 'spool — wind files into one thread',
+  whetstone: 'whetstone — hone a name then share',
+  harbor: 'harbor — dock a pile then launch',
 };
 
 export default async function handler(req, res) {

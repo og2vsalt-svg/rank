@@ -102,5 +102,6 @@ export default function HourglassPage() {
           )}
         </motion.div>
       </div>
-    </n  );
+    </div>
+  );
 }

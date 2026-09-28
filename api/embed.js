@@ -6,8 +6,183 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"');
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function isBot(ua) {
+  const u = (ua || '').toLowerCase();
+  return /discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|skype|linkedinbot|embed|preview|bot|crawler|spider|redditbot|applebot|discordbot|iframely|unfurl|valve|steam/.test(u);
+}
+
+function prettySize(n) {
+  const x = Number(n) || 0;
+  if (x < 1024) return x + ' b';
+  if (x < 1024 * 1024) return Math.max(1, Math.round(x / 1024)) + ' kb';
+  if (x < 1024 * 1024 * 1024) return (x / (1024 * 1024)).toFixed(1) + ' mb';
+  return (x / (1024 * 1024 * 1024)).toFixed(2) + ' gb';
+}
+
+function pageHtml({ title, desc, image, url, color, mime }) {
+  const img = image || 'https://og2vsalt-svg.github.io/rank/og.png';
+  const isRemoteImg = /^https?:\/\//i.test(img) && !img.startsWith('data:');
+  const safeImg = isRemoteImg ? img : 'https://og2vsalt-svg.github.io/rank/og.png';
+  const c = color || '#0A84FF';
+  const imgType = mime && String(mime).startsWith('image/') ? mime : 'image/png';
+  const extra = [];
+  extra.push('<link rel="image_src" href="' + esc(safeImg) + '" />');
+  extra.push('<meta name="theme-color" content="' + esc(c) + '" />');
+  extra.push('<meta name="msapplication-TileColor" content="' + esc(c) + '" />');
+  extra.push('<meta property="og:locale" content="en_US" />');
+  extra.push('<meta property="og:site_name" content="rankvault" />');
+  extra.push('<meta name="twitter:card" content="summary_large_image" />');
+  extra.push('<meta property="og:image:width" content="1200" />');
+  extra.push('<meta property="og:image:height" content="630" />');
+  extra.push('<meta property="og:image:alt" content="' + esc(title) + '" />');
+  extra.push('<meta name="twitter:image:alt" content="' + esc(title) + '" />');
+  extra.push('<meta name="og:description" content="' + esc(desc) + '" />');
+  if (mime && String(mime).startsWith('video/') && isRemoteImg && image) {
+    extra.push('<meta property="og:video" content="' + esc(image) + '" />');
+    extra.push('<meta property="og:video:type" content="' + esc(mime) + '" />');
+  }
+  if (mime && String(mime).startsWith('audio/') && isRemoteImg && image) {
+    extra.push('<meta property="og:audio" content="' + esc(image) + '" />');
+    extra.push('<meta property="og:audio:type" content="' + esc(mime) + '" />');
+  }
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>${esc(title)}</title>
+<meta name="description" content="${esc(desc)}" />
+<meta name="theme-color" content="${esc(c)}" />
+<meta name="robots" content="noindex" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="rankvault" />
+<meta property="og:title" content="${esc(title)}" />
+<meta property="og:description" content="${esc(desc)}" />
+<meta property="og:image" content="${esc(safeImg)}" />
+<meta property="og:image:secure_url" content="${esc(safeImg)}" />
+<meta property="og:image:type" content="${esc(imgType)}" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:url" content="${esc(url)}" />
+${extra.join('\n')}
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="${esc(title)}" />
+<meta name="twitter:description" content="${esc(desc)}" />
+<meta name="twitter:image" content="${esc(safeImg)}" />
+<link rel="canonical" href="${esc(url)}" />
+</head>
+<body style="background:#050506;color:#f5f5f7;font-family:Inter,system-ui,sans-serif;padding:48px 24px">
+<p style="opacity:.7;font-size:14px">rankvault</p>
+<h1 style="font-size:28px;letter-spacing:-.03em">${esc(title)}</h1>
+<p style="color:#a1a1aa;max-width:40rem">${esc(desc)}</p>
+<p><a href="${esc(url)}" style="color:#0a84ff">open in rankvault</a></p>
+<script>if(!/discord|bot|embed|preview/i.test(navigator.userAgent||'')) location.replace(${JSON.stringify(url)});</script>
+</body>
+</html>`;
+}
+
+async function loadShare(id) {
+  try {
+    const url = `${SUPABASE_URL}/rest/v1/public_shares?id=eq.${encodeURIComponent(id)}&select=id,name,mime,size,file_url,expires_at,is_public,author,download_count&limit=1`;
+    const r = await fetch(url, {
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
+    });
+    if (!r.ok) return null;
+    const rows = await r.json();
+    return Array.isArray(rows) && rows[0] ? rows[0] : null;
+  } catch {
+    return null;
+  }
+}
+
+const PAGE_TITLES = {
+  vault: 'vault \u2014 rankvault',
+  drop: 'drop \u2014 rankvault',
+  share: 'share \u2014 rankvault',
+  parcel: 'parcel \u2014 local to share db',
+  keystone: 'keystone \u2014 weigh then pin a receipt',
+  wellhead: 'wellhead \u2014 field note then surface',
+  windlass: 'windlass \u2014 wind then haul a coil',
+  pontoon: 'pontoon \u2014 pile across the water',
+  silt: 'silt \u2014 sieve then share',
+  latch: 'latch \u2014 optional pass drop',
+  whisper: 'whisper \u2014 sealed note',
+  hourglass: 'hourglass \u2014 timed drop',
+  lumenbox: 'lumenbox \u2014 color card',
+  quay: 'quay \u2014 sequential drops',
+  mosaic: 'mosaic \u2014 stills into one card',
+  ledger: 'ledger \u2014 public drop log',
+  locket: 'locket \u2014 framed still',
+  relay: 'relay \u2014 one-shot handoff',
+  oscillo: 'oscillo \u2014 wave card',
+  docket: 'docket \u2014 labeled intake',
+  linotype: 'linotype \u2014 typeset notice',
+  gauge: 'gauge \u2014 inspect a local file',
+  helix: 'helix \u2014 checksum then share',
+  apron: 'apron \u2014 scratch desk',
+  plumb: 'plumb \u2014 look up a public drop',
+  kiln: 'kiln \u2014 fire text then share',
+  lodestone: 'lodestone \u2014 file card for discord',
+  meridian: 'meridian \u2014 weigh two locals',
+  nook: 'nook \u2014 pocket of live ids',
+  spool: 'spool \u2014 wind files into one thread',
+  whetstone: 'whetstone \u2014 hone a name then share',
+  harbor: 'harbor \u2014 dock a pile then launch',
+  tinderbox: 'tinderbox \u2014 preview the discord card then light',
+  pilotage: 'pilotage \u2014 steer a local file into the share db',
+};
+
+export default async function handler(req, res) {
+  const id = (req.query.id || '').toString().trim();
+  const page = (req.query.page || '').toString().trim();
+  const proto = (req.headers['x-forwarded-proto'] || 'https').toString();
+  const host = (req.headers['x-forwarded-host'] || req.headers.host || '').toString();
+
+  if (page && !id) {
+    const dest = `${proto}://${host}/#${encodeURIComponent(page)}`;
+    const title = PAGE_TITLES[page] || `${page} \u2014 rankvault`;
+    const desc = 'quiet file hosting and side desks. share only if you want.';
+    if (!isBot(req.headers['user-agent']) && req.query.embed !== '1') {
+      res.status(302).setHeader('Location', dest);
+      res.end();
+      return;
+    }
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.status(200).send(pageHtml({ title, desc, image: undefined, url: dest, color: '#0A84FF' }));
+    return;
+  }
+
+  const appUrl = `${proto}://${host}/#share?f=${encodeURIComponent(id)}`;
+  if (!id) {
+    res.status(302).setHeader('Location', '/');
+    res.end();
+    return;
+  }
+
+  const row = await loadShare(id);
+  const live = row && row.is_public && (!row.expires_at || +new Date(row.expires_at) > Date.now());
+  const title = live ? `${row.name}` : 'rankvault drop';
+  const kind = (live && row.mime) ? String(row.mime).split(';')[0] : 'file';
+  const desc = live
+    ? `${kind} \u00b7 ${prettySize(row.size)}${row.author ? ' \u00b7 ' + row.author : ''}${row.download_count ? ' \u00b7 ' + row.download_count + ' opens' : ''} \u00b7 public drop on rankvault`
+    : 'a quiet file drop. open to download.';
+  const mime = String((live && row.mime) || '');
+  const image = live && (mime.startsWith('image/') || mime.startsWith('video/') || mime.startsWith('audio/')) && String(row.file_url || '').startsWith('http')
+    ? row.file_url
+    : undefined;
+
+  if (!isBot(req.headers['user-agent']) && req.query.embed !== '1') {
+    res.status(302).setHeader('Location', appUrl);
+    res.end();
+    return;
+  }
+
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
+  res.status(200).send(pageHtml({ title, desc, image, url: appUrl, color: '#0A84FF', mime }));
 }

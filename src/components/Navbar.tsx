@@ -21,6 +21,9 @@ const primary: NavItem[] = [
   { to: 'meridian', label: 'meridian' },
   { to: 'nook', label: 'nook' },
   { to: 'tinderbox', label: 'tinderbox' },
+  { to: 'lantern', label: 'lantern' },
+  { to: 'solarium', label: 'solarium' },
+  { to: 'vestibule', label: 'vestibule' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -59,6 +62,8 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'slipway', label: 'slipway' },
       { to: 'mason', label: 'mason' },
       { to: 'tinderbox', label: 'tinderbox' },
+      { to: 'lantern', label: 'lantern' },
+      { to: 'solarium', label: 'solarium' },
     ],
   },
   {
@@ -93,6 +98,8 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'capstan', label: 'capstan' },
       { to: 'flotsam', label: 'flotsam' },
       { to: 'tinderbox', label: 'tinderbox' },
+      { to: 'lantern', label: 'lantern' },
+      { to: 'vestibule', label: 'vestibule' },
     ],
   },
   {
@@ -119,6 +126,7 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'linotype', label: 'linotype' },
       { to: 'oscillo', label: 'oscillo' },
       { to: 'docket', label: 'docket' },
+      { to: 'lantern', label: 'lantern' },
     ],
   },
   {
@@ -146,6 +154,8 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'oscillo', label: 'oscillo' },
       { to: 'docket', label: 'docket' },
       { to: 'linotype', label: 'linotype' },
+      { to: 'vestibule', label: 'vestibule' },
+      { to: 'solarium', label: 'solarium' },
     ],
   },
 ];

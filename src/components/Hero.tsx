@@ -16,7 +16,7 @@ export default function Hero() {
         </motion.h1>
 
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.12 }} className="text-neutral-400 text-lg leading-relaxed max-w-xl mb-8">
-          a quiet vault for clips, docs, and dumps. preview in place, sort into folders, flip a file public when you need a link. no size lock. just a heads up if the tab might lag. new desks: kiln fires text into a drop, lodestone paints a discord card, meridian compares two locals, nook pins live ids.
+          a quiet vault for clips, docs, and dumps. preview in place, sort into folders, flip a file public when you need a link. no size lock. just a heads up if the tab might lag. tinderbox previews the discord card before the bytes leave the machine.
         </motion.p>
 
         <div className="flex flex-wrap gap-3 mb-12">
@@ -26,6 +26,7 @@ export default function Hero() {
           <button onClick={() => navigate('lodestone')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">lodestone</button>
           <button onClick={() => navigate('meridian')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">meridian</button>
           <button onClick={() => navigate('nook')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">nook</button>
+          <button onClick={() => navigate('tinderbox')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">tinderbox</button>
           <a href="#features" className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">see features</a>
         </div>
       </div>

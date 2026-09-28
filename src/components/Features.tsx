@@ -1,6 +1,10 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'lumenbox swatch', body: 'paint a 1200×630 color card and publish it so discord unfurls a real image.' },
+  { title: 'hourglass drop', body: 'set hours until a public file fades, then ship it to the share db with a /s card.' },
+  { title: 'manifest list', body: 'hash a local pile in the tab. only the json list goes public. bytes stay here.' },
+  { title: 'whisper seal', body: 'aes-gcm a note in the browser, then leave ciphertext in the share db.' },
   { title: 'linnet bookmark', body: 'turn any url into a tiny public html drop. discord still gets a /s card.' },
   { title: 'feldspar hash', body: 'sha-256 a local file in the tab, then ship it to the share db. no hard cap, just a slowness warning.' },
   { title: 'sash preview', body: 'look at image, video, or audio first. if it feels right, publish. not another vault grid.' },

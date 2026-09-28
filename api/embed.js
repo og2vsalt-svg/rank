@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"');
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 function isBot(ua) {
@@ -43,6 +43,7 @@ function pageHtml({ title, desc, image, url, color, mime }) {
   extra.push('<meta property="og:image:width" content="1200" />');
   extra.push('<meta property="og:image:height" content="630" />');
   extra.push('<meta name="apple-mobile-web-app-title" content="rankvault" />');
+  extra.push('<meta name="og:image:alt" content="' + esc(title) + '" />');
   if (mime && String(mime).startsWith('video/') && isRemoteImg && image) {
     extra.push('<meta property="og:video" content="' + esc(image) + '" />');
     extra.push('<meta property="og:video:type" content="' + esc(mime) + '" />');
@@ -148,6 +149,10 @@ const PAGE_TITLES = {
   gazetteer: 'gazetteer — map of live drops',
   foghorn: 'foghorn — named public drop',
   magnet: 'magnet — hash then share',
+  saltbox: 'saltbox — stack then share',
+  dewpoint: 'dewpoint — slowness meter',
+  mullion: 'mullion — two pane share',
+  lanternwick: 'lanternwick — discord unfurl',
 };
 
 export default async function handler(req, res) {

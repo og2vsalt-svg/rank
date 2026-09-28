@@ -7,18 +7,20 @@ type NavItem = { to: Route; label: string };
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
+  { to: 'parcel', label: 'parcel' },
+  { to: 'foghorn', label: 'foghorn' },
+  { to: 'magnet', label: 'magnet' },
+  { to: 'tidepool', label: 'tidepool' },
   { to: 'frostline', label: 'frostline' },
   { to: 'nook', label: 'nook' },
-  { to: 'spire', label: 'spire' },
-  { to: 'wreath', label: 'wreath' },
-  { to: 'tidepool', label: 'tidepool' },
-  { to: 'parcel', label: 'parcel' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'files',
     items: [
+      { to: 'foghorn', label: 'foghorn' },
+      { to: 'magnet', label: 'magnet' },
       { to: 'frostline', label: 'frostline' },
       { to: 'nook', label: 'nook' },
       { to: 'spire', label: 'spire' },
@@ -89,6 +91,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'foghorn', label: 'foghorn' },
+      { to: 'magnet', label: 'magnet' },
       { to: 'frostline', label: 'frostline' },
       { to: 'nook', label: 'nook' },
       { to: 'spire', label: 'spire' },
@@ -158,6 +162,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'create',
     items: [
+      { to: 'foghorn', label: 'foghorn' },
       { to: 'nook', label: 'nook' },
       { to: 'wreath', label: 'wreath' },
       { to: 'kindling', label: 'kindling' },
@@ -197,6 +202,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'magnet', label: 'magnet' },
       { to: 'spire', label: 'spire' },
       { to: 'frostline', label: 'frostline' },
       { to: 'waypoint', label: 'waypoint' },

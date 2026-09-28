@@ -194,6 +194,7 @@ export function shareUrls(id: string) {
     nook: `${origin}/n/${id}`,
     keystone: `${origin}/k/${id}`,
     wellhead: `${origin}/w/${id}`,
+    windlass: `${origin}/u/${id}`,
     drop: `${origin}/d/${id}`,
   };
 }

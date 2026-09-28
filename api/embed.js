@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"');
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 function isBot(ua) {
@@ -34,12 +34,14 @@ function pageHtml({ title, desc, image, url, color, mime }) {
   const extra = [];
   extra.push('<link rel="image_src" href="' + esc(safeImg) + '" />');
   extra.push('<meta name="theme-color" content="' + esc(c) + '" />');
+  extra.push('<meta name="msapplication-TileColor" content="' + esc(c) + '" />');
   extra.push('<meta property="og:locale" content="en_US" />');
   extra.push('<meta property="og:site_name" content="rankvault" />');
   extra.push('<meta name="twitter:card" content="summary_large_image" />');
   extra.push('<meta property="og:image:width" content="1200" />');
   extra.push('<meta property="og:image:height" content="630" />');
-  extra.push('<meta name="og:image:alt" content="' + esc(title) + '" />');
+  extra.push('<meta property="og:image:alt" content="' + esc(title) + '" />');
+  extra.push('<meta name="twitter:image:alt" content="' + esc(title) + '" />');
   if (mime && String(mime).startsWith('video/') && isRemoteImg && image) {
     extra.push('<meta property="og:video" content="' + esc(image) + '" />');
     extra.push('<meta property="og:video:type" content="' + esc(mime) + '" />');
@@ -116,6 +118,10 @@ const PAGE_TITLES = {
   oscillo: 'oscillo — wave card',
   docket: 'docket — labeled intake',
   linotype: 'linotype — typeset notice',
+  gauge: 'gauge — inspect a local file',
+  helix: 'helix — checksum then share',
+  apron: 'apron — scratch desk',
+  plumb: 'plumb — look up a public drop',
 };
 
 export default async function handler(req, res) {

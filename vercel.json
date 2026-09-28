@@ -9,18 +9,10 @@
     { "source": "/card/:id", "destination": "/api/embed?id=:id" },
     { "source": "/link/:id", "destination": "/api/embed?id=:id" },
     { "source": "/v/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/p/:page", "destination": "/api/embed?page=:page" },
-    { "source": "/e/:page", "destination": "/api/embed?page=:page" },
-    { "source": "/n/:id", "destination": "/api/embed?id=:id" },
     { "source": "/y/:id", "destination": "/api/embed?id=:id" },
     { "source": "/q/:id", "destination": "/api/embed?id=:id" },
     { "source": "/l/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/embed/:id", "destination": "/api/embed?id=:id" }
-  ],
-  "headers": [
-    {
-      "source": "/(s|f|x|d|go|open|card|link|v|n|y|q|l|embed)/(.*)",
-      "headers": [{ "key": "Cache-Control", "value": "public, s-maxage=60, stale-while-revalidate=300" }]
-    }
+    { "source": "/embed/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/p/:page", "destination": "/api/embed?page=:page" }
   ]
 }

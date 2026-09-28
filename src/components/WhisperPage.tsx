@@ -1,84 +1,61 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { useAuth } from './AuthContext';
-import { publishShare, shareUrls } from '../lib/cloudShare';
+import { shareUrls } from '../lib/cloudShare';
 
-function rid() {
-  return Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+async function wrap(text: string, pass: string) {
+  const enc = new TextEncoder();
+  const keyMat = await crypto.subtle.digest('SHA-256', enc.encode(pass || 'rankvault'));
+  const key = await crypto.subtle.importKey('raw', keyMat, { name: 'AES-GCM' }, false, ['encrypt']);
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const cipher = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, enc.encode(text));
+  const out = new Uint8Array(iv.length + new Uint8Array(cipher).length);
+  out.set(iv, 0);
+  out.set(new Uint8Array(cipher), iv.length);
+  let bin = '';
+  out.forEach((b) => { bin += String.fromCharCode(b); });
+  return btoa(bin);
 }
 
 export default function WhisperPage() {
-  const { user } = useAuth();
-  const recRef = useRef<MediaRecorder | null>(null);
-  const chunks = useRef<Blob[]>([]);
-  const [recording, setRecording] = useState(false);
-  const [blob, setBlob] = useState<Blob | null>(null);
-  const [url, setUrl] = useState('');
+  const [note, setNote] = useState('');
+  const [pass, setPass] = useState('');
   const [busy, setBusy] = useState(false);
-  const [warn, setWarn] = useState('');
   const [err, setErr] = useState('');
-  const [done, setDone] = useState<{ embed: string; app: string } | null>(null);
+  const [link, setLink] = useState('');
+  const [embed, setEmbed] = useState('');
 
-  const start = async () => {
-    setErr('');
-    setDone(null);
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const rec = new MediaRecorder(stream);
-      chunks.current = [];
-      rec.ondataavailable = (e) => {
-        if (e.data.size) chunks.current.push(e.data);
-      };
-      rec.onstop = () => {
-        stream.getTracks().forEach((t) => t.stop());
-        const b = new Blob(chunks.current, { type: rec.mimeType || 'audio/webm' });
-        setBlob(b);
-        setUrl(URL.createObjectURL(b));
-        if (b.size > 8 * 1024 * 1024) setWarn('long take. still ships, might feel slow.');
-      };
-      rec.start();
-      recRef.current = rec;
-      setRecording(true);
-    } catch {
-      setErr('mic access blocked. allow it and try again.');
-    }
-  };
-
-  const stop = () => {
-    recRef.current?.stop();
-    setRecording(false);
-  };
-
-  const publish = async () => {
-    if (!blob) return;
+  const send = async () => {
+    if (!note.trim()) return;
     setBusy(true);
     setErr('');
     try {
-      const file = new File([blob], `whisper-${Date.now()}.webm`, { type: blob.type || 'audio/webm' });
+      const sealed = await wrap(note, pass);
+      const body = JSON.stringify({
+        kind: 'rankvault-whisper',
+        hint: pass ? 'aes-gcm with the phrase you set' : 'aes-gcm with default desk phrase',
+        payload: sealed,
+      }, null, 2);
+      const file = new File([body], 'whisper.json', { type: 'application/json' });
       const dataUrl = await new Promise<string>((resolve, reject) => {
         const r = new FileReader();
         r.onload = () => resolve(String(r.result || ''));
-        r.onerror = () => reject(new Error('could not read take'));
+        r.onerror = () => reject(new Error('encode failed'));
         r.readAsDataURL(file);
       });
-      const id = rid();
-      const res = await publishShare({
-        id,
-        name: file.name,
-        type: file.type,
-        size: file.size,
-        dataUrl,
-        author: user?.username,
+      const r = await fetch('/api/share', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: file.name, type: file.type, size: file.size, dataUrl }),
       });
-      if (!res.ok) {
-        setErr(res.error || 'could not park the take');
-        return;
-      }
-      const urls = shareUrls(res.id || id);
-      setDone({ embed: urls.embed, app: urls.app });
+      const json = await r.json();
+      if (!r.ok || !json?.ok) throw new Error(json?.error || 'share failed');
+      const urls = shareUrls(json.id);
+      setLink(urls.app);
+      setEmbed(urls.embed || `${window.location.origin}/s/${json.id}`);
+      try { await navigator.clipboard.writeText(urls.embed || urls.app); } catch {}
     } catch (e: any) {
-      setErr(e?.message || 'upload failed');
+      setErr(e?.message || 'whisper failed');
     } finally {
       setBusy(false);
     }
@@ -87,37 +64,28 @@ export default function WhisperPage() {
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}>
-          <p className="text-[11px] uppercase tracking-[0.18em] text-[#0a84ff] mb-3">create</p>
-          <h1 className="text-4xl font-semibold tracking-tight">whisper</h1>
-          <p className="text-neutral-400 mt-3 text-[15px] leading-relaxed">record a quiet voice note. park it in the same public drop table as harbor. no hard cap, just a slowness warning if it runs long.</p>
-          <div className="glass rounded-3xl p-6 mt-8">
-            <div className="flex items-center gap-3">
-              {!recording ? (
-                <button onClick={start} className="px-5 py-2.5 rounded-full bg-[#0a84ff] text-white text-sm font-medium">start take</button>
-              ) : (
-                <button onClick={stop} className="px-5 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium">stop</button>
-              )}
-              {recording && <span className="text-sm text-red-400 animate-pulse">recording</span>}
+      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          className="glass rounded-[32px] p-8"
+        >
+          <p className="text-[#0a84ff] text-sm mb-2">whisper</p>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">seal a note, then leave it in public.</h1>
+          <p className="text-neutral-400 text-sm mb-6">aes-gcm in the tab. the share db only sees ciphertext. not another vault grid.</p>
+          <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={7} placeholder="quiet words" className="w-full mb-4 bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white outline-none focus:border-[#0a84ff]/50 resize-y" />
+          <input value={pass} onChange={(e) => setPass(e.target.value)} placeholder="optional phrase" className="w-full mb-6 bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white outline-none focus:border-[#0a84ff]/50" />
+          <button onClick={send} disabled={busy || !note.trim()} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 disabled:opacity-50">
+            {busy ? 'sealing…' : 'publish sealed note'}
+          </button>
+          {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
+          {embed && (
+            <div className="mt-6 space-y-2">
+              <p className="text-xs text-neutral-400 break-all">discord: {embed}</p>
+              <p className="text-xs text-neutral-500 break-all">app: {link}</p>
             </div>
-            {url && <audio className="w-full mt-5" controls src={url} />}
-            {warn && <p className="text-amber-300/90 text-sm mt-4">{warn}</p>}
-            {err && <p className="text-red-400 text-sm mt-4">{err}</p>}
-            {blob && (
-              <button disabled={busy} onClick={publish} className="mt-5 px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-50">
-                {busy ? 'parking…' : 'publish drop'}
-              </button>
-            )}
-            {done && (
-              <div className="mt-5 space-y-2 text-sm">
-                <p className="text-neutral-400">live embed (discord-ready)</p>
-                <code className="block break-all text-[#0a84ff]">{done.embed}</code>
-                <p className="text-neutral-400">app link</p>
-                <code className="block break-all text-neutral-300">{done.app}</code>
-              </div>
-            )}
-          </div>
+          )}
         </motion.div>
       </div>
     </div>

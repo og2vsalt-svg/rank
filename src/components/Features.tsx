@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'wellhead', body: 'surface a local file with a field note. ship a tiny ticket or the original. discord unfurls /s.' },
   { title: 'spool', body: 'wind several local notes into one thread, then publish a single .txt drop with a discord /s card.' },
   { title: 'whetstone', body: 'hone a filename locally, keep the bytes, ship a tidy public drop.' },
   { title: 'harbor', body: 'tie a pile to the dock and send each file out as its own share-db drop.' },
@@ -17,7 +18,7 @@ const items = [
   { title: 'locket + relay', body: 'frame one still, or hand a file across with a clock. both mint discord cards.' },
   { title: 'local-first vault', body: 'files live in your browser first. nothing ships unless you flip a drop public.' },
   { title: 'cloud share db', body: 'public drops land in supabase, with vercel blob when a token is set.' },
-  { title: 'discord embeds', body: '/s/id plus /f /x /d /go /open /card /link /v /y /q /l /embed /n all serve og tags so previews look finished.' },
+  { title: 'discord embeds', body: '/s/id plus /f /x /d /go /open /card /link /v /y /q /l /embed /n /k /w all serve og tags so previews look finished.' },
   { title: 'no hard file cap', body: 'drop whatever size you want. we only warn when the tab might feel sleepy.' },
   { title: 'lanyard', body: 'hang a tag on a file and mint a named discord card.' },
   { title: 'oxbow', body: 'local reminder loop. no upload. come back when the bend is due.' },
@@ -30,6 +31,8 @@ const items = [
   { title: 'helix', body: 'sha-256 a file in the tab, then publish only the receipt to the share db.' },
   { title: 'apron', body: 'a local scratch pad. no upload, no vault grid.' },
   { title: 'plumb', body: 'look up a public drop id and copy the discord /s card.' },
+  { title: 'keystone', body: 'weigh a local file, pin a sha receipt or the original. discord unfurls /s.' },
+  { title: 'tinderbox', body: 'preview the discord card then light a public drop.' },
 ];
 
 export default function Features() {

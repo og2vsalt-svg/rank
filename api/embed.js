@@ -33,21 +33,15 @@ function pageHtml({ title, desc, image, url, color, mime }) {
   const imgType = mime && String(mime).startsWith('image/') ? mime : 'image/png';
   const extra = [];
   extra.push('<link rel="image_src" href="' + esc(safeImg) + '" />');
-  extra.push('<meta name="msapplication-TileColor" content="' + esc(c) + '" />');
   extra.push('<meta name="theme-color" content="' + esc(c) + '" />');
-  extra.push('<meta name="theme-color" media="(prefers-color-scheme: dark)" content="' + esc(c) + '" />');
   extra.push('<meta property="og:site_name" content="rankvault" />');
   extra.push('<meta name="twitter:card" content="summary_large_image" />');
-  extra.push('<meta name="twitter:site" content="@rankvault" />');
-  extra.push('<meta property="og:determiner" content="" />');
   extra.push('<meta property="og:image:width" content="1200" />');
   extra.push('<meta property="og:image:height" content="630" />');
-  extra.push('<meta name="apple-mobile-web-app-title" content="rankvault" />');
   extra.push('<meta name="og:image:alt" content="' + esc(title) + '" />');
   if (mime && String(mime).startsWith('video/') && isRemoteImg && image) {
     extra.push('<meta property="og:video" content="' + esc(image) + '" />');
     extra.push('<meta property="og:video:type" content="' + esc(mime) + '" />');
-    extra.push('<meta property="og:type" content="video.other" />');
   }
   if (mime && String(mime).startsWith('audio/') && isRemoteImg && image) {
     extra.push('<meta property="og:audio" content="' + esc(image) + '" />');
@@ -60,7 +54,6 @@ function pageHtml({ title, desc, image, url, color, mime }) {
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}" />
 <meta name="theme-color" content="${esc(c)}" />
-<meta name="theme-color" media="(prefers-color-scheme: dark)" content="${esc(c)}" />
 <meta name="robots" content="noindex" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="rankvault" />
@@ -71,15 +64,12 @@ function pageHtml({ title, desc, image, url, color, mime }) {
 <meta property="og:image:type" content="${esc(imgType)}" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
-<meta property="og:image:alt" content="${esc(title)}" />
 <meta property="og:url" content="${esc(url)}" />
-<meta property="og:locale" content="en_US" />
 ${extra.join('\n')}
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="${esc(title)}" />
 <meta name="twitter:description" content="${esc(desc)}" />
 <meta name="twitter:image" content="${esc(safeImg)}" />
-<meta name="twitter:image:alt" content="${esc(title)}" />
 <link rel="canonical" href="${esc(url)}" />
 </head>
 <body style="background:#050506;color:#f5f5f7;font-family:Inter,system-ui,sans-serif;padding:48px 24px">
@@ -109,54 +99,14 @@ async function loadShare(id) {
 const PAGE_TITLES = {
   vault: 'vault — rankvault',
   drop: 'drop — rankvault',
-  tidepool: 'tidepool — public pool',
-  kindling: 'kindling — note to file',
-  waypoint: 'waypoint — discord card',
-  harvest: 'harvest — batch publish',
-  sundial: 'sundial — expiry planner',
   share: 'share — rankvault',
-  pulse: 'pulse — live share check',
-  satin: 'satin — share card studio',
-  palette: 'palette — color from file',
-  meridian: 'meridian — expiry clock',
-  vale: 'vale — compare two drops',
-  driftglass: 'driftglass — polish a drop',
-  loom: 'loom — share thread',
-  quill: 'quill — drop notes',
-  harbor: 'harbor — incoming shares',
-  lanyard: 'lanyard — discord card',
   parcel: 'parcel — local to share db',
-  pebble: 'pebble — stamp then share',
-  keystone: 'keystone — pin a live drop',
-  vellum: 'vellum — text to public file',
-  spindle: 'spindle — split then share',
-  quarry: 'quarry — peek local bytes',
-  thresh: 'thresh — pick by size then share',
-  keel: 'keel — weigh then launch',
-  slipway: 'slipway — pile into the water',
-  emberwake: 'emberwake — sit with a live drop',
-  rivulet: 'rivulet — name then send',
-  oxbow: 'oxbow — public drop bend',
-  spar: 'spar — inspect a local file',
-  trestle: 'trestle — several files across',
-  copse: 'copse — a stand of rooms',
-  nightjar: 'nightjar — preview then share',
-  veranda: 'veranda — porch note',
-  oarlock: 'oarlock — lock and tide',
-  tinder: 'tinder — fingerprint then share',
-  seaglass: 'seaglass — tumble a file public',
-  skylark: 'skylark — header song then share',
-  gazetteer: 'gazetteer — map of live drops',
-  foghorn: 'foghorn — named public drop',
-  magnet: 'magnet — hash then share',
-  saltbox: 'saltbox — stack then share',
-  dewpoint: 'dewpoint — slowness meter',
-  mullion: 'mullion — two pane share',
-  lanternwick: 'lanternwick — discord unfurl',
-  lumenbox: 'lumenbox — color card',
-  hourglass: 'hourglass — timed drop',
-  manifest: 'manifest — hashed pile list',
+  pontoon: 'pontoon — pile across the water',
+  silt: 'silt — sieve then share',
+  latch: 'latch — optional pass drop',
   whisper: 'whisper — sealed note',
+  hourglass: 'hourglass — timed drop',
+  lumenbox: 'lumenbox — color card',
 };
 
 export default async function handler(req, res) {

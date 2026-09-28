@@ -1,6 +1,10 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'kiln', body: 'fire loose text until extra space falls away, then optionally publish a .txt drop with a discord /s card.' },
+  { title: 'lodestone', body: 'paint a 1200×630 card from a local file. only the card goes to the share db so discord unfurls cleanly.' },
+  { title: 'meridian', body: 'lay two locals on a line and see which cut is heavier. nothing uploads.' },
+  { title: 'nook', body: 'pin live drop ids in this browser and copy their discord /s cards. not a vault grid.' },
   { title: 'pontoon pile', body: 'float several local files across. each one becomes its own public drop and discord /s card.' },
   { title: 'silt sieve', body: 'filter a pile by image, video, audio, or text, then settle one file into the share db.' },
   { title: 'latch phrase', body: 'optional pass on a public drop. friends need the phrase. discord still unfurls /s.' },
@@ -10,7 +14,7 @@ const items = [
   { title: 'locket + relay', body: 'frame one still, or hand a file across with a clock. both mint discord cards.' },
   { title: 'local-first vault', body: 'files live in your browser first. nothing ships unless you flip a drop public.' },
   { title: 'cloud share db', body: 'public drops land in supabase, with vercel blob when a token is set.' },
-  { title: 'discord embeds', body: '/s/id plus /f /x /d /go /open /card /link /v /y /q /l /embed all serve og tags so previews look finished.' },
+  { title: 'discord embeds', body: '/s/id plus /f /x /d /go /open /card /link /v /y /q /l /embed /n all serve og tags so previews look finished.' },
   { title: 'no hard file cap', body: 'drop whatever size you want. we only warn when the tab might feel sleepy.' },
   { title: 'lanyard', body: 'hang a tag on a file and mint a named discord card.' },
   { title: 'oxbow', body: 'local reminder loop. no upload. come back when the bend is due.' },

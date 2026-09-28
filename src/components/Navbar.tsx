@@ -8,17 +8,22 @@ const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
   { to: 'parcel', label: 'parcel' },
-  { to: 'lumenbox', label: 'lumenbox' },
-  { to: 'hourglass', label: 'hourglass' },
-  { to: 'manifest', label: 'manifest' },
-  { to: 'whisper', label: 'whisper' },
-  { to: 'tidepool', label: 'tidepool' },
+  { to: 'sextant', label: 'sextant' },
+  { to: 'rookery', label: 'rookery' },
+  { to: 'gasket', label: 'gasket' },
+  { to: 'coda', label: 'coda' },
+  { to: 'pewter', label: 'pewter' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'files',
     items: [
+      { to: 'sextant', label: 'sextant' },
+      { to: 'rookery', label: 'rookery' },
+      { to: 'gasket', label: 'gasket' },
+      { to: 'coda', label: 'coda' },
+      { to: 'pewter', label: 'pewter' },
       { to: 'lumenbox', label: 'lumenbox' },
       { to: 'hourglass', label: 'hourglass' },
       { to: 'manifest', label: 'manifest' },
@@ -105,6 +110,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'rookery', label: 'rookery' },
+      { to: 'gasket', label: 'gasket' },
+      { to: 'coda', label: 'coda' },
       { to: 'hourglass', label: 'hourglass' },
       { to: 'manifest', label: 'manifest' },
       { to: 'whisper', label: 'whisper' },
@@ -189,6 +197,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'create',
     items: [
+      { to: 'coda', label: 'coda' },
+      { to: 'gasket', label: 'gasket' },
       { to: 'lumenbox', label: 'lumenbox' },
       { to: 'whisper', label: 'whisper' },
       { to: 'lanternwick', label: 'lanternwick' },
@@ -234,6 +244,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'sextant', label: 'sextant' },
+      { to: 'pewter', label: 'pewter' },
       { to: 'manifest', label: 'manifest' },
       { to: 'hourglass', label: 'hourglass' },
       { to: 'dewpoint', label: 'dewpoint' },

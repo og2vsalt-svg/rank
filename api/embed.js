@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"');
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 function isBot(ua) {
@@ -129,6 +129,7 @@ const PAGE_TITLES = {
   spool: 'spool — wind files into one thread',
   whetstone: 'whetstone — hone a name then share',
   harbor: 'harbor — dock a pile then launch',
+  tinderbox: 'tinderbox — preview the discord card then light',
 };
 
 export default async function handler(req, res) {

@@ -22,6 +22,13 @@
     { "source": "/q/:id", "destination": "/api/embed?id=:id" },
     { "source": "/l/:id", "destination": "/api/embed?id=:id" },
     { "source": "/v/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/r/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/g/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/m/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/o/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/i/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/a/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/z/:id", "destination": "/api/embed?id=:id" },
     { "source": "/p/:page", "destination": "/api/embed?page=:page" },
     { "source": "/api/share", "destination": "/api/share" },
     { "source": "/api/embed", "destination": "/api/embed" }

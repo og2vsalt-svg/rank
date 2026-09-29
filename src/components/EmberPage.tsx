@@ -1,56 +1,113 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
+import { publishShare, shareUrls } from '../lib/cloudShare';
 
-type Ember = { id: string; note: string; seen: boolean };
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
 
 export default function EmberPage() {
+  const [title, setTitle] = useState('ember');
+  const [hex, setHex] = useState('#0A84FF');
   const [note, setNote] = useState('');
-  const [embers, setEmbers] = useState<Ember[]>(() => {
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState('');
+  const [embed, setEmbed] = useState('');
+  const [app, setApp] = useState('');
+
+  const burn = async () => {
+    setErr('');
+    setEmbed('');
+    setApp('');
+    setBusy(true);
     try {
-      return JSON.parse(sessionStorage.getItem('rankvault-ember') || '[]');
-    } catch {
-      return [];
+      const body = [
+        title.trim() || 'ember',
+        hex.trim() || '#0A84FF',
+        note.trim() || 'a quiet color card',
+        new Date().toISOString(),
+      ].join('\n');
+      const blob = new Blob([body], { type: 'text/plain' });
+      const dataUrl = `data:text/plain;base64,${btoa(unescape(encodeURIComponent(body)))}`;
+      const id = uid();
+      const name = `${(title.trim() || 'ember').slice(0, 40)}.txt`;
+      const res = await publishShare({
+        id,
+        name,
+        type: 'text/plain',
+        size: blob.size,
+        dataUrl,
+        author: note.trim() || undefined,
+      });
+      if (!res.ok) throw new Error(res.error || 'ember failed');
+      const urls = shareUrls(res.id || id);
+      setEmbed(urls.embed);
+      setApp(urls.app);
+      try { await navigator.clipboard.writeText(urls.embed); } catch {}
+    } catch (e: any) {
+      setErr(e?.message || 'ember failed');
+    } finally {
+      setBusy(false);
     }
-  });
-
-  function persist(next: Ember[]) {
-    setEmbers(next);
-    sessionStorage.setItem('rankvault-ember', JSON.stringify(next));
-  }
-
-  function add() {
-    if (!note.trim()) return;
-    persist([{ id: crypto.randomUUID(), note: note.trim(), seen: false }, ...embers]);
-    setNote('');
-  }
-
-  function burn(id: string) {
-    persist(embers.filter((e) => e.id !== id));
-  }
+  };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <main className="pt-24 pb-20 px-5">
-        <div className="max-w-xl mx-auto">
-          <p className="text-xs tracking-[0.2em] uppercase text-neutral-500 mb-3">ember</p>
-          <h1 className="text-3xl font-semibold text-white tracking-tight">burn after glance</h1>
-          <p className="text-sm text-neutral-500 mt-2 mb-8">session-only notes. close the tab and they fade. not a vault, just a spark.</p>
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-3xl p-5 space-y-3">
-            <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={4} placeholder="something you only need for a minute" className="w-full bg-black/30 rounded-2xl px-4 py-3 text-sm text-white outline-none border border-white/10 resize-none" />
-            <motion.button whileTap={{ scale: 0.98 }} onClick={add} className="w-full rounded-full bg-white text-black text-sm font-medium py-2.5">light ember</motion.button>
-          </motion.div>
-          <ul className="mt-6 space-y-2">
-            {embers.map((e) => (
-              <li key={e.id} className="glass rounded-2xl px-4 py-3 flex items-start justify-between gap-3">
-                <p className="text-sm text-neutral-200 whitespace-pre-wrap">{e.note}</p>
-                <button onClick={() => burn(e.id)} className="text-xs text-neutral-500 shrink-0">burn</button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </main>
+      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          className="glass rounded-[32px] p-8"
+        >
+          <p className="text-[#0a84ff] text-sm mb-2">ember</p>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">write a color card, then let it travel.</h1>
+          <p className="text-neutral-400 text-sm mb-6">
+            not a vault. a tiny text drop with a title, a hex, and a line. discord unfurls /s.
+          </p>
+          <div className="flex items-center gap-3 mb-4">
+            <input
+              type="color"
+              value={hex}
+              onChange={(e) => setHex(e.target.value)}
+              className="h-11 w-14 rounded-xl bg-transparent border border-white/10 cursor-pointer"
+            />
+            <input
+              value={hex}
+              onChange={(e) => setHex(e.target.value)}
+              className="flex-1 px-4 py-2.5 rounded-full bg-white/5 border border-white/10 text-sm outline-none"
+            />
+          </div>
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="title"
+            className="w-full mb-3 px-4 py-2.5 rounded-full bg-white/5 border border-white/10 text-sm outline-none"
+          />
+          <input
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="one line"
+            className="w-full mb-5 px-4 py-2.5 rounded-full bg-white/5 border border-white/10 text-sm outline-none"
+          />
+          <button
+            onClick={burn}
+            disabled={busy}
+            className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 disabled:opacity-50"
+          >
+            {busy ? 'warming…' : 'send the card'}
+          </button>
+          {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
+          {embed && (
+            <div className="mt-6 space-y-2">
+              <p className="text-xs text-neutral-300 break-all">discord: {embed}</p>
+              <p className="text-xs text-neutral-500 break-all">app: {app}</p>
+            </div>
+          )}
+        </motion.div>
+      </div>
     </div>
   );
 }

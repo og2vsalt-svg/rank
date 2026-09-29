@@ -91,6 +91,8 @@ const PAGE_TITLES = {
   spinnaker: 'spinnaker \u2014 pack a drop into a share sheet',
   taffrail: 'taffrail \u2014 inspect a discord card',
   yardarm: 'yardarm \u2014 hash a local file then publish',
+  porchlight: 'porchlight \u2014 drop a file and preview the discord card',
+  stillwater: 'stillwater \u2014 park files in the share db',
 };
 
 export default async function handler(req, res) {

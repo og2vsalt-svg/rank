@@ -20,6 +20,13 @@
     { "source": "/card/:id", "destination": "/api/embed?id=:id" },
     { "source": "/embed/:id", "destination": "/api/embed?id=:id" },
     { "source": "/p/:page", "destination": "/api/embed?page=:page" },
+    { "source": "/b/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/g/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/z/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/c/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/m/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/o/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/t/:id", "destination": "/api/embed?id=:id" },
     { "source": "/page/:page", "destination": "/api/embed?page=:page" }
   ],
   "headers": [

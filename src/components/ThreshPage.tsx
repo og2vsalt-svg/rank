@@ -6,49 +6,57 @@ import { publishShare, shareUrls } from '../lib/cloudShare';
 function pretty(n: number) {
   if (n < 1024) return n + ' b';
   if (n < 1024 * 1024) return Math.round(n / 1024) + ' kb';
-  return (n / (1024 * 1024)).toFixed(1) + ' mb';
+  if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(1) + ' mb';
+  return (n / (1024 * 1024 * 1024)).toFixed(2) + ' gb';
+}
+
+function readAsDataUrl(file: File) {
+  return new Promise<string>((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(String(r.result || ''));
+    r.onerror = () => reject(new Error('could not read file'));
+    r.readAsDataURL(file);
+  });
 }
 
 export default function ThreshPage() {
-  const [minMb, setMinMb] = useState(0);
+  const [files, setFiles] = useState<File[]>([]);
+  const [kb, setKb] = useState(256);
+  const [mode, setMode] = useState<'over' | 'under'>('over');
   const [busy, setBusy] = useState(false);
   const [warn, setWarn] = useState('');
   const [err, setErr] = useState('');
-  const [kept, setKept] = useState<{ name: string; size: number; embed: string }[]>([]);
+  const [links, setLinks] = useState<string[]>([]);
 
-  const run = async (list: FileList | null) => {
-    if (!list?.length) return;
-    const floor = Math.max(0, minMb) * 1024 * 1024;
-    const files = [...list].filter((f) => f.size >= floor);
-    setWarn(files.some((f) => f.size > 40 * 1024 * 1024) ? 'at least one file is huge. publishing may feel slow. no cap.' : '');
+  const cut = kb * 1024;
+  const keep = files.filter((f) => (mode === 'over' ? f.size >= cut : f.size <= cut));
+
+  const ship = async () => {
+    if (!keep.length) return;
     setErr('');
-    setKept([]);
-    if (!files.length) {
-      setErr('nothing passed the size floor');
-      return;
-    }
+    setLinks([]);
+    const heavy = keep.reduce((n, f) => n + f.size, 0);
+    setWarn(heavy > 40 * 1024 * 1024 ? 'large pile. encoding can feel sleepy. no hard cap.' : '');
     setBusy(true);
+    const out: string[] = [];
     try {
-      const out: { name: string; size: number; embed: string }[] = [];
-      for (const file of files) {
-        const dataUrl = await new Promise<string>((resolve, reject) => {
-          const r = new FileReader();
-          r.onload = () => resolve(String(r.result || ''));
-          r.onerror = () => reject(new Error('read failed'));
-          r.readAsDataURL(file);
-        });
-        const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-        const pub = await publishShare({
+      for (const file of keep) {
+        const dataUrl = await readAsDataUrl(file);
+        const id = `thresh-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
+        const res = await publishShare({
           id,
           name: file.name,
           type: file.type || 'application/octet-stream',
           size: file.size,
           dataUrl,
+          author: 'thresh',
         });
-        if (!pub.ok) throw new Error(pub.error || 'publish failed');
-        out.push({ name: file.name, size: file.size, embed: shareUrls(pub.id || id).embed });
+        if (!res.ok) throw new Error(res.error || 'share failed');
+        if (res.warn) setWarn(res.warn);
+        out.push(shareUrls(id).embed);
       }
-      setKept(out);
+      setLinks(out);
+      try { await navigator.clipboard.writeText(out[0]); } catch {}
     } catch (e: any) {
       setErr(e?.message || 'thresh failed');
     } finally {
@@ -59,29 +67,51 @@ export default function ThreshPage() {
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-8">
+      <main className="pt-24 pb-20 px-5">
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          className="max-w-xl mx-auto"
+        >
           <p className="text-[#0a84ff] text-sm mb-2">thresh</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">keep files over a size floor, then share them.</h1>
-          <p className="text-neutral-400 text-sm mb-6">not a vault grid. you pick a minimum mb, we publish only the ones that pass. discord still uses /s.</p>
-          <label className="text-xs text-neutral-500 block mb-2">min mb (0 = keep all)</label>
-          <input type="number" min={0} value={minMb} onChange={(e) => setMinMb(Number(e.target.value))} className="w-28 bg-white/5 border border-white/10 rounded-full px-4 py-2 text-sm mb-4 outline-none" />
-          <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition">
-            <input type="file" multiple className="hidden" onChange={(e) => run(e.target.files)} />
-            <p className="text-white font-medium">{busy ? 'threshing…' : 'drop a pile'}</p>
-            <p className="text-xs text-neutral-500 mt-2">no hard limit. we only warn when it might lag.</p>
+          <h1 className="text-4xl font-semibold tracking-tight text-white mb-3">beat a pile, keep what crosses the line.</h1>
+          <p className="text-neutral-400 text-sm mb-8">not a vault. sort locally by size, then ship only the keepers to the share db. discord unfurls /s.</p>
+          <label className="block glass rounded-3xl p-8 text-center cursor-pointer mb-5 hover:bg-white/[0.04] transition-colors"
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => { e.preventDefault(); setFiles(Array.from(e.dataTransfer.files || [])); }}
+          >
+            <input type="file" multiple className="hidden" onChange={(e) => setFiles(Array.from(e.target.files || []))} />
+            <p className="text-white">{files.length ? files.length + ' files on the floor' : 'drop a pile'}</p>
+            <p className="text-xs text-neutral-500 mt-1">no hard limit. we only warn when it might feel slow.</p>
           </label>
-          {warn && <p className="text-xs text-amber-300/80 mt-4">{warn}</p>}
-          {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
-          {kept.length > 0 && (
-            <ul className="mt-6 space-y-2">
-              {kept.map((k) => (
-                <li key={k.embed} className="text-xs text-neutral-400 break-all">{k.name} · {pretty(k.size)} · {k.embed}</li>
-              ))}
+          <div className="flex gap-2 mb-4">
+            <button onClick={() => setMode('over')} className={`flex-1 rounded-full py-2 text-sm ${mode === 'over' ? 'bg-white text-black' : 'bg-white/5 text-neutral-300'}`}>keep over</button>
+            <button onClick={() => setMode('under')} className={`flex-1 rounded-full py-2 text-sm ${mode === 'under' ? 'bg-white text-black' : 'bg-white/5 text-neutral-300'}`}>keep under</button>
+          </div>
+          <label className="block text-xs text-neutral-500 mb-2">threshold · {kb} kb</label>
+          <input type="range" min={16} max={8192} value={kb} onChange={(e) => setKb(Number(e.target.value))} className="w-full mb-5" />
+          {!!files.length && (
+            <ul className="mb-5 space-y-1.5">
+              {files.map((f) => {
+                const on = mode === 'over' ? f.size >= cut : f.size <= cut;
+                return (
+                  <li key={f.name + f.size} className={`text-xs flex justify-between ${on ? 'text-white' : 'text-neutral-600'}`}>
+                    <span className="truncate pr-3">{f.name}</span>
+                    <span>{pretty(f.size)}</span>
+                  </li>
+                );
+              })}
             </ul>
           )}
+          <button onClick={ship} disabled={!keep.length || busy} className="w-full rounded-full bg-white text-black py-3 text-sm font-medium disabled:opacity-40 hover:bg-neutral-200 transition-colors">
+            {busy ? 'threshing…' : `ship ${keep.length} keeper${keep.length === 1 ? '' : 's'}`}
+          </button>
+          {warn && <p className="text-amber-300/80 text-xs mt-4">{warn}</p>}
+          {err && <p className="text-red-400 text-xs mt-4">{err}</p>}
+          {links.map((l) => <p key={l} className="text-[#0a84ff] text-xs mt-3 break-all">{l}</p>)}
         </motion.div>
-      </div>
+      </main>
     </div>
   );
 }

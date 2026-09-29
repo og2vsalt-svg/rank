@@ -1,29 +1,73 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { useVault } from './VaultContext';
-import { useRouter } from './Router';
-import { shareUrls } from '../lib/cloudShare';
+
+type Swatch = { hex: string; n: number };
+
+function hex(r: number, g: number, b: number) {
+  return '#' + [r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('');
+}
+
+function sample(file: File): Promise<Swatch[]> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const w = Math.min(80, img.width);
+      const h = Math.max(1, Math.round((img.height / img.width) * w));
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        URL.revokeObjectURL(url);
+        reject(new Error('no canvas'));
+        return;
+      }
+      ctx.drawImage(img, 0, 0, w, h);
+      const data = ctx.getImageData(0, 0, w, h).data;
+      const map = new Map<string, number>();
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i] & 0xf0;
+        const g = data[i + 1] & 0xf0;
+        const b = data[i + 2] & 0xf0;
+        const key = hex(r, g, b);
+        map.set(key, (map.get(key) || 0) + 1);
+      }
+      URL.revokeObjectURL(url);
+      resolve(
+        [...map.entries()]
+          .map(([h, n]) => ({ hex: h, n }))
+          .sort((a, b) => b.n - a.n)
+          .slice(0, 12),
+      );
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error('could not read image'));
+    };
+    img.src = url;
+  });
+}
 
 export default function LoomPage() {
-  const { files } = useVault() as any;
-  const { navigate } = useRouter();
-  const [picked, setPicked] = useState<string[]>([]);
-  const list = files || [];
-  const huge = list.some((f: any) => (f.size || 0) > 40 * 1024 * 1024);
+  const [name, setName] = useState('');
+  const [warn, setWarn] = useState('');
+  const [swatches, setSwatches] = useState<Swatch[]>([]);
+  const [err, setErr] = useState('');
 
-  const thread = useMemo(
-    () => picked.map((id) => list.find((f: any) => f.id === id)).filter(Boolean),
-    [picked, list],
-  );
-
-  const toggle = (id: string) => {
-    setPicked((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  const onFile = async (list: FileList | null) => {
+    const f = list?.[0];
+    if (!f) return;
+    setName(f.name);
+    setErr('');
+    setWarn(f.size > 12 * 1024 * 1024 ? 'large image. sampling still runs, the tab may hitch. no hard limit.' : '');
+    try {
+      setSwatches(await sample(f));
+    } catch (e: any) {
+      setErr(e?.message || 'could not sample');
+    }
   };
-
-  const exportText = thread
-    .map((f: any, i: number) => `${i + 1}. ${f.name} — ${shareUrls(f.id).app}`)
-    .join('\n');
 
   return (
     <div className="mesh min-h-screen">
@@ -36,38 +80,27 @@ export default function LoomPage() {
           className="glass rounded-[32px] p-8"
         >
           <p className="text-[#0a84ff] text-sm mb-2">loom</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">weave a share thread.</h1>
-          <p className="text-neutral-400 text-sm mb-6">pick vault files in order, copy a playlist of links. not another vault — just a sequence you can drop in discord.</p>
-          {huge && <p className="text-xs text-amber-300/80 mb-4">some of these are chunky. weaving is fine, previews might hitch.</p>}
-          {list.length === 0 && <p className="text-sm text-neutral-500">vault is empty. drop something first.</p>}
-          <ul className="space-y-2 mb-6">
-            {list.slice(0, 40).map((f: any) => {
-              const on = picked.includes(f.id);
-              return (
-                <li key={f.id}>
-                  <button
-                    onClick={() => toggle(f.id)}
-                    className={`w-full text-left rounded-2xl px-4 py-3 border transition ${on ? 'bg-[#0a84ff]/15 border-[#0a84ff]/30' : 'bg-white/[0.03] border-white/5 hover:border-white/15'}`}
-                  >
-                    <p className="text-sm text-white truncate">{f.name}</p>
-                    <p className="text-[11px] text-neutral-500">{((f.size || 0) / 1024).toFixed(1)} kb</p>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-          {thread.length > 0 && (
-            <div className="space-y-3">
-              <p className="text-xs text-neutral-400 whitespace-pre-wrap break-all">{exportText}</p>
-              <div className="flex flex-wrap gap-2">
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">pull a palette from a picture.</h1>
+          <p className="text-neutral-400 text-sm mb-6">local color desk. the image never leaves this tab.</p>
+          <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition">
+            <input type="file" accept="image/*" className="hidden" onChange={(e) => onFile(e.target.files)} />
+            <p className="text-white font-medium">{name || 'drop a local image'}</p>
+            <p className="text-xs text-neutral-500 mt-2">no file limit. just a slowness ping if it is huge.</p>
+          </label>
+          {warn && <p className="text-amber-300/90 text-xs mt-3">{warn}</p>}
+          {err && <p className="text-red-400 text-xs mt-3">{err}</p>}
+          {swatches.length > 0 && (
+            <div className="mt-8 grid grid-cols-3 sm:grid-cols-4 gap-3">
+              {swatches.map((s) => (
                 <button
-                  onClick={() => navigator.clipboard.writeText(exportText).catch(() => {})}
-                  className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium"
+                  key={s.hex}
+                  onClick={() => navigator.clipboard.writeText(s.hex).catch(() => {})}
+                  className="rounded-2xl overflow-hidden text-left"
                 >
-                  copy thread
+                  <div className="h-16" style={{ background: s.hex }} />
+                  <p className="text-[11px] text-neutral-400 mt-1.5 tabular-nums">{s.hex}</p>
                 </button>
-                <button onClick={() => navigate('drop')} className="px-5 py-2.5 rounded-full bg-white/5 text-sm">add more</button>
-              </div>
+              ))}
             </div>
           )}
         </motion.div>

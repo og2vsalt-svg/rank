@@ -1,106 +1,64 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { useAuth } from './AuthContext';
-import { publishShare, shareUrls } from '../lib/cloudShare';
 
-function rid() {
-  return 'w' + Math.random().toString(36).slice(2, 8);
+type Stats = { words: number; chars: number; lines: number; minutes: number };
+
+function measure(text: string): Stats {
+  const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+  return {
+    words,
+    chars: text.length,
+    lines: text.split(/\n/).length,
+    minutes: Math.max(1, Math.round(words / 220)) || 0,
+  };
 }
 
 export default function WickPage() {
-  const { user } = useAuth();
-  const [hours, setHours] = useState(24);
-  const [file, setFile] = useState<File | null>(null);
-  const [busy, setBusy] = useState(false);
+  const [name, setName] = useState('');
   const [warn, setWarn] = useState('');
-  const [err, setErr] = useState('');
-  const [done, setDone] = useState<{ embed: string; app: string; when: string } | null>(null);
+  const [stats, setStats] = useState<Stats | null>(null);
 
-  const expiresAt = useMemo(() => new Date(Date.now() + hours * 3600 * 1000).toISOString(), [hours]);
-
-  const burn = async () => {
-    if (!file) return;
-    setBusy(true);
-    setErr('');
-    try {
-      if (file.size > 15 * 1024 * 1024) setWarn('fat wick. encoding might take a beat. still no cap.');
-      const dataUrl = await new Promise<string>((resolve, reject) => {
-        const r = new FileReader();
-        r.onload = () => resolve(String(r.result || ''));
-        r.onerror = () => reject(new Error('read failed'));
-        r.readAsDataURL(file);
-      });
-      const id = rid();
-      const res = await publishShare({
-        id,
-        name: file.name,
-        type: file.type || 'application/octet-stream',
-        size: file.size,
-        dataUrl,
-        expiresAt,
-        author: user?.username,
-      });
-      if (!res.ok) {
-        setErr(res.error || 'could not light it');
-        return;
-      }
-      const urls = shareUrls(res.id || id);
-      setDone({ embed: urls.embed, app: urls.app, when: expiresAt });
-    } catch (e: any) {
-      setErr(e?.message || 'failed');
-    } finally {
-      setBusy(false);
-    }
+  const onFile = async (list: FileList | null) => {
+    const f = list?.[0];
+    if (!f) return;
+    setName(f.name);
+    setWarn(f.size > 8 * 1024 * 1024 ? 'large text. reading still runs, the tab may hitch. no hard limit.' : '');
+    setStats(measure(await f.text()));
   };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-xl mx-auto">
+      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          className="glass rounded-[28px] p-8"
+          className="glass rounded-[32px] p-8"
         >
           <p className="text-[#0a84ff] text-sm mb-2">wick</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-2">share that burns out</h1>
-          <p className="text-sm text-neutral-500 mb-6">same db drop as harbor, but with an expiry baked in. discord still gets the embed until it goes cold.</p>
-
-          <label className="block rounded-2xl border border-dashed border-white/15 p-8 text-center cursor-pointer hover:border-white/30">
-            <input type="file" className="hidden" onChange={(e) => setFile(e.target.files?.[0] || null)} />
-            <p className="text-sm text-white">{file ? file.name : 'pick a file'}</p>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">how long would this take to read.</h1>
+          <p className="text-neutral-400 text-sm mb-6">local reading desk. drop a note. nothing is uploaded.</p>
+          <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition">
+            <input type="file" accept=".txt,.md,.csv,.json,.log,text/*" className="hidden" onChange={(e) => onFile(e.target.files)} />
+            <p className="text-white font-medium">{name || 'drop a local text file'}</p>
+            <p className="text-xs text-neutral-500 mt-2">no file limit. just a slowness ping if it is huge.</p>
           </label>
-
-          <label className="block mt-5 text-xs text-neutral-500">
-            hours until it snuffs
-            <input
-              type="range"
-              min={1}
-              max={168}
-              value={hours}
-              onChange={(e) => setHours(Number(e.target.value))}
-              className="w-full mt-2"
-            />
-            <span className="text-neutral-300 text-sm">{hours}h · {new Date(expiresAt).toLocaleString()}</span>
-          </label>
-
-          {warn && <p className="text-xs text-amber-300/80 mt-3">{warn}</p>}
-
-          <button
-            disabled={!file || busy}
-            onClick={burn}
-            className="mt-5 px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40"
-          >
-            {busy ? 'lighting…' : 'light the wick'}
-          </button>
-
-          {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
-          {done && (
-            <div className="mt-5 text-sm space-y-1">
-              <p className="text-neutral-400">dies after {new Date(done.when).toLocaleString()}</p>
-              <p className="break-all text-[#0a84ff]">{done.embed}</p>
+          {warn && <p className="text-amber-300/90 text-xs mt-3">{warn}</p>}
+          {stats && (
+            <div className="mt-8 grid grid-cols-2 gap-3">
+              {[
+                ['words', stats.words],
+                ['characters', stats.chars],
+                ['lines', stats.lines],
+                ['minutes', stats.minutes],
+              ].map(([k, v]) => (
+                <div key={String(k)} className="rounded-2xl bg-white/[0.04] border border-white/5 px-4 py-3">
+                  <p className="text-[11px] text-neutral-500">{k}</p>
+                  <p className="text-xl text-white tabular-nums tracking-tight">{v}</p>
+                </div>
+              ))}
             </div>
           )}
         </motion.div>

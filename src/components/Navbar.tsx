@@ -6,6 +6,10 @@ type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
   { to: 'quay', label: 'quay' },
+  { to: 'lumen', label: 'lumen' },
+  { to: 'tether', label: 'tether' },
+  { to: 'solstice', label: 'solstice' },
+  { to: 'drift', label: 'drift' },
   { to: 'loom', label: 'loom' },
   { to: 'wick', label: 'wick' },
   { to: 'lintel', label: 'lintel' },
@@ -87,6 +91,10 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'lumen', label: 'lumen' },
+      { to: 'tether', label: 'tether' },
+      { to: 'solstice', label: 'solstice' },
+      { to: 'drift', label: 'drift' },
       { to: 'wick', label: 'wick' },
       { to: 'lintel', label: 'lintel' },
       { to: 'loom', label: 'loom' },
@@ -110,6 +118,10 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'all desks',
     items: [
+      { to: 'lumen', label: 'lumen' },
+      { to: 'tether', label: 'tether' },
+      { to: 'solstice', label: 'solstice' },
+      { to: 'drift', label: 'drift' },
       { to: 'quay', label: 'quay' },
       { to: 'loom', label: 'loom' },
       { to: 'wick', label: 'wick' },

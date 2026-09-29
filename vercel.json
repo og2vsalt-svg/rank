@@ -30,6 +30,7 @@
     { "source": "/a/:id", "destination": "/api/embed?id=:id" },
     { "source": "/z/:id", "destination": "/api/embed?id=:id" },
     { "source": "/p/:page", "destination": "/api/embed?page=:page" },
+    { "source": "/desk/:page", "destination": "/api/embed?page=:page" },
     { "source": "/api/share", "destination": "/api/share" },
     { "source": "/api/embed", "destination": "/api/embed" }
   ]

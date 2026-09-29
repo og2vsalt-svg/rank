@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"');
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 function isBot(ua) {
@@ -38,11 +38,14 @@ function pageHtml({ title, desc, image, url, color, mime }) {
   extra.push('<meta property="og:locale" content="en_US" />');
   extra.push('<meta property="og:site_name" content="rankvault" />');
   extra.push('<meta name="twitter:card" content="summary_large_image" />');
+  extra.push('<meta name="twitter:image" content="' + esc(safeImg) + '" />');
+  extra.push('<meta name="twitter:image:src" content="' + esc(safeImg) + '" />');
+  extra.push('<meta name="twitter:title" content="' + esc(title) + '" />');
+  extra.push('<meta name="twitter:description" content="' + esc(desc) + '" />');
   extra.push('<meta property="og:image:width" content="1200" />');
   extra.push('<meta property="og:image:height" content="630" />');
   extra.push('<meta property="og:image:alt" content="' + esc(title) + '" />');
   extra.push('<meta name="twitter:image:alt" content="' + esc(title) + '" />');
-  extra.push('<meta name="og:description" content="' + esc(desc) + '" />');
   if (mime && String(mime).startsWith('video/') && isRemoteImg && image) {
     extra.push('<meta property="og:video" content="' + esc(image) + '" />');
     extra.push('<meta property="og:video:type" content="' + esc(mime) + '" />');
@@ -104,55 +107,9 @@ const PAGE_TITLES = {
   vault: 'vault \u2014 rankvault',
   drop: 'drop \u2014 rankvault',
   share: 'share \u2014 rankvault',
-  parcel: 'parcel \u2014 local to share db',
-  folio: 'folio \u2014 reading room',
-  prism: 'prism \u2014 colour contrast',
-  quorum: 'quorum \u2014 quiet poll',
-  fathom: 'fathom \u2014 sound a local file',
-  signal: 'signal \u2014 pulse of public drops',
-  mews: 'mews \u2014 alley of locals then one drop',
-  drawbridge: 'drawbridge \u2014 timed public crossing',
-  soffit: 'soffit \u2014 inspect then share',
-  portico: 'portico \u2014 preview the discord card then walk through',
-  trestle: 'trestle \u2014 weigh two locals',
-  skylight: 'skylight \u2014 sample a still then ship the pane',
-  keystone: 'keystone \u2014 weigh then pin a receipt',
-  wellhead: 'wellhead \u2014 field note then surface',
-  windlass: 'windlass \u2014 wind then haul a coil',
-  pontoon: 'pontoon \u2014 pile across the water',
-  silt: 'silt \u2014 sieve then share',
-  latch: 'latch \u2014 optional pass drop',
-  whisper: 'whisper \u2014 sealed note',
-  hourglass: 'hourglass \u2014 timed drop',
-  lumenbox: 'lumenbox \u2014 color card',
-  quay: 'quay \u2014 sequential drops',
-  mosaic: 'mosaic \u2014 stills into one card',
-  ledger: 'ledger \u2014 public drop log',
-  locket: 'locket \u2014 framed still',
-  relay: 'relay \u2014 one-shot handoff',
-  oscillo: 'oscillo \u2014 wave card',
-  docket: 'docket \u2014 labeled intake',
-  linotype: 'linotype \u2014 typeset notice',
-  gauge: 'gauge \u2014 inspect a local file',
-  helix: 'helix \u2014 checksum then share',
-  apron: 'apron \u2014 scratch desk',
-  plumb: 'plumb \u2014 look up a public drop',
-  kiln: 'kiln \u2014 fire text then share',
-  lodestone: 'lodestone \u2014 file card for discord',
-  meridian: 'meridian \u2014 weigh two locals',
-  nook: 'nook \u2014 pocket of live ids',
-  spool: 'spool \u2014 wind files into one thread',
-  whetstone: 'whetstone \u2014 hone a name then share',
-  harbor: 'harbor \u2014 dock a pile then launch',
-  tinderbox: 'tinderbox \u2014 preview the discord card then light',
-  pilotage: 'pilotage \u2014 steer a local file into the share db',
-  thresh: 'thresh \u2014 keep what crosses the line',
-  scrip: 'scrip \u2014 issue a quiet iou',
-  oriel: 'oriel \u2014 hang a window card',
-  sextant: 'sextant \u2014 take a bearing on a local file',
-  pannier: 'pannier \u2014 strap a note then ride it out',
-  ember: 'ember \u2014 write a color card then let it travel',
-  corbel: 'corbel \u2014 time a local sound',
+  firth: 'firth \u2014 wrap a note or file',
+  pounce: 'pounce \u2014 local solar clock',
+  spandrel: 'spandrel \u2014 compare two hashes',
 };
 
 export default async function handler(req, res) {

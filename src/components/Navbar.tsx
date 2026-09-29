@@ -5,6 +5,11 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'furlong', label: 'furlong' },
+  { to: 'cresset', label: 'cresset' },
+  { to: 'palisade', label: 'palisade' },
+  { to: 'rivulet', label: 'rivulet' },
+  { to: 'wainscot', label: 'wainscot' },
   { to: 'flume', label: 'flume' },
   { to: 'truss', label: 'truss' },
   { to: 'oriel', label: 'oriel' },
@@ -51,6 +56,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'files',
     items: [
+      { to: 'wainscot', label: 'wainscot' },
       { to: 'flume', label: 'flume' },
       { to: 'oriel', label: 'oriel' },
       { to: 'reliquary', label: 'reliquary' },
@@ -73,6 +79,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'wainscot', label: 'wainscot' },
       { to: 'flume', label: 'flume' },
       { to: 'gesso', label: 'gesso' },
       { to: 'reliquary', label: 'reliquary' },
@@ -93,6 +100,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'create',
     items: [
+      { to: 'cresset', label: 'cresset' },
+      { to: 'rivulet', label: 'rivulet' },
       { to: 'truss', label: 'truss' },
       { to: 'gesso', label: 'gesso' },
       { to: 'haven', label: 'haven' },
@@ -113,6 +122,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'furlong', label: 'furlong' },
+      { to: 'palisade', label: 'palisade' },
       { to: 'oriel', label: 'oriel' },
       { to: 'reliquary', label: 'reliquary' },
       { to: 'belfry', label: 'belfry' },
@@ -143,6 +154,11 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'all desks',
     items: [
+      { to: 'furlong', label: 'furlong' },
+      { to: 'cresset', label: 'cresset' },
+      { to: 'palisade', label: 'palisade' },
+      { to: 'rivulet', label: 'rivulet' },
+      { to: 'wainscot', label: 'wainscot' },
       { to: 'flume', label: 'flume' },
       { to: 'truss', label: 'truss' },
       { to: 'oriel', label: 'oriel' },

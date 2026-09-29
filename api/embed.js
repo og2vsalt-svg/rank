@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"');
 }
 
 function isBot(ua) {
@@ -149,6 +149,10 @@ const PAGE_TITLES = {
   thresh: 'thresh \u2014 keep what crosses the line',
   scrip: 'scrip \u2014 issue a quiet iou',
   oriel: 'oriel \u2014 hang a window card',
+  sextant: 'sextant \u2014 take a bearing on a local file',
+  pannier: 'pannier \u2014 strap a note then ride it out',
+  ember: 'ember \u2014 write a color card then let it travel',
+  corbel: 'corbel \u2014 time a local sound',
 };
 
 export default async function handler(req, res) {

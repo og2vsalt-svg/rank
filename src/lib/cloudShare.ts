@@ -198,5 +198,11 @@ export function shareUrls(id: string) {
     drop: `${origin}/d/${id}`,
     hearth: `${origin}/h/${id}`,
     lantern: `${origin}/r/${id}`,
+    belvedere: `${origin}/b/${id}`,
+    gazebo: `${origin}/g/${id}`,
+    conservatory: `${origin}/c/${id}`,
+    umbra: `${origin}/m/${id}`,
+    loggia: `${origin}/o/${id}`,
+    scriptorium: `${origin}/t/${id}`,
   };
 }

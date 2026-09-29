@@ -1,22 +1,56 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
+import { publishShare, shareUrls } from '../lib/cloudShare';
+
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
 
 export default function TrussPage() {
-  const [raw, setRaw] = useState('');
-  const id = raw.trim().replace(/^.*[?#/](?:f=)?/, '').replace(/[^a-z0-9_-]/gi, '');
-  const origin = typeof window !== 'undefined' ? window.location.origin : '';
-  const cards = id
-    ? [
-        `${origin}/s/${id}`,
-        `${origin}/f/${id}`,
-        `${origin}/embed/${id}`,
-        `${origin}/share/${id}`,
-        `${origin}/drop/${id}`,
-        `${origin}/card/${id}`,
-        `${origin}/flitch/${id}`,
-      ]
-    : [];
+  const [text, setText] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState('');
+  const [link, setLink] = useState('');
+  const [embed, setEmbed] = useState('');
+
+  const stats = useMemo(() => {
+    const t = text;
+    const words = t.trim() ? t.trim().split(/\s+/).length : 0;
+    return { chars: t.length, words, lines: t ? t.split('\n').length : 0 };
+  }, [text]);
+
+  const publish = async () => {
+    if (!text.trim()) return;
+    setBusy(true);
+    setErr('');
+    try {
+      const blob = new Blob([text], { type: 'text/plain' });
+      const dataUrl = `data:text/plain;base64,${btoa(unescape(encodeURIComponent(text)))}`;
+      const id = uid();
+      const pub = await publishShare({
+        id,
+        name: 'truss-note.txt',
+        type: 'text/plain',
+        size: blob.size,
+        dataUrl,
+      });
+      if (!pub.ok) {
+        setErr(pub.error || 'could not publish');
+        return;
+      }
+      const urls = shareUrls(id);
+      setLink(urls.app);
+      setEmbed(urls.embed);
+      try {
+        await navigator.clipboard.writeText(urls.embed);
+      } catch {}
+    } catch (e: any) {
+      setErr(e?.message || 'truss failed');
+    } finally {
+      setBusy(false);
+    }
+  };
 
   return (
     <div className="mesh min-h-screen">
@@ -29,25 +63,34 @@ export default function TrussPage() {
           className="glass rounded-[32px] p-8"
         >
           <p className="text-[#0a84ff] text-sm mb-2">truss</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">every discord card for one drop.</h1>
-          <p className="text-neutral-400 text-sm mb-6">paste a share id. copy the pretty unfurl urls. same file, different beams.</p>
-          <input
-            value={raw}
-            onChange={(e) => setRaw(e.target.value)}
-            className="w-full rounded-2xl bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white outline-none focus:border-[#0a84ff]/50 mb-5"
-            placeholder="share id or link"
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">brace a note, then ship it if you want.</h1>
+          <p className="text-neutral-400 text-sm mb-6">
+            a writing desk, not a vault. counts stay local. publish only when you ask.
+          </p>
+          <textarea
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            rows={12}
+            className="w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 text-sm text-white outline-none focus:border-[#0a84ff]/50"
+            placeholder="write something quiet…"
           />
-          <div className="space-y-2">
-            {cards.map((u) => (
-              <button
-                key={u}
-                onClick={async () => { try { await navigator.clipboard.writeText(u); } catch {} }}
-                className="block w-full text-left text-xs text-neutral-300 bg-white/5 hover:bg-white/8 rounded-2xl px-4 py-3 break-all transition"
-              >
-                {u}
-              </button>
-            ))}
+          <div className="flex items-center justify-between mt-3 text-[12px] text-neutral-500">
+            <span>{stats.words} words · {stats.chars} chars · {stats.lines} lines</span>
+            <button
+              onClick={publish}
+              disabled={busy || !text.trim()}
+              className="px-4 py-1.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40"
+            >
+              {busy ? 'publishing…' : 'publish .txt'}
+            </button>
           </div>
+          {err && <p className="text-red-400 text-xs mt-3">{err}</p>}
+          {link && (
+            <div className="mt-6 space-y-2 text-xs text-neutral-400 break-all">
+              <p>app: {link}</p>
+              <p>discord embed (copied): {embed}</p>
+            </div>
+          )}
         </motion.div>
       </div>
     </div>

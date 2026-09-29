@@ -5,6 +5,9 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'mews', label: 'mews' },
+  { to: 'drawbridge', label: 'drawbridge' },
+  { to: 'soffit', label: 'soffit' },
   { to: 'lintel', label: 'lintel' },
   { to: 'antechamber', label: 'antechamber' },
   { to: 'camber', label: 'camber' },
@@ -43,6 +46,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'files',
     items: [
+      { to: 'mews', label: 'mews' },
+      { to: 'soffit', label: 'soffit' },
+      { to: 'drawbridge', label: 'drawbridge' },
       { to: 'antechamber', label: 'antechamber' },
       { to: 'camber', label: 'camber' },
       { to: 'portico', label: 'portico' },
@@ -91,6 +97,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'drawbridge', label: 'drawbridge' },
+      { to: 'mews', label: 'mews' },
+      { to: 'soffit', label: 'soffit' },
       { to: 'lintel', label: 'lintel' },
       { to: 'antechamber', label: 'antechamber' },
       { to: 'camber', label: 'camber' },
@@ -137,6 +146,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'create',
     items: [
+      { to: 'soffit', label: 'soffit' },
       { to: 'camber', label: 'camber' },
       { to: 'skylight', label: 'skylight' },
       { to: 'portico', label: 'portico' },
@@ -170,6 +180,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'soffit', label: 'soffit' },
+      { to: 'drawbridge', label: 'drawbridge' },
       { to: 'lintel', label: 'lintel' },
       { to: 'trestle', label: 'trestle' },
       { to: 'foyer', label: 'foyer' },

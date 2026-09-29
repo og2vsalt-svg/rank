@@ -1,6 +1,11 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'flume', body: 'sample a still into a palette, then dock the original in the share db. discord unfurls /s.' },
+  { title: 'truss', body: 'brace a note in the tab. publish a .txt drop only when you ask.' },
+  { title: 'oriel', body: 'peek at name, type, and size locally. nothing uploads from this desk.' },
+  { title: 'gesso', body: 'prime a 1200×630 card and file it so discord unfurls cleanly.' },
+  { title: 'reliquary', body: 'keep a sha-256 of the thing. only the receipt goes public.' },
   { title: 'lumen', body: 'check how two colours sit. contrast stays in the tab.' },
   { title: 'tether', body: 'mint a stable nickname for this browser from a phrase.' },
   { title: 'solstice', body: 'daylight hours from latitude. no upload.' },
@@ -11,7 +16,7 @@ const items = [
   { title: 'whetstone', body: 'hone a filename locally, keep the bytes, ship a tidy public drop.' },
   { title: 'harbor', body: 'tie a pile to the dock and send each file out as its own share-db drop.' },
   { title: 'kiln', body: 'fire loose text until extra space falls away, then optionally publish a .txt drop with a discord /s card.' },
-  { title: 'lodestone', body: 'paint a 1200\u00d7630 card from a local file. only the card goes to the share db so discord unfurls cleanly.' },
+  { title: 'lodestone', body: 'paint a 1200×630 card from a local file. only the card goes to the share db so discord unfurls cleanly.' },
   { title: 'meridian', body: 'lay two locals on a line and see which cut is heavier. nothing uploads.' },
   { title: 'nook', body: 'pin live drop ids in this browser and copy their discord /s cards. not a vault grid.' },
   { title: 'pontoon pile', body: 'float several local files across. each one becomes its own public drop and discord /s card.' },
@@ -19,7 +24,7 @@ const items = [
   { title: 'latch phrase', body: 'optional pass on a public drop. friends need the phrase. discord still unfurls /s.' },
   { title: 'quay line', body: 'queue several locals and ship them one after another, each with its own embed path.' },
   { title: 'mosaic card', body: 'tile stills into a single jpeg, then drop that card into the share db.' },
-  { title: 'ledger', body: 'read what already landed in supabase. not a vault \u2014 just the public log.' },
+  { title: 'ledger', body: 'read what already landed in supabase. not a vault — just the public log.' },
   { title: 'locket + relay', body: 'frame one still, or hand a file across with a clock. both mint discord cards.' },
   { title: 'local-first vault', body: 'files live in your browser first. nothing ships unless you flip a drop public.' },
   { title: 'cloud share db', body: 'public drops land in supabase, with vercel blob when a token is set.' },
@@ -31,7 +36,7 @@ const items = [
   { title: 'yarrow', body: 'cast a pile, keep the smallest stalk, publish only that one.' },
   { title: 'oscillo', body: 'decode audio in the tab and print a wave still for discord.' },
   { title: 'docket', body: 'label a local file, tag who filed it, ship it to the share db.' },
-  { title: 'linotype', body: 'set a short notice as a 1200\u00d7630 card and publish the still.' },
+  { title: 'linotype', body: 'set a short notice as a 1200×630 card and publish the still.' },
   { title: 'gauge', body: 'inspect name, type, and size locally. nothing leaves the device.' },
   { title: 'helix', body: 'sha-256 a file in the tab, then publish only the receipt to the share db.' },
   { title: 'apron', body: 'a local scratch pad. no upload, no vault grid.' },
@@ -40,7 +45,7 @@ const items = [
   { title: 'tinderbox', body: 'preview the discord card then light a public drop.' },
   { title: 'metronome', body: 'keep time in the tab. no files, no upload.' },
   { title: 'orrery', body: 'a tiny solar-system clock for the desk. not a vault.' },
-  { title: 'astrolabe', body: 'guess the sun\u2019s height from latitude and hour.' },
+  { title: 'astrolabe', body: 'guess the sun’s height from latitude and hour.' },
   { title: 'nocturne', body: 'a dim writing pad that stays on this device.' },
 ];
 

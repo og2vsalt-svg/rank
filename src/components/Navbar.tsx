@@ -5,6 +5,11 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'folio', label: 'folio' },
+  { to: 'prism', label: 'prism' },
+  { to: 'quorum', label: 'quorum' },
+  { to: 'fathom', label: 'fathom' },
+  { to: 'signal', label: 'signal' },
   { to: 'mews', label: 'mews' },
   { to: 'drawbridge', label: 'drawbridge' },
   { to: 'soffit', label: 'soffit' },
@@ -46,6 +51,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'files',
     items: [
+      { to: 'fathom', label: 'fathom' },
+      { to: 'signal', label: 'signal' },
       { to: 'mews', label: 'mews' },
       { to: 'soffit', label: 'soffit' },
       { to: 'drawbridge', label: 'drawbridge' },
@@ -97,6 +104,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'signal', label: 'signal' },
       { to: 'drawbridge', label: 'drawbridge' },
       { to: 'mews', label: 'mews' },
       { to: 'soffit', label: 'soffit' },
@@ -146,6 +154,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'create',
     items: [
+      { to: 'folio', label: 'folio' },
+      { to: 'prism', label: 'prism' },
+      { to: 'quorum', label: 'quorum' },
       { to: 'soffit', label: 'soffit' },
       { to: 'camber', label: 'camber' },
       { to: 'skylight', label: 'skylight' },
@@ -180,6 +191,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'fathom', label: 'fathom' },
+      { to: 'prism', label: 'prism' },
+      { to: 'quorum', label: 'quorum' },
       { to: 'soffit', label: 'soffit' },
       { to: 'drawbridge', label: 'drawbridge' },
       { to: 'lintel', label: 'lintel' },

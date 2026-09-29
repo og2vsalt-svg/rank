@@ -5,6 +5,11 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'flume', label: 'flume' },
+  { to: 'truss', label: 'truss' },
+  { to: 'oriel', label: 'oriel' },
+  { to: 'gesso', label: 'gesso' },
+  { to: 'reliquary', label: 'reliquary' },
   { to: 'haven', label: 'haven' },
   { to: 'skein', label: 'skein' },
   { to: 'belfry', label: 'belfry' },
@@ -46,6 +51,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'files',
     items: [
+      { to: 'flume', label: 'flume' },
+      { to: 'oriel', label: 'oriel' },
+      { to: 'reliquary', label: 'reliquary' },
       { to: 'haven', label: 'haven' },
       { to: 'skein', label: 'skein' },
       { to: 'quay', label: 'quay' },
@@ -65,6 +73,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'flume', label: 'flume' },
+      { to: 'gesso', label: 'gesso' },
+      { to: 'reliquary', label: 'reliquary' },
       { to: 'haven', label: 'haven' },
       { to: 'skein', label: 'skein' },
       { to: 'quay', label: 'quay' },
@@ -82,6 +93,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'create',
     items: [
+      { to: 'truss', label: 'truss' },
+      { to: 'gesso', label: 'gesso' },
       { to: 'haven', label: 'haven' },
       { to: 'skein', label: 'skein' },
       { to: 'loom', label: 'loom' },
@@ -100,6 +113,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'oriel', label: 'oriel' },
+      { to: 'reliquary', label: 'reliquary' },
       { to: 'belfry', label: 'belfry' },
       { to: 'lumen', label: 'lumen' },
       { to: 'tether', label: 'tether' },
@@ -128,6 +143,11 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'all desks',
     items: [
+      { to: 'flume', label: 'flume' },
+      { to: 'truss', label: 'truss' },
+      { to: 'oriel', label: 'oriel' },
+      { to: 'gesso', label: 'gesso' },
+      { to: 'reliquary', label: 'reliquary' },
       { to: 'haven', label: 'haven' },
       { to: 'skein', label: 'skein' },
       { to: 'belfry', label: 'belfry' },

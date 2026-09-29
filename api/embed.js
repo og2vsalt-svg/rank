@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"');
 }
 
 function isBot(ua) {
@@ -56,7 +56,7 @@ function pageHtml({ title, desc, image, url, color, mime }) {
     extra.push('<meta property="og:audio" content="' + esc(image) + '" />');
     extra.push('<meta property="og:audio:type" content="' + esc(mime) + '" />');
   }
-  return `<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8" />\n<title>${esc(title)}</title>\n<meta name="description" content="${esc(desc)}" />\n<meta name="theme-color" content="${esc(c)}" />\n<meta name="robots" content="noindex" />\n<meta property="og:type" content="website" />\n<meta property="og:site_name" content="rankvault" />\n<meta property="og:title" content="${esc(title)}" />\n<meta property="og:description" content="${esc(desc)}" />\n<meta property="og:image" content="${esc(safeImg)}" />\n<meta property="og:image:secure_url" content="${esc(safeImg)}" />\n<meta property="og:image:type" content="${esc(imgType)}" />\n<meta property="og:image:width" content="1200" />\n<meta property="og:image:height" content="630" />\n<meta property="og:url" content="${esc(url)}" />\n${extra.join('\\n')}\n<meta name="twitter:card" content="summary_large_image" />\n<meta name="twitter:title" content="${esc(title)}" />\n<meta name="twitter:description" content="${esc(desc)}" />\n<meta name="twitter:image" content="${esc(safeImg)}" />\n<link rel="canonical" href="${esc(url)}" />\n</head>\n<body style="background:#050506;color:#f5f5f7;font-family:Inter,system-ui,sans-serif;padding:48px 24px">\n<p style="opacity:.7;font-size:14px">rankvault</p>\n<h1 style="font-size:28px;letter-spacing:-.03em">${esc(title)}</h1>\n<p style="color:#a1a1aa;max-width:40rem">${esc(desc)}</p>\n<p><a href="${esc(url)}" style="color:#0a84ff">open in rankvault</a></p>\n<script>if(!/discord|bot|embed|preview/i.test(navigator.userAgent||'')) location.replace(${JSON.stringify(url)});</script>\n</body>\n</html>`;
+  return `<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8" />\n<title>${esc(title)}</title>\n<meta name="description" content="${esc(desc)}" />\n<meta name="theme-color" content="${esc(c)}" />\n<meta name="robots" content="noindex" />\n<meta property="og:type" content="website" />\n<meta property="og:site_name" content="rankvault" />\n<meta property="og:title" content="${esc(title)}" />\n<meta property="og:description" content="${esc(desc)}" />\n<meta property="og:image" content="${esc(safeImg)}" />\n<meta property="og:image:secure_url" content="${esc(safeImg)}" />\n<meta property="og:image:type" content="${esc(imgType)}" />\n<meta property="og:image:width" content="1200" />\n<meta property="og:image:height" content="630" />\n<meta property="og:url" content="${esc(url)}" />\n${extra.join('\n')}\n<meta name="twitter:card" content="summary_large_image" />\n<meta name="twitter:title" content="${esc(title)}" />\n<meta name="twitter:description" content="${esc(desc)}" />\n<meta name="twitter:image" content="${esc(safeImg)}" />\n<link rel="canonical" href="${esc(url)}" />\n</head>\n<body style="background:#050506;color:#f5f5f7;font-family:Inter,system-ui,sans-serif;padding:48px 24px">\n<p style="opacity:.7;font-size:14px">rankvault</p>\n<h1 style="font-size:28px;letter-spacing:-.03em">${esc(title)}</h1>\n<p style="color:#a1a1aa;max-width:40rem">${esc(desc)}</p>\n<p><a href="${esc(url)}" style="color:#0a84ff">open in rankvault</a></p>\n<script>if(!/discord|bot|embed|preview/i.test(navigator.userAgent||'')) location.replace(${JSON.stringify(url)});</script>\n</body>\n</html>`;
 }
 
 async function loadShare(id) {
@@ -88,6 +88,9 @@ const PAGE_TITLES = {
   garret: 'garret \u2014 a local attic of drop ids',
   lockgate: 'lockgate \u2014 publish with a pass and tide',
   fid: 'fid \u2014 peek at the first bytes, then ship',
+  spinnaker: 'spinnaker \u2014 pack a drop into a share sheet',
+  taffrail: 'taffrail \u2014 inspect a discord card',
+  yardarm: 'yardarm \u2014 hash a local file then publish',
 };
 
 export default async function handler(req, res) {

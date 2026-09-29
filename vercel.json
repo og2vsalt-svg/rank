@@ -31,7 +31,8 @@
     { "source": "/m/:id", "destination": "/api/embed?id=:id" },
     { "source": "/o/:id", "destination": "/api/embed?id=:id" },
     { "source": "/t/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/page/:page", "destination": "/api/embed?page=:page" }
+    { "source": "/page/:page", "destination": "/api/embed?page=:page" },
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
   ],
   "headers": [
     {

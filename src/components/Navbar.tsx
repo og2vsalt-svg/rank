@@ -5,9 +5,13 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'foyer', label: 'foyer' },
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
   { to: 'parcel', label: 'parcel' },
+  { to: 'ingress', label: 'ingress' },
+  { to: 'palimpsest', label: 'palimpsest' },
+  { to: 'cleat', label: 'cleat' },
   { to: 'thresh', label: 'thresh' },
   { to: 'scrip', label: 'scrip' },
   { to: 'oriel', label: 'oriel' },
@@ -33,6 +37,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'files',
     items: [
+      { to: 'foyer', label: 'foyer' },
+      { to: 'ingress', label: 'ingress' },
+      { to: 'cleat', label: 'cleat' },
       { to: 'thresh', label: 'thresh' },
       { to: 'oriel', label: 'oriel' },
       { to: 'hearth', label: 'hearth' },
@@ -74,6 +81,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'cleat', label: 'cleat' },
+      { to: 'ingress', label: 'ingress' },
       { to: 'scrip', label: 'scrip' },
       { to: 'thresh', label: 'thresh' },
       { to: 'oriel', label: 'oriel' },
@@ -113,6 +122,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'create',
     items: [
+      { to: 'palimpsest', label: 'palimpsest' },
       { to: 'scrip', label: 'scrip' },
       { to: 'oriel', label: 'oriel' },
       { to: 'windlass', label: 'windlass' },
@@ -142,6 +152,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'foyer', label: 'foyer' },
       { to: 'thresh', label: 'thresh' },
       { to: 'windlass', label: 'windlass' },
       { to: 'wellhead', label: 'wellhead' },

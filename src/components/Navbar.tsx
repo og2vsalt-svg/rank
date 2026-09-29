@@ -24,6 +24,10 @@ const primary: NavItem[] = [
   { to: 'firth', label: 'firth' },
   { to: 'pounce', label: 'pounce' },
   { to: 'spandrel', label: 'spandrel' },
+  { to: 'tinder', label: 'tinder' },
+  { to: 'windrow', label: 'windrow' },
+  { to: 'splice', label: 'splice' },
+  { to: 'thimble', label: 'thimble' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -84,6 +88,10 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'meridian', label: 'meridian' },
       { to: 'pounce', label: 'pounce' },
       { to: 'spandrel', label: 'spandrel' },
+      { to: 'tinder', label: 'tinder' },
+      { to: 'windrow', label: 'windrow' },
+      { to: 'splice', label: 'splice' },
+      { to: 'thimble', label: 'thimble' },
     ],
   },
   {
@@ -106,6 +114,10 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'firth', label: 'firth' },
       { to: 'pounce', label: 'pounce' },
       { to: 'spandrel', label: 'spandrel' },
+      { to: 'tinder', label: 'tinder' },
+      { to: 'windrow', label: 'windrow' },
+      { to: 'splice', label: 'splice' },
+      { to: 'thimble', label: 'thimble' },
     ],
   },
 ];

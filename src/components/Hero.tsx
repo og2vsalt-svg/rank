@@ -25,6 +25,8 @@ export default function Hero() {
           <button onClick={() => navigate('camber')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">camber</button>
           <button onClick={() => navigate('lintel')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">lintel</button>
           <button onClick={() => navigate('parcel')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">parcel</button>
+          <button onClick={() => navigate('firth')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">firth</button>
+          <button onClick={() => navigate('pounce')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">pounce</button>
           <a href="#features" className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">see features</a>
         </div>
       </div>

@@ -5,6 +5,9 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'lintel', label: 'lintel' },
+  { to: 'antechamber', label: 'antechamber' },
+  { to: 'camber', label: 'camber' },
   { to: 'portico', label: 'portico' },
   { to: 'trestle', label: 'trestle' },
   { to: 'skylight', label: 'skylight' },
@@ -40,6 +43,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'files',
     items: [
+      { to: 'antechamber', label: 'antechamber' },
+      { to: 'camber', label: 'camber' },
       { to: 'portico', label: 'portico' },
       { to: 'skylight', label: 'skylight' },
       { to: 'foyer', label: 'foyer' },
@@ -86,6 +91,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'lintel', label: 'lintel' },
+      { to: 'antechamber', label: 'antechamber' },
+      { to: 'camber', label: 'camber' },
       { to: 'portico', label: 'portico' },
       { to: 'skylight', label: 'skylight' },
       { to: 'cleat', label: 'cleat' },
@@ -129,6 +137,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'create',
     items: [
+      { to: 'camber', label: 'camber' },
       { to: 'skylight', label: 'skylight' },
       { to: 'portico', label: 'portico' },
       { to: 'palimpsest', label: 'palimpsest' },
@@ -161,6 +170,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'lintel', label: 'lintel' },
       { to: 'trestle', label: 'trestle' },
       { to: 'foyer', label: 'foyer' },
       { to: 'thresh', label: 'thresh' },

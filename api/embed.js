@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"');
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 function isBot(ua) {
@@ -105,6 +105,11 @@ const PAGE_TITLES = {
   drop: 'drop \u2014 rankvault',
   share: 'share \u2014 rankvault',
   parcel: 'parcel \u2014 local to share db',
+  folio: 'folio \u2014 reading room',
+  prism: 'prism \u2014 colour contrast',
+  quorum: 'quorum \u2014 quiet poll',
+  fathom: 'fathom \u2014 sound a local file',
+  signal: 'signal \u2014 pulse of public drops',
   mews: 'mews \u2014 alley of locals then one drop',
   drawbridge: 'drawbridge \u2014 timed public crossing',
   soffit: 'soffit \u2014 inspect then share',

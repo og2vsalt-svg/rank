@@ -1,89 +1,104 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { useVault } from './VaultContext';
-import { useRouter } from './Router';
-import { shareUrls } from '../lib/cloudShare';
-
-type Row = { name: string; size: number; id?: string; link?: string; err?: string; warn?: string };
+import { publishShare, shareUrls } from '../lib/cloudShare';
 
 function pretty(n: number) {
   if (n < 1024) return n + ' b';
   if (n < 1024 * 1024) return Math.round(n / 1024) + ' kb';
-  return (n / (1024 * 1024)).toFixed(1) + ' mb';
+  if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(1) + ' mb';
+  return (n / (1024 * 1024 * 1024)).toFixed(2) + ' gb';
+}
+
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
 
 export default function KettlePage() {
-  const { addFiles, togglePublic } = useVault();
-  const { navigate } = useRouter();
+  const [title, setTitle] = useState('');
+  const [body, setBody] = useState('');
   const [busy, setBusy] = useState(false);
-  const [rows, setRows] = useState<Row[]>([]);
-  const [note, setNote] = useState('');
+  const [warn, setWarn] = useState('');
+  const [err, setErr] = useState('');
+  const [embed, setEmbed] = useState('');
+  const [app, setApp] = useState('');
 
-  const run = async (list: FileList | null) => {
-    if (!list?.length) return;
-    const files = [...list];
-    const chunky = files.some((f) => f.size > 40 * 1024 * 1024);
-    setNote(chunky ? 'some of these are chunky. the tab may hitch while encoding. no hard cap.' : '');
-    setBusy(true);
-    const next: Row[] = [];
-    for (const file of files) {
-      const row: Row = { name: file.name, size: file.size };
-      try {
-        const result = await addFiles([file], 'drops');
-        if (!result.ok || !result.ids?.[0]) {
-          row.err = result.error || 'could not save';
-        } else {
-          if (result.warn) row.warn = result.warn;
-          const id = result.ids[0];
-          const pub = await togglePublic(id);
-          if (!pub.ok) {
-            row.err = pub.error || 'saved locally, cloud publish missed';
-            row.id = id;
-          } else {
-            row.id = id;
-            row.link = shareUrls(id).app;
-          }
-        }
-      } catch (e: any) {
-        row.err = e?.message || 'failed';
-      }
-      next.push(row);
-      setRows([...next]);
+  const brew = async () => {
+    const name = (title.trim() || 'kettle-note') + '.txt';
+    const text = [title.trim() && `# ${title.trim()}`, body.trim()].filter(Boolean).join('\n\n');
+    if (!text) {
+      setErr('write something first.');
+      return;
     }
-    setBusy(false);
+    setErr('');
+    setBusy(true);
+    setWarn(text.length > 400_000 ? 'long note. encoding may feel slow. no cap.' : '');
+    try {
+      const dataUrl = `data:text/plain;charset=utf-8;base64,${btoa(unescape(encodeURIComponent(text)))}`;
+      const id = uid();
+      const res = await publishShare({
+        id,
+        name,
+        type: 'text/plain',
+        size: new Blob([text]).size,
+        dataUrl,
+      });
+      if (!res.ok) throw new Error(res.error || 'could not pour');
+      const urls = shareUrls(res.id || id);
+      setEmbed(urls.embed);
+      setApp(urls.app);
+      if (res.warn) setWarn(res.warn);
+      try { await navigator.clipboard.writeText(urls.embed); } catch {}
+    } catch (e: any) {
+      setErr(e?.message || 'kettle failed');
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
       <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="glass rounded-[32px] p-8"
+        >
           <p className="text-[#0a84ff] text-sm mb-2">kettle</p>
-          <h1 className="text-3xl font-semibold mb-3">simmer a batch, publish each.</h1>
-          <p className="text-neutral-400 text-sm mb-6">drop several local files. each one lands in the vault and tries the public db on its own. no size cap — only a slowness note.</p>
-          <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition"
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => { e.preventDefault(); run(e.dataTransfer.files); }}>
-            <input type="file" multiple className="hidden" onChange={(e) => run(e.target.files)} />
-            <p className="text-white font-medium">{busy ? 'publishing…' : 'drop a handful here'}</p>
-            <p className="text-xs text-neutral-500 mt-2">unlimited count. we only warn when the browser might wheeze.</p>
-          </label>
-          {note && <p className="text-xs text-amber-300/80 mt-4">{note}</p>}
-          {rows.length > 0 && (
-            <ul className="mt-6 space-y-2">
-              {rows.map((r, i) => (
-                <li key={i} className="rounded-2xl bg-white/[0.04] px-4 py-3 flex items-center justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="text-sm text-white truncate">{r.name}</p>
-                    <p className="text-[11px] text-neutral-500">{pretty(r.size)}{r.warn ? ' · ' + r.warn : ''}{r.err ? ' · ' + r.err : ''}</p>
-                  </div>
-                  {r.id && (
-                    <button onClick={() => navigate('share', r.id)} className="shrink-0 text-[12px] px-3 py-1.5 rounded-full bg-white text-black">open</button>
-                  )}
-                </li>
-              ))}
-            </ul>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">brew a note, then pour it public.</h1>
+          <p className="text-neutral-400 text-sm mb-6">
+            not the vault. a quiet kettle for text that becomes a discord-ready drop.
+          </p>
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="title"
+            className="w-full mb-3 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm outline-none focus:border-[#0a84ff]/50 transition"
+          />
+          <textarea
+            value={body}
+            onChange={(e) => setBody(e.target.value)}
+            placeholder="what you want to send"
+            rows={8}
+            className="w-full mb-4 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm outline-none focus:border-[#0a84ff]/50 transition resize-none"
+          />
+          <button
+            onClick={brew}
+            disabled={busy}
+            className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-50"
+          >
+            {busy ? 'pouring…' : 'pour to share db'}
+          </button>
+          {warn && <p className="text-xs text-amber-300/80 mt-4">{warn}</p>}
+          {err && <p className="text-xs text-red-400 mt-4">{err}</p>}
+          {embed && (
+            <div className="mt-6 space-y-1">
+              <p className="text-xs text-neutral-400 break-all">discord: {embed}</p>
+              <p className="text-xs text-neutral-500 break-all">app: {app}</p>
+              <p className="text-[11px] text-neutral-600">{pretty(new Blob([body]).size)} note</p>
+            </div>
           )}
         </motion.div>
       </div>

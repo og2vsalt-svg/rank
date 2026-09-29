@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"');
 }
 
 function isBot(ua) {
@@ -105,6 +105,9 @@ const PAGE_TITLES = {
   drop: 'drop \u2014 rankvault',
   share: 'share \u2014 rankvault',
   parcel: 'parcel \u2014 local to share db',
+  portico: 'portico \u2014 preview the discord card then walk through',
+  trestle: 'trestle \u2014 weigh two locals',
+  skylight: 'skylight \u2014 sample a still then ship the pane',
   keystone: 'keystone \u2014 weigh then pin a receipt',
   wellhead: 'wellhead \u2014 field note then surface',
   windlass: 'windlass \u2014 wind then haul a coil',

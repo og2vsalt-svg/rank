@@ -1,99 +1,53 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishShare, shareUrls } from '../lib/cloudShare';
 
 function pretty(n: number) {
   if (n < 1024) return n + ' b';
-  if (n < 1024 * 1024) return Math.round(n / 1024) + ' kb';
-  if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(1) + ' mb';
+  if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' kb';
+  if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(2) + ' mb';
   return (n / (1024 * 1024 * 1024)).toFixed(2) + ' gb';
 }
 
-function hexHead(buf: ArrayBuffer, bytes = 64) {
-  const u = new Uint8Array(buf.slice(0, bytes));
-  return Array.from(u)
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join(' ');
-}
-
-function entropy(buf: ArrayBuffer) {
-  const u = new Uint8Array(buf.slice(0, Math.min(buf.byteLength, 65536)));
-  const counts = new Array(256).fill(0);
-  for (let i = 0; i < u.length; i++) counts[u[i]]++;
-  let h = 0;
-  for (const c of counts) {
-    if (!c) continue;
-    const p = c / u.length;
-    h -= p * Math.log2(p);
-  }
-  return h;
-}
-
-function readAsDataUrl(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const r = new FileReader();
-    r.onload = () => resolve(String(r.result || ''));
-    r.onerror = () => reject(new Error('could not read file'));
-    r.readAsDataURL(file);
-  });
+async function sha256(buf: ArrayBuffer) {
+  const hash = await crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(hash)).map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
 export default function FathomPage() {
+  const [info, setInfo] = useState<{
+    name: string;
+    type: string;
+    size: number;
+    last: string;
+    hash?: string;
+    warn?: string;
+  } | null>(null);
   const [busy, setBusy] = useState(false);
-  const [warn, setWarn] = useState('');
-  const [err, setErr] = useState('');
-  const [peek, setPeek] = useState<{ name: string; size: number; type: string; hex: string; bits: string } | null>(null);
-  const [file, setFile] = useState<File | null>(null);
-  const [link, setLink] = useState('');
-  const [embed, setEmbed] = useState('');
 
-  const inspect = async (f: File | undefined) => {
-    if (!f) return;
-    setErr('');
-    setLink('');
-    setEmbed('');
-    setFile(f);
-    setWarn(f.size > 40 * 1024 * 1024 ? 'no cap. a file this heavy can make the tab lag while it encodes.' : '');
-    try {
-      const buf = await f.slice(0, 65536).arrayBuffer();
-      setPeek({
-        name: f.name,
-        size: f.size,
-        type: f.type || 'application/octet-stream',
-        hex: hexHead(buf),
-        bits: entropy(buf).toFixed(2) + ' bits / byte',
-      });
-    } catch (e: any) {
-      setErr(e?.message || 'could not peek');
-    }
-  };
-
-  const send = async () => {
-    if (!file) return;
+  const onFile = async (file: File) => {
     setBusy(true);
-    setErr('');
+    const warn =
+      file.size > 40 * 1024 * 1024
+        ? 'large file. hashing may feel slow. no hard cap.'
+        : file.size > 8 * 1024 * 1024
+          ? 'chunky file. give the tab a second.'
+          : undefined;
+    let hash: string | undefined;
     try {
-      const dataUrl = await readAsDataUrl(file);
-      const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-      const res = await publishShare({
-        id,
-        name: file.name,
-        type: file.type || 'application/octet-stream',
-        size: file.size,
-        dataUrl,
-      });
-      if (!res.ok) throw new Error(res.error || 'share failed');
-      const urls = shareUrls(res.id || id);
-      setLink(urls.app);
-      setEmbed(urls.embed);
-      try { await navigator.clipboard.writeText(urls.embed); } catch {}
-      if (res.warn) setWarn(res.warn);
-    } catch (e: any) {
-      setErr(e?.message || 'fathom failed');
-    } finally {
-      setBusy(false);
+      hash = await sha256(await file.arrayBuffer());
+    } catch {
+      hash = undefined;
     }
+    setInfo({
+      name: file.name,
+      type: file.type || 'unknown',
+      size: file.size,
+      last: file.lastModified ? new Date(file.lastModified).toISOString() : '',
+      hash,
+      warn,
+    });
+    setBusy(false);
   };
 
   return (
@@ -107,39 +61,31 @@ export default function FathomPage() {
           className="glass rounded-[32px] p-8"
         >
           <p className="text-[#0a84ff] text-sm mb-2">fathom</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">peek the first bytes, then send it live.</h1>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">sound a local file. keep the bytes here.</h1>
           <p className="text-neutral-400 text-sm mb-6">
-            not the vault. a depth check on a local file, then a public drop with a discord card.
+            inspect name, type, size, and sha-256. nothing is uploaded. no size limit, only a slowness note.
           </p>
-          <label
-            className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition"
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => { e.preventDefault(); inspect(e.dataTransfer.files?.[0]); }}
-          >
-            <input type="file" className="hidden" onChange={(e) => inspect(e.target.files?.[0])} />
-            <p className="text-white font-medium">drop a file to sound it</p>
-            <p className="text-xs text-neutral-500 mt-2">no hard limit. we only warn when it might feel slow.</p>
+          <label className="block rounded-[24px] border border-dashed border-white/15 bg-black/20 px-6 py-10 text-center cursor-pointer hover:border-[#0a84ff]/40 transition">
+            <input
+              type="file"
+              className="hidden"
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) onFile(f);
+              }}
+            />
+            <span className="text-sm text-neutral-300">{busy ? 'sounding…' : 'drop or choose a file'}</span>
           </label>
-          {peek && (
-            <div className="mt-6 space-y-3">
-              <p className="text-sm text-white">{peek.name}</p>
-              <p className="text-xs text-neutral-500">{pretty(peek.size)} · {peek.type} · {peek.bits}</p>
-              <pre className="text-[11px] leading-5 text-neutral-400 bg-black/30 rounded-2xl p-4 overflow-x-auto whitespace-pre-wrap">{peek.hex}</pre>
-              <button
-                onClick={send}
-                disabled={busy}
-                className="w-full rounded-full bg-white text-black py-3 text-sm font-medium hover:bg-neutral-200 transition disabled:opacity-50"
-              >
-                {busy ? 'sending…' : 'publish drop'}
-              </button>
-            </div>
-          )}
-          {warn && <p className="text-xs text-amber-300/80 mt-3">{warn}</p>}
-          {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
-          {embed && (
-            <div className="mt-6 space-y-2">
-              <p className="text-xs text-neutral-400 break-all">discord: {embed}</p>
-              <p className="text-xs text-neutral-500 break-all">app: {link}</p>
+          {info && (
+            <div className="mt-6 space-y-2 text-sm text-neutral-300">
+              <p><span className="text-neutral-500">name</span> {info.name}</p>
+              <p><span className="text-neutral-500">type</span> {info.type}</p>
+              <p><span className="text-neutral-500">size</span> {pretty(info.size)}</p>
+              {info.last && <p><span className="text-neutral-500">modified</span> {info.last}</p>}
+              {info.hash && (
+                <p className="break-all"><span className="text-neutral-500">sha-256</span> {info.hash}</p>
+              )}
+              {info.warn && <p className="text-amber-400/80 text-xs pt-2">{info.warn}</p>}
             </div>
           )}
         </motion.div>

@@ -1,106 +1,62 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { useAuth } from './AuthContext';
-import { publishShare, shareUrls } from '../lib/cloudShare';
 
-function readFile(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const r = new FileReader();
-    r.onload = () => resolve(String(r.result || ''));
-    r.onerror = () => reject(new Error('could not read file'));
-    r.readAsDataURL(file);
-  });
-}
+const KEY = 'rankvault-folio';
 
 export default function FolioPage() {
-  const { user } = useAuth();
   const [title, setTitle] = useState('');
-  const [note, setNote] = useState('');
-  const [busy, setBusy] = useState(false);
-  const [warn, setWarn] = useState('');
-  const [err, setErr] = useState('');
-  const [link, setLink] = useState('');
-  const [embed, setEmbed] = useState('');
+  const [body, setBody] = useState('');
 
-  const onFile = async (file?: File | null) => {
-    if (!file) return;
-    setBusy(true);
-    setErr('');
-    setLink('');
-    setWarn(file.size > 40 * 1024 * 1024 ? 'chunky file. this tab may nap while it encodes. no hard cap.' : '');
+  useEffect(() => {
     try {
-      const dataUrl = await readFile(file);
-      const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-      const name = title.trim() ? `${title.trim()}-${file.name}` : file.name;
-      const res = await publishShare({
-        id,
-        name,
-        type: file.type || 'application/octet-stream',
-        size: file.size,
-        dataUrl,
-        author: user?.username || undefined,
-      });
-      if (!res.ok) {
-        setErr(res.error || 'could not publish');
-        return;
-      }
-      if (res.warn) setWarn(res.warn);
-      const urls = shareUrls(id);
-      setLink(urls.app);
-      setEmbed(urls.embed);
-      try {
-        await navigator.clipboard.writeText(urls.embed);
-      } catch {}
-    } catch (e: any) {
-      setErr(e?.message || 'folio failed');
-    } finally {
-      setBusy(false);
-    }
+      const raw = localStorage.getItem(KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      setTitle(parsed.title || '');
+      setBody(parsed.body || '');
+    } catch {}
+  }, []);
+
+  const persist = (nextTitle: string, nextBody: string) => {
+    setTitle(nextTitle);
+    setBody(nextBody);
+    try {
+      localStorage.setItem(KEY, JSON.stringify({ title: nextTitle, body: nextBody }));
+    } catch {}
   };
+
+  const words = body.trim() ? body.trim().split(/\s+/).length : 0;
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-8">
+      <div className="pt-28 pb-20 px-5 max-w-3xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="glass rounded-[32px] p-8 sm:p-10"
+        >
           <p className="text-[#0a84ff] text-sm mb-2">folio</p>
-          <h1 className="text-3xl font-semibold mb-3 tracking-tight">title a drop, then send it.</h1>
-          <p className="text-neutral-400 text-sm mb-6">not another vault grid. just a cover line plus one local file into the share db. discord uses the /s card.</p>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">a reading room that stays on this device.</h1>
+          <p className="text-neutral-400 text-sm mb-8">
+            not a vault. write a title and a page. nothing leaves the tab unless you copy it.
+          </p>
           <input
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="cover title"
-            className="w-full mb-3 bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/40"
+            onChange={(e) => persist(e.target.value, body)}
+            placeholder="untitled folio"
+            className="w-full bg-transparent text-2xl font-semibold tracking-tight outline-none placeholder:text-neutral-600 mb-5"
           />
           <textarea
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            placeholder="optional note. stays on this page, not in the file."
-            rows={3}
-            className="w-full mb-4 bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/40 resize-none"
+            value={body}
+            onChange={(e) => persist(title, e.target.value)}
+            rows={16}
+            placeholder="start a page…"
+            className="w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 text-sm leading-relaxed text-neutral-200 outline-none focus:border-[#0a84ff]/50 transition"
           />
-          <label
-            className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition"
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => {
-              e.preventDefault();
-              onFile(e.dataTransfer.files?.[0]);
-            }}
-          >
-            <input type="file" className="hidden" onChange={(e) => onFile(e.target.files?.[0])} />
-            <p className="text-white font-medium">{busy ? 'publishing…' : 'drop one file'}</p>
-            <p className="text-xs text-neutral-500 mt-2">no size lock. just a slowness warning if it is huge.</p>
-          </label>
-          {note && <p className="text-xs text-neutral-500 mt-4">kept locally: {note}</p>}
-          {warn && <p className="text-xs text-amber-300/80 mt-4">{warn}</p>}
-          {err && <p className="text-xs text-red-400 mt-4">{err}</p>}
-          {embed && (
-            <div className="mt-5 space-y-1 text-xs text-neutral-400 break-all">
-              <p>embed (copied): {embed}</p>
-              <p>app: {link}</p>
-            </div>
-          )}
+          <p className="text-xs text-neutral-500 mt-3">{words} words · {body.length} chars · local only</p>
         </motion.div>
       </div>
     </div>

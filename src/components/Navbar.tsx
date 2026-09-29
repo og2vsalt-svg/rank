@@ -5,6 +5,9 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'haven', label: 'haven' },
+  { to: 'skein', label: 'skein' },
+  { to: 'belfry', label: 'belfry' },
   { to: 'quay', label: 'quay' },
   { to: 'lumen', label: 'lumen' },
   { to: 'tether', label: 'tether' },
@@ -43,6 +46,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'files',
     items: [
+      { to: 'haven', label: 'haven' },
+      { to: 'skein', label: 'skein' },
       { to: 'quay', label: 'quay' },
       { to: 'lintel', label: 'lintel' },
       { to: 'spindle', label: 'spindle' },
@@ -60,6 +65,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'haven', label: 'haven' },
+      { to: 'skein', label: 'skein' },
       { to: 'quay', label: 'quay' },
       { to: 'kettle', label: 'kettle' },
       { to: 'spindle', label: 'spindle' },
@@ -75,6 +82,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'create',
     items: [
+      { to: 'haven', label: 'haven' },
+      { to: 'skein', label: 'skein' },
       { to: 'loom', label: 'loom' },
       { to: 'marrow', label: 'marrow' },
       { to: 'kettle', label: 'kettle' },
@@ -91,6 +100,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'belfry', label: 'belfry' },
       { to: 'lumen', label: 'lumen' },
       { to: 'tether', label: 'tether' },
       { to: 'solstice', label: 'solstice' },
@@ -118,6 +128,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'all desks',
     items: [
+      { to: 'haven', label: 'haven' },
+      { to: 'skein', label: 'skein' },
+      { to: 'belfry', label: 'belfry' },
       { to: 'lumen', label: 'lumen' },
       { to: 'tether', label: 'tether' },
       { to: 'solstice', label: 'solstice' },

@@ -16,6 +16,9 @@ const primary: NavItem[] = [
   { to: 'drop', label: 'drop' },
   { to: 'quay', label: 'quay' },
   { to: 'harbor', label: 'harbor' },
+  { to: 'spinnaker', label: 'spinnaker' },
+  { to: 'taffrail', label: 'taffrail' },
+  { to: 'yardarm', label: 'yardarm' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -32,6 +35,7 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'harbor', label: 'harbor' },
       { to: 'wainscot', label: 'wainscot' },
       { to: 'parcel', label: 'parcel' },
+      { to: 'yardarm', label: 'yardarm' },
     ],
   },
   {
@@ -45,6 +49,9 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'quay', label: 'quay' },
       { to: 'signal', label: 'signal' },
       { to: 'ledger', label: 'ledger' },
+      { to: 'spinnaker', label: 'spinnaker' },
+      { to: 'taffrail', label: 'taffrail' },
+      { to: 'yardarm', label: 'yardarm' },
     ],
   },
   {
@@ -79,6 +86,9 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'skein', label: 'skein' },
       { to: 'harbor', label: 'harbor' },
       { to: 'nook', label: 'nook' },
+      { to: 'spinnaker', label: 'spinnaker' },
+      { to: 'taffrail', label: 'taffrail' },
+      { to: 'yardarm', label: 'yardarm' },
     ],
   },
 ];

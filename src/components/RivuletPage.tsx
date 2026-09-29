@@ -1,69 +1,23 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishShare, shareUrls } from '../lib/cloudShare';
-
-function uid() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-}
-
-function pretty(n: number) {
-  if (n < 1024) return n + ' b';
-  if (n < 1024 * 1024) return Math.round(n / 1024) + ' kb';
-  if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(1) + ' mb';
-  return (n / (1024 * 1024 * 1024)).toFixed(2) + ' gb';
-}
-
-function readAsDataUrl(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const r = new FileReader();
-    r.onload = () => resolve(String(r.result || ''));
-    r.onerror = () => reject(new Error('could not read file'));
-    r.readAsDataURL(file);
-  });
-}
 
 export default function RivuletPage() {
-  const [busy, setBusy] = useState(false);
-  const [warn, setWarn] = useState('');
-  const [err, setErr] = useState('');
-  const [note, setNote] = useState('');
-  const [embed, setEmbed] = useState('');
-  const [app, setApp] = useState('');
+  const [raw, setRaw] = useState('');
+  const [copied, setCopied] = useState(-1);
 
-  const send = async (list: FileList | null) => {
-    const file = list?.[0];
-    if (!file) return;
-    setErr('');
-    setEmbed('');
-    setApp('');
-    setWarn(file.size > 40 * 1024 * 1024 ? 'wide stream. no cap — the tab might just breathe a second.' : '');
-    setBusy(true);
-    try {
-      const dataUrl = await readAsDataUrl(file);
-      const id = uid();
-      const name = note.trim() ? `${note.trim()} — ${file.name}` : file.name;
-      const res = await publishShare({
-        id,
-        name,
-        type: file.type || 'application/octet-stream',
-        size: file.size,
-        dataUrl,
-      });
-      if (!res.ok) {
-        setErr(res.error || 'the rivulet dried up');
-        return;
-      }
-      if (res.warn) setWarn(res.warn);
-      const urls = shareUrls(id);
-      setEmbed(urls.embed);
-      setApp(urls.app);
-      try { await navigator.clipboard.writeText(urls.embed); } catch {}
-    } catch (e: any) {
-      setErr(e?.message || 'could not send the file downstream');
-    } finally {
-      setBusy(false);
-    }
+  const streams = useMemo(() => {
+    return raw
+      .split(/\n\s*\n/)
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .slice(0, 40);
+  }, [raw]);
+
+  const copy = async (i: number, text: string) => {
+    await navigator.clipboard.writeText(text);
+    setCopied(i);
+    setTimeout(() => setCopied(-1), 900);
   };
 
   return (
@@ -77,33 +31,32 @@ export default function RivuletPage() {
           className="glass rounded-[32px] p-8"
         >
           <p className="text-[#0a84ff] text-sm mb-2">rivulet</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">name a drop, then let it run.</h1>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">split a note into little streams.</h1>
           <p className="text-neutral-400 text-sm mb-6">
-            local file goes to the share db. discord cards use the /s link. no hard size lock.
+            blank lines become banks. copies stay local. nothing is uploaded.
           </p>
-          <input
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            placeholder="optional label for the current"
-            className="w-full mb-4 px-4 py-2.5 rounded-full bg-white/5 border border-white/10 text-sm outline-none focus:border-[#0a84ff]/50"
+          <textarea
+            value={raw}
+            onChange={(e) => setRaw(e.target.value)}
+            placeholder="paste a long note. leave a blank line between thoughts."
+            className="w-full min-h-[180px] rounded-3xl bg-white/5 border border-white/10 p-4 text-sm text-neutral-100 outline-none focus:border-[#0a84ff]/40"
           />
-          <label
-            className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition"
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => { e.preventDefault(); send(e.dataTransfer.files); }}
-          >
-            <input type="file" className="hidden" onChange={(e) => send(e.target.files)} />
-            <p className="text-white font-medium">{busy ? 'the water is moving…' : 'drop a file into the rivulet'}</p>
-            <p className="text-xs text-neutral-500 mt-2">warnings only if encoding might lag.</p>
-          </label>
-          {warn && <p className="text-xs text-amber-300/80 mt-3">{warn}</p>}
-          {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
-          {embed && (
-            <div className="mt-6 space-y-2">
-              <p className="text-xs text-neutral-400 break-all">discord embed (copied): {embed}</p>
-              <p className="text-xs text-neutral-500 break-all">app link: {app}</p>
-            </div>
-          )}
+          <p className="text-xs text-neutral-500 mt-3">{streams.length} streams</p>
+          <ul className="mt-4 space-y-2">
+            {streams.map((s, i) => (
+              <li key={i}>
+                <button
+                  onClick={() => copy(i, s)}
+                  className="w-full text-left rounded-2xl bg-white/5 hover:bg-white/8 px-4 py-3 text-sm text-neutral-200 transition"
+                >
+                  <span className="text-neutral-500 mr-2">{i + 1}</span>
+                  {s.slice(0, 140)}
+                  {s.length > 140 ? '…' : ''}
+                  <span className="float-right text-neutral-500">{copied === i ? 'copied' : 'copy'}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
         </motion.div>
       </div>
     </div>

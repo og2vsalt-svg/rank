@@ -18,6 +18,7 @@
     { "source": "/n/:id", "destination": "/api/embed?id=:id" },
     { "source": "/h/:id", "destination": "/api/embed?id=:id" },
     { "source": "/r/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/o/:id", "destination": "/api/embed?id=:id" },
     { "source": "/embed/:id", "destination": "/api/embed?id=:id" },
     { "source": "/p/:page", "destination": "/api/embed?page=:page" },
     { "source": "/tinderbox", "destination": "/api/embed?page=tinderbox" },
@@ -30,6 +31,9 @@
     { "source": "/lantern", "destination": "/api/embed?page=lantern" },
     { "source": "/solarium", "destination": "/api/embed?page=solarium" },
     { "source": "/vestibule", "destination": "/api/embed?page=vestibule" },
+    { "source": "/thresh", "destination": "/api/embed?page=thresh" },
+    { "source": "/scrip", "destination": "/api/embed?page=scrip" },
+    { "source": "/oriel", "destination": "/api/embed?page=oriel" },
     { "source": "/share/:id", "destination": "/api/embed?id=:id" },
     { "source": "/drop/:id", "destination": "/api/embed?id=:id" }
   ]

@@ -8,6 +8,9 @@ const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
   { to: 'parcel', label: 'parcel' },
+  { to: 'thresh', label: 'thresh' },
+  { to: 'scrip', label: 'scrip' },
+  { to: 'oriel', label: 'oriel' },
   { to: 'hearth', label: 'hearth' },
   { to: 'stillroom', label: 'stillroom' },
   { to: 'windlass', label: 'windlass' },
@@ -30,6 +33,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'files',
     items: [
+      { to: 'thresh', label: 'thresh' },
+      { to: 'oriel', label: 'oriel' },
       { to: 'hearth', label: 'hearth' },
       { to: 'stillroom', label: 'stillroom' },
       { to: 'windlass', label: 'windlass' },
@@ -69,6 +74,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'scrip', label: 'scrip' },
+      { to: 'thresh', label: 'thresh' },
+      { to: 'oriel', label: 'oriel' },
       { to: 'hearth', label: 'hearth' },
       { to: 'stillroom', label: 'stillroom' },
       { to: 'windlass', label: 'windlass' },
@@ -105,6 +113,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'create',
     items: [
+      { to: 'scrip', label: 'scrip' },
+      { to: 'oriel', label: 'oriel' },
       { to: 'windlass', label: 'windlass' },
       { to: 'wellhead', label: 'wellhead' },
       { to: 'keystone', label: 'keystone' },
@@ -132,6 +142,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'thresh', label: 'thresh' },
       { to: 'windlass', label: 'windlass' },
       { to: 'wellhead', label: 'wellhead' },
       { to: 'harbor', label: 'harbor' },

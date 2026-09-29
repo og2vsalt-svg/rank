@@ -5,6 +5,8 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'keelson', label: 'keelson' },
+  { to: 'hatchway', label: 'hatchway' },
   { to: 'porchlight', label: 'porchlight' },
   { to: 'stillwater', label: 'stillwater' },
   { to: 'mooring', label: 'mooring' },
@@ -27,6 +29,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'files',
     items: [
+      { to: 'keelson', label: 'keelson' },
+      { to: 'hatchway', label: 'hatchway' },
       { to: 'mooring', label: 'mooring' },
       { to: 'towpath', label: 'towpath' },
       { to: 'lockgate', label: 'lockgate' },
@@ -43,6 +47,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'keelson', label: 'keelson' },
+      { to: 'hatchway', label: 'hatchway' },
       { to: 'hawser', label: 'hawser' },
       { to: 'buoy', label: 'buoy' },
       { to: 'garret', label: 'garret' },
@@ -74,6 +80,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'all desks',
     items: [
+      { to: 'keelson', label: 'keelson' },
+      { to: 'hatchway', label: 'hatchway' },
       { to: 'mooring', label: 'mooring' },
       { to: 'towpath', label: 'towpath' },
       { to: 'buoy', label: 'buoy' },

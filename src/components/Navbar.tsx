@@ -5,6 +5,10 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'sextant', label: 'sextant' },
+  { to: 'pannier', label: 'pannier' },
+  { to: 'ember', label: 'ember' },
+  { to: 'corbel', label: 'corbel' },
   { to: 'jetty', label: 'jetty' },
   { to: 'gable', label: 'gable' },
   { to: 'mullion', label: 'mullion' },
@@ -23,6 +27,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'files',
     items: [
+      { to: 'pannier', label: 'pannier' },
       { to: 'jetty', label: 'jetty' },
       { to: 'gable', label: 'gable' },
       { to: 'vault', label: 'vault' },
@@ -36,6 +41,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'pannier', label: 'pannier' },
+      { to: 'ember', label: 'ember' },
       { to: 'transom', label: 'transom' },
       { to: 'jetty', label: 'jetty' },
       { to: 'gable', label: 'gable' },
@@ -49,6 +56,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'create',
     items: [
+      { to: 'ember', label: 'ember' },
       { to: 'gable', label: 'gable' },
       { to: 'mullion', label: 'mullion' },
       { to: 'folio', label: 'folio' },
@@ -62,6 +70,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'sextant', label: 'sextant' },
+      { to: 'corbel', label: 'corbel' },
       { to: 'transom', label: 'transom' },
       { to: 'quorum', label: 'quorum' },
       { to: 'gauge', label: 'gauge' },
@@ -75,6 +85,10 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'all desks',
     items: [
+      { to: 'sextant', label: 'sextant' },
+      { to: 'pannier', label: 'pannier' },
+      { to: 'ember', label: 'ember' },
+      { to: 'corbel', label: 'corbel' },
       { to: 'folio', label: 'folio' },
       { to: 'prism', label: 'prism' },
       { to: 'quorum', label: 'quorum' },

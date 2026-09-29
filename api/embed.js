@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"');
 }
 
 function isBot(ua) {
@@ -46,6 +46,8 @@ function pageHtml({ title, desc, image, url, color, mime }) {
   extra.push('<meta property="og:image:height" content="630" />');
   extra.push('<meta property="og:image:alt" content="' + esc(title) + '" />');
   extra.push('<meta name="twitter:image:alt" content="' + esc(title) + '" />');
+  extra.push('<meta name="color-scheme" content="dark" />');
+  extra.push('<meta property="og:determiner" content="a" />');
   if (mime && String(mime).startsWith('video/') && isRemoteImg && image) {
     extra.push('<meta property="og:video" content="' + esc(image) + '" />');
     extra.push('<meta property="og:video:type" content="' + esc(mime) + '" />');
@@ -119,6 +121,10 @@ const PAGE_TITLES = {
   lintel: 'lintel \u2014 peek a file header',
   marrow: 'marrow \u2014 split a note',
   quay: 'quay \u2014 dock a file into the share db',
+  lumen: 'lumen \u2014 colour contrast',
+  tether: 'tether \u2014 a nickname for this browser',
+  solstice: 'solstice \u2014 daylight hours',
+  drift: 'drift \u2014 local slips',
 };
 
 export default async function handler(req, res) {

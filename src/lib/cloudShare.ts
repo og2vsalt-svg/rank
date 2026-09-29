@@ -204,5 +204,8 @@ export function shareUrls(id: string) {
     umbra: `${origin}/m/${id}`,
     loggia: `${origin}/o/${id}`,
     scriptorium: `${origin}/t/${id}`,
+    lintel: `${origin}/i/${id}`,
+    antechamber: `${origin}/a/${id}`,
+    camber: `${origin}/e/${id}`,
   };
 }

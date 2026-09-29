@@ -114,6 +114,11 @@ const PAGE_TITLES = {
   windrow: 'windrow \u2014 sort a list',
   splice: 'splice \u2014 join two texts',
   thimble: 'thimble \u2014 mint short ids',
+  loom: 'loom \u2014 palette from a picture',
+  wick: 'wick \u2014 reading time',
+  lintel: 'lintel \u2014 peek a file header',
+  marrow: 'marrow \u2014 split a note',
+  quay: 'quay \u2014 dock a file into the share db',
 };
 
 export default async function handler(req, res) {

@@ -5,6 +5,11 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'quay', label: 'quay' },
+  { to: 'loom', label: 'loom' },
+  { to: 'wick', label: 'wick' },
+  { to: 'lintel', label: 'lintel' },
+  { to: 'marrow', label: 'marrow' },
   { to: 'kettle', label: 'kettle' },
   { to: 'spindle', label: 'spindle' },
   { to: 'sextant', label: 'sextant' },
@@ -34,6 +39,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'files',
     items: [
+      { to: 'quay', label: 'quay' },
+      { to: 'lintel', label: 'lintel' },
       { to: 'spindle', label: 'spindle' },
       { to: 'pannier', label: 'pannier' },
       { to: 'jetty', label: 'jetty' },
@@ -49,6 +56,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'quay', label: 'quay' },
       { to: 'kettle', label: 'kettle' },
       { to: 'spindle', label: 'spindle' },
       { to: 'pannier', label: 'pannier' },
@@ -63,6 +71,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'create',
     items: [
+      { to: 'loom', label: 'loom' },
+      { to: 'marrow', label: 'marrow' },
       { to: 'kettle', label: 'kettle' },
       { to: 'ember', label: 'ember' },
       { to: 'gable', label: 'gable' },
@@ -77,6 +87,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'wick', label: 'wick' },
+      { to: 'lintel', label: 'lintel' },
+      { to: 'loom', label: 'loom' },
       { to: 'sextant', label: 'sextant' },
       { to: 'corbel', label: 'corbel' },
       { to: 'quorum', label: 'quorum' },
@@ -97,6 +110,11 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'all desks',
     items: [
+      { to: 'quay', label: 'quay' },
+      { to: 'loom', label: 'loom' },
+      { to: 'wick', label: 'wick' },
+      { to: 'lintel', label: 'lintel' },
+      { to: 'marrow', label: 'marrow' },
       { to: 'kettle', label: 'kettle' },
       { to: 'spindle', label: 'spindle' },
       { to: 'sextant', label: 'sextant' },

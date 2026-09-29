@@ -34,6 +34,10 @@ const items = [
   { title: 'plumb', body: 'look up a public drop id and copy the discord /s card.' },
   { title: 'keystone', body: 'weigh a local file, pin a sha receipt or the original. discord unfurls /s.' },
   { title: 'tinderbox', body: 'preview the discord card then light a public drop.' },
+  { title: 'metronome', body: 'keep time in the tab. no files, no upload.' },
+  { title: 'orrery', body: 'a tiny solar-system clock for the desk. not a vault.' },
+  { title: 'astrolabe', body: 'guess the sun\u2019s height from latitude and hour.' },
+  { title: 'nocturne', body: 'a dim writing pad that stays on this device.' },
 ];
 
 export default function Features() {

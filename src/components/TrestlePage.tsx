@@ -1,94 +1,81 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishShare, shareUrls } from '../lib/cloudShare';
 
-function uid() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+function pretty(n: number) {
+  if (n < 1024) return n + ' b';
+  if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' kb';
+  if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(2) + ' mb';
+  return (n / (1024 * 1024 * 1024)).toFixed(2) + ' gb';
 }
 
-function readAsDataUrl(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const r = new FileReader();
-    r.onload = () => resolve(String(r.result || ''));
-    r.onerror = () => reject(new Error('could not read file'));
-    r.readAsDataURL(file);
-  });
-}
-
-type Row = { name: string; embed?: string; err?: string };
+type Side = { name: string; size: number; type: string } | null;
 
 export default function TrestlePage() {
-  const [busy, setBusy] = useState(false);
-  const [warn, setWarn] = useState('');
-  const [rows, setRows] = useState<Row[]>([]);
+  const [left, setLeft] = useState<Side>(null);
+  const [right, setRight] = useState<Side>(null);
 
-  const send = async (list: FileList | null) => {
-    if (!list || !list.length) return;
-    const files = Array.from(list);
-    const heavy = files.some((f) => f.size > 40 * 1024 * 1024);
-    setWarn(heavy ? 'one of these spans is chunky. no cap, just a slowness tap.' : '');
-    setBusy(true);
-    const out: Row[] = [];
-    for (const file of files) {
-      try {
-        const dataUrl = await readAsDataUrl(file);
-        const id = uid();
-        const res = await publishShare({
-          id,
-          name: file.name,
-          type: file.type || 'application/octet-stream',
-          size: file.size,
-          dataUrl,
-        });
-        if (!res.ok) out.push({ name: file.name, err: res.error || 'fell off the trestle' });
-        else out.push({ name: file.name, embed: shareUrls(id).embed });
-      } catch (e: any) {
-        out.push({ name: file.name, err: e?.message || 'failed' });
-      }
-    }
-    setRows(out);
-    const first = out.find((r) => r.embed)?.embed;
-    if (first) {
-      try { await navigator.clipboard.writeText(first); } catch {}
-    }
-    setBusy(false);
+  const pick = (which: 'left' | 'right', file?: File) => {
+    if (!file) return;
+    const row = { name: file.name, size: file.size, type: file.type || 'application/octet-stream' };
+    if (which === 'left') setLeft(row);
+    else setRight(row);
   };
+
+  const note = useMemo(() => {
+    if (!left || !right) return 'two local files. nothing uploads.';
+    if (left.size === right.size) return 'same weight. names still differ.';
+    return left.size > right.size
+      ? `${left.name} sits heavier by ${pretty(left.size - right.size)}.`
+      : `${right.name} sits heavier by ${pretty(right.size - left.size)}.`;
+  }, [left, right]);
+
+  const warn = (left && left.size > 40 * 1024 * 1024) || (right && right.size > 40 * 1024 * 1024)
+    ? 'no cap. big locals can just make the picker feel slow.'
+    : '';
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
+      <main className="pt-28 pb-20 px-5">
         <motion.div
-          initial={{ opacity: 0, y: 18 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          className="glass rounded-[32px] p-8"
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          className="max-w-3xl mx-auto"
         >
           <p className="text-[#0a84ff] text-sm mb-2">trestle</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">walk several files across at once.</h1>
-          <p className="text-neutral-400 text-sm mb-6">
-            multi-select local files. each one lands on the share db with its own discord /s card.
-          </p>
-          <label
-            className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition"
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => { e.preventDefault(); send(e.dataTransfer.files); }}
-          >
-            <input type="file" multiple className="hidden" onChange={(e) => send(e.target.files)} />
-            <p className="text-white font-medium">{busy ? 'laying the spans…' : 'drop a handful on the trestle'}</p>
-            <p className="text-xs text-neutral-500 mt-2">no file count cap. just patience if the pile is huge.</p>
-          </label>
-          {warn && <p className="text-xs text-amber-300/80 mt-3">{warn}</p>}
-          <div className="mt-5 space-y-2">
-            {rows.map((r, i) => (
-              <p key={i} className="text-xs text-neutral-400 break-all">
-                {r.name} — {r.embed || r.err}
-              </p>
-            ))}
+          <h1 className="text-3xl font-semibold tracking-tight text-white mb-3">lay two locals across a beam.</h1>
+          <p className="text-neutral-400 text-sm mb-8">a scale, not a vault. compare name and size in this tab. nothing is written to the share db.</p>
+          <div className="grid sm:grid-cols-2 gap-4">
+            {(['left', 'right'] as const).map((side) => {
+              const row = side === 'left' ? left : right;
+              return (
+                <label
+                  key={side}
+                  className="glass rounded-[28px] p-6 cursor-pointer hover:-translate-y-0.5 transition"
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => { e.preventDefault(); pick(side, e.dataTransfer.files?.[0]); }}
+                >
+                  <input type="file" className="hidden" onChange={(e) => pick(side, e.target.files?.[0] || undefined)} />
+                  <p className="text-xs text-neutral-500 mb-2">{side} pier</p>
+                  {row ? (
+                    <>
+                      <p className="text-white font-medium break-all">{row.name}</p>
+                      <p className="text-sm text-neutral-400 mt-2">{pretty(row.size)}</p>
+                      <p className="text-xs text-neutral-600 mt-1">{row.type}</p>
+                    </>
+                  ) : (
+                    <p className="text-neutral-400 text-sm">drop a file here</p>
+                  )}
+                </label>
+              );
+            })}
           </div>
+          <p className="text-sm text-neutral-300 mt-6">{note}</p>
+          {warn && <p className="text-xs text-amber-300/80 mt-3">{warn}</p>}
         </motion.div>
-      </div>
+      </main>
     </div>
   );
 }

@@ -1,33 +1,109 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { fetchShare, shareUrls } from '../lib/cloudShare';
+import { publishShare, shareUrls } from '../lib/cloudShare';
+
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+
+function sampleColor(src: string) {
+  return new Promise<string>((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const c = document.createElement('canvas');
+      c.width = 8;
+      c.height = 8;
+      const ctx = c.getContext('2d');
+      if (!ctx) {
+        resolve('#0a84ff');
+        return;
+      }
+      ctx.drawImage(img, 0, 0, 8, 8);
+      const data = ctx.getImageData(0, 0, 8, 8).data;
+      let r = 0, g = 0, b = 0, n = 0;
+      for (let i = 0; i < data.length; i += 4) {
+        r += data[i];
+        g += data[i + 1];
+        b += data[i + 2];
+        n += 1;
+      }
+      r = Math.round(r / n);
+      g = Math.round(g / n);
+      b = Math.round(b / n);
+      resolve('#' + [r, g, b].map((x) => x.toString(16).padStart(2, '0')).join(''));
+    };
+    img.onerror = () => resolve('#0a84ff');
+    img.src = src;
+  });
+}
+
+function paintCard(hex: string, name: string) {
+  const c = document.createElement('canvas');
+  c.width = 1200;
+  c.height = 630;
+  const ctx = c.getContext('2d')!;
+  ctx.fillStyle = '#050506';
+  ctx.fillRect(0, 0, 1200, 630);
+  ctx.fillStyle = hex;
+  ctx.beginPath();
+  ctx.roundRect(80, 80, 1040, 470, 48);
+  ctx.fill();
+  ctx.fillStyle = 'rgba(0,0,0,0.35)';
+  ctx.fillRect(80, 430, 1040, 120);
+  ctx.fillStyle = '#f5f5f7';
+  ctx.font = '600 42px Inter, system-ui, sans-serif';
+  ctx.fillText(name.slice(0, 42), 120, 500);
+  ctx.font = '400 24px Inter, system-ui, sans-serif';
+  ctx.fillText(hex + '  ·  skylight', 120, 540);
+  return c.toDataURL('image/png');
+}
 
 export default function SkylightPage() {
-  const [id, setId] = useState('');
-  const [title, setTitle] = useState('');
-  const [desc, setDesc] = useState('');
-  const [embed, setEmbed] = useState('');
-  const [err, setErr] = useState('');
+  const [hex, setHex] = useState('#0a84ff');
+  const [name, setName] = useState('');
+  const [preview, setPreview] = useState('');
   const [busy, setBusy] = useState(false);
+  const [warn, setWarn] = useState('');
+  const [err, setErr] = useState('');
+  const [embed, setEmbed] = useState('');
 
-  const load = async () => {
-    const raw = id.trim().replace(/^.*[?#]f=/, '').replace(/^.*\/s\//, '');
-    if (!raw) return;
+  const take = async (file?: File) => {
+    if (!file) return;
+    setErr('');
+    setEmbed('');
+    setName(file.name);
+    setWarn(file.size > 40 * 1024 * 1024 ? 'no cap. a huge still can make sampling feel slow.' : '');
+    const url = URL.createObjectURL(file);
+    try {
+      const color = file.type.startsWith('image/') ? await sampleColor(url) : '#0a84ff';
+      setHex(color);
+      setPreview(paintCard(color, file.name));
+    } finally {
+      URL.revokeObjectURL(url);
+    }
+  };
+
+  const ship = async () => {
+    if (!preview) return;
     setBusy(true);
     setErr('');
     try {
-      const meta = await fetchShare(raw);
-      if (!meta) {
-        setErr('could not find that drop');
-        return;
-      }
-      const urls = shareUrls(meta.id);
-      setTitle(meta.name);
-      setDesc(`${meta.type || 'file'} · ${Math.round((meta.size || 0) / 1024) || 1} kb · public drop on rankvault`);
+      const id = uid();
+      const res = await publishShare({
+        id,
+        name: (name || 'skylight') + '.png',
+        type: 'image/png',
+        size: Math.floor((preview.split(',')[1] || '').length * 0.75),
+        dataUrl: preview,
+        author: 'skylight',
+      });
+      if (!res.ok) throw new Error(res.error || 'publish failed');
+      const urls = shareUrls(res.id || id);
       setEmbed(urls.embed);
+      try { await navigator.clipboard.writeText(urls.embed); } catch {}
     } catch (e: any) {
-      setErr(e?.message || 'preview failed');
+      setErr(e?.message || 'skylight failed');
     } finally {
       setBusy(false);
     }
@@ -36,46 +112,38 @@ export default function SkylightPage() {
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
+      <main className="pt-28 pb-20 px-5">
         <motion.div
-          initial={{ opacity: 0, y: 18 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          className="glass rounded-[32px] p-8"
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          className="max-w-2xl mx-auto glass rounded-[32px] p-8"
         >
           <p className="text-[#0a84ff] text-sm mb-2">skylight</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">see the discord card first.</h1>
-          <p className="text-neutral-400 text-sm mb-6">paste a share id or /s link. we mock the embed so you know it looks clean before you drop it in a server.</p>
-          <div className="flex gap-2">
-            <input
-              value={id}
-              onChange={(e) => setId(e.target.value)}
-              placeholder="id or /s/abc"
-              className="flex-1 rounded-full bg-white/5 border border-white/10 px-4 py-2.5 text-sm outline-none focus:border-[#0a84ff]/50"
-            />
-            <button onClick={load} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium">
-              {busy ? 'looking…' : 'preview'}
-            </button>
-          </div>
-          {err && <p className="text-xs text-red-400 mt-4">{err}</p>}
-          {embed && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="mt-6 rounded-2xl overflow-hidden border border-[#5865f2]/30 bg-[#2b2d31]"
-            >
-              <div className="h-1 bg-[#0a84ff]" />
-              <div className="p-4">
-                <p className="text-[11px] text-[#00a8fc] font-medium">rankvault</p>
-                <p className="text-white text-[15px] font-semibold mt-1">{title}</p>
-                <p className="text-[#dbdee1] text-[13px] mt-1">{desc}</p>
-                <p className="text-[11px] text-[#949ba4] mt-3 break-all">{embed}</p>
-              </div>
-            </motion.div>
+          <h1 className="text-3xl font-semibold tracking-tight text-white mb-3">sample a still, paint a color pane, ship only the pane.</h1>
+          <p className="text-neutral-400 text-sm mb-6">the original file stays on the device. discord unfurls the 1200×630 card from /s.</p>
+          <label
+            className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/40 p-8 text-center transition"
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => { e.preventDefault(); take(e.dataTransfer.files?.[0]); }}
+          >
+            <input type="file" accept="image/*" className="hidden" onChange={(e) => take(e.target.files?.[0] || undefined)} />
+            <p className="text-white font-medium">drop a still through the glass</p>
+          </label>
+          {preview && (
+            <div className="mt-6 space-y-4">
+              <img src={preview} alt="" className="w-full rounded-2xl" />
+              <p className="text-sm text-neutral-400">{hex} · {name}</p>
+              <button disabled={busy} onClick={ship} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40">
+                {busy ? 'opening the pane…' : 'publish color card'}
+              </button>
+            </div>
           )}
+          {warn && <p className="text-xs text-amber-300/80 mt-4">{warn}</p>}
+          {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
+          {embed && <p className="text-xs text-neutral-400 mt-4 break-all">discord: {embed}</p>}
         </motion.div>
-      </div>
+      </main>
     </div>
   );
 }

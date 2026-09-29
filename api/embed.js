@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"');
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 function isBot(ua) {
@@ -109,22 +109,10 @@ const PAGE_TITLES = {
   vault: 'vault \u2014 rankvault',
   drop: 'drop \u2014 rankvault',
   share: 'share \u2014 rankvault',
-  firth: 'firth \u2014 wrap a note or file',
-  pounce: 'pounce \u2014 local solar clock',
-  spandrel: 'spandrel \u2014 compare two hashes',
-  tinder: 'tinder \u2014 word counts, local',
-  windrow: 'windrow \u2014 sort a list',
-  splice: 'splice \u2014 join two texts',
-  thimble: 'thimble \u2014 mint short ids',
-  loom: 'loom \u2014 palette from a picture',
-  wick: 'wick \u2014 reading time',
-  lintel: 'lintel \u2014 peek a file header',
-  marrow: 'marrow \u2014 split a note',
+  haven: 'haven \u2014 paste a note into the share db',
+  skein: 'skein \u2014 wind lines into one drop',
+  belfry: 'belfry \u2014 a quiet local chime',
   quay: 'quay \u2014 dock a file into the share db',
-  lumen: 'lumen \u2014 colour contrast',
-  tether: 'tether \u2014 a nickname for this browser',
-  solstice: 'solstice \u2014 daylight hours',
-  drift: 'drift \u2014 local slips',
 };
 
 export default async function handler(req, res) {

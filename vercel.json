@@ -2,45 +2,15 @@
   "rewrites": [
     { "source": "/s/:id", "destination": "/api/embed?id=:id" },
     { "source": "/f/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/open/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/go/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/link/:id", "destination": "/api/embed?id=:id" },
     { "source": "/x/:id", "destination": "/api/embed?id=:id" },
     { "source": "/d/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/h/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/r/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/y/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/q/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/l/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/n/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/k/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/w/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/u/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/v/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/i/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/a/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/e/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/j/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/go/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/open/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/link/:id", "destination": "/api/embed?id=:id" },
     { "source": "/card/:id", "destination": "/api/embed?id=:id" },
     { "source": "/embed/:id", "destination": "/api/embed?id=:id" },
     { "source": "/p/:page", "destination": "/api/embed?page=:page" },
-    { "source": "/b/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/g/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/z/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/c/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/m/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/o/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/t/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/page/:page", "destination": "/api/embed?page=:page" },
-    { "source": "/((?!api/).*)", "destination": "/index.html" }
-  ],
-  "headers": [
-    {
-      "source": "/api/(.*)",
-      "headers": [
-        { "key": "Access-Control-Allow-Origin", "value": "*" },
-        { "key": "Access-Control-Allow-Methods", "value": "GET,POST,OPTIONS" }
-      ]
-    }
+    { "source": "/api/share", "destination": "/api/share" },
+    { "source": "/api/embed", "destination": "/api/embed" }
   ]
 }

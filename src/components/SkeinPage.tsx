@@ -7,33 +7,35 @@ function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
 
-export default function HavenPage() {
-  const [text, setText] = useState('');
-  const [name, setName] = useState('note.txt');
+export default function SkeinPage() {
+  const [lines, setLines] = useState('');
   const [busy, setBusy] = useState(false);
   const [warn, setWarn] = useState('');
   const [err, setErr] = useState('');
   const [link, setLink] = useState('');
   const [embed, setEmbed] = useState('');
 
-  const publish = async () => {
-    const body = text.trim();
-    if (!body) {
-      setErr('write something first');
+  const wind = async () => {
+    const parts = lines
+      .split(/\n+/)
+      .map((s) => s.trim())
+      .filter(Boolean);
+    if (!parts.length) {
+      setErr('add at least one line');
       return;
     }
+    const body = parts.map((p, i) => `${String(i + 1).padStart(2, '0')}  ${p}`).join('\n');
     setErr('');
     setBusy(true);
-    setWarn(body.length > 400_000 ? 'long note. encoding may feel slow. no hard cap.' : '');
+    setWarn(body.length > 400_000 ? 'long skein. the tab may feel slow.' : '');
     try {
-      const blob = new Blob([body], { type: 'text/plain' });
       const dataUrl = `data:text/plain;base64,${btoa(unescape(encodeURIComponent(body)))}`;
       const id = uid();
       const pub = await publishShare({
         id,
-        name: name.trim() || 'note.txt',
+        name: 'skein.txt',
         type: 'text/plain',
-        size: blob.size,
+        size: new Blob([body]).size,
         dataUrl,
       });
       if (!pub.ok) {
@@ -48,7 +50,7 @@ export default function HavenPage() {
         await navigator.clipboard.writeText(urls.embed);
       } catch {}
     } catch (e: any) {
-      setErr(e?.message || 'haven failed');
+      setErr(e?.message || 'skein failed');
     } finally {
       setBusy(false);
     }
@@ -64,28 +66,22 @@ export default function HavenPage() {
           transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
           className="glass rounded-[32px] p-8"
         >
-          <p className="text-[#0a84ff] text-sm mb-2">haven</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">paste a note into the share db.</h1>
-          <p className="text-neutral-400 text-sm mb-6">not the vault. just a quiet text drop with a discord card.</p>
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full mb-3 px-4 py-2.5 rounded-full bg-white/5 border border-white/10 text-sm outline-none"
-            placeholder="filename"
-          />
+          <p className="text-[#0a84ff] text-sm mb-2">skein</p>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">wind loose lines into one drop.</h1>
+          <p className="text-neutral-400 text-sm mb-6">each line is numbered, then published as a single .txt with a discord card.</p>
           <textarea
-            value={text}
-            onChange={(e) => setText(e.target.value)}
+            value={lines}
+            onChange={(e) => setLines(e.target.value)}
             rows={10}
             className="w-full px-4 py-3 rounded-3xl bg-white/5 border border-white/10 text-sm outline-none resize-y min-h-[160px]"
-            placeholder="write here…"
+            placeholder="one thought per line"
           />
           <button
-            onClick={publish}
+            onClick={wind}
             disabled={busy}
             className="mt-4 px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-50"
           >
-            {busy ? 'publishing…' : 'publish note'}
+            {busy ? 'winding…' : 'wind and publish'}
           </button>
           {warn && <p className="text-amber-300/90 text-xs mt-3">{warn}</p>}
           {err && <p className="text-red-400 text-xs mt-3">{err}</p>}

@@ -135,6 +135,9 @@ const PAGE_TITLES = {
   harbor: 'harbor \u2014 dock a pile then launch',
   tinderbox: 'tinderbox \u2014 preview the discord card then light',
   pilotage: 'pilotage \u2014 steer a local file into the share db',
+  thresh: 'thresh \u2014 keep what crosses the line',
+  scrip: 'scrip \u2014 issue a quiet iou',
+  oriel: 'oriel \u2014 hang a window card',
 };
 
 export default async function handler(req, res) {

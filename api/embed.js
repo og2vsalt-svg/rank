@@ -110,6 +110,10 @@ const PAGE_TITLES = {
   firth: 'firth \u2014 wrap a note or file',
   pounce: 'pounce \u2014 local solar clock',
   spandrel: 'spandrel \u2014 compare two hashes',
+  tinder: 'tinder \u2014 word counts, local',
+  windrow: 'windrow \u2014 sort a list',
+  splice: 'splice \u2014 join two texts',
+  thimble: 'thimble \u2014 mint short ids',
 };
 
 export default async function handler(req, res) {

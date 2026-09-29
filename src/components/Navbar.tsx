@@ -5,6 +5,9 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'portico', label: 'portico' },
+  { to: 'trestle', label: 'trestle' },
+  { to: 'skylight', label: 'skylight' },
   { to: 'foyer', label: 'foyer' },
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
@@ -37,6 +40,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'files',
     items: [
+      { to: 'portico', label: 'portico' },
+      { to: 'skylight', label: 'skylight' },
       { to: 'foyer', label: 'foyer' },
       { to: 'ingress', label: 'ingress' },
       { to: 'cleat', label: 'cleat' },
@@ -81,6 +86,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'portico', label: 'portico' },
+      { to: 'skylight', label: 'skylight' },
       { to: 'cleat', label: 'cleat' },
       { to: 'ingress', label: 'ingress' },
       { to: 'scrip', label: 'scrip' },
@@ -122,6 +129,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'create',
     items: [
+      { to: 'skylight', label: 'skylight' },
+      { to: 'portico', label: 'portico' },
       { to: 'palimpsest', label: 'palimpsest' },
       { to: 'scrip', label: 'scrip' },
       { to: 'oriel', label: 'oriel' },
@@ -152,6 +161,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'trestle', label: 'trestle' },
       { to: 'foyer', label: 'foyer' },
       { to: 'thresh', label: 'thresh' },
       { to: 'windlass', label: 'windlass' },

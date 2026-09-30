@@ -207,5 +207,6 @@ export function shareUrls(id: string) {
     lintel: `${origin}/i/${id}`,
     antechamber: `${origin}/a/${id}`,
     camber: `${origin}/e/${id}`,
+    zenith: `${origin}/z/${id}`,
   };
 }

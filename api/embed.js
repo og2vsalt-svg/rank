@@ -115,6 +115,7 @@ const PAGE_TITLES = {
   vault: 'vault — rankvault',
   drop: 'drop — rankvault',
   share: 'share — rankvault',
+  sluice: 'sluice — pour a local into the share db',
   quill: 'quill — write and send a note',
   prism: 'prism — peek at file headers',
   mosaic: 'mosaic — local image board',

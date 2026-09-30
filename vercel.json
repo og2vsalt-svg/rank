@@ -1,12 +1,14 @@
 {
   "rewrites": [
-    { "source": "/api/:path*", "destination": "/api/:path*" },
     { "source": "/s/:id", "destination": "/api/embed?id=:id" },
     { "source": "/f/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/open/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/go/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/link/:id", "destination": "/api/embed?id=:id" },
     { "source": "/x/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/d/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/go/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/open/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/link/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/card/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/embed/:id", "destination": "/api/embed?id=:id" },
     { "source": "/y/:id", "destination": "/api/embed?id=:id" },
     { "source": "/q/:id", "destination": "/api/embed?id=:id" },
     { "source": "/l/:id", "destination": "/api/embed?id=:id" },
@@ -14,8 +16,6 @@
     { "source": "/k/:id", "destination": "/api/embed?id=:id" },
     { "source": "/w/:id", "destination": "/api/embed?id=:id" },
     { "source": "/u/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/d/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/h/:id", "destination": "/api/embed?id=:id" },
     { "source": "/r/:id", "destination": "/api/embed?id=:id" },
     { "source": "/b/:id", "destination": "/api/embed?id=:id" },
     { "source": "/g/:id", "destination": "/api/embed?id=:id" },
@@ -27,17 +27,8 @@
     { "source": "/a/:id", "destination": "/api/embed?id=:id" },
     { "source": "/e/:id", "destination": "/api/embed?id=:id" },
     { "source": "/z/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/h/:id", "destination": "/api/embed?id=:id" },
     { "source": "/v/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/j/:id", "destination": "/api/embed?id=:id" },
     { "source": "/p/:page", "destination": "/api/embed?page=:page" }
-  ],
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
-      ]
-    }
   ]
 }

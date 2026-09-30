@@ -36,6 +36,10 @@ const primary: NavItem[] = [
   { to: 'drop', label: 'drop' },
   { to: 'well', label: 'well' },
   { to: 'lumen', label: 'lumen' },
+  { to: 'deadeye', label: 'deadeye' },
+  { to: 'scupper', label: 'scupper' },
+  { to: 'gunwale', label: 'gunwale' },
+  { to: 'companionway', label: 'companionway' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -52,6 +56,8 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'harbor', label: 'harbor' },
       { to: 'quay', label: 'quay' },
       { to: 'drop', label: 'drop' },
+      { to: 'deadeye', label: 'deadeye' },
+      { to: 'companionway', label: 'companionway' },
       { to: 'vault', label: 'vault' },
       { to: 'lantern', label: 'lantern' },
       { to: 'lodestone', label: 'lodestone' },
@@ -107,6 +113,8 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'transit', label: 'transit' },
       { to: 'still', label: 'still' },
       { to: 'glyph', label: 'glyph' },
+      { to: 'scupper', label: 'scupper' },
+      { to: 'gunwale', label: 'gunwale' },
     ],
   },
 ];

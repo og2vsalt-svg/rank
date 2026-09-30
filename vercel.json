@@ -48,6 +48,11 @@
     { "source": "/pintle", "destination": "/api/embed?page=pintle" },
     { "source": "/kevel", "destination": "/api/embed?page=kevel" },
     { "source": "/fairlead", "destination": "/api/embed?page=fairlead" },
-    { "source": "/halyard", "destination": "/api/embed?page=halyard" }
+    { "source": "/halyard", "destination": "/api/embed?page=halyard" },
+    { "source": "/windlass", "destination": "/api/embed?page=windlass" },
+    { "source": "/catenary", "destination": "/api/embed?page=catenary" },
+    { "source": "/spar", "destination": "/api/embed?page=spar" },
+    { "source": "/mullion", "destination": "/api/embed?page=mullion" },
+    { "source": "/hawse", "destination": "/api/embed?page=hawse" }
   ]
 }

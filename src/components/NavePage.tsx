@@ -1,109 +1,51 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishShare, shareUrls } from '../lib/cloudShare';
 
-function uid() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-}
-
-function readAsDataUrl(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const r = new FileReader();
-    r.onload = () => resolve(String(r.result || ''));
-    r.onerror = () => reject(r.error || new Error('read failed'));
-    r.readAsDataURL(file);
-  });
+async function digest(file: File) {
+  const buf = await file.arrayBuffer();
+  const hash = await crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(hash)).map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
 export default function NavePage() {
+  const [a, setA] = useState<{ name: string; hash: string; size: number } | null>(null);
+  const [b, setB] = useState<{ name: string; hash: string; size: number } | null>(null);
   const [busy, setBusy] = useState(false);
-  const [author, setAuthor] = useState('');
-  const [warn, setWarn] = useState('');
-  const [err, setErr] = useState('');
-  const [embed, setEmbed] = useState('');
-  const [app, setApp] = useState('');
-  const [name, setName] = useState('');
 
-  const onFile = async (file: File | undefined) => {
+  async function take(which: 'a' | 'b', file?: File) {
     if (!file) return;
-    setName(file.name);
-    setErr('');
-    setEmbed('');
-    setApp('');
-    setWarn(file.size > 40 * 1024 * 1024 ? 'huge file. browser may wheeze. no cap.' : '');
     setBusy(true);
-    try {
-      const dataUrl = await readAsDataUrl(file);
-      const id = uid();
-      const res = await publishShare({
-        id,
-        name: file.name,
-        type: file.type || 'application/octet-stream',
-        size: file.size,
-        dataUrl,
-        author: author.trim() || undefined,
-      });
-      if (!res.ok) {
-        setErr(res.error || 'nave drop failed');
-        return;
-      }
-      if (res.warn) setWarn(res.warn);
-      const urls = shareUrls(id);
-      setEmbed(urls.embed);
-      setApp(urls.app);
-      try {
-        await navigator.clipboard.writeText(urls.embed);
-      } catch {}
-    } catch (e: any) {
-      setErr(e?.message || 'nave drop failed');
-    } finally {
-      setBusy(false);
-    }
-  };
+    const hash = await digest(file);
+    const rec = { name: file.name, hash, size: file.size };
+    if (which === 'a') setA(rec); else setB(rec);
+    setBusy(false);
+  }
+
+  const match = a && b ? a.hash === b.hash : null;
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
       <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.52, ease: [0.22, 1, 0.36, 1] }}
-          className="glass rounded-[32px] p-8"
-        >
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-8">
           <p className="text-[#0a84ff] text-sm mb-2">nave</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">a quiet aisle for one public file.</h1>
-          <p className="text-neutral-400 text-sm mb-6">
-            sign it if you want, then drop a local file into the share db. discord unfurls /s like a product card.
-          </p>
-          <input
-            value={author}
-            onChange={(e) => setAuthor(e.target.value)}
-            placeholder="optional name on the drop"
-            className="w-full mb-4 rounded-full bg-white/[0.04] border border-white/10 px-4 py-2.5 text-sm text-white placeholder:text-neutral-600 outline-none focus:border-[#0a84ff]/40"
-          />
-          <label
-            className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition-all duration-300"
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => {
-              e.preventDefault();
-              onFile(e.dataTransfer.files?.[0]);
-            }}
-          >
-            <input type="file" className="hidden" onChange={(e) => onFile(e.target.files?.[0])} />
-            <p className="text-white font-medium">{busy ? 'walking it down the aisle…' : 'drop a file'}</p>
-            <p className="text-xs text-neutral-500 mt-2">unlimited size. warnings only if it might feel slow.</p>
-          </label>
-          {name && <p className="text-xs text-neutral-500 mt-4 truncate">{name}</p>}
-          {warn && <p className="text-xs text-amber-300/80 mt-3">{warn}</p>}
-          {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
-          {embed && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-5 space-y-1">
-              <p className="text-xs text-neutral-400 break-all">discord embed (copied): {embed}</p>
-              <p className="text-xs text-neutral-500 break-all">app: {app}</p>
-            </motion.div>
-          )}
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">two files, one aisle</h1>
+          <p className="text-neutral-400 text-sm mb-6">compare sha-256 of two locals. nothing leaves the tab. large files only warn that hashing may pause.</p>
+          <div className="grid sm:grid-cols-2 gap-3">
+            {(['a', 'b'] as const).map((side) => (
+              <label key={side} className="cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-6 text-center">
+                <input type="file" className="hidden" onChange={(e) => take(side, e.target.files?.[0])} />
+                <p className="text-sm font-medium">file {side}</p>
+                <p className="text-xs text-neutral-500 mt-2 truncate">{(side === 'a' ? a : b)?.name || 'choose'}</p>
+              </label>
+            ))}
+          </div>
+          {busy && <p className="text-xs text-neutral-500 mt-4">hashing… the tab may feel sleepy on large locals.</p>}
+          {a && <p className="text-[11px] text-neutral-500 mt-4 break-all">a · {a.hash}</p>}
+          {b && <p className="text-[11px] text-neutral-500 mt-1 break-all">b · {b.hash}</p>}
+          {match === true && <p className="text-sm text-emerald-300 mt-4">same bytes.</p>}
+          {match === false && <p className="text-sm text-amber-300 mt-4">different bytes.</p>}
         </motion.div>
       </div>
     </div>

@@ -5,6 +5,9 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'leat', label: 'leat' },
+  { to: 'weir', label: 'weir' },
+  { to: 'beck', label: 'beck' },
   { to: 'keelson', label: 'keelson' },
   { to: 'hatchway', label: 'hatchway' },
   { to: 'porchlight', label: 'porchlight' },
@@ -20,15 +23,14 @@ const primary: NavItem[] = [
   { to: 'drop', label: 'drop' },
   { to: 'quay', label: 'quay' },
   { to: 'harbor', label: 'harbor' },
-  { to: 'spinnaker', label: 'spinnaker' },
-  { to: 'taffrail', label: 'taffrail' },
-  { to: 'yardarm', label: 'yardarm' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'files',
     items: [
+      { to: 'leat', label: 'leat' },
+      { to: 'weir', label: 'weir' },
       { to: 'keelson', label: 'keelson' },
       { to: 'hatchway', label: 'hatchway' },
       { to: 'mooring', label: 'mooring' },
@@ -47,6 +49,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'beck', label: 'beck' },
+      { to: 'leat', label: 'leat' },
+      { to: 'weir', label: 'weir' },
       { to: 'keelson', label: 'keelson' },
       { to: 'hatchway', label: 'hatchway' },
       { to: 'hawser', label: 'hawser' },
@@ -80,6 +85,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'all desks',
     items: [
+      { to: 'leat', label: 'leat' },
+      { to: 'weir', label: 'weir' },
+      { to: 'beck', label: 'beck' },
       { to: 'keelson', label: 'keelson' },
       { to: 'hatchway', label: 'hatchway' },
       { to: 'mooring', label: 'mooring' },
@@ -103,6 +111,7 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'spinnaker', label: 'spinnaker' },
       { to: 'taffrail', label: 'taffrail' },
       { to: 'yardarm', label: 'yardarm' },
+      { to: 'ledger', label: 'ledger' },
     ],
   },
 ];

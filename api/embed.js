@@ -131,6 +131,11 @@ const PAGE_TITLES = {
   glade: 'glade — light from a still, kept in the tab',
   bothy: 'bothy — a hut for scraps',
   wherry: 'wherry — ferry several locals across',
+  windlass: 'windlass — hoist a local onto the public capstan',
+  catenary: 'catenary — hang file weight on a quiet curve',
+  spar: 'spar — one short public line',
+  mullion: 'mullion — split a draft into panes',
+  hawse: 'hawse — thread a note through a spoken phrase',
 };
 
 export default async function handler(req, res) {

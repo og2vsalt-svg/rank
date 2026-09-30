@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'fathom', body: 'sound a local file with sha-256 in the tab, then hang the original on the share db. discord unfurls /s.' },
   { title: 'tannoy', body: 'hear a local clip as bars, then hang the original on the public board. discord unfurls /s.' },
   { title: 'sundial', body: 'a noon-stick from latitude and hour. stays in the tab.' },
   { title: 'parcel', body: 'tie a packing list of locals and ship only the manifesto.' },

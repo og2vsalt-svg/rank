@@ -5,6 +5,9 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'fluke', label: 'fluke' },
+  { to: 'thwart', label: 'thwart' },
+  { to: 'coaming', label: 'coaming' },
   { to: 'windlass', label: 'windlass' },
   { to: 'catenary', label: 'catenary' },
   { to: 'spar', label: 'spar' },
@@ -59,6 +62,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'files',
     items: [
+      { to: 'fluke', label: 'fluke' },
+      { to: 'thwart', label: 'thwart' },
       { to: 'windlass', label: 'windlass' },
       { to: 'parcel', label: 'parcel' },
       { to: 'skerry', label: 'skerry' },
@@ -88,6 +93,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'coaming', label: 'coaming' },
       { to: 'spar', label: 'spar' },
       { to: 'hawse', label: 'hawse' },
       { to: 'mullion', label: 'mullion' },

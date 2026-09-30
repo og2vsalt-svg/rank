@@ -43,6 +43,11 @@
     { "source": "/gimbal", "destination": "/api/embed?page=gimbal" },
     { "source": "/trunnion", "destination": "/api/embed?page=trunnion" },
     { "source": "/samphire", "destination": "/api/embed?page=samphire" },
-    { "source": "/strake", "destination": "/api/embed?page=strake" }
+    { "source": "/strake", "destination": "/api/embed?page=strake" },
+    { "source": "/funicular", "destination": "/api/embed?page=funicular" },
+    { "source": "/pintle", "destination": "/api/embed?page=pintle" },
+    { "source": "/kevel", "destination": "/api/embed?page=kevel" },
+    { "source": "/fairlead", "destination": "/api/embed?page=fairlead" },
+    { "source": "/halyard", "destination": "/api/embed?page=halyard" }
   ]
 }

@@ -6,10 +6,11 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"');
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 function isBot(ua) {
@@ -48,6 +49,7 @@ function pageHtml({ title, desc, image, url, color, mime }) {
   extra.push('<meta name="twitter:image:alt" content="' + esc(title) + '" />');
   extra.push('<meta name="color-scheme" content="dark" />');
   extra.push('<meta property="og:determiner" content="a" />');
+  extra.push('<meta name="application-name" content="rankvault" />');
   if (mime && String(mime).startsWith('video/') && isRemoteImg && image) {
     extra.push('<meta property="og:video" content="' + esc(image) + '" />');
     extra.push('<meta property="og:video:type" content="' + esc(mime) + '" />');
@@ -93,6 +95,9 @@ const PAGE_TITLES = {
   yardarm: 'yardarm \u2014 hash a local file then publish',
   porchlight: 'porchlight \u2014 drop a file and preview the discord card',
   stillwater: 'stillwater \u2014 park files in the share db',
+  fathom: 'fathom \u2014 hash a local file then publish',
+  windrow: 'windrow \u2014 rake several locals into the share db',
+  splice: 'splice \u2014 braid a note with a file',
 };
 
 export default async function handler(req, res) {

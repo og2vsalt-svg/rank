@@ -5,6 +5,10 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'reliquary', label: 'reliquary' },
+  { to: 'solstice', label: 'solstice' },
+  { to: 'palimpsest', label: 'palimpsest' },
+  { to: 'keyring', label: 'keyring' },
   { to: 'meander', label: 'meander' },
   { to: 'ford', label: 'ford' },
   { to: 'kilter', label: 'kilter' },
@@ -32,6 +36,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'files',
     items: [
+      { to: 'reliquary', label: 'reliquary' },
+      { to: 'solstice', label: 'solstice' },
       { to: 'meander', label: 'meander' },
       { to: 'ford', label: 'ford' },
       { to: 'leat', label: 'leat' },
@@ -54,6 +60,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'palimpsest', label: 'palimpsest' },
+      { to: 'keyring', label: 'keyring' },
+      { to: 'reliquary', label: 'reliquary' },
       { to: 'kilter', label: 'kilter' },
       { to: 'ford', label: 'ford' },
       { to: 'meander', label: 'meander' },
@@ -80,6 +89,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'keyring', label: 'keyring' },
+      { to: 'solstice', label: 'solstice' },
       { to: 'buoy', label: 'buoy' },
       { to: 'fid', label: 'fid' },
       { to: 'garret', label: 'garret' },
@@ -93,6 +104,10 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'all desks',
     items: [
+      { to: 'reliquary', label: 'reliquary' },
+      { to: 'solstice', label: 'solstice' },
+      { to: 'palimpsest', label: 'palimpsest' },
+      { to: 'keyring', label: 'keyring' },
       { to: 'meander', label: 'meander' },
       { to: 'ford', label: 'ford' },
       { to: 'kilter', label: 'kilter' },

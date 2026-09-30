@@ -5,6 +5,9 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'meander', label: 'meander' },
+  { to: 'ford', label: 'ford' },
+  { to: 'kilter', label: 'kilter' },
   { to: 'leat', label: 'leat' },
   { to: 'weir', label: 'weir' },
   { to: 'beck', label: 'beck' },
@@ -29,6 +32,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'files',
     items: [
+      { to: 'meander', label: 'meander' },
+      { to: 'ford', label: 'ford' },
       { to: 'leat', label: 'leat' },
       { to: 'weir', label: 'weir' },
       { to: 'keelson', label: 'keelson' },
@@ -49,6 +54,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'kilter', label: 'kilter' },
+      { to: 'ford', label: 'ford' },
+      { to: 'meander', label: 'meander' },
       { to: 'beck', label: 'beck' },
       { to: 'leat', label: 'leat' },
       { to: 'weir', label: 'weir' },
@@ -85,6 +93,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'all desks',
     items: [
+      { to: 'meander', label: 'meander' },
+      { to: 'ford', label: 'ford' },
+      { to: 'kilter', label: 'kilter' },
       { to: 'leat', label: 'leat' },
       { to: 'weir', label: 'weir' },
       { to: 'beck', label: 'beck' },

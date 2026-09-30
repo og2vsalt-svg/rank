@@ -29,6 +29,7 @@
     { "source": "/z/:id", "destination": "/api/embed?id=:id" },
     { "source": "/h/:id", "destination": "/api/embed?id=:id" },
     { "source": "/v/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/j/:id", "destination": "/api/embed?id=:id" },
     { "source": "/p/:page", "destination": "/api/embed?page=:page" }
   ]
 }

@@ -1,25 +1,62 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
+import { publishShare, shareUrls } from '../lib/cloudShare';
+
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+
+async function sha256(text: string) {
+  const buf = new TextEncoder().encode(text);
+  const hash = await crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(hash))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+}
 
 export default function EchoPage() {
-  const [url, setUrl] = useState('https://grook.vercel.app');
-  const [ms, setMs] = useState<number | null>(null);
-  const [status, setStatus] = useState('');
+  const [text, setText] = useState('');
+  const [title, setTitle] = useState('echo.txt');
+  const [digest, setDigest] = useState('');
   const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState('');
+  const [embed, setEmbed] = useState('');
+  const bytes = useMemo(() => new TextEncoder().encode(text).length, [text]);
+  const warn = bytes > 40 * 1024 * 1024 ? 'no cap. a note this long can make the tab feel sleepy.' : '';
 
-  const ping = async () => {
-    setBusy(true);
-    setStatus('');
-    setMs(null);
-    const start = performance.now();
+  const fingerprint = async () => {
+    setErr('');
     try {
-      await fetch(url, { method: 'HEAD', mode: 'no-cors' });
-      setMs(Math.round(performance.now() - start));
-      setStatus('echo back (opaque cors so status is just timing)');
-    } catch {
-      setMs(Math.round(performance.now() - start));
-      setStatus('could not reach it from this tab');
+      setDigest(await sha256(text));
+    } catch (e: any) {
+      setErr(e?.message || 'could not hash');
+    }
+  };
+
+  const send = async () => {
+    if (!text.trim()) return;
+    setBusy(true);
+    setErr('');
+    try {
+      const blob = new Blob([text], { type: 'text/plain' });
+      const dataUrl = `data:text/plain;base64,${btoa(unescape(encodeURIComponent(text)))}`;
+      const id = uid();
+      const res = await publishShare({
+        id,
+        name: title.trim() || 'echo.txt',
+        type: 'text/plain',
+        size: blob.size,
+        dataUrl,
+      });
+      if (!res.ok) throw new Error(res.error || 'echo failed');
+      const urls = shareUrls(res.id || id);
+      setEmbed(urls.embed);
+      try {
+        await navigator.clipboard.writeText(urls.embed);
+      } catch {}
+    } catch (e: any) {
+      setErr(e?.message || 'echo failed');
     } finally {
       setBusy(false);
     }
@@ -28,17 +65,47 @@ export default function EchoPage() {
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-8">
+      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          className="glass rounded-[32px] p-8"
+        >
           <p className="text-[#0a84ff] text-sm mb-2">echo</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">how far is that host.</h1>
-          <p className="text-sm text-neutral-400 mb-6">not a file tool. just a tiny latency poke so you are not bouncing to another site.</p>
-          <div className="flex gap-2">
-            <input value={url} onChange={(e) => setUrl(e.target.value)} className="flex-1 px-4 py-2.5 rounded-full bg-white/5 border border-white/10 text-sm outline-none" />
-            <button onClick={ping} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium">{busy ? '…' : 'ping'}</button>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">write a note, hear the hash, send it out.</h1>
+          <p className="text-neutral-400 text-sm mb-6">
+            not the vault. a text desk that fingerprints locally, then can publish to the public share table.
+          </p>
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full mb-3 px-4 py-2.5 rounded-full bg-white/5 border border-white/10 text-sm outline-none focus:border-[#0a84ff]/40"
+          />
+          <textarea
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            rows={10}
+            placeholder="say something quiet"
+            className="w-full bg-white/5 border border-white/10 rounded-3xl px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/40 resize-y"
+          />
+          <p className="text-xs text-neutral-500 mt-3">{bytes} bytes</p>
+          {warn && <p className="text-xs text-amber-300/80 mt-2">{warn}</p>}
+          <div className="flex flex-wrap gap-2 mt-4">
+            <button onClick={fingerprint} className="px-4 py-2 rounded-full bg-white/8 border border-white/10 text-sm hover:bg-white/12 transition-colors">
+              fingerprint
+            </button>
+            <button
+              disabled={!text.trim() || busy}
+              onClick={send}
+              className="px-4 py-2 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40 hover:bg-neutral-200 transition-colors"
+            >
+              {busy ? 'sending…' : 'publish echo'}
+            </button>
           </div>
-          {ms !== null && <p className="text-4xl font-semibold mt-8 tracking-tight">{ms}<span className="text-lg text-neutral-500"> ms</span></p>}
-          {status && <p className="text-xs text-neutral-500 mt-2">{status}</p>}
+          {digest && <p className="text-[11px] text-neutral-400 mt-4 break-all font-mono">{digest}</p>}
+          {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
+          {embed && <p className="text-xs text-neutral-300 mt-4 break-all">discord (copied): {embed}</p>}
         </motion.div>
       </div>
     </div>

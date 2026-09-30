@@ -5,6 +5,10 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'lantern', label: 'lantern' },
+  { to: 'lintel', label: 'lintel' },
+  { to: 'loom', label: 'loom' },
+  { to: 'lodestone', label: 'lodestone' },
   { to: 'reliquary', label: 'reliquary' },
   { to: 'solstice', label: 'solstice' },
   { to: 'palimpsest', label: 'palimpsest' },
@@ -36,6 +40,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'files',
     items: [
+      { to: 'lantern', label: 'lantern' },
+      { to: 'lodestone', label: 'lodestone' },
       { to: 'reliquary', label: 'reliquary' },
       { to: 'solstice', label: 'solstice' },
       { to: 'meander', label: 'meander' },
@@ -60,6 +66,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'lintel', label: 'lintel' },
+      { to: 'loom', label: 'loom' },
+      { to: 'lantern', label: 'lantern' },
       { to: 'palimpsest', label: 'palimpsest' },
       { to: 'keyring', label: 'keyring' },
       { to: 'reliquary', label: 'reliquary' },
@@ -89,6 +98,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'lodestone', label: 'lodestone' },
+      { to: 'loom', label: 'loom' },
       { to: 'keyring', label: 'keyring' },
       { to: 'solstice', label: 'solstice' },
       { to: 'buoy', label: 'buoy' },
@@ -104,6 +115,10 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'all desks',
     items: [
+      { to: 'lantern', label: 'lantern' },
+      { to: 'lintel', label: 'lintel' },
+      { to: 'loom', label: 'loom' },
+      { to: 'lodestone', label: 'lodestone' },
       { to: 'reliquary', label: 'reliquary' },
       { to: 'solstice', label: 'solstice' },
       { to: 'palimpsest', label: 'palimpsest' },

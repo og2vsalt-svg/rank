@@ -15,7 +15,7 @@ function esc(s) {
 
 function isBot(ua) {
   const u = (ua || '').toLowerCase();
-  return /discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|skype|linkedinbot|embed|preview|bot|crawler|spider|redditbot|applebot|discordbot|iframely|unfurl|valve|steam|pinterest|notion|teams/.test(u);
+  return /discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|skype|linkedinbot|embed|preview|bot|crawler|spider|redditbot|applebot|discordbot|iframely|unfurl|valve|steam|pinterest|notion|teams|slack-imgproxy/.test(u);
 }
 
 function prettySize(n) {
@@ -48,11 +48,11 @@ function pageHtml({ title, desc, image, url, color, mime }) {
   extra.push('<meta property="og:image:alt" content="' + esc(title) + '" />');
   extra.push('<meta name="twitter:image:alt" content="' + esc(title) + '" />');
   extra.push('<meta name="color-scheme" content="dark" />');
-  extra.push('<meta property="og:determiner" content="a" />');
   extra.push('<meta name="application-name" content="rankvault" />');
   extra.push('<meta name="apple-mobile-web-app-title" content="rankvault" />');
   if (mime && String(mime).startsWith('video/') && isRemoteImg && image) {
     extra.push('<meta property="og:video" content="' + esc(image) + '" />');
+    extra.push('<meta property="og:video:secure_url" content="' + esc(image) + '" />');
     extra.push('<meta property="og:video:type" content="' + esc(mime) + '" />');
   }
   if (mime && String(mime).startsWith('audio/') && isRemoteImg && image) {
@@ -114,6 +114,13 @@ const PAGE_TITLES = {
   vault: 'vault — rankvault',
   drop: 'drop — rankvault',
   share: 'share — rankvault',
+  quill: 'quill — write and send a note',
+  prism: 'prism — peek at file headers',
+  mosaic: 'mosaic — local image board',
+  kiln: 'kiln — compact a note',
+  transit: 'transit — open a share by id',
+  still: 'still — grab a first frame',
+  glyph: 'glyph — tidy a filename',
   haven: 'haven — paste a note into the share db',
   quay: 'quay — dock a file into the share db',
   harbor: 'harbor — send a pile of locals',

@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"')
     .replace(/'/g, '&#39;');
 }
 
@@ -122,6 +122,11 @@ const PAGE_TITLES = {
   gantry: 'gantry — hoist a still, then publish the original',
   clew: 'clew — wind a thread of notes into one share',
   porch: 'porch — preview the discord card for a drop',
+  skerry: 'skerry — an island drop that fades on its own',
+  eyot: 'eyot — a sandbar of words',
+  glade: 'glade — light from a still, kept in the tab',
+  bothy: 'bothy — a hut for scraps',
+  wherry: 'wherry — ferry several locals across',
 };
 
 export default async function handler(req, res) {
@@ -133,7 +138,7 @@ export default async function handler(req, res) {
   if (page && !id) {
     const dest = `${proto}://${host}/#${encodeURIComponent(page)}`;
     const title = PAGE_TITLES[page] || `${page} — rankvault`;
-    const desc = 'quiet file hosting and side desks. share only if you want.';
+    const desc = 'quiet file hosting. drop a file, share only if you want. discord cards on every /s link.';
     if (!isBot(req.headers['user-agent']) && req.query.embed !== '1') {
       res.status(302).setHeader('Location', dest);
       res.end();

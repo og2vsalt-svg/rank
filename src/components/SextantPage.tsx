@@ -2,95 +2,74 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
 
+type Sight = { label: string; value: string };
+
 function pretty(n: number) {
   if (n < 1024) return n + ' b';
-  if (n < 1024 * 1024) return Math.round(n / 1024) + ' kb';
-  if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(1) + ' mb';
+  if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' kb';
+  if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(2) + ' mb';
   return (n / (1024 * 1024 * 1024)).toFixed(2) + ' gb';
 }
 
-async function sha256(file: File) {
+async function hashFile(file: File) {
   const buf = await file.arrayBuffer();
-  const hash = await crypto.subtle.digest('SHA-256', buf);
-  return Array.from(new Uint8Array(hash)).map((b) => b.toString(16).padStart(2, '0')).join('');
-}
-
-function imageSize(file: File) {
-  return new Promise<{ w: number; h: number } | null>((resolve) => {
-    if (!file.type.startsWith('image/')) return resolve(null);
-    const url = URL.createObjectURL(file);
-    const img = new Image();
-    img.onload = () => {
-      resolve({ w: img.naturalWidth, h: img.naturalHeight });
-      URL.revokeObjectURL(url);
-    };
-    img.onerror = () => {
-      URL.revokeObjectURL(url);
-      resolve(null);
-    };
-    img.src = url;
-  });
+  const digest = await crypto.subtle.digest('SHA-256', buf);
+  return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
 export default function SextantPage() {
-  const [busy, setBusy] = useState(false);
+  const [sights, setSights] = useState<Sight[]>([]);
   const [warn, setWarn] = useState('');
   const [err, setErr] = useState('');
-  const [report, setReport] = useState<string>('');
+  const [busy, setBusy] = useState(false);
 
-  const inspect = async (file?: File) => {
-    if (!file) return;
+  const sight = async (file: File | null) => {
     setErr('');
-    setReport('');
-    setWarn(file.size > 40 * 1024 * 1024 ? 'no cap. hashing a large file can make the tab feel sleepy.' : '');
+    setSights([]);
+    if (!file) return;
+    setWarn(file.size > 40 * 1024 * 1024 ? 'large sight. hashing may stall the tab. no cap.' : '');
     setBusy(true);
     try {
-      const [digest, dims] = await Promise.all([sha256(file), imageSize(file)]);
-      const lines = [
-        file.name,
-        file.type || 'application/octet-stream',
-        pretty(file.size),
-        file.lastModified ? new Date(file.lastModified).toISOString() : 'unknown date',
-        dims ? `${dims.w} × ${dims.h}` : 'no pixel frame',
-        digest,
+      const rows: Sight[] = [
+        { label: 'name', value: file.name },
+        { label: 'type', value: file.type || 'unknown' },
+        { label: 'size', value: pretty(file.size) + ' (' + file.size + ')' },
+        { label: 'modified', value: file.lastModified ? new Date(file.lastModified).toLocaleString() : '—' },
       ];
-      setReport(lines.join('\n'));
+      try {
+        rows.push({ label: 'sha-256', value: await hashFile(file) });
+      } catch {
+        rows.push({ label: 'sha-256', value: 'unavailable in this browser' });
+      }
+      setSights(rows);
     } catch (e: any) {
-      setErr(e?.message || 'sextant failed');
-    } finally {
-      setBusy(false);
+      setErr(e?.message || 'could not take the sight');
     }
+    setBusy(false);
   };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          className="glass rounded-[32px] p-8"
-        >
+      <div className="pt-28 pb-20 px-5 max-w-xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[28px] p-7">
           <p className="text-[#0a84ff] text-sm mb-2">sextant</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">take a bearing on a local file.</h1>
-          <p className="text-neutral-400 text-sm mb-6">
-            stays on this machine. name, type, size, date, pixels if any, sha-256. nothing is uploaded.
-          </p>
-          <label
-            className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center"
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => { e.preventDefault(); inspect(e.dataTransfer.files?.[0]); }}
-          >
-            <input type="file" className="hidden" onChange={(e) => inspect(e.target.files?.[0] || undefined)} />
-            <p className="text-white font-medium">{busy ? 'sighting…' : 'drop one file'}</p>
-            <p className="text-xs text-neutral-500 mt-2">no hard limit. we only warn when hashing might feel slow.</p>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">take a sight of a local file.</h1>
+          <p className="text-neutral-400 text-sm mb-6">reads name, type, weight, and a sha-256 in the tab. nothing is sent. useful before you decide whether a drop is worth publishing.</p>
+          <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-8 text-center mb-5 transition-colors duration-300">
+            <input type="file" className="hidden" onChange={(e) => sight(e.target.files?.[0] || null)} />
+            <span className="text-sm text-neutral-300">{busy ? 'taking the sight…' : 'choose a file to inspect'}</span>
           </label>
-          {warn && <p className="text-xs text-amber-300/80 mt-3">{warn}</p>}
-          {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
-          {report && (
-            <pre className="mt-6 text-xs text-neutral-300 whitespace-pre-wrap break-all leading-6">{report}</pre>
-          )}
+          {warn && <p className="text-xs text-amber-300/80 mb-3">{warn}</p>}
+          {err && <p className="text-xs text-red-400 mb-3">{err}</p>}
+          <div className="space-y-2">
+            {sights.map((s) => (
+              <div key={s.label} className="rounded-2xl bg-white/[0.03] border border-white/5 px-4 py-3">
+                <p className="text-[11px] uppercase tracking-wide text-neutral-500 mb-1">{s.label}</p>
+                <p className="text-sm text-neutral-200 break-all font-mono">{s.value}</p>
+              </div>
+            ))}
+          </div>
         </motion.div>
       </div>
     </div>

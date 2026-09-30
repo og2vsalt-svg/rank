@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"')
     .replace(/'/g, '&#39;');
 }
 
@@ -122,6 +122,9 @@ const PAGE_TITLES = {
   oriel: 'oriel — preview a still, then publish',
   threshold: 'threshold — a note across the door',
   marquee: 'marquee — a line that travels',
+  causeway: 'causeway — walk a local file into the share db',
+  spire: 'spire — six clocks on one quiet tower',
+  tally: 'tally — count a note in the tab',
 };
 
 export default async function handler(req, res) {

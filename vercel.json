@@ -37,6 +37,12 @@
     { "source": "/companionway", "destination": "/api/embed?page=companionway" },
     { "source": "/tannoy", "destination": "/api/embed?page=tannoy" },
     { "source": "/sundial", "destination": "/api/embed?page=sundial" },
-    { "source": "/parcel", "destination": "/api/embed?page=parcel" }
+    { "source": "/parcel", "destination": "/api/embed?page=parcel" },
+    { "source": "/weft", "destination": "/api/embed?page=weft" },
+    { "source": "/thole", "destination": "/api/embed?page=thole" },
+    { "source": "/gimbal", "destination": "/api/embed?page=gimbal" },
+    { "source": "/trunnion", "destination": "/api/embed?page=trunnion" },
+    { "source": "/samphire", "destination": "/api/embed?page=samphire" },
+    { "source": "/strake", "destination": "/api/embed?page=strake" }
   ]
 }

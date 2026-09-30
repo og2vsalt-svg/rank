@@ -20,6 +20,12 @@ const items = [
   { title: 'discord embeds', body: '/s/id plus /p/page and named paths serve og tags so discord previews look finished.' },
   { title: 'no hard file cap', body: 'drop whatever size you want. we only warn when the tab might feel sleepy.' },
   { title: 'nocturne', body: 'a dim writing pad that stays on this device.' },
+  { title: 'weft', body: 'weave several notes into one public .txt. discord unfurls /s.' },
+  { title: 'thole', body: 'pin a sha-256 of a local file. share only the receipt if you want.' },
+  { title: 'gimbal', body: 'rotate a still in the tab, then hang the leveled png.' },
+  { title: 'trunnion', body: 'slice a local into a map. only the json goes public.' },
+  { title: 'samphire', body: 'a field note — title, place, body — published as markdown.' },
+  { title: 'strake', body: 'a running stamped log that launches as a .log drop.' },
 ];
 
 export default function Features() {

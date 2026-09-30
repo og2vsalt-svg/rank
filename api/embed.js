@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"')
     .replace(/'/g, '&#39;');
 }
 
@@ -98,6 +98,9 @@ const PAGE_TITLES = {
   fathom: 'fathom \u2014 hash a local file then publish',
   windrow: 'windrow \u2014 rake several locals into the share db',
   splice: 'splice \u2014 braid a note with a file',
+  meander: 'meander \u2014 preview a still then publish',
+  ford: 'ford \u2014 ship the heavier of two locals',
+  kilter: 'kilter \u2014 a note plus a file ticket',
 };
 
 export default async function handler(req, res) {

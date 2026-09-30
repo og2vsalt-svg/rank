@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 }
 
@@ -50,6 +50,7 @@ function pageHtml({ title, desc, image, url, color, mime }) {
   extra.push('<meta name="color-scheme" content="dark" />');
   extra.push('<meta name="application-name" content="rankvault" />');
   extra.push('<meta name="apple-mobile-web-app-title" content="rankvault" />');
+  extra.push('<meta name="og:rich_attachment" content="true" />');
   if (mime && String(mime).startsWith('video/') && isRemoteImg && image) {
     extra.push('<meta property="og:video" content="' + esc(image) + '" />');
     extra.push('<meta property="og:video:secure_url" content="' + esc(image) + '" />');
@@ -132,6 +133,10 @@ const PAGE_TITLES = {
   causeway: 'causeway — walk a local file into the share db',
   spire: 'spire — six clocks on one quiet tower',
   tally: 'tally — count a note in the tab',
+  fathom: 'fathom — how heavy a file will feel',
+  solarium: 'solarium — pull a palette from a still',
+  meridian: 'meridian — the same instant in many cities',
+  gazette: 'gazette — recent public drops',
 };
 
 export default async function handler(req, res) {

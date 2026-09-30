@@ -6,6 +6,10 @@ type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
   { to: 'causeway', label: 'causeway' },
+  { to: 'gazette', label: 'gazette' },
+  { to: 'fathom', label: 'fathom' },
+  { to: 'solarium', label: 'solarium' },
+  { to: 'meridian', label: 'meridian' },
   { to: 'spire', label: 'spire' },
   { to: 'tally', label: 'tally' },
   { to: 'oriel', label: 'oriel' },
@@ -17,8 +21,6 @@ const primary: NavItem[] = [
   { to: 'ledger', label: 'ledger' },
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
-  { to: 'lantern', label: 'lantern' },
-  { to: 'lintel', label: 'lintel' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -41,6 +43,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'gazette', label: 'gazette' },
       { to: 'threshold', label: 'threshold' },
       { to: 'marquee', label: 'marquee' },
       { to: 'signal', label: 'signal' },
@@ -54,6 +57,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'fathom', label: 'fathom' },
+      { to: 'solarium', label: 'solarium' },
+      { to: 'meridian', label: 'meridian' },
       { to: 'spire', label: 'spire' },
       { to: 'tally', label: 'tally' },
       { to: 'loom', label: 'loom' },

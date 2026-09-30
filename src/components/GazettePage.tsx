@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { shareUrls } from '../lib/cloudShare';
+import { listPublicShares, shareUrls, type CloudMeta } from '../lib/cloudShare';
+import { useRouter } from './Router';
 
 function pretty(n: number) {
   if (n < 1024) return n + ' b';
@@ -10,48 +11,24 @@ function pretty(n: number) {
 }
 
 export default function GazettePage() {
-  const [title, setTitle] = useState('untitled bulletin');
-  const [body, setBody] = useState('');
-  const [busy, setBusy] = useState(false);
-  const [warn, setWarn] = useState('');
-  const [err, setErr] = useState('');
-  const [link, setLink] = useState('');
-  const [embed, setEmbed] = useState('');
+  const { navigate } = useRouter();
+  const [rows, setRows] = useState<CloudMeta[]>([]);
+  const [busy, setBusy] = useState(true);
+  const [copied, setCopied] = useState('');
 
-  const publish = async () => {
-    setErr('');
-    setBusy(true);
-    try {
-      const text = `# ${title.trim() || 'bulletin'}\n\n${body}`;
-      const blob = new Blob([text], { type: 'text/markdown' });
-      const name = `${(title || 'bulletin').replace(/[^a-z0-9]+/gi, '-').slice(0, 48)}.md`;
-      if (blob.size > 40 * 1024 * 1024) setWarn('huge note. encoding might feel slow. no cap tho.');
-      const dataUrl = await new Promise<string>((resolve, reject) => {
-        const r = new FileReader();
-        r.onload = () => resolve(String(r.result || ''));
-        r.onerror = () => reject(new Error('could not encode'));
-        r.readAsDataURL(blob);
-      });
-      const res = await fetch('/api/share', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, type: 'text/markdown', size: blob.size, dataUrl }),
-      });
-      const json = await res.json();
-      if (!res.ok || !json?.ok) throw new Error(json?.error || 'publish failed');
-      const urls = shareUrls(json.id);
-      setLink(urls.app);
-      setEmbed(urls.embed);
-      try { await navigator.clipboard.writeText(urls.embed); } catch {}
-      if (json.warn) setWarn(json.warn);
-    } catch (e: any) {
-      setErr(e?.message || 'gazette failed');
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const bytes = new TextEncoder().encode(`# ${title}\n\n${body}`).length;
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      const list = await listPublicShares(36);
+      if (alive) {
+        setRows(list);
+        setBusy(false);
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   return (
     <div className="mesh min-h-screen">
@@ -64,39 +41,33 @@ export default function GazettePage() {
           className="glass rounded-[32px] p-8"
         >
           <p className="text-[#0a84ff] text-sm mb-2">gazette</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">write a bulletin, ship it as a file.</h1>
-          <p className="text-neutral-400 text-sm mb-6">not the vault. this is a one-shot markdown drop with a discord card.</p>
-          <input
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="w-full mb-3 rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/50"
-            placeholder="headline"
-          />
-          <textarea
-            value={body}
-            onChange={(e) => setBody(e.target.value)}
-            rows={10}
-            className="w-full mb-4 rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/50 resize-y min-h-[12rem]"
-            placeholder="what happened"
-          />
-          <div className="flex items-center justify-between gap-3">
-            <p className="text-xs text-neutral-500">{pretty(bytes)}</p>
-            <button
-              onClick={publish}
-              disabled={busy || !body.trim()}
-              className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40"
-            >
-              {busy ? 'sending…' : 'publish bulletin'}
-            </button>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">what just crossed the share db.</h1>
+          <p className="text-neutral-400 text-sm mb-6">public drops only. copy the /s card for discord, or open the file in the app.</p>
+          {busy && <p className="text-sm text-neutral-500">listening…</p>}
+          {!busy && rows.length === 0 && <p className="text-sm text-neutral-500">quiet right now.</p>}
+          <div className="space-y-2">
+            {rows.map((row) => (
+              <div key={row.id} className="rounded-2xl bg-white/[0.03] border border-white/5 px-4 py-3 flex items-center gap-3">
+                <button onClick={() => navigate('share', row.id)} className="flex-1 text-left min-w-0">
+                  <p className="text-sm text-white truncate">{row.name}</p>
+                  <p className="text-[11px] text-neutral-500">
+                    {pretty(row.size)} · {row.type.split(';')[0]}
+                    {row.author ? ' · ' + row.author : ''}
+                  </p>
+                </button>
+                <button
+                  onClick={async () => {
+                    const url = shareUrls(row.id).embed;
+                    await navigator.clipboard.writeText(url);
+                    setCopied(row.id);
+                  }}
+                  className="text-[12px] text-neutral-400 hover:text-white shrink-0"
+                >
+                  {copied === row.id ? 'copied' : 'discord'}
+                </button>
+              </div>
+            ))}
           </div>
-          {warn && <p className="text-xs text-amber-300/80 mt-4">{warn}</p>}
-          {err && <p className="text-xs text-red-400 mt-4">{err}</p>}
-          {embed && (
-            <div className="mt-6 space-y-2">
-              <p className="text-xs text-neutral-400 break-all">discord: {embed}</p>
-              <p className="text-xs text-neutral-500 break-all">app: {link}</p>
-            </div>
-          )}
         </motion.div>
       </div>
     </div>

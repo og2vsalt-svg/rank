@@ -26,6 +26,7 @@
     { "source": "/i/:id", "destination": "/api/embed?id=:id" },
     { "source": "/a/:id", "destination": "/api/embed?id=:id" },
     { "source": "/e/:id", "destination": "/api/embed?id=:id" },
+    { "source": "/z/:id", "destination": "/api/embed?id=:id" },
     { "source": "/p/:page", "destination": "/api/embed?page=:page" }
   ],
   "headers": [

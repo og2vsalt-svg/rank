@@ -1,92 +1,120 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import Navbar from './Navbar';
 
-type Shot = { id: string; name: string; url: string; size: number };
+function rgbToHex(r: number, g: number, b: number) {
+  return '#' + [r, g, b].map((n) => n.toString(16).padStart(2, '0')).join('');
+}
 
-function formatBytes(n: number) {
-  if (n < 1024) return n + ' b';
-  if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' kb';
-  return (n / (1024 * 1024)).toFixed(2) + ' mb';
+function sample(file: File): Promise<string[]> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const w = 48;
+      const h = Math.max(1, Math.round((img.height / img.width) * w));
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        URL.revokeObjectURL(url);
+        reject(new Error('no canvas'));
+        return;
+      }
+      ctx.drawImage(img, 0, 0, w, h);
+      const data = ctx.getImageData(0, 0, w, h).data;
+      const buckets = new Map<string, number>();
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i] & 0xf0;
+        const g = data[i + 1] & 0xf0;
+        const b = data[i + 2] & 0xf0;
+        const key = rgbToHex(r, g, b);
+        buckets.set(key, (buckets.get(key) || 0) + 1);
+      }
+      const colors = [...buckets.entries()]
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 8)
+        .map(([hex]) => hex);
+      URL.revokeObjectURL(url);
+      resolve(colors);
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error('could not read still'));
+    };
+    img.src = url;
+  });
 }
 
 export default function SolariumPage() {
-  const [shots, setShots] = useState<Shot[]>([]);
-  const [open, setOpen] = useState<Shot | null>(null);
-  const [warn, setWarn] = useState('');
+  const [preview, setPreview] = useState('');
+  const [colors, setColors] = useState<string[]>([]);
+  const [err, setErr] = useState('');
+  const [copied, setCopied] = useState('');
 
-  const add = (list: FileList | null) => {
-    if (!list?.length) return;
-    const next: Shot[] = [];
-    let heavy = false;
-    Array.from(list).forEach((file) => {
-      if (!file.type.startsWith('image/')) return;
-      if (file.size > 20 * 1024 * 1024) heavy = true;
-      next.push({
-        id: `${file.name}-${file.size}-${file.lastModified}`,
-        name: file.name,
-        url: URL.createObjectURL(file),
-        size: file.size,
-      });
-    });
-    setWarn(heavy ? 'some stills are large. this tab may feel slow. no hard cap.' : '');
-    setShots((prev) => [...next, ...prev]);
+  const onFile = async (file?: File) => {
+    if (!file) return;
+    setErr('');
+    setColors([]);
+    if (!file.type.startsWith('image/')) {
+      setErr('needs a still. video and dumps stay on the other desks.');
+      return;
+    }
+    setPreview(URL.createObjectURL(file));
+    try {
+      setColors(await sample(file));
+    } catch (e: any) {
+      setErr(e?.message || 'could not sample');
+    }
   };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <main className="pt-24 pb-20 px-5">
-        <div className="max-w-5xl mx-auto">
+      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          className="glass rounded-[32px] p-8"
+        >
           <p className="text-[#0a84ff] text-sm mb-2">solarium</p>
-          <h1 className="text-4xl font-semibold tracking-tight text-white mb-3">a sun room for stills.</h1>
-          <p className="text-neutral-400 text-sm mb-8 max-w-xl">local images only. nothing uploads. not a vault — just a quiet lightbox on this device.</p>
-          <label className="inline-flex items-center px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium cursor-pointer mb-8 hover:bg-neutral-200 transition-colors">
-            <input type="file" accept="image/*" multiple className="hidden" onChange={(e) => add(e.target.files)} />
-            bring stills in
-          </label>
-          {warn && <p className="text-amber-300/80 text-xs mb-6">{warn}</p>}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-            {shots.map((s, i) => (
-              <motion.button
-                key={s.id}
-                initial={{ opacity: 0, scale: 0.96 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: Math.min(i, 8) * 0.03, duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                onClick={() => setOpen(s)}
-                className="aspect-square rounded-2xl overflow-hidden bg-black/30 text-left"
-              >
-                <img src={s.url} alt="" className="w-full h-full object-cover" />
-              </motion.button>
-            ))}
-          </div>
-          {!shots.length && <p className="text-neutral-600 text-sm">empty room.</p>}
-        </div>
-      </main>
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            className="fixed inset-0 z-[80] bg-black/70 backdrop-blur-xl flex items-center justify-center p-6"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setOpen(null)}
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">pull a palette from a still.</h1>
+          <p className="text-neutral-400 text-sm mb-6">stays in the tab. nothing hits the share db unless you take it to causeway later.</p>
+          <label
+            className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition-all duration-300"
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => {
+              e.preventDefault();
+              onFile(e.dataTransfer.files?.[0]);
+            }}
           >
-            <motion.div
-              initial={{ scale: 0.96, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.96, opacity: 0 }}
-              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-              className="max-w-3xl w-full"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <img src={open.url} alt="" className="w-full max-h-[70vh] object-contain rounded-3xl" />
-              <p className="text-white text-sm mt-4">{open.name}</p>
-              <p className="text-neutral-500 text-xs">{formatBytes(open.size)}</p>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <input type="file" accept="image/*" className="hidden" onChange={(e) => onFile(e.target.files?.[0] || undefined)} />
+            <p className="text-white font-medium">drop a photo</p>
+          </label>
+          {preview && <img src={preview} alt="" className="mt-6 w-full rounded-2xl" />}
+          {colors.length > 0 && (
+            <div className="mt-5 grid grid-cols-4 gap-2">
+              {colors.map((c) => (
+                <button
+                  key={c}
+                  onClick={async () => {
+                    await navigator.clipboard.writeText(c);
+                    setCopied(c);
+                  }}
+                  className="rounded-2xl overflow-hidden border border-white/10"
+                >
+                  <div className="h-14" style={{ background: c }} />
+                  <p className="text-[11px] py-1.5 text-neutral-400">{c}</p>
+                </button>
+              ))}
+            </div>
+          )}
+          {copied && <p className="text-xs text-neutral-500 mt-3">copied {copied}</p>}
+          {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
+        </motion.div>
+      </div>
     </div>
   );
 }

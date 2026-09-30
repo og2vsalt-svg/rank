@@ -136,6 +136,9 @@ const PAGE_TITLES = {
   spar: 'spar — one short public line',
   mullion: 'mullion — split a draft into panes',
   hawse: 'hawse — thread a note through a spoken phrase',
+  fluke: 'fluke — hook a local file and let it drift',
+  thwart: 'thwart — sit across the public bench and look',
+  coaming: 'coaming — raise a lip around a note',
 };
 
 export default async function handler(req, res) {

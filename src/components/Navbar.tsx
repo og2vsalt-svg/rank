@@ -6,6 +6,10 @@ type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
   { to: 'causeway', label: 'causeway' },
+  { to: 'vestibule', label: 'vestibule' },
+  { to: 'echo', label: 'echo' },
+  { to: 'drift', label: 'drift' },
+  { to: 'lattice', label: 'lattice' },
   { to: 'gazette', label: 'gazette' },
   { to: 'fathom', label: 'fathom' },
   { to: 'solarium', label: 'solarium' },
@@ -30,6 +34,7 @@ const groups: { title: string; items: NavItem[] }[] = [
     title: 'files',
     items: [
       { to: 'causeway', label: 'causeway' },
+      { to: 'vestibule', label: 'vestibule' },
       { to: 'oriel', label: 'oriel' },
       { to: 'harbor', label: 'harbor' },
       { to: 'quay', label: 'quay' },
@@ -48,6 +53,7 @@ const groups: { title: string; items: NavItem[] }[] = [
     title: 'share',
     items: [
       { to: 'gazette', label: 'gazette' },
+      { to: 'echo', label: 'echo' },
       { to: 'threshold', label: 'threshold' },
       { to: 'marquee', label: 'marquee' },
       { to: 'signal', label: 'signal' },
@@ -68,6 +74,8 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'meridian', label: 'meridian' },
       { to: 'spire', label: 'spire' },
       { to: 'tally', label: 'tally' },
+      { to: 'drift', label: 'drift' },
+      { to: 'lattice', label: 'lattice' },
       { to: 'loom', label: 'loom' },
       { to: 'hash', label: 'hash' },
       { to: 'convert', label: 'convert' },

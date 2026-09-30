@@ -1,10 +1,16 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './Navbar';
 import { publishShare, shareUrls } from '../lib/cloudShare';
 
 function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+
+function pretty(n: number) {
+  if (n < 1024) return n + ' b';
+  if (n < 1024 * 1024) return Math.round(n / 1024) + ' kb';
+  return (n / (1024 * 1024)).toFixed(1) + ' mb';
 }
 
 function readAsDataUrl(file: File) {
@@ -16,49 +22,53 @@ function readAsDataUrl(file: File) {
   });
 }
 
-export default function WeirPage() {
-  const [busy, setBusy] = useState(false);
-  const [warn, setWarn] = useState('');
-  const [err, setErr] = useState('');
-  const [rows, setRows] = useState<{ name: string; embed: string; app: string }[]>([]);
+type Held = { file: File; warn: string };
 
-  const send = async (list: FileList | null) => {
-    if (!list || !list.length) return;
+export default function WeirPage() {
+  const [held, setHeld] = useState<Held[]>([]);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState('');
+  const [out, setOut] = useState<{ name: string; embed: string }[]>([]);
+
+  const add = (list: FileList | null) => {
+    if (!list?.length) return;
+    const next: Held[] = [];
+    for (const f of Array.from(list)) {
+      next.push({
+        file: f,
+        warn: f.size > 12 * 1024 * 1024 ? 'this one may feel slow. no cap.' : '',
+      });
+    }
+    setHeld((prev) => [...prev, ...next]);
     setErr('');
-    setRows([]);
-    const files = Array.from(list);
-    const heavy = files.some((f) => f.size > 40 * 1024 * 1024);
-    setWarn(heavy ? 'one of these is chunky. encoding might feel sleepy. no hard cap.' : '');
+  };
+
+  const release = async () => {
+    if (!held.length || busy) return;
     setBusy(true);
-    const out: { name: string; embed: string; app: string }[] = [];
+    setErr('');
+    const shipped: { name: string; embed: string }[] = [];
     try {
-      let i = 0;
-      for (const file of files) {
-        i += 1;
-        const dataUrl = await readAsDataUrl(file);
+      for (const item of held) {
+        const dataUrl = await readAsDataUrl(item.file);
         const id = uid();
-        const name = `${String(i).padStart(2, '0')}-${file.name}`;
-        const res = await publishShare({
+        const pub = await publishShare({
           id,
-          name,
-          type: file.type || 'application/octet-stream',
-          size: file.size,
+          name: item.file.name,
+          type: item.file.type || 'application/octet-stream',
+          size: item.file.size,
           dataUrl,
         });
-        if (!res.ok) {
-          setErr(res.error || 'weir jammed');
+        if (!pub.ok) {
+          setErr(pub.error || `could not ship ${item.file.name}`);
           break;
         }
-        if (res.warn) setWarn(res.warn);
-        const urls = shareUrls(id);
-        out.push({ name, embed: urls.embed, app: urls.app });
+        shipped.push({ name: item.file.name, embed: shareUrls(id).embed });
       }
-      setRows(out);
-      if (out[0]) {
-        try { await navigator.clipboard.writeText(out[0].embed); } catch {}
-      }
+      setOut(shipped);
+      if (shipped.length === held.length) setHeld([]);
     } catch (e: any) {
-      setErr(e?.message || 'weir stayed dry');
+      setErr(e?.message || 'weir failed');
     } finally {
       setBusy(false);
     }
@@ -69,37 +79,56 @@ export default function WeirPage() {
       <Navbar />
       <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 18 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           className="glass rounded-[32px] p-8"
         >
           <p className="text-[#0a84ff] text-sm mb-2">weir</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">let a pile spill through in order.</h1>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">hold locals behind the gate, then let them through.</h1>
           <p className="text-neutral-400 text-sm mb-6">
-            each file gets a numbered name and its own public drop. discord still uses /s.
+            a queue, not a vault. files stay on this device until you lift the weir. each one becomes its own public drop and discord /s card.
           </p>
-          <label
-            className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition"
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => { e.preventDefault(); send(e.dataTransfer.files); }}
-          >
-            <input type="file" multiple className="hidden" onChange={(e) => send(e.target.files)} />
-            <p className="text-white font-medium">{busy ? 'spilling…' : 'drop a pile on the weir'}</p>
-            <p className="text-xs text-neutral-500 mt-2">no size lock. we only tap you if the tab might lag.</p>
+          <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-8 text-center transition-colors duration-300">
+            <input type="file" multiple className="hidden" onChange={(e) => add(e.target.files)} />
+            <p className="text-white font-medium">add files to the pool</p>
+            <p className="text-xs text-neutral-500 mt-2">nothing ships until you release.</p>
           </label>
-          {warn && <p className="text-xs text-amber-300/80 mt-3">{warn}</p>}
-          {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
-          {rows.length > 0 && (
-            <div className="mt-6 space-y-3">
-              {rows.map((r) => (
-                <div key={r.embed} className="text-xs text-neutral-400 break-all">
-                  <p className="text-white text-sm mb-1">{r.name}</p>
-                  <p>discord: {r.embed}</p>
+          <AnimatePresence>
+            {held.map((item, i) => (
+              <motion.div
+                key={item.file.name + i}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                className="mt-3 rounded-2xl bg-white/[0.04] border border-white/8 px-4 py-3 flex items-center justify-between gap-3"
+              >
+                <div className="min-w-0">
+                  <p className="text-sm text-white truncate">{item.file.name}</p>
+                  <p className="text-[11px] text-neutral-500">{pretty(item.file.size)}{item.warn ? ' · ' + item.warn : ''}</p>
                 </div>
-              ))}
-            </div>
-          )}
+                <button
+                  onClick={() => setHeld((prev) => prev.filter((_, idx) => idx !== i))}
+                  className="text-[12px] text-neutral-500 hover:text-white"
+                >
+                  lift one
+                </button>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+          <button
+            onClick={release}
+            disabled={!held.length || busy}
+            className="mt-5 w-full rounded-full bg-white text-black text-sm font-medium py-2.5 disabled:opacity-40 hover:bg-neutral-200 transition-colors"
+          >
+            {busy ? 'opening the gate…' : 'release the weir'}
+          </button>
+          {err && <p className="text-red-400 text-xs mt-3">{err}</p>}
+          {out.map((row) => (
+            <p key={row.embed} className="text-xs text-neutral-400 mt-2 break-all">
+              {row.name} · {row.embed}
+            </p>
+          ))}
         </motion.div>
       </div>
     </div>

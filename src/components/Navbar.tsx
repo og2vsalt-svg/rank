@@ -62,6 +62,13 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'diff', label: 'diff' },
       { to: 'fid', label: 'fid' },
       { to: 'buoy', label: 'buoy' },
+      { to: 'quill', label: 'quill' },
+      { to: 'prism', label: 'prism' },
+      { to: 'mosaic', label: 'mosaic' },
+      { to: 'kiln', label: 'kiln' },
+      { to: 'transit', label: 'transit' },
+      { to: 'still', label: 'still' },
+      { to: 'glyph', label: 'glyph' },
     ],
   },
 ];

@@ -5,6 +5,11 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'windlass', label: 'windlass' },
+  { to: 'catenary', label: 'catenary' },
+  { to: 'spar', label: 'spar' },
+  { to: 'mullion', label: 'mullion' },
+  { to: 'hawse', label: 'hawse' },
   { to: 'tannoy', label: 'tannoy' },
   { to: 'sundial', label: 'sundial' },
   { to: 'parcel', label: 'parcel' },
@@ -54,6 +59,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'files',
     items: [
+      { to: 'windlass', label: 'windlass' },
       { to: 'parcel', label: 'parcel' },
       { to: 'skerry', label: 'skerry' },
       { to: 'wherry', label: 'wherry' },
@@ -82,6 +88,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'spar', label: 'spar' },
+      { to: 'hawse', label: 'hawse' },
+      { to: 'mullion', label: 'mullion' },
       { to: 'tannoy', label: 'tannoy' },
       { to: 'eyot', label: 'eyot' },
       { to: 'bothy', label: 'bothy' },
@@ -106,6 +115,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'catenary', label: 'catenary' },
       { to: 'sundial', label: 'sundial' },
       { to: 'glade', label: 'glade' },
       { to: 'sill', label: 'sill' },

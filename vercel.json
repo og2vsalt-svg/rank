@@ -34,6 +34,9 @@
     { "source": "/deadeye", "destination": "/api/embed?page=deadeye" },
     { "source": "/scupper", "destination": "/api/embed?page=scupper" },
     { "source": "/gunwale", "destination": "/api/embed?page=gunwale" },
-    { "source": "/companionway", "destination": "/api/embed?page=companionway" }
+    { "source": "/companionway", "destination": "/api/embed?page=companionway" },
+    { "source": "/tannoy", "destination": "/api/embed?page=tannoy" },
+    { "source": "/sundial", "destination": "/api/embed?page=sundial" },
+    { "source": "/parcel", "destination": "/api/embed?page=parcel" }
   ]
 }

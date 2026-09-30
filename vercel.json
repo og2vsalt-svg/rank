@@ -53,6 +53,9 @@
     { "source": "/catenary", "destination": "/api/embed?page=catenary" },
     { "source": "/spar", "destination": "/api/embed?page=spar" },
     { "source": "/mullion", "destination": "/api/embed?page=mullion" },
-    { "source": "/hawse", "destination": "/api/embed?page=hawse" }
+    { "source": "/hawse", "destination": "/api/embed?page=hawse" },
+    { "source": "/fluke", "destination": "/api/embed?page=fluke" },
+    { "source": "/thwart", "destination": "/api/embed?page=thwart" },
+    { "source": "/coaming", "destination": "/api/embed?page=coaming" }
   ]
 }

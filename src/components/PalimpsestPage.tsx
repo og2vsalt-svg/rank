@@ -1,50 +1,56 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { shareUrls } from '../lib/cloudShare';
+import { publishShare, shareUrls } from '../lib/cloudShare';
 
-function readAsDataUrl(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const r = new FileReader();
-    r.onload = () => resolve(String(r.result || ''));
-    r.onerror = () => reject(new Error('could not read file'));
-    r.readAsDataURL(file);
-  });
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
 
 export default function PalimpsestPage() {
-  const [note, setNote] = useState('');
+  const [title, setTitle] = useState('');
+  const [body, setBody] = useState('');
   const [busy, setBusy] = useState(false);
-  const [warn, setWarn] = useState('');
   const [err, setErr] = useState('');
+  const [link, setLink] = useState('');
   const [embed, setEmbed] = useState('');
 
-  const send = async (file?: File) => {
-    if (!file) return;
-    setErr('');
-    setEmbed('');
-    setWarn(file.size > 40 * 1024 * 1024 ? 'no cap, but encoding this size can make the tab sleepy.' : '');
+  const publish = async () => {
+    const text = body.trim();
+    if (!text) {
+      setErr('write something first');
+      return;
+    }
     setBusy(true);
+    setErr('');
     try {
-      const dataUrl = await readAsDataUrl(file);
-      const name = note.trim() ? `${note.trim()} — ${file.name}` : file.name;
-      const r = await fetch('/api/share', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name,
-          type: file.type || 'application/octet-stream',
-          size: file.size,
-          dataUrl,
-          author: note.trim() || undefined,
-        }),
+      const name = (title.trim() || 'note') + '.txt';
+      const blob = new Blob([text], { type: 'text/plain' });
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = () => resolve(String(r.result || ''));
+        r.onerror = () => reject(new Error('encode failed'));
+        r.readAsDataURL(blob);
       });
-      const json = await r.json();
-      if (!r.ok || !json?.ok) throw new Error(json?.error || 'share failed');
-      const urls = shareUrls(json.id);
+      const id = uid();
+      const pub = await publishShare({
+        id,
+        name,
+        type: 'text/plain',
+        size: blob.size,
+        dataUrl,
+        author: title.trim() || undefined,
+      });
+      if (!pub.ok) {
+        setErr(pub.error || 'could not publish');
+        return;
+      }
+      const urls = shareUrls(id);
+      setLink(urls.app);
       setEmbed(urls.embed);
-      try { await navigator.clipboard.writeText(urls.embed); } catch {}
-      if (json.warn) setWarn(json.warn);
+      try {
+        await navigator.clipboard.writeText(urls.embed);
+      } catch {}
     } catch (e: any) {
       setErr(e?.message || 'palimpsest failed');
     } finally {
@@ -63,23 +69,38 @@ export default function PalimpsestPage() {
           className="glass rounded-[32px] p-8"
         >
           <p className="text-[#0a84ff] text-sm mb-2">palimpsest</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">write over the filename, keep the file.</h1>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">write a note. it becomes a public drop.</h1>
           <p className="text-neutral-400 text-sm mb-6">
-            the note becomes the card title discord sees. the original name stays in the title as a second layer.
+            not a vault file — a plain text share that discord can card. scrape over it and publish again whenever you like.
           </p>
-          <textarea
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            placeholder="what should the card say"
-            className="w-full min-h-[88px] rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-white outline-none focus:border-[#0a84ff]/50 mb-4"
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="title"
+            className="w-full px-4 py-2.5 rounded-full bg-white/5 border border-white/10 text-sm outline-none mb-3"
           />
-          <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center">
-            <input type="file" className="hidden" onChange={(e) => send(e.target.files?.[0] || undefined)} />
-            <p className="text-white font-medium">{busy ? 'writing through…' : 'lay a file under the note'}</p>
-          </label>
-          {warn && <p className="text-xs text-amber-300/80 mt-3">{warn}</p>}
-          {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
-          {embed && <p className="text-xs text-neutral-400 mt-4 break-all">discord: {embed}</p>}
+          <textarea
+            value={body}
+            onChange={(e) => setBody(e.target.value)}
+            placeholder="write on the scraped page…"
+            rows={10}
+            className="w-full px-4 py-3 rounded-3xl bg-white/5 border border-white/10 text-sm outline-none resize-y min-h-[12rem]"
+          />
+          <p className="text-[11px] text-neutral-500 mt-2">{body.length} characters. no cap.</p>
+          <button
+            onClick={publish}
+            disabled={busy}
+            className="mt-5 px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40"
+          >
+            {busy ? 'publishing…' : 'publish note'}
+          </button>
+          {err && <p className="text-red-400 text-xs mt-3">{err}</p>}
+          {link && (
+            <div className="mt-6 space-y-2 text-xs text-neutral-400 break-all">
+              <p>app: {link}</p>
+              <p>discord embed (copied): {embed}</p>
+            </div>
+          )}
         </motion.div>
       </div>
     </div>

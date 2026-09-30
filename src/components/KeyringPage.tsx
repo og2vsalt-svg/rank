@@ -1,42 +1,78 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-
-function makePass(n = 12) {
-  const alphabet = 'abcdefghijkmnopqrstuvwxyz23456789';
-  const buf = new Uint8Array(n);
-  crypto.getRandomValues(buf);
-  return [...buf].map((b) => alphabet[b % alphabet.length]).join('');
-}
+import { fetchShare, shareUrls } from '../lib/cloudShare';
 
 export default function KeyringPage() {
-  const [pass, setPass] = useState(makePass());
-  const [hint, setHint] = useState('');
-  const [copied, setCopied] = useState(false);
+  const [id, setId] = useState('');
+  const [status, setStatus] = useState('');
+  const [urls, setUrls] = useState<Record<string, string> | null>(null);
+  const [copied, setCopied] = useState('');
 
-  const copy = async () => {
+  const inspect = async () => {
+    const raw = id.trim().replace(/^.*\/(s|f|open|go|link|d)\//, '').replace(/[#?].*$/, '');
+    if (!raw) {
+      setStatus('paste a share id or embed path');
+      return;
+    }
+    setStatus('checking the share db…');
+    const meta = await fetchShare(raw);
+    const bag = shareUrls(raw);
+    setUrls(bag);
+    setStatus(meta ? `${meta.name} · live` : 'id accepted. if the drop exists, every alias cards the same file.');
+  };
+
+  const copy = async (label: string, value: string) => {
     try {
-      await navigator.clipboard.writeText(pass);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1400);
-    } catch {}
+      await navigator.clipboard.writeText(value);
+      setCopied(label);
+    } catch {
+      setCopied(value);
+    }
   };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-[32px] p-8">
+      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          className="glass rounded-[32px] p-8"
+        >
           <p className="text-[#0a84ff] text-sm mb-2">keyring</p>
-          <h1 className="text-3xl font-semibold mb-3">mint a lock for a drop.</h1>
-          <p className="text-neutral-400 text-sm mb-6">generate a soft password, then paste it into drop / vault when you publish. this page never stores the file.</p>
-          <p className="font-mono text-2xl tracking-wide mb-4">{pass}</p>
-          <input value={hint} onChange={(e) => setHint(e.target.value)} className="w-full mb-4 bg-white/5 rounded-2xl px-4 py-3 text-sm outline-none" placeholder="private hint only you see" />
-          <div className="flex flex-wrap gap-2">
-            <button onClick={() => setPass(makePass())} className="px-5 py-2.5 rounded-full bg-white/8 text-sm">new one</button>
-            <button onClick={copy} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium">{copied ? 'copied' : 'copy'}</button>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">every embed alias for one drop.</h1>
+          <p className="text-neutral-400 text-sm mb-6">
+            discord, slack, and iMessage unfurl /s/id. the other short paths hit the same card so a link always looks finished.
+          </p>
+          <div className="flex gap-2 mb-4">
+            <input
+              value={id}
+              onChange={(e) => setId(e.target.value)}
+              placeholder="share id or /s/…"
+              className="flex-1 px-4 py-2.5 rounded-full bg-white/5 border border-white/10 text-sm outline-none"
+            />
+            <button onClick={inspect} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium">
+              ring
+            </button>
           </div>
-          {hint && <p className="text-xs text-neutral-500 mt-4">hint stays in this tab only: {hint}</p>}
+          {status && <p className="text-xs text-neutral-400 mb-4">{status}</p>}
+          {urls && (
+            <div className="space-y-1.5">
+              {Object.entries(urls).map(([k, v]) => (
+                <button
+                  key={k}
+                  onClick={() => copy(k, v)}
+                  className="w-full text-left px-3 py-2 rounded-2xl bg-white/[0.03] hover:bg-white/[0.06] transition"
+                >
+                  <span className="text-[11px] text-neutral-500 uppercase tracking-wide">{k}</span>
+                  <p className="text-xs text-neutral-300 break-all">{v}</p>
+                </button>
+              ))}
+              {copied && <p className="text-[11px] text-neutral-500 pt-2">copied {copied}</p>}
+            </div>
+          )}
         </motion.div>
       </div>
     </div>

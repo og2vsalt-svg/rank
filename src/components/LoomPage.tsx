@@ -1,71 +1,70 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
+import { publishShare, shareUrls } from '../lib/cloudShare';
 
-type Swatch = { hex: string; n: number };
-
-function hex(r: number, g: number, b: number) {
-  return '#' + [r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('');
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
 
-function sample(file: File): Promise<Swatch[]> {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    const url = URL.createObjectURL(file);
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      const w = Math.min(80, img.width);
-      const h = Math.max(1, Math.round((img.height / img.width) * w));
-      canvas.width = w;
-      canvas.height = h;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) {
-        URL.revokeObjectURL(url);
-        reject(new Error('no canvas'));
-        return;
-      }
-      ctx.drawImage(img, 0, 0, w, h);
-      const data = ctx.getImageData(0, 0, w, h).data;
-      const map = new Map<string, number>();
-      for (let i = 0; i < data.length; i += 4) {
-        const r = data[i] & 0xf0;
-        const g = data[i + 1] & 0xf0;
-        const b = data[i + 2] & 0xf0;
-        const key = hex(r, g, b);
-        map.set(key, (map.get(key) || 0) + 1);
-      }
-      URL.revokeObjectURL(url);
-      resolve(
-        [...map.entries()]
-          .map(([h, n]) => ({ hex: h, n }))
-          .sort((a, b) => b.n - a.n)
-          .slice(0, 12),
-      );
-    };
-    img.onerror = () => {
-      URL.revokeObjectURL(url);
-      reject(new Error('could not read image'));
-    };
-    img.src = url;
+function readAsDataUrl(file: File) {
+  return new Promise<string>((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(String(r.result || ''));
+    r.onerror = () => reject(new Error('could not read file'));
+    r.readAsDataURL(file);
   });
 }
 
 export default function LoomPage() {
-  const [name, setName] = useState('');
-  const [warn, setWarn] = useState('');
-  const [swatches, setSwatches] = useState<Swatch[]>([]);
+  const [thread, setThread] = useState('');
+  const [warp, setWarp] = useState<string[]>([]);
+  const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
+  const [link, setLink] = useState('');
+  const [embed, setEmbed] = useState('');
 
-  const onFile = async (list: FileList | null) => {
-    const f = list?.[0];
-    if (!f) return;
-    setName(f.name);
+  const add = () => {
+    const t = thread.trim();
+    if (!t) return;
+    setWarp((w) => [...w, t]);
+    setThread('');
+  };
+
+  const weave = async () => {
+    if (!warp.length) {
+      setErr('add at least one thread');
+      return;
+    }
+    setBusy(true);
     setErr('');
-    setWarn(f.size > 12 * 1024 * 1024 ? 'large image. sampling still runs, the tab may hitch. no hard limit.' : '');
     try {
-      setSwatches(await sample(f));
+      const body = warp.map((line, i) => `${i + 1}. ${line}`).join('\n');
+      const file = new File([body], 'loom.txt', { type: 'text/plain' });
+      const dataUrl = await readAsDataUrl(file);
+      const id = uid();
+      const pub = await publishShare({
+        id,
+        name: `loom · ${warp.length} threads`,
+        type: 'text/plain',
+        size: file.size,
+        dataUrl,
+        author: 'loom',
+      });
+      if (!pub.ok) {
+        setErr(pub.error || 'could not weave');
+        return;
+      }
+      const urls = shareUrls(id);
+      setLink(urls.app);
+      setEmbed(urls.embed);
+      try {
+        await navigator.clipboard.writeText(urls.embed);
+      } catch {}
     } catch (e: any) {
-      setErr(e?.message || 'could not sample');
+      setErr(e?.message || 'loom failed');
+    } finally {
+      setBusy(false);
     }
   };
 
@@ -80,27 +79,37 @@ export default function LoomPage() {
           className="glass rounded-[32px] p-8"
         >
           <p className="text-[#0a84ff] text-sm mb-2">loom</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">pull a palette from a picture.</h1>
-          <p className="text-neutral-400 text-sm mb-6">local color desk. the image never leaves this tab.</p>
-          <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition">
-            <input type="file" accept="image/*" className="hidden" onChange={(e) => onFile(e.target.files)} />
-            <p className="text-white font-medium">{name || 'drop a local image'}</p>
-            <p className="text-xs text-neutral-500 mt-2">no file limit. just a slowness ping if it is huge.</p>
-          </label>
-          {warn && <p className="text-amber-300/90 text-xs mt-3">{warn}</p>}
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">wind several lines into one drop.</h1>
+          <p className="text-neutral-400 text-sm mb-6">
+            not a vault. a small cloth of notes that publishes as one text file with a finished discord card.
+          </p>
+          <div className="flex gap-2 mb-4">
+            <input
+              value={thread}
+              onChange={(e) => setThread(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && add()}
+              placeholder="a thread"
+              className="flex-1 px-4 py-2.5 rounded-full bg-white/5 border border-white/10 text-sm outline-none"
+            />
+            <button onClick={add} className="px-4 py-2.5 rounded-full bg-white/8 border border-white/10 text-sm">
+              add
+            </button>
+          </div>
+          <ul className="space-y-1.5 mb-5">
+            {warp.map((line, i) => (
+              <li key={i} className="text-sm text-neutral-300 px-3 py-2 rounded-2xl bg-white/[0.03]">
+                {line}
+              </li>
+            ))}
+          </ul>
+          <button onClick={weave} disabled={busy} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-50">
+            {busy ? 'weaving…' : 'publish the cloth'}
+          </button>
           {err && <p className="text-red-400 text-xs mt-3">{err}</p>}
-          {swatches.length > 0 && (
-            <div className="mt-8 grid grid-cols-3 sm:grid-cols-4 gap-3">
-              {swatches.map((s) => (
-                <button
-                  key={s.hex}
-                  onClick={() => navigator.clipboard.writeText(s.hex).catch(() => {})}
-                  className="rounded-2xl overflow-hidden text-left"
-                >
-                  <div className="h-16" style={{ background: s.hex }} />
-                  <p className="text-[11px] text-neutral-400 mt-1.5 tabular-nums">{s.hex}</p>
-                </button>
-              ))}
+          {link && (
+            <div className="mt-6 space-y-2 text-xs text-neutral-400 break-all">
+              <p>app: {link}</p>
+              <p>discord embed (copied): {embed}</p>
             </div>
           )}
         </motion.div>

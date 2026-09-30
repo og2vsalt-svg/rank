@@ -3,79 +3,71 @@ import { motion } from 'framer-motion';
 import Navbar from './Navbar';
 import { publishShare, shareUrls } from '../lib/cloudShare';
 
-function pretty(n: number) {
-  if (n < 1024) return n + ' b';
-  if (n < 1024 * 1024) return Math.round(n / 1024) + ' kb';
-  if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(1) + ' mb';
-  return (n / (1024 * 1024 * 1024)).toFixed(2) + ' gb';
-}
-
 function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
 
-function card(file: File) {
-  const canvas = document.createElement('canvas');
-  canvas.width = 1200;
-  canvas.height = 630;
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return Promise.reject(new Error('no canvas'));
-  const g = ctx.createLinearGradient(0, 0, 1200, 630);
-  g.addColorStop(0, '#0b0b0d');
-  g.addColorStop(1, '#12233a');
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, 1200, 630);
-  ctx.fillStyle = '#0a84ff';
-  ctx.font = '600 28px ui-sans-serif, system-ui';
-  ctx.fillText('lodestone', 72, 120);
-  ctx.fillStyle = '#f5f5f7';
-  ctx.font = '600 52px ui-sans-serif, system-ui';
-  const name = file.name.length > 36 ? file.name.slice(0, 34) + '…' : file.name;
-  ctx.fillText(name, 72, 210);
-  ctx.fillStyle = '#a1a1aa';
-  ctx.font = '400 28px ui-sans-serif, system-ui';
-  ctx.fillText(`${pretty(file.size)}  ·  ${file.type || 'unknown'}`, 72, 280);
-  ctx.fillText(`touched  ${new Date(file.lastModified).toLocaleString()}`, 72, 330);
-  ctx.fillStyle = '#52525b';
-  ctx.font = '400 20px ui-sans-serif, system-ui';
-  ctx.fillText('rankvault  ·  local file card, then a public drop', 72, 560);
-  return new Promise<string>((resolve) => resolve(canvas.toDataURL('image/jpeg', 0.92)));
+function readAsDataUrl(file: File) {
+  return new Promise<string>((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(String(r.result || ''));
+    r.onerror = () => reject(new Error('could not read file'));
+    r.readAsDataURL(file);
+  });
+}
+
+async function sha256(file: File) {
+  const buf = await file.arrayBuffer();
+  const digest = await crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(digest))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
 }
 
 export default function LodestonePage() {
-  const [preview, setPreview] = useState('');
   const [busy, setBusy] = useState(false);
+  const [hash, setHash] = useState('');
   const [warn, setWarn] = useState('');
   const [err, setErr] = useState('');
+  const [link, setLink] = useState('');
   const [embed, setEmbed] = useState('');
-  const [meta, setMeta] = useState('');
+  const [name, setName] = useState('');
 
-  const run = async (file?: File) => {
-    if (!file) return;
+  const onFile = async (list: FileList | null) => {
+    const f = list?.[0];
+    if (!f) return;
     setErr('');
+    setLink('');
     setEmbed('');
-    setMeta(`${file.name} · ${pretty(file.size)}`);
-    setWarn(file.size > 40 * 1024 * 1024 ? 'no cap, but large files make encode feel sleepy.' : '');
+    setName(f.name);
+    setWarn(f.size > 24 * 1024 * 1024 ? 'heavy stone. hashing and upload may feel slow. no hard cap.' : '');
     setBusy(true);
     try {
-      const dataUrl = await card(file);
-      setPreview(dataUrl);
+      const digest = await sha256(f);
+      setHash(digest);
+      const dataUrl = await readAsDataUrl(f);
       const id = uid();
-      const res = await publishShare({
+      const pub = await publishShare({
         id,
-        name: `lodestone-${file.name.replace(/[^a-z0-9._-]+/gi, '-')}.jpg`,
-        type: 'image/jpeg',
-        size: Math.floor((dataUrl.length * 3) / 4),
+        name: `${f.name} · ${digest.slice(0, 12)}`,
+        type: f.type || 'application/octet-stream',
+        size: f.size,
         dataUrl,
-        author: 'lodestone',
+        author: digest.slice(0, 16),
       });
-      if (!res.ok) throw new Error(res.error || 'lodestone failed');
-      const urls = shareUrls(res.id || id);
+      if (!pub.ok) {
+        setErr(pub.error || 'could not set the stone');
+        return;
+      }
+      if (pub.warn) setWarn(pub.warn);
+      const urls = shareUrls(id);
+      setLink(urls.app);
       setEmbed(urls.embed);
-      try { await navigator.clipboard.writeText(urls.embed); } catch {}
-      if (res.warn) setWarn(res.warn);
+      try {
+        await navigator.clipboard.writeText(urls.embed);
+      } catch {}
     } catch (e: any) {
-      setErr(e?.message || 'failed');
+      setErr(e?.message || 'lodestone failed');
     } finally {
       setBusy(false);
     }
@@ -92,24 +84,26 @@ export default function LodestonePage() {
           className="glass rounded-[32px] p-8"
         >
           <p className="text-[#0a84ff] text-sm mb-2">lodestone</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">pull a file into a 1200×630 card.</h1>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">hash a local file, then publish the pull.</h1>
           <p className="text-neutral-400 text-sm mb-6">
-            the original stays on device. only the painted card goes to the share db so discord unfurls cleanly.
+            sha-256 stays on this machine first. the short prefix rides on the discord card title so the drop can be checked later.
           </p>
-          <label
-            className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition"
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => { e.preventDefault(); run(e.dataTransfer.files?.[0]); }}
-          >
-            <input type="file" className="hidden" onChange={(e) => run(e.target.files?.[0])} />
-            <p className="text-white font-medium">{busy ? 'painting…' : 'drop one file'}</p>
-            <p className="text-xs text-neutral-500 mt-2">no size lock. we only warn if the tab might lag.</p>
+          <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition">
+            <input type="file" className="hidden" onChange={(e) => onFile(e.target.files)} />
+            <p className="text-white font-medium">{busy ? 'finding north…' : name ? `swap ${name}` : 'drop a file on the stone'}</p>
+            <p className="text-xs text-neutral-500 mt-2">the embed link copies itself.</p>
           </label>
-          {meta && <p className="text-xs text-neutral-500 mt-4">{meta}</p>}
-          {preview && <img src={preview} alt="lodestone card" className="mt-5 rounded-2xl w-full" />}
-          {warn && <p className="text-xs text-amber-300/80 mt-3">{warn}</p>}
-          {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
-          {embed && <p className="text-xs text-neutral-400 break-all mt-4">discord: {embed}</p>}
+          {hash && (
+            <p className="mt-4 text-[11px] text-neutral-500 break-all font-mono">{hash}</p>
+          )}
+          {warn && <p className="text-amber-300/90 text-xs mt-3">{warn}</p>}
+          {err && <p className="text-red-400 text-xs mt-3">{err}</p>}
+          {link && (
+            <div className="mt-6 space-y-2 text-xs text-neutral-400 break-all">
+              <p>app: {link}</p>
+              <p>discord embed (copied): {embed}</p>
+            </div>
+          )}
         </motion.div>
       </div>
     </div>

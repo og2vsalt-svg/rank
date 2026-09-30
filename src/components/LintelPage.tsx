@@ -1,34 +1,101 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
+import { publishShare, shareUrls } from '../lib/cloudShare';
 
-type Meta = { name: string; type: string; size: string; last: string; hex: string };
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
 
-function pretty(n: number) {
-  if (n < 1024) return n + ' b';
-  if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' kb';
-  if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(1) + ' mb';
-  return (n / (1024 * 1024 * 1024)).toFixed(2) + ' gb';
+function readAsDataUrl(file: File) {
+  return new Promise<string>((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(String(r.result || ''));
+    r.onerror = () => reject(new Error('could not read file'));
+    r.readAsDataURL(file);
+  });
 }
 
 export default function LintelPage() {
+  const [note, setNote] = useState('');
+  const [busy, setBusy] = useState(false);
   const [warn, setWarn] = useState('');
-  const [meta, setMeta] = useState<Meta | null>(null);
+  const [err, setErr] = useState('');
+  const [link, setLink] = useState('');
+  const [embed, setEmbed] = useState('');
+
+  const shipNote = async () => {
+    const body = note.trim();
+    if (!body) {
+      setErr('write a lintel first');
+      return;
+    }
+    setBusy(true);
+    setErr('');
+    try {
+      const blob = new Blob([body], { type: 'text/plain' });
+      const file = new File([blob], 'lintel.txt', { type: 'text/plain' });
+      const dataUrl = await readAsDataUrl(file);
+      const id = uid();
+      const pub = await publishShare({
+        id,
+        name: body.slice(0, 72) || 'lintel',
+        type: 'text/plain',
+        size: file.size,
+        dataUrl,
+        author: 'lintel',
+      });
+      if (!pub.ok) {
+        setErr(pub.error || 'could not set the beam');
+        return;
+      }
+      const urls = shareUrls(id);
+      setLink(urls.app);
+      setEmbed(urls.embed);
+      try {
+        await navigator.clipboard.writeText(urls.embed);
+      } catch {}
+    } catch (e: any) {
+      setErr(e?.message || 'lintel failed');
+    } finally {
+      setBusy(false);
+    }
+  };
 
   const onFile = async (list: FileList | null) => {
     const f = list?.[0];
     if (!f) return;
-    setWarn(f.size > 40 * 1024 * 1024 ? 'large file. we only peek at the first bytes. no hard limit.' : '');
-    const slice = await f.slice(0, 16).arrayBuffer();
-    const bytes = new Uint8Array(slice);
-    const hex = [...bytes].map((b) => b.toString(16).padStart(2, '0')).join(' ');
-    setMeta({
-      name: f.name,
-      type: f.type || 'unknown',
-      size: pretty(f.size),
-      last: f.lastModified ? new Date(f.lastModified).toISOString() : '—',
-      hex,
-    });
+    setWarn(f.size > 16 * 1024 * 1024 ? 'heavy beam. encoding may feel slow. no hard cap.' : '');
+    setBusy(true);
+    setErr('');
+    try {
+      const dataUrl = await readAsDataUrl(f);
+      const id = uid();
+      const labeled = note.trim() ? `${note.trim().slice(0, 80)} — ${f.name}` : f.name;
+      const pub = await publishShare({
+        id,
+        name: labeled.slice(0, 180),
+        type: f.type || 'application/octet-stream',
+        size: f.size,
+        dataUrl,
+        author: note.trim() || 'lintel',
+      });
+      if (!pub.ok) {
+        setErr(pub.error || 'could not set the beam');
+        return;
+      }
+      if (pub.warn) setWarn(pub.warn);
+      const urls = shareUrls(id);
+      setLink(urls.app);
+      setEmbed(urls.embed);
+      try {
+        await navigator.clipboard.writeText(urls.embed);
+      } catch {}
+    } catch (e: any) {
+      setErr(e?.message || 'lintel failed');
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -42,24 +109,33 @@ export default function LintelPage() {
           className="glass rounded-[32px] p-8"
         >
           <p className="text-[#0a84ff] text-sm mb-2">lintel</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">peek at a file without opening it.</h1>
-          <p className="text-neutral-400 text-sm mb-6">name, type, size, first sixteen bytes. stays on this machine.</p>
-          <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition">
-            <input type="file" className="hidden" onChange={(e) => onFile(e.target.files)} />
-            <p className="text-white font-medium">{meta?.name || 'drop any local file'}</p>
-            <p className="text-xs text-neutral-500 mt-2">no file limit. just a slowness ping if it is huge.</p>
-          </label>
-          {warn && <p className="text-amber-300/90 text-xs mt-3">{warn}</p>}
-          {meta && (
-            <dl className="mt-8 space-y-3 text-sm">
-              <div className="flex justify-between gap-4"><dt className="text-neutral-500">type</dt><dd className="text-white">{meta.type}</dd></div>
-              <div className="flex justify-between gap-4"><dt className="text-neutral-500">size</dt><dd className="text-white tabular-nums">{meta.size}</dd></div>
-              <div className="flex justify-between gap-4"><dt className="text-neutral-500">modified</dt><dd className="text-white tabular-nums text-right">{meta.last}</dd></div>
-              <div>
-                <dt className="text-neutral-500 mb-1">header</dt>
-                <dd className="text-white font-mono text-xs break-all">{meta.hex}</dd>
-              </div>
-            </dl>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">a note across the door, or a file under it.</h1>
+          <p className="text-neutral-400 text-sm mb-6">
+            ship just the text, or rest a local file under the same title. discord reads the title from the share db.
+          </p>
+          <textarea
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            rows={5}
+            placeholder="what sits above the door"
+            className="w-full mb-3 px-4 py-3 rounded-3xl bg-white/5 border border-white/10 text-sm outline-none focus:border-[#0a84ff]/40 resize-none"
+          />
+          <div className="flex flex-wrap gap-2 mb-4">
+            <button onClick={shipNote} disabled={busy} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-50">
+              {busy ? 'setting…' : 'ship the note'}
+            </button>
+            <label className="px-5 py-2.5 rounded-full bg-white/8 border border-white/10 text-sm cursor-pointer">
+              rest a file under it
+              <input type="file" className="hidden" onChange={(e) => onFile(e.target.files)} />
+            </label>
+          </div>
+          {warn && <p className="text-amber-300/90 text-xs">{warn}</p>}
+          {err && <p className="text-red-400 text-xs">{err}</p>}
+          {link && (
+            <div className="mt-6 space-y-2 text-xs text-neutral-400 break-all">
+              <p>app: {link}</p>
+              <p>discord embed (copied): {embed}</p>
+            </div>
           )}
         </motion.div>
       </div>

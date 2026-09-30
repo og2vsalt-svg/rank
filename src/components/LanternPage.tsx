@@ -3,10 +3,8 @@ import { motion } from 'framer-motion';
 import Navbar from './Navbar';
 import { publishShare, shareUrls } from '../lib/cloudShare';
 
-function formatBytes(n: number) {
-  if (n < 1024) return n + ' b';
-  if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' kb';
-  return (n / (1024 * 1024)).toFixed(2) + ' mb';
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
 
 function readAsDataUrl(file: File) {
@@ -19,41 +17,50 @@ function readAsDataUrl(file: File) {
 }
 
 export default function LanternPage() {
-  const [file, setFile] = useState<File | null>(null);
-  const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
+  const [preview, setPreview] = useState('');
+  const [kind, setKind] = useState('');
   const [warn, setWarn] = useState('');
   const [err, setErr] = useState('');
   const [link, setLink] = useState('');
+  const [embed, setEmbed] = useState('');
+  const [name, setName] = useState('');
 
-  const light = async () => {
-    if (!file) return;
+  const onFile = async (list: FileList | null) => {
+    const f = list?.[0];
+    if (!f) return;
     setErr('');
-    setWarn(file.size > 12 * 1024 * 1024 ? 'chunky file. encoding may feel sleepy. no hard cap.' : '');
+    setLink('');
+    setEmbed('');
+    setName(f.name);
+    setKind(f.type || '');
+    setWarn(f.size > 20 * 1024 * 1024 ? 'bright file. preview and upload may feel slow. no hard cap.' : '');
     setBusy(true);
     try {
-      const dataUrl = await readAsDataUrl(file);
-      const stamp = Date.now().toString(36);
-      const id = `lantern-${stamp}`;
-      const name = note.trim() ? `${note.trim().slice(0, 40)} · ${file.name}` : file.name;
-      const res = await publishShare({
+      const dataUrl = await readAsDataUrl(f);
+      setPreview(dataUrl);
+      const id = uid();
+      const pub = await publishShare({
         id,
-        name,
-        type: file.type || 'application/octet-stream',
-        size: file.size,
+        name: f.name,
+        type: f.type || 'application/octet-stream',
+        size: f.size,
         dataUrl,
         author: 'lantern',
       });
-      if (!res.ok) {
-        setErr(res.error || 'could not publish');
+      if (!pub.ok) {
+        setErr(pub.error || 'could not light it');
         return;
       }
-      if (res.warn) setWarn(res.warn);
+      if (pub.warn) setWarn(pub.warn);
       const urls = shareUrls(id);
-      setLink(urls.embed);
-      try { await navigator.clipboard.writeText(urls.embed); } catch {}
+      setLink(urls.app);
+      setEmbed(urls.embed);
+      try {
+        await navigator.clipboard.writeText(urls.embed);
+      } catch {}
     } catch (e: any) {
-      setErr(e?.message || 'failed');
+      setErr(e?.message || 'lantern failed');
     } finally {
       setBusy(false);
     }
@@ -62,25 +69,39 @@ export default function LanternPage() {
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <main className="pt-24 pb-20 px-5">
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }} className="max-w-xl mx-auto">
+      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          className="glass rounded-[32px] p-8"
+        >
           <p className="text-[#0a84ff] text-sm mb-2">lantern</p>
-          <h1 className="text-4xl font-semibold tracking-tight text-white mb-3">hang a light on a local file.</h1>
-          <p className="text-neutral-400 text-sm mb-8">not a vault grid. pick one file, write a short caption, ship it to the share db. discord unfurls /s.</p>
-          <label className="block glass rounded-3xl p-8 text-center cursor-pointer mb-5 hover:bg-white/[0.04] transition-colors">
-            <input type="file" className="hidden" onChange={(e) => setFile(e.target.files?.[0] || null)} />
-            <p className="text-white">{file ? file.name : 'choose a file'}</p>
-            {file && <p className="text-xs text-neutral-500 mt-1">{formatBytes(file.size)} · {file.type || 'file'}</p>}
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">preview a still, then hang it on the share db.</h1>
+          <p className="text-neutral-400 text-sm mb-6">
+            images and clips glow here first. discord unfurls the same file from /s. no size cap — only a slowness note.
+          </p>
+          <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition">
+            <input type="file" accept="image/*,video/*" className="hidden" onChange={(e) => onFile(e.target.files)} />
+            <p className="text-white font-medium">{busy ? 'hanging the lamp…' : name ? `swap ${name}` : 'choose a still or clip'}</p>
+            <p className="text-xs text-neutral-500 mt-2">the embed link copies itself.</p>
           </label>
-          <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="optional caption" className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white outline-none mb-4" />
-          <button onClick={light} disabled={!file || busy} className="w-full rounded-full bg-white text-black py-3 text-sm font-medium disabled:opacity-40 hover:bg-neutral-200 transition-colors">
-            {busy ? 'lighting…' : 'light and copy embed'}
-          </button>
-          {warn && <p className="text-amber-300/80 text-xs mt-4">{warn}</p>}
-          {err && <p className="text-red-400 text-xs mt-4">{err}</p>}
-          {link && <p className="text-[#0a84ff] text-xs mt-4 break-all">{link}</p>}
+          {preview && kind.startsWith('image/') && (
+            <img src={preview} alt="" className="mt-5 w-full rounded-[24px] object-cover max-h-80" />
+          )}
+          {preview && kind.startsWith('video/') && (
+            <video src={preview} controls className="mt-5 w-full rounded-[24px] max-h-80" />
+          )}
+          {warn && <p className="text-amber-300/90 text-xs mt-3">{warn}</p>}
+          {err && <p className="text-red-400 text-xs mt-3">{err}</p>}
+          {link && (
+            <div className="mt-6 space-y-2 text-xs text-neutral-400 break-all">
+              <p>app: {link}</p>
+              <p>discord embed (copied): {embed}</p>
+            </div>
+          )}
         </motion.div>
-      </main>
+      </div>
     </div>
   );
 }

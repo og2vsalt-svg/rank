@@ -6,24 +6,24 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 }
 
 function isBot(ua) {
   const u = (ua || '').toLowerCase();
-  return /discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|skype|linkedinbot|embed|preview|bot|crawler|spider|redditbot|applebot|discordbot|iframely|unfurl|valve|steam/.test(u);
+  return /discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|skype|linkedinbot|embed|preview|bot|crawler|spider|redditbot|applebot|discordbot|iframely|unfurl|valve|steam|pinterest|notion|teams/.test(u);
 }
 
 function prettySize(n) {
   const x = Number(n) || 0;
-  if (x < 1024) return x + ' b';
-  if (x < 1024 * 1024) return Math.max(1, Math.round(x / 1024)) + ' kb';
-  if (x < 1024 * 1024 * 1024) return (x / (1024 * 1024)).toFixed(1) + ' mb';
-  return (x / (1024 * 1024 * 1024)).toFixed(2) + ' gb';
+  if (x < 1024) return x + ' B';
+  if (x < 1024 * 1024) return Math.max(1, Math.round(x / 1024)) + ' KB';
+  if (x < 1024 * 1024 * 1024) return (x / (1024 * 1024)).toFixed(1) + ' MB';
+  return (x / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
 }
 
 function pageHtml({ title, desc, image, url, color, mime }) {
@@ -50,6 +50,7 @@ function pageHtml({ title, desc, image, url, color, mime }) {
   extra.push('<meta name="color-scheme" content="dark" />');
   extra.push('<meta property="og:determiner" content="a" />');
   extra.push('<meta name="application-name" content="rankvault" />');
+  extra.push('<meta name="apple-mobile-web-app-title" content="rankvault" />');
   if (mime && String(mime).startsWith('video/') && isRemoteImg && image) {
     extra.push('<meta property="og:video" content="' + esc(image) + '" />');
     extra.push('<meta property="og:video:type" content="' + esc(mime) + '" />');
@@ -58,7 +59,41 @@ function pageHtml({ title, desc, image, url, color, mime }) {
     extra.push('<meta property="og:audio" content="' + esc(image) + '" />');
     extra.push('<meta property="og:audio:type" content="' + esc(mime) + '" />');
   }
-  return `<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8" />\n<title>${esc(title)}</title>\n<meta name="description" content="${esc(desc)}" />\n<meta name="theme-color" content="${esc(c)}" />\n<meta name="robots" content="noindex" />\n<meta property="og:type" content="website" />\n<meta property="og:site_name" content="rankvault" />\n<meta property="og:title" content="${esc(title)}" />\n<meta property="og:description" content="${esc(desc)}" />\n<meta property="og:image" content="${esc(safeImg)}" />\n<meta property="og:image:secure_url" content="${esc(safeImg)}" />\n<meta property="og:image:type" content="${esc(imgType)}" />\n<meta property="og:image:width" content="1200" />\n<meta property="og:image:height" content="630" />\n<meta property="og:url" content="${esc(url)}" />\n${extra.join('\n')}\n<meta name="twitter:card" content="summary_large_image" />\n<meta name="twitter:title" content="${esc(title)}" />\n<meta name="twitter:description" content="${esc(desc)}" />\n<meta name="twitter:image" content="${esc(safeImg)}" />\n<link rel="canonical" href="${esc(url)}" />\n</head>\n<body style="background:#050506;color:#f5f5f7;font-family:Inter,system-ui,sans-serif;padding:48px 24px">\n<p style="opacity:.7;font-size:14px">rankvault</p>\n<h1 style="font-size:28px;letter-spacing:-.03em">${esc(title)}</h1>\n<p style="color:#a1a1aa;max-width:40rem">${esc(desc)}</p>\n<p><a href="${esc(url)}" style="color:#0a84ff">open in rankvault</a></p>\n<script>if(!/discord|bot|embed|preview/i.test(navigator.userAgent||'')) location.replace(${JSON.stringify(url)});</script>\n</body>\n</html>`;
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>${esc(title)}</title>
+<meta name="description" content="${esc(desc)}" />
+<meta name="theme-color" content="${esc(c)}" />
+<meta name="robots" content="noindex" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="rankvault" />
+<meta property="og:title" content="${esc(title)}" />
+<meta property="og:description" content="${esc(desc)}" />
+<meta property="og:image" content="${esc(safeImg)}" />
+<meta property="og:image:secure_url" content="${esc(safeImg)}" />
+<meta property="og:image:type" content="${esc(imgType)}" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:url" content="${esc(url)}" />
+${extra.join('\n')}
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="${esc(title)}" />
+<meta name="twitter:description" content="${esc(desc)}" />
+<meta name="twitter:image" content="${esc(safeImg)}" />
+<link rel="canonical" href="${esc(url)}" />
+</head>
+<body style="margin:0;background:#050506;color:#f5f5f7;font-family:Inter,system-ui,-apple-system,sans-serif;padding:64px 28px;min-height:100vh">
+<div style="max-width:36rem">
+<p style="opacity:.55;font-size:13px;letter-spacing:.08em;text-transform:uppercase">rankvault</p>
+<h1 style="font-size:32px;letter-spacing:-.04em;font-weight:600;margin:12px 0 16px">${esc(title)}</h1>
+<p style="color:#a1a1aa;max-width:40rem;line-height:1.55">${esc(desc)}</p>
+<p style="margin-top:28px"><a href="${esc(url)}" style="color:#0a84ff;text-decoration:none">open in rankvault →</a></p>
+</div>
+<script>if(!/discord|bot|embed|preview/i.test(navigator.userAgent||'')) location.replace(${JSON.stringify(url)});</script>
+</body>
+</html>`;
 }
 
 async function loadShare(id) {
@@ -76,39 +111,17 @@ async function loadShare(id) {
 }
 
 const PAGE_TITLES = {
-  vault: 'vault \u2014 rankvault',
-  drop: 'drop \u2014 rankvault',
-  share: 'share \u2014 rankvault',
-  haven: 'haven \u2014 paste a note into the share db',
-  skein: 'skein \u2014 wind lines into one drop',
-  belfry: 'belfry \u2014 a quiet local chime',
-  quay: 'quay \u2014 dock a file into the share db',
-  mooring: 'mooring \u2014 tie several locals to one index card',
-  towpath: 'towpath \u2014 walk a local file into the share db',
-  buoy: 'buoy \u2014 preview a discord card',
-  hawser: 'hawser \u2014 braid drop ids into one line',
-  garret: 'garret \u2014 a local attic of drop ids',
-  lockgate: 'lockgate \u2014 publish with a pass and tide',
-  fid: 'fid \u2014 peek at the first bytes, then ship',
-  spinnaker: 'spinnaker \u2014 pack a drop into a share sheet',
-  taffrail: 'taffrail \u2014 inspect a discord card',
-  yardarm: 'yardarm \u2014 hash a local file then publish',
-  porchlight: 'porchlight \u2014 drop a file and preview the discord card',
-  stillwater: 'stillwater \u2014 park files in the share db',
-  fathom: 'fathom \u2014 hash a local file then publish',
-  windrow: 'windrow \u2014 rake several locals into the share db',
-  splice: 'splice \u2014 braid a note with a file',
-  meander: 'meander \u2014 preview a still then publish',
-  ford: 'ford \u2014 ship the heavier of two locals',
-  kilter: 'kilter \u2014 a note plus a file ticket',
-  reliquary: 'reliquary \u2014 caption a file for the share db',
-  solstice: 'solstice \u2014 hash two locals, ship one',
-  palimpsest: 'palimpsest \u2014 write a note into the share db',
-  keyring: 'keyring \u2014 every embed alias for one drop',
-  lantern: 'lantern \u2014 preview a still then publish',
-  lintel: 'lintel \u2014 a note across the door',
-  loom: 'loom \u2014 wind lines into one drop',
-  lodestone: 'lodestone \u2014 hash a local file then publish',
+  vault: 'vault — rankvault',
+  drop: 'drop — rankvault',
+  share: 'share — rankvault',
+  haven: 'haven — paste a note into the share db',
+  quay: 'quay — dock a file into the share db',
+  harbor: 'harbor — send a pile of locals',
+  signal: 'signal — public drop pulse',
+  ledger: 'ledger — what already made it',
+  oriel: 'oriel — preview a still, then publish',
+  threshold: 'threshold — a note across the door',
+  marquee: 'marquee — a line that travels',
 };
 
 export default async function handler(req, res) {
@@ -119,7 +132,7 @@ export default async function handler(req, res) {
 
   if (page && !id) {
     const dest = `${proto}://${host}/#${encodeURIComponent(page)}`;
-    const title = PAGE_TITLES[page] || `${page} \u2014 rankvault`;
+    const title = PAGE_TITLES[page] || `${page} — rankvault`;
     const desc = 'quiet file hosting and side desks. share only if you want.';
     if (!isBot(req.headers['user-agent']) && req.query.embed !== '1') {
       res.status(302).setHeader('Location', dest);
@@ -143,7 +156,7 @@ export default async function handler(req, res) {
   const title = live ? `${row.name}` : 'rankvault drop';
   const kind = (live && row.mime) ? String(row.mime).split(';')[0] : 'file';
   const desc = live
-    ? `${kind} \u00b7 ${prettySize(row.size)}${row.author ? ' \u00b7 ' + row.author : ''}${row.download_count ? ' \u00b7 ' + row.download_count + ' opens' : ''} \u00b7 public drop on rankvault`
+    ? `${kind} · ${prettySize(row.size)}${row.author ? ' · ' + row.author : ''}${row.download_count ? ' · ' + row.download_count + ' opens' : ''} · public drop on rankvault`
     : 'a quiet file drop. open to download.';
   const mime = String((live && row.mime) || '');
   const image = live && (mime.startsWith('image/') || mime.startsWith('video/') || mime.startsWith('audio/')) && String(row.file_url || '').startsWith('http')

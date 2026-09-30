@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"')
     .replace(/'/g, '&#39;');
 }
 
@@ -137,6 +137,10 @@ const PAGE_TITLES = {
   solarium: 'solarium — pull a palette from a still',
   meridian: 'meridian — the same instant in many cities',
   gazette: 'gazette — recent public drops',
+  lumen: 'lumen — read a still without leaving the tab',
+  well: 'well — pour a note into the public share table',
+  nave: 'nave — compare two locals by hash',
+  porch: 'porch — preview the discord card for a drop',
 };
 
 export default async function handler(req, res) {

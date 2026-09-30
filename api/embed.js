@@ -101,6 +101,10 @@ const PAGE_TITLES = {
   meander: 'meander \u2014 preview a still then publish',
   ford: 'ford \u2014 ship the heavier of two locals',
   kilter: 'kilter \u2014 a note plus a file ticket',
+  reliquary: 'reliquary \u2014 caption a file for the share db',
+  solstice: 'solstice \u2014 hash two locals, ship one',
+  palimpsest: 'palimpsest \u2014 write a note into the share db',
+  keyring: 'keyring \u2014 every embed alias for one drop',
 };
 
 export default async function handler(req, res) {

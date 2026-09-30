@@ -30,6 +30,10 @@
     { "source": "/h/:id", "destination": "/api/embed?id=:id" },
     { "source": "/v/:id", "destination": "/api/embed?id=:id" },
     { "source": "/j/:id", "destination": "/api/embed?id=:id" },
-    { "source": "/p/:page", "destination": "/api/embed?page=:page" }
+    { "source": "/p/:page", "destination": "/api/embed?page=:page" },
+    { "source": "/deadeye", "destination": "/api/embed?page=deadeye" },
+    { "source": "/scupper", "destination": "/api/embed?page=scupper" },
+    { "source": "/gunwale", "destination": "/api/embed?page=gunwale" },
+    { "source": "/companionway", "destination": "/api/embed?page=companionway" }
   ]
 }

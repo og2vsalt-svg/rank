@@ -5,6 +5,11 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'skerry', label: 'skerry' },
+  { to: 'eyot', label: 'eyot' },
+  { to: 'glade', label: 'glade' },
+  { to: 'bothy', label: 'bothy' },
+  { to: 'wherry', label: 'wherry' },
   { to: 'kettle', label: 'kettle' },
   { to: 'sill', label: 'sill' },
   { to: 'trestle', label: 'trestle' },
@@ -37,6 +42,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'files',
     items: [
+      { to: 'skerry', label: 'skerry' },
+      { to: 'wherry', label: 'wherry' },
       { to: 'kettle', label: 'kettle' },
       { to: 'sluice', label: 'sluice' },
       { to: 'causeway', label: 'causeway' },
@@ -58,6 +65,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'eyot', label: 'eyot' },
+      { to: 'bothy', label: 'bothy' },
       { to: 'trestle', label: 'trestle' },
       { to: 'gazette', label: 'gazette' },
       { to: 'echo', label: 'echo' },
@@ -76,6 +85,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'glade', label: 'glade' },
       { to: 'sill', label: 'sill' },
       { to: 'fathom', label: 'fathom' },
       { to: 'solarium', label: 'solarium' },

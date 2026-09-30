@@ -105,6 +105,10 @@ const PAGE_TITLES = {
   solstice: 'solstice \u2014 hash two locals, ship one',
   palimpsest: 'palimpsest \u2014 write a note into the share db',
   keyring: 'keyring \u2014 every embed alias for one drop',
+  lantern: 'lantern \u2014 preview a still then publish',
+  lintel: 'lintel \u2014 a note across the door',
+  loom: 'loom \u2014 wind lines into one drop',
+  lodestone: 'lodestone \u2014 hash a local file then publish',
 };
 
 export default async function handler(req, res) {

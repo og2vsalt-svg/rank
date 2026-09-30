@@ -43,6 +43,11 @@ const primary: NavItem[] = [
   { to: 'scupper', label: 'scupper' },
   { to: 'gunwale', label: 'gunwale' },
   { to: 'companionway', label: 'companionway' },
+  { to: 'funicular', label: 'funicular' },
+  { to: 'pintle', label: 'pintle' },
+  { to: 'kevel', label: 'kevel' },
+  { to: 'fairlead', label: 'fairlead' },
+  { to: 'halyard', label: 'halyard' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -70,6 +75,8 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'lockgate', label: 'lockgate' },
       { to: 'lumen', label: 'lumen' },
       { to: 'nave', label: 'nave' },
+      { to: 'pintle', label: 'pintle' },
+      { to: 'funicular', label: 'funicular' },
     ],
   },
   {
@@ -91,6 +98,9 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'keyring', label: 'keyring' },
       { to: 'well', label: 'well' },
       { to: 'porch', label: 'porch' },
+      { to: 'kevel', label: 'kevel' },
+      { to: 'fairlead', label: 'fairlead' },
+      { to: 'halyard', label: 'halyard' },
     ],
   },
   {

@@ -1,6 +1,9 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'meander', body: 'preview a still with its frame size, then dock the original in the share db. discord unfurls /s.' },
+  { title: 'ford', body: 'weigh two locals in the tab and publish only the heavier crossing.' },
+  { title: 'kilter', body: 'tilt a field note against a file. the public drop is a small json ticket, not the bytes.' },
   { title: 'flume', body: 'sample a still into a palette, then dock the original in the share db. discord unfurls /s.' },
   { title: 'truss', body: 'brace a note in the tab. publish a .txt drop only when you ask.' },
   { title: 'oriel', body: 'peek at name, type, and size locally. nothing uploads from this desk.' },

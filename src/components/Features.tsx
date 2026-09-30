@@ -1,6 +1,10 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'millrace', body: 'send a local file down the channel into the share db. discord unfurls /s. not the vault grid.' },
+  { title: 'lychgate', body: 'walk a pasted note out as a public .txt drop. a door, not a filing cabinet.' },
+  { title: 'gantry', body: 'hoist a still in the tab, then publish the original when you are ready.' },
+  { title: 'clew', body: 'wind three short notes into one thread and ship a single discord card.' },
   { title: 'meander', body: 'preview a still with its frame size, then dock the original in the share db. discord unfurls /s.' },
   { title: 'ford', body: 'weigh two locals in the tab and publish only the heavier crossing.' },
   { title: 'kilter', body: 'tilt a field note against a file. the public drop is a small json ticket, not the bytes.' },

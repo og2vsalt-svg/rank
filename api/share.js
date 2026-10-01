@@ -227,6 +227,38 @@ export default async function handler(req, res) {
       return;
     }
 
+    if (req.method === 'PATCH') {
+      const raw = await readBody(req);
+      let body;
+      try {
+        body = JSON.parse(raw.toString('utf8') || '{}');
+      } catch {
+        res.status(400).json({ error: 'bad json' });
+        return;
+      }
+      const id = (body.id || '').toString().trim().slice(0, 64);
+      if (!id) {
+        res.status(400).json({ error: 'id required' });
+        return;
+      }
+      const row = await sbGetShare(id);
+      if (!row) {
+        res.status(404).json({ error: 'share not found' });
+        return;
+      }
+      const meta = { ...(row.meta || {}) };
+      if (typeof body.caption === 'string') meta.caption = body.caption.slice(0, 280);
+      if (typeof body.cardTitle === 'string' && body.cardTitle.trim()) meta.cardTitle = body.cardTitle.slice(0, 120);
+      if (typeof body.color === 'string' && /^#[0-9a-fA-F]{6}$/.test(body.color)) meta.color = body.color;
+      await sbUpsertShare({
+        ...row,
+        meta,
+        updated_at: new Date().toISOString(),
+      });
+      res.status(200).json({ ok: true, id, embedPath: `/s/${id}` });
+      return;
+    }
+
     res.status(405).json({ error: 'method not allowed' });
   } catch (err) {
     console.error(err);

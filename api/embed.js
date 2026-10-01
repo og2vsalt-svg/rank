@@ -135,6 +135,10 @@ const PAGE_TITLES = {
   reliquary: 'reliquary \u2014 send a local file into the share database',
   tint: 'tint \u2014 pull a palette from a still',
   waybill: 'waybill \u2014 read a public drop and its discord card',
+  stamp: 'stamp \u2014 fingerprint a local file, then file it',
+  lanyard: 'lanyard \u2014 retouch the discord card on a drop',
+  quire: 'quire \u2014 read a public text drop',
+  courier: 'courier \u2014 several locals, each with a card',
 };
 
 export default async function handler(req, res) {
@@ -166,7 +170,7 @@ export default async function handler(req, res) {
 
   const row = await loadShare(id);
   const live = row && row.is_public && (!row.expires_at || +new Date(row.expires_at) > Date.now());
-  const title = live ? `${row.name}` : 'rankvault drop';
+  const title = live ? ((row.meta && row.meta.cardTitle) || row.name) : 'rankvault drop';
   const kind = (live && row.mime) ? String(row.mime).split(';')[0] : 'file';
   const caption = live && row.meta && row.meta.caption ? String(row.meta.caption) : '';
   const desc = live
@@ -185,5 +189,6 @@ export default async function handler(req, res) {
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
-  res.status(200).send(pageHtml({ title, desc, image, url: appUrl, color: '#0A84FF', mime }));
+  const accent = live && row.meta && row.meta.color ? String(row.meta.color) : '#0A84FF';
+  res.status(200).send(pageHtml({ title, desc, image, url: appUrl, color: accent, mime }));
 }

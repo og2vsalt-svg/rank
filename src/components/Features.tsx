@@ -1,6 +1,10 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'stamp', body: 'hash a local file in the tab, then publish the bytes to the share database. discord gets the /s card. slowness warning only.' },
+  { title: 'courier', body: 'send several locals in one run. each becomes its own public row and its own unfurl.' },
+  { title: 'lanyard', body: 'retouch the title, caption, and accent on a drop that is already filed. no second upload.' },
+  { title: 'quire', body: 'a reading room for a public text drop. not another drawer.' },
   { title: 'inbox', body: 'hand a local file to the share database. discord unfurls /s. slowness warning only, no hard cap.' },
   { title: 'transept', body: 'four city clocks at the crossing. not a vault drawer. the page link still unfurls.' },
   { title: 'ambo', body: 'time a reading, then publish the markdown if you want a card.' },

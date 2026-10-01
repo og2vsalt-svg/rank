@@ -106,6 +106,10 @@
     { "source": "/waybill", "destination": "/api/embed?page=waybill" },
     { "source": "/bilge", "destination": "/api/embed?page=bilge" },
     { "source": "/davit", "destination": "/api/embed?page=davit" },
-    { "source": "/futtock", "destination": "/api/embed?page=futtock" }
+    { "source": "/futtock", "destination": "/api/embed?page=futtock" },
+    { "source": "/stamp", "destination": "/api/embed?page=stamp" },
+    { "source": "/lanyard", "destination": "/api/embed?page=lanyard" },
+    { "source": "/quire", "destination": "/api/embed?page=quire" },
+    { "source": "/courier", "destination": "/api/embed?page=courier" }
   ]
 }

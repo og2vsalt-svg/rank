@@ -5,6 +5,10 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'lazaret', label: 'lazaret' },
+  { to: 'loam', label: 'loam' },
+  { to: 'orlop', label: 'orlop' },
+  { to: 'carrel', label: 'carrel' },
   { to: 'bulkhead', label: 'bulkhead' },
   { to: 'crosstree', label: 'crosstree' },
   { to: 'hold', label: 'hold' },
@@ -24,6 +28,16 @@ const primary: NavItem[] = [
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
+  {
+    title: 'deck',
+    items: [
+      { to: 'lazaret', label: 'lazaret' },
+      { to: 'loam', label: 'loam' },
+      { to: 'orlop', label: 'orlop' },
+      { to: 'carrel', label: 'carrel' },
+      { to: 'hold', label: 'hold' },
+    ],
+  },
   {
     title: 'rooms',
     items: [

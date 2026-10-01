@@ -51,6 +51,10 @@ const PAGE_TITLES = {
   palimpsest: 'palimpsest \u2014 rankvault',
   inbox: 'inbox \u2014 rankvault',
   courier: 'courier \u2014 several locals, each with a card',
+  orlop: 'orlop \u2014 notes under the waterline',
+  lazaret: 'lazaret \u2014 hand a local file across',
+  loam: 'loam \u2014 a line you can hand someone',
+  carrel: 'carrel \u2014 a shared watch list',
 };
 
 function pageHtml({ title, desc, image, url, color, mime }) {

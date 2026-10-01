@@ -122,6 +122,10 @@
     { "source": "/stamp", "destination": "/api/embed?page=stamp" },
     { "source": "/lanyard", "destination": "/api/embed?page=lanyard" },
     { "source": "/quire", "destination": "/api/embed?page=quire" },
-    { "source": "/courier", "destination": "/api/embed?page=courier" }
+    { "source": "/courier", "destination": "/api/embed?page=courier" },
+    { "source": "/orlop", "destination": "/api/embed?page=orlop" },
+    { "source": "/lazaret", "destination": "/api/embed?page=lazaret" },
+    { "source": "/loam", "destination": "/api/embed?page=loam" },
+    { "source": "/carrel", "destination": "/api/embed?page=carrel" }
   ]
 }

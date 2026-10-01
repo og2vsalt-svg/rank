@@ -100,6 +100,9 @@
     { "source": "/volute", "destination": "/api/embed?page=volute" },
     { "source": "/reliquary", "destination": "/api/embed?page=reliquary" },
     { "source": "/tint", "destination": "/api/embed?page=tint" },
-    { "source": "/waybill", "destination": "/api/embed?page=waybill" }
+    { "source": "/waybill", "destination": "/api/embed?page=waybill" },
+    { "source": "/bilge", "destination": "/api/embed?page=bilge" },
+    { "source": "/davit", "destination": "/api/embed?page=davit" },
+    { "source": "/futtock", "destination": "/api/embed?page=futtock" }
   ]
 }

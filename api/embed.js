@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 }
 
@@ -144,6 +144,10 @@ const PAGE_TITLES = {
   fluke: 'fluke — hook a local file and let it drift',
   thwart: 'thwart — sit across the public bench and look',
   coaming: 'coaming — raise a lip around a note',
+  copse: 'copse — a grove of colour from a still',
+  riprap: 'riprap — stack a bank of sentences',
+  wicket: 'wicket — a small gate for a note',
+  leat: 'leat — let a channel of words run',
 };
 
 export default async function handler(req, res) {

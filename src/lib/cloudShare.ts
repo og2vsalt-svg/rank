@@ -69,6 +69,7 @@ async function publishToSupabase(payload: {
   lockPass?: string;
   expiresAt?: string | null;
   author?: string;
+  caption?: string;
 }): Promise<{ ok: boolean; id?: string; url?: string; error?: string; warn?: string }> {
   if (!payload.dataUrl || !payload.dataUrl.startsWith('data:')) {
     return { ok: false, error: 'missing file data' };
@@ -90,7 +91,7 @@ async function publishToSupabase(payload: {
     is_public: true,
     download_count: 0,
     author: payload.author || null,
-    meta: { source: 'rankvault-client', warn },
+    meta: { source: 'rankvault-client', warn, caption: payload.caption || null },
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   };
@@ -117,6 +118,7 @@ export async function publishShare(payload: {
   lockPass?: string;
   expiresAt?: string | null;
   author?: string;
+  caption?: string;
 }): Promise<{ ok: boolean; id?: string; url?: string; error?: string; warn?: string }> {
   try {
     const res = await fetch('/api/share', {
@@ -129,7 +131,8 @@ export async function publishShare(payload: {
       return { ok: true, id: data.id || payload.id, url: data.url, warn: data.warn };
     }
     const data = await res.json().catch(() => ({}));
-    if (data.error && payload.size < 2 * 1024 * 1024) {
+    // api missed — still try the shares table so a local file can land
+    if (data.error && payload.size < 1500) {
       return { ok: false, error: data.error };
     }
   } catch {

@@ -90,6 +90,11 @@
     { "source": "/locker", "destination": "/api/embed?page=locker" },
     { "source": "/dispatch", "destination": "/api/embed?page=dispatch" },
     { "source": "/envelope", "destination": "/api/embed?page=envelope" },
-    { "source": "/receipt", "destination": "/api/embed?page=receipt" }
+    { "source": "/receipt", "destination": "/api/embed?page=receipt" },
+    { "source": "/keystone", "destination": "/api/embed?page=keystone" },
+    { "source": "/newel", "destination": "/api/embed?page=newel" },
+    { "source": "/transom", "destination": "/api/embed?page=transom" },
+    { "source": "/plinth", "destination": "/api/embed?page=plinth" },
+    { "source": "/corbel", "destination": "/api/embed?page=corbel" }
   ]
 }

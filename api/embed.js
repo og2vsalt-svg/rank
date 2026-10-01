@@ -100,7 +100,7 @@ ${extra.join('\n')}
 
 async function loadShare(id) {
   try {
-    const url = `${SUPABASE_URL}/rest/v1/public_shares?id=eq.${encodeURIComponent(id)}&select=id,name,mime,size,file_url,expires_at,is_public,author,download_count&limit=1`;
+    const url = `${SUPABASE_URL}/rest/v1/public_shares?id=eq.${encodeURIComponent(id)}&select=id,name,mime,size,file_url,expires_at,is_public,author,download_count,meta&limit=1`;
     const r = await fetch(url, {
       headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
     });
@@ -159,6 +159,11 @@ const PAGE_TITLES = {
   impost: 'impost — seat one file on the springing',
   fillet: 'fillet — a thin band of colour',
   ogee: 'ogee — a double curve of notes',
+  keystone: 'keystone — set one local in the arch',
+  newel: 'newel — a stair of small jobs',
+  transom: 'transom — a window for wording',
+  plinth: 'plinth — a stand for one passage',
+  corbel: 'corbel — a shelf for addresses',
 };
 
 export default async function handler(req, res) {
@@ -192,8 +197,9 @@ export default async function handler(req, res) {
   const live = row && row.is_public && (!row.expires_at || +new Date(row.expires_at) > Date.now());
   const title = live ? `${row.name}` : 'rankvault drop';
   const kind = (live && row.mime) ? String(row.mime).split(';')[0] : 'file';
+  const caption = live && row.meta && row.meta.caption ? String(row.meta.caption) : '';
   const desc = live
-    ? `${kind} · ${prettySize(row.size)}${row.author ? ' · ' + row.author : ''}${row.download_count ? ' · ' + row.download_count + ' opens' : ''} · public drop on rankvault`
+    ? `${caption ? caption + ' · ' : ''}${kind} · ${prettySize(row.size)}${row.author ? ' · ' + row.author : ''}${row.download_count ? ' · ' + row.download_count + ' opens' : ''} · public drop on rankvault`
     : 'a quiet file drop. open to download.';
   const mime = String((live && row.mime) || '');
   const image = live && (mime.startsWith('image/') || mime.startsWith('video/') || mime.startsWith('audio/')) && String(row.file_url || '').startsWith('http')

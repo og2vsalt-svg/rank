@@ -189,7 +189,7 @@ export default async function handler(req, res) {
         is_public: true,
         download_count: 0,
         author: body.author || null,
-        meta: { warn, source: 'rankvault' },
+        meta: { warn, source: 'rankvault', caption: body.caption || null },
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };

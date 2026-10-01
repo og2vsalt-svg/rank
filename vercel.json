@@ -69,6 +69,10 @@
     { "source": "/pergola", "destination": "/api/embed?page=pergola" },
     { "source": "/spinney", "destination": "/api/embed?page=spinney" },
     { "source": "/cameo", "destination": "/api/embed?page=cameo" },
-    { "source": "/holt", "destination": "/api/embed?page=holt" }
+    { "source": "/holt", "destination": "/api/embed?page=holt" },
+    { "source": "/locker", "destination": "/api/embed?page=locker" },
+    { "source": "/dispatch", "destination": "/api/embed?page=dispatch" },
+    { "source": "/envelope", "destination": "/api/embed?page=envelope" },
+    { "source": "/receipt", "destination": "/api/embed?page=receipt" }
   ]
 }

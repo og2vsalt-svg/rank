@@ -9,7 +9,7 @@ function esc(s) {
     .replace(/&/g, '&')
     .replace(/</g, '<')
     .replace(/>/g, '>')
-    .replace(/\"/g, '"')
+    .replace(/"/g, '"')
     .replace(/'/g, '&#39;');
 }
 
@@ -41,32 +41,30 @@ async function loadShare(id) {
 }
 
 const PAGE_TITLES = {
+  berth: 'berth \u2014 name the slip, then hand the file',
+  sounding: 'sounding \u2014 what is already on the water',
+  fender: 'fender \u2014 a note that leaves as a file',
   bulkhead: 'bulkhead \u2014 a compartment of files',
   crosstree: 'crosstree \u2014 a still with a colour on the card',
   hold: 'hold \u2014 what is already on the deck',
-  lattice: 'lattice \u2014 a folder, each file its own card',
-  slipway: 'slipway \u2014 rankvault',
-  quay: 'quay \u2014 rankvault',
-  binnacle: 'binnacle \u2014 rankvault',
-  palimpsest: 'palimpsest \u2014 rankvault',
-  inbox: 'inbox \u2014 rankvault',
-  courier: 'courier \u2014 several locals, each with a card',
-  orlop: 'orlop \u2014 notes under the waterline',
   lazaret: 'lazaret \u2014 hand a local file across',
   loam: 'loam \u2014 a line you can hand someone',
   carrel: 'carrel \u2014 a shared watch list',
+  orlop: 'orlop \u2014 notes under the waterline',
+  vault: 'vault \u2014 rankvault',
+  drop: 'drop \u2014 rankvault',
 };
 
-function pageHtml({ title, desc, image, url, color, mime }) {
+function pageHtml({ title, desc, image, url, color }) {
   const img = image || 'https://og2vsalt-svg.github.io/rank/og.png';
   const safeImg = /^https?:\/\//i.test(img) && !img.startsWith('data:') ? img : 'https://og2vsalt-svg.github.io/rank/og.png';
-  const c = color || '#0A84FF';
-  return `<!doctype html><html lang="en"><head><meta charset="utf-8" /><title>${esc(title)}</title><meta name="description" content="${esc(desc)}" /><meta name="theme-color" content="${esc(c)}" /><meta property="og:type" content="website" /><meta property="og:site_name" content="rankvault" /><meta property="og:title" content="${esc(title)}" /><meta property="og:description" content="${esc(desc)}" /><meta property="og:image" content="${esc(safeImg)}" /><meta property="og:url" content="${esc(url)}" /><meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content="${esc(title)}" /><meta name="twitter:description" content="${esc(desc)}" /><meta name="twitter:image" content="${esc(safeImg)}" /></head><body style="margin:0;background:#050506;color:#f5f5f7;font-family:Inter,system-ui,-apple-system,sans-serif;padding:64px 28px"><p style="opacity:.55;font-size:13px;letter-spacing:.08em;text-transform:uppercase">rankvault</p><h1 style="font-size:32px;letter-spacing:-.04em">${esc(title)}</h1><p style="color:#a1a1aa">${esc(desc)}</p><script>if(!/discord|bot|embed|preview/i.test(navigator.userAgent||'')) location.replace(${JSON.stringify(url)});</script></body></html>`;
+  const c = /^#[0-9a-fA-F]{6}$/.test(color || '') ? color : '#0A84FF';
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8" /><title>${esc(title)}</title><meta name="description" content="${esc(desc)}" /><meta name="theme-color" content="${esc(c)}" /><meta property="og:type" content="website" /><meta property="og:site_name" content="rankvault" /><meta property="og:title" content="${esc(title)}" /><meta property="og:description" content="${esc(desc)}" /><meta property="og:image" content="${esc(safeImg)}" /><meta property="og:image:width" content="1200" /><meta property="og:image:height" content="630" /><meta property="og:url" content="${esc(url)}" /><meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content="${esc(title)}" /><meta name="twitter:description" content="${esc(desc)}" /><meta name="twitter:image" content="${esc(safeImg)}" /></head><body style="margin:0;background:#050506;color:#f5f5f7;font-family:Inter,system-ui,-apple-system,sans-serif;padding:64px 28px"><p style="opacity:.55;font-size:13px;letter-spacing:.08em;text-transform:uppercase">rankvault</p><h1 style="font-size:32px;letter-spacing:-.04em">${esc(title)}</h1><p style="color:#a1a1aa">${esc(desc)}</p><script>if(!/discord|bot|embed|preview/i.test(navigator.userAgent||'')) location.replace(${JSON.stringify(url)});</script></body></html>`;
 }
 
 export default async function handler(req, res) {
   const id = (req.query.id || '').toString().trim();
-  const page = (req.query.page || '').toString().trim();
+  const page = (req.query.page || '').toString().trim().toLowerCase();
   const proto = (req.headers['x-forwarded-proto'] || 'https').toString();
   const host = (req.headers['x-forwarded-host'] || req.headers.host || '').toString();
 
@@ -111,5 +109,5 @@ export default async function handler(req, res) {
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
   const accent = live && row.meta && row.meta.color ? String(row.meta.color) : '#0A84FF';
-  res.status(200).send(pageHtml({ title, desc, image, url: appUrl, color: accent, mime }));
+  res.status(200).send(pageHtml({ title, desc, image, url: appUrl, color: accent }));
 }

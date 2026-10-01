@@ -17,11 +17,11 @@ export default function Hero() {
         </motion.p>
         <div className="flex flex-wrap gap-3 mb-12">
           <button onClick={() => navigate('vault')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black font-medium text-sm hover:bg-neutral-200 transition">open vault</button>
+          <button onClick={() => navigate('copse')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">copse</button>
+          <button onClick={() => navigate('riprap')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">riprap</button>
+          <button onClick={() => navigate('wicket')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">wicket</button>
+          <button onClick={() => navigate('leat')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">leat</button>
           <button onClick={() => navigate('mere')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">mere</button>
-          <button onClick={() => navigate('glean')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">glean</button>
-          <button onClick={() => navigate('dewpond')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">dewpond</button>
-          <button onClick={() => navigate('saggar')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">saggar</button>
-          <button onClick={() => navigate('emboss')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">emboss</button>
           <button onClick={() => navigate('drop')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">drop</button>
           <a href="#features" className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">see features</a>
         </div>

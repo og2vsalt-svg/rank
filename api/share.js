@@ -14,7 +14,7 @@ const SUPABASE_KEY =
 
 function cors(res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS,PATCH');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 }
 
@@ -51,7 +51,7 @@ async function sbGetShare(id) {
 }
 
 async function sbUpsertShare(row) {
-  const url = `${SUPABASE_URL}/rest/v1/public_shares`;
+  const url = `${SUPABASE_URL}/rest/v1/public_shares?on_conflict=id`;
   const r = await fetch(url, {
     method: 'POST',
     headers: {
@@ -94,6 +94,67 @@ function rowToMeta(row) {
   };
 }
 
+function parseMultipart(buf, contentType) {
+  const m = /boundary=(?:"([^"]+)"|([^;]+))/i.exec(contentType || '');
+  if (!m) return null;
+  const boundary = Buffer.from('--' + (m[1] || m[2]).trim());
+  const parts = [];
+  let start = buf.indexOf(boundary);
+  while (start !== -1) {
+    start += boundary.length;
+    if (buf.slice(start, start + 2).toString() === '--') break;
+    if (buf.slice(start, start + 2).toString() === '\r\n') start += 2;
+    const next = buf.indexOf(boundary, start);
+    if (next === -1) break;
+    let chunk = buf.slice(start, next - 2);
+    const sep = chunk.indexOf('\r\n\r\n');
+    if (sep !== -1) {
+      const head = chunk.slice(0, sep).toString('utf8');
+      const body = chunk.slice(sep + 4);
+      const name = /name="([^"]+)"/.exec(head)?.[1] || '';
+      const filename = /filename="([^"]*)"/.exec(head)?.[1] || '';
+      const type = /Content-Type:\s*([^\r\n]+)/i.exec(head)?.[1] || 'application/octet-stream';
+      parts.push({ name, filename, type, body });
+    }
+    start = next;
+  }
+  return parts;
+}
+
+async function storeBytes({ id, name, type, buf }) {
+  const safeName = name.replace(/[^a-zA-Z0-9._-]+/g, '_').slice(0, 180) || 'file';
+  const objectPath = `${id}/${safeName}`;
+  let fileUrl = null;
+  try {
+    const up = await fetch(`${SUPABASE_URL}/storage/v1/object/shares/${objectPath}`, {
+      method: 'POST',
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': type,
+        'x-upsert': 'true',
+        'cache-control': 'public, max-age=31536000',
+      },
+      body: buf,
+    });
+    if (up.ok) fileUrl = `${SUPABASE_URL}/storage/v1/object/public/shares/${objectPath}`;
+  } catch {}
+  if (!fileUrl) {
+    const opts = blobOpts();
+    if (opts) {
+      const fileBlob = await put(`shares/${id}/${safeName}`, buf, {
+        access: 'public',
+        contentType: type,
+        addRandomSuffix: false,
+        allowOverwrite: true,
+        ...opts,
+      });
+      fileUrl = fileBlob.url;
+    }
+  }
+  return fileUrl;
+}
+
 export default async function handler(req, res) {
   cors(res);
   if (req.method === 'OPTIONS') {
@@ -108,95 +169,79 @@ export default async function handler(req, res) {
         res.status(400).json({ error: 'missing id' });
         return;
       }
-
       const row = await sbGetShare(id);
-      if (!row) {
+      if (!row || !row.is_public) {
         res.status(404).json({ error: 'share not found' });
         return;
       }
-
       if (row.expires_at && +new Date(row.expires_at) < Date.now()) {
         res.status(410).json({ error: 'share expired' });
         return;
       }
-
-      if (!row.is_public) {
-        res.status(404).json({ error: 'share not found' });
-        return;
-      }
-
       const meta = rowToMeta(row);
-      if (req.query.dl === '1') {
-        sbBumpDownload(id, (Number(row.download_count) || 0) + 1);
-      }
-
+      if (req.query.dl === '1') sbBumpDownload(id, (Number(row.download_count) || 0) + 1);
       res.status(200).json(meta);
       return;
     }
 
     if (req.method === 'POST') {
       const contentType = req.headers['content-type'] || '';
-      if (!contentType.includes('application/json')) {
-        res.status(400).json({ error: 'send json { id?, name, type, size, dataUrl, lockPass?, expiresAt?, author? }' });
-        return;
-      }
-
       const raw = await readBody(req);
-      const body = JSON.parse(raw.toString('utf8'));
-      const id = (body.id || uid()).toString().slice(0, 64);
-      const name = (body.name || 'file').toString().slice(0, 512);
-      const type = (body.type || 'application/octet-stream').toString();
-      const dataUrl = body.dataUrl;
-      if (!dataUrl || typeof dataUrl !== 'string' || !dataUrl.startsWith('data:')) {
-        res.status(400).json({ error: 'dataUrl required' });
+      let id = uid();
+      let name = 'file';
+      let type = 'application/octet-stream';
+      let buf = null;
+      let lockPass = null;
+      let expiresAt = null;
+      let author = null;
+      let caption = null;
+
+      if (contentType.includes('multipart/form-data')) {
+        const parts = parseMultipart(raw, contentType) || [];
+        const file = parts.find((p) => p.filename || p.name === 'file');
+        if (!file) {
+          res.status(400).json({ error: 'file field required' });
+          return;
+        }
+        buf = file.body;
+        name = file.filename || 'file';
+        type = file.type || 'application/octet-stream';
+        const field = (key) => parts.find((p) => p.name === key)?.body.toString('utf8') || '';
+        id = (field('id') || id).toString().slice(0, 64);
+        author = field('author') || null;
+        caption = field('caption') || null;
+        lockPass = field('lockPass') || null;
+        expiresAt = field('expiresAt') || null;
+      } else if (contentType.includes('application/json')) {
+        const body = JSON.parse(raw.toString('utf8'));
+        id = (body.id || id).toString().slice(0, 64);
+        name = (body.name || 'file').toString().slice(0, 512);
+        type = (body.type || 'application/octet-stream').toString();
+        const dataUrl = body.dataUrl;
+        if (!dataUrl || typeof dataUrl !== 'string' || !dataUrl.startsWith('data:')) {
+          res.status(400).json({ error: 'dataUrl required' });
+          return;
+        }
+        const comma = dataUrl.indexOf(',');
+        if (comma < 0) {
+          res.status(400).json({ error: 'bad dataUrl' });
+          return;
+        }
+        buf = Buffer.from(dataUrl.slice(comma + 1), 'base64');
+        lockPass = body.lockPass || null;
+        expiresAt = body.expiresAt || null;
+        author = body.author || null;
+        caption = body.caption || null;
+      } else {
+        res.status(400).json({ error: 'send a file or json dataUrl' });
         return;
       }
 
-      const comma = dataUrl.indexOf(',');
-      if (comma < 0) {
-        res.status(400).json({ error: 'bad dataUrl' });
-        return;
-      }
-      const b64 = dataUrl.slice(comma + 1);
-      const buf = Buffer.from(b64, 'base64');
-      const size = Number(body.size) || buf.length;
-
-      let fileUrl = null;
-      const safeName = name.replace(/[^a-zA-Z0-9._-]+/g, '_').slice(0, 180) || 'file';
-      const objectPath = `${id}/${safeName}`;
-      try {
-        const up = await fetch(`${SUPABASE_URL}/storage/v1/object/shares/${objectPath}`, {
-          method: 'POST',
-          headers: {
-            apikey: SUPABASE_KEY,
-            Authorization: `Bearer ${SUPABASE_KEY}`,
-            'Content-Type': type,
-            'x-upsert': 'true',
-            'cache-control': 'public, max-age=31536000',
-          },
-          body: buf,
-        });
-        if (up.ok) {
-          fileUrl = `${SUPABASE_URL}/storage/v1/object/public/shares/${objectPath}`;
-        }
-      } catch {}
-      if (!fileUrl) {
-        const opts = blobOpts();
-        if (opts) {
-          const fileBlob = await put(`shares/${id}/${safeName}`, buf, {
-            access: 'public',
-            contentType: type,
-            addRandomSuffix: false,
-            allowOverwrite: true,
-            ...opts,
-          });
-          fileUrl = fileBlob.url;
-        } else {
-          fileUrl = dataUrl;
-        }
-      }
-
-      const warn = size > 40 * 1024 * 1024 ? 'large drop. preview clients may feel slow.' : null;
+      name = name.toString().slice(0, 512);
+      const size = buf.length;
+      const warn = size > 12 * 1024 * 1024 ? 'large drop. preview clients may feel slow.' : null;
+      let fileUrl = await storeBytes({ id, name, type, buf });
+      if (!fileUrl) fileUrl = `data:${type};base64,${buf.toString('base64')}`;
 
       const row = {
         id,
@@ -204,18 +249,17 @@ export default async function handler(req, res) {
         mime: type,
         size,
         file_url: fileUrl,
-        lock_pass: body.lockPass || null,
-        expires_at: body.expiresAt || null,
+        lock_pass: lockPass,
+        expires_at: expiresAt,
         is_public: true,
         download_count: 0,
-        author: body.author || null,
-        meta: { warn, source: 'rankvault', caption: body.caption || null },
+        author,
+        caption,
+        meta: { warn, source: 'rankvault', caption },
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
-
       await sbUpsertShare(row);
-
       res.status(200).json({
         ok: true,
         id,
@@ -250,11 +294,7 @@ export default async function handler(req, res) {
       if (typeof body.caption === 'string') meta.caption = body.caption.slice(0, 280);
       if (typeof body.cardTitle === 'string' && body.cardTitle.trim()) meta.cardTitle = body.cardTitle.slice(0, 120);
       if (typeof body.color === 'string' && /^#[0-9a-fA-F]{6}$/.test(body.color)) meta.color = body.color;
-      await sbUpsertShare({
-        ...row,
-        meta,
-        updated_at: new Date().toISOString(),
-      });
+      await sbUpsertShare({ ...row, meta, caption: meta.caption || row.caption || null, updated_at: new Date().toISOString() });
       res.status(200).json({ ok: true, id, embedPath: `/s/${id}` });
       return;
     }

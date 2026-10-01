@@ -21,6 +21,10 @@ export default function Hero() {
           <button onClick={() => navigate('spinney')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">spinney</button>
           <button onClick={() => navigate('cameo')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">cameo</button>
           <button onClick={() => navigate('holt')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">holt</button>
+          <button onClick={() => navigate('locker')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">locker</button>
+          <button onClick={() => navigate('dispatch')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">dispatch</button>
+          <button onClick={() => navigate('envelope')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">envelope</button>
+          <button onClick={() => navigate('receipt')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">receipt</button>
           <button onClick={() => navigate('skerry')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">skerry</button>
           <button onClick={() => navigate('eyot')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">eyot</button>
           <a href="#features" className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">see features</a>

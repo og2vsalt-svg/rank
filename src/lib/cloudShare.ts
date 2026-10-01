@@ -60,6 +60,87 @@ async function fetchShareFromSupabase(id: string): Promise<CloudMeta | null> {
   return rowToMeta(row);
 }
 
+async function publishToSupabase(payload: {
+  id: string;
+  name: string;
+  type: string;
+  size: number;
+  dataUrl: string;
+  lockPass?: string;
+  expiresAt?: string | null;
+  author?: string;
+  caption?: string;
+}): Promise<{ ok: boolean; id?: string; url?: string; error?: string; warn?: string }> {
+  if (!payload.dataUrl || !payload.dataUrl.startsWith('data:')) {
+    return { ok: false, error: 'missing file data' };
+  }
+  const approx = Math.floor(((payload.dataUrl.split(',')[1] || '').length * 3) / 4);
+  const warn =
+    approx > 8 * 1024 * 1024 || payload.size > 8 * 1024 * 1024
+      ? 'big drop. the tab or host may feel slow. no hard cap on our side.'
+      : undefined;
+
+  const row = {
+    id: payload.id,
+    name: payload.name,
+    mime: payload.type || 'application/octet-stream',
+    size: payload.size || approx,
+    file_url: payload.dataUrl,
+    lock_pass: payload.lockPass || null,
+    expires_at: payload.expiresAt || null,
+    is_public: true,
+    download_count: 0,
+    author: payload.author || null,
+    meta: { source: 'rankvault-client', warn, caption: payload.caption || null },
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  };
+
+  const res = await fetch(`${SB_URL}/rest/v1/public_shares`, {
+    method: 'POST',
+    headers: sbHeaders({ Prefer: 'resolution=merge-duplicates,return=representation' }),
+    body: JSON.stringify(row),
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    return { ok: false, error: text || `supabase ${res.status}`, warn };
+  }
+  return { ok: true, id: payload.id, url: payload.dataUrl, warn };
+}
+
+export async function publishShare(payload: {
+  id: string;
+  name: string;
+  type: string;
+  size: number;
+  dataUrl: string;
+  lockPass?: string;
+  expiresAt?: string | null;
+  author?: string;
+  caption?: string;
+}): Promise<{ ok: boolean; id?: string; url?: string; error?: string; warn?: string }> {
+  try {
+    const res = await fetch('/api/share', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      return { ok: true, id: data.id || payload.id, url: data.url, warn: data.warn };
+    }
+  } catch {
+    // no api (static host) — fall through
+  }
+
+  try {
+    return await publishToSupabase(payload);
+  } catch (e: any) {
+    return { ok: false, error: e?.message || 'network error' };
+  }
+}
+
 export async function fetchShare(id: string): Promise<CloudMeta | null> {
   try {
     const res = await fetch(`/api/share?id=${encodeURIComponent(id)}`);
@@ -67,6 +148,7 @@ export async function fetchShare(id: string): Promise<CloudMeta | null> {
   } catch {
     // fall through
   }
+
   try {
     return await fetchShareFromSupabase(id);
   } catch {
@@ -100,6 +182,30 @@ export function shareUrls(id: string) {
     embed: `${origin}/s/${id}`,
     card: `${origin}/s/${id}`,
     file: `${origin}/f/${id}`,
+    open: `${origin}/open/${id}`,
+    go: `${origin}/go/${id}`,
+    link: `${origin}/link/${id}`,
+    raw: `${origin}/x/${id}`,
+    yarrow: `${origin}/y/${id}`,
+    quoin: `${origin}/q/${id}`,
+    lanyard: `${origin}/l/${id}`,
+    nook: `${origin}/n/${id}`,
+    keystone: `${origin}/k/${id}`,
+    wellhead: `${origin}/w/${id}`,
+    windlass: `${origin}/u/${id}`,
+    drop: `${origin}/d/${id}`,
+    hearth: `${origin}/h/${id}`,
+    lantern: `${origin}/r/${id}`,
+    belvedere: `${origin}/b/${id}`,
+    gazebo: `${origin}/g/${id}`,
+    conservatory: `${origin}/c/${id}`,
+    umbra: `${origin}/m/${id}`,
+    loggia: `${origin}/o/${id}`,
+    scriptorium: `${origin}/t/${id}`,
+    lintel: `${origin}/i/${id}`,
+    antechamber: `${origin}/a/${id}`,
+    camber: `${origin}/e/${id}`,
+    zenith: `${origin}/z/${id}`,
   };
 }
 
@@ -145,7 +251,7 @@ export async function publishLocalFile(
       download_count: 0,
       author: opts.author || null,
       caption: opts.caption || null,
-      meta: { warn, source: 'rankvault', caption: opts.caption || null, color: opts.color || null, cardTitle: file.name || safeName },
+      meta: { warn, source: 'reliquary', caption: opts.caption || null, color: opts.color || null },
     };
     const ins = await fetch(`${SB_URL}/rest/v1/public_shares`, {
       method: 'POST',
@@ -160,31 +266,4 @@ export async function publishLocalFile(
   } catch (e: any) {
     return { ok: false, error: e?.message || 'upload failed' };
   }
-}
-
-export async function publishShare(payload: {
-  id: string;
-  name: string;
-  type: string;
-  size: number;
-  dataUrl: string;
-  lockPass?: string;
-  expiresAt?: string | null;
-  author?: string;
-  caption?: string;
-}): Promise<{ ok: boolean; id?: string; url?: string; error?: string; warn?: string }> {
-  try {
-    const res = await fetch('/api/share', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-    if (res.ok) {
-      const data = await res.json();
-      return { ok: true, id: data.id || payload.id, url: data.url, warn: data.warn };
-    }
-  } catch {
-    // no api
-  }
-  return { ok: false, error: 'share api unavailable' };
 }

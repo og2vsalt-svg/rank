@@ -51,6 +51,7 @@ function pageHtml({ title, desc, image, url, color, mime }) {
   extra.push('<meta name="application-name" content="rankvault" />');
   extra.push('<meta name="apple-mobile-web-app-title" content="rankvault" />');
   extra.push('<meta name="og:rich_attachment" content="true" />');
+  extra.push('<meta name="twitter:site" content="@rankvault" />');
   if (mime && String(mime).startsWith('video/') && isRemoteImg && image) {
     extra.push('<meta property="og:video" content="' + esc(image) + '" />');
     extra.push('<meta property="og:video:secure_url" content="' + esc(image) + '" />');
@@ -153,6 +154,11 @@ const PAGE_TITLES = {
   riprap: 'riprap — stack a bank of sentences',
   wicket: 'wicket — a small gate for a note',
   leat: 'leat — let a channel of words run',
+  jamb: 'jamb — a doorframe for a note',
+  lintol: 'lintol — weigh a draft in the tab',
+  impost: 'impost — seat one file on the springing',
+  fillet: 'fillet — a thin band of colour',
+  ogee: 'ogee — a double curve of notes',
 };
 
 export default async function handler(req, res) {

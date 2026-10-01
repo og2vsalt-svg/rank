@@ -10,9 +10,10 @@ export default function Footer() {
         </span>
         <div className="flex gap-4 text-xs text-neutral-600">
           <button onClick={() => navigate('drop')}>drop</button>
-          <button onClick={() => navigate('mere')}>mere</button>
-          <button onClick={() => navigate('glean')}>glean</button>
-          <button onClick={() => navigate('emboss')}>emboss</button>
+          <button onClick={() => navigate('copse')}>copse</button>
+          <button onClick={() => navigate('leat')}>leat</button>
+          <button onClick={() => navigate('wicket')}>wicket</button>
+          <button onClick={() => navigate('riprap')}>riprap</button>
         </div>
         <span className="text-xs text-neutral-700">
           &copy; {new Date().getFullYear()} rankvault

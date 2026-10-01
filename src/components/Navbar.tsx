@@ -5,6 +5,10 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'lattice', label: 'lattice' },
+  { to: 'folio', label: 'folio' },
+  { to: 'margin', label: 'margin' },
+  { to: 'transom', label: 'transom' },
   { to: 'slipway', label: 'slipway' },
   { to: 'quay', label: 'quay' },
   { to: 'stamp', label: 'stamp' },
@@ -24,11 +28,15 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'transept', label: 'transept' },
       { to: 'ambo', label: 'ambo' },
       { to: 'sedilia', label: 'sedilia' },
+      { to: 'transom', label: 'transom' },
     ],
   },
   {
     title: 'files',
     items: [
+      { to: 'lattice', label: 'lattice' },
+      { to: 'folio', label: 'folio' },
+      { to: 'margin', label: 'margin' },
       { to: 'garboard', label: 'garboard' },
       { to: 'keelson', label: 'keelson' },
       { to: 'rudder', label: 'rudder' },
@@ -93,7 +101,7 @@ const groups: { title: string; items: NavItem[] }[] = [
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [openGroup, setOpenGroup] = useState<string | null>('rooms');
+  const [openGroup, setOpenGroup] = useState<string | null>('files');
   const { user, isLoggedIn, logout } = useAuth();
   const { navigate } = useRouter();
   const userMenuRef = useRef<HTMLDivElement>(null);

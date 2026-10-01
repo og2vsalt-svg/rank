@@ -50,6 +50,16 @@ async function sbGetShare(id) {
   return Array.isArray(rows) && rows[0] ? rows[0] : null;
 }
 
+async function sbListShares(limit) {
+  const n = Math.min(40, Math.max(1, Number(limit) || 16));
+  const url = `${SUPABASE_URL}/rest/v1/public_shares?is_public=eq.true&select=id,name,mime,size,file_url,expires_at,author,download_count,caption,created_at&order=created_at.desc&limit=${n}`;
+  const r = await fetch(url, { headers: sbHeaders() });
+  if (!r.ok) return [];
+  const rows = await r.json();
+  if (!Array.isArray(rows)) return [];
+  return rows.filter((row) => !row.expires_at || +new Date(row.expires_at) > Date.now());
+}
+
 async function sbUpsertShare(row) {
   const url = `${SUPABASE_URL}/rest/v1/public_shares?on_conflict=id`;
   const r = await fetch(url, {
@@ -125,6 +135,7 @@ async function storeBytes({ id, name, type, buf }) {
   const safeName = name.replace(/[^a-zA-Z0-9._-]+/g, '_').slice(0, 180) || 'file';
   const objectPath = `${id}/${safeName}`;
   let fileUrl = null;
+  let storageError = '';
   try {
     const up = await fetch(`${SUPABASE_URL}/storage/v1/object/shares/${objectPath}`, {
       method: 'POST',
@@ -138,7 +149,10 @@ async function storeBytes({ id, name, type, buf }) {
       body: buf,
     });
     if (up.ok) fileUrl = `${SUPABASE_URL}/storage/v1/object/public/shares/${objectPath}`;
-  } catch {}
+    else storageError = await up.text();
+  } catch (err) {
+    storageError = err?.message || 'storage request failed';
+  }
   if (!fileUrl) {
     const opts = blobOpts();
     if (opts) {
@@ -152,7 +166,7 @@ async function storeBytes({ id, name, type, buf }) {
       fileUrl = fileBlob.url;
     }
   }
-  return fileUrl;
+  return { fileUrl, storageError };
 }
 
 export default async function handler(req, res) {
@@ -164,6 +178,11 @@ export default async function handler(req, res) {
 
   try {
     if (req.method === 'GET') {
+      if (req.query.list === '1') {
+        const rows = await sbListShares(req.query.limit);
+        res.status(200).json({ ok: true, shares: rows.map(rowToMeta) });
+        return;
+      }
       const id = (req.query.id || '').toString().trim();
       if (!id) {
         res.status(400).json({ error: 'missing id' });
@@ -240,8 +259,19 @@ export default async function handler(req, res) {
       name = name.toString().slice(0, 512);
       const size = buf.length;
       const warn = size > 12 * 1024 * 1024 ? 'large drop. preview clients may feel slow.' : null;
-      let fileUrl = await storeBytes({ id, name, type, buf });
-      if (!fileUrl) fileUrl = `data:${type};base64,${buf.toString('base64')}`;
+      const stored = await storeBytes({ id, name, type, buf });
+      let fileUrl = stored.fileUrl;
+      if (!fileUrl && size <= 900 * 1024) {
+        fileUrl = `data:${type};base64,${buf.toString('base64')}`;
+      }
+      if (!fileUrl) {
+        res.status(502).json({
+          error: 'storage did not take the file. the row was not written with a data url.',
+          detail: (stored.storageError || '').slice(0, 240),
+          warn,
+        });
+        return;
+      }
 
       const row = {
         id,

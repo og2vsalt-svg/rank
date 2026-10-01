@@ -1,6 +1,9 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'sheave', body: 'several locals, one index card. each file lands in the share table, and discord unfurls the pack note. slowness warning only.' },
+  { title: 'dolphin', body: 'record a take in the tab and file the clip. not a drawer, and not a size gate.' },
+  { title: 'gudgeon', body: 'hinge two drafts in the tab. publish the line diff only if you want a discord card.' },
   { title: 'mooring', body: 'pick a local file, set a caption and accent, and land it in the share database. discord unfurls /s. slowness warning only.' },
   { title: 'bellows', body: 'a timed breath in the tab. file the session as a note if you want a card. not a drawer.' },
   { title: 'inkwell', body: 'draw a mark, then publish the png so discord gets an image card.' },
@@ -14,10 +17,10 @@ const items = [
   { title: 'sedilia', body: 'three seats of notes on this device. publish them as one public drop.' },
   { title: 'voussoir', body: 'set one local file in the public shares table, with a caption discord can unfurl. slowness warning only.' },
   { title: 'scotia', body: 'a stair of checkboxes. publish the list as markdown, not another vault drawer.' },
-  { title: 'necking', body: 'reshape a line — title, slug, case — then ship the pane if you want a card.' },
+  { title: 'necking', body: 'reshape a line \u2014 title, slug, case \u2014 then ship the pane if you want a card.' },
   { title: 'abacus', body: 'time a passage at a calm reading pace. stays in the tab until you publish it.' },
   { title: 'volute', body: 'seat an address and a note on the links shelf. no files involved.' },
-  { title: 'quoin', body: 'paint a 1200×630 corner card in the tab and file the png so discord unfurls cleanly.' },
+  { title: 'quoin', body: 'paint a 1200\u00d7630 corner card in the tab and file the png so discord unfurls cleanly.' },
   { title: 'soffit', body: 'count words on the underside of a draft, then hang a .txt drop. not a vault drawer.' },
   { title: 'taffrail', body: 'lean on the public rail and read supabase drops that already landed.' },
   { title: 'rondel', body: 'three lines that return as A B C A B A. the poem ships as a public card.' },
@@ -44,17 +47,17 @@ const items = [
   { title: 'gesso', body: 'prime a 1200x630 card and file it so discord unfurls cleanly.' },
   { title: 'reliquary', body: 'keep a sha-256 of the thing. only the receipt goes public.' },
   { title: 'harbor', body: 'tie a pile to the dock and send each file out as its own share-db drop.' },
-  { title: 'ledger', body: 'read what already landed in supabase. not a vault — just the public log.' },
+  { title: 'ledger', body: 'read what already landed in supabase. not a vault \u2014 just the public log.' },
   { title: 'local-first vault', body: 'files live in your browser first. nothing ships unless you flip a drop public.' },
   { title: 'cloud share db', body: 'public drops land in supabase, with vercel blob when a token is set.' },
-  { title: 'discord embeds', body: '/s/id plus /p/page and named paths serve og tags so discord previews look finished.' },
+  { title: 'discord embeds', body: '/s/id plus /p/page and named paths serve og tags so discord previews look finished. image cards only use real images.' },
   { title: 'no hard file cap', body: 'drop whatever size you want. we only warn when the tab might feel sleepy.' },
   { title: 'nocturne', body: 'a dim writing pad that stays on this device.' },
   { title: 'weft', body: 'weave several notes into one public .txt. discord unfurls /s.' },
   { title: 'thole', body: 'pin a sha-256 of a local file. share only the receipt if you want.' },
   { title: 'gimbal', body: 'rotate a still in the tab, then hang the leveled png.' },
   { title: 'trunnion', body: 'slice a local into a map. only the json goes public.' },
-  { title: 'samphire', body: 'a field note — title, place, body — published as markdown.' },
+  { title: 'samphire', body: 'a field note \u2014 title, place, body \u2014 published as markdown.' },
   { title: 'strake', body: 'a running stamped log that launches as a .log drop.' },
 ];
 

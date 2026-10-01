@@ -31,6 +31,8 @@
     { "source": "/v/:id", "destination": "/api/embed?id=:id" },
     { "source": "/j/:id", "destination": "/api/embed?id=:id" },
     { "source": "/p/:page", "destination": "/api/embed?page=:page" },
+    { "source": "/astragal", "destination": "/api/embed?page=astragal" },
+    { "source": "/modillion", "destination": "/api/embed?page=modillion" },
     { "source": "/quoin", "destination": "/api/embed?page=quoin" },
     { "source": "/soffit", "destination": "/api/embed?page=soffit" },
     { "source": "/taffrail", "destination": "/api/embed?page=taffrail" },

@@ -5,24 +5,15 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'berth', label: 'berth' },
+  { to: 'sounding', label: 'sounding' },
+  { to: 'fender', label: 'fender' },
   { to: 'lazaret', label: 'lazaret' },
   { to: 'loam', label: 'loam' },
   { to: 'orlop', label: 'orlop' },
   { to: 'carrel', label: 'carrel' },
   { to: 'bulkhead', label: 'bulkhead' },
-  { to: 'crosstree', label: 'crosstree' },
   { to: 'hold', label: 'hold' },
-  { to: 'lattice', label: 'lattice' },
-  { to: 'folio', label: 'folio' },
-  { to: 'margin', label: 'margin' },
-  { to: 'transom', label: 'transom' },
-  { to: 'slipway', label: 'slipway' },
-  { to: 'quay', label: 'quay' },
-  { to: 'stamp', label: 'stamp' },
-  { to: 'courier', label: 'courier' },
-  { to: 'lanyard', label: 'lanyard' },
-  { to: 'quire', label: 'quire' },
-  { to: 'inbox', label: 'inbox' },
   { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
 ];
@@ -31,6 +22,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'deck',
     items: [
+      { to: 'berth', label: 'berth' },
+      { to: 'sounding', label: 'sounding' },
+      { to: 'fender', label: 'fender' },
       { to: 'lazaret', label: 'lazaret' },
       { to: 'loam', label: 'loam' },
       { to: 'orlop', label: 'orlop' },
@@ -53,24 +47,9 @@ const groups: { title: string; items: NavItem[] }[] = [
     items: [
       { to: 'bulkhead', label: 'bulkhead' },
       { to: 'crosstree', label: 'crosstree' },
-      { to: 'hold', label: 'hold' },
       { to: 'lattice', label: 'lattice' },
       { to: 'folio', label: 'folio' },
       { to: 'margin', label: 'margin' },
-      { to: 'garboard', label: 'garboard' },
-      { to: 'keelson', label: 'keelson' },
-      { to: 'rudder', label: 'rudder' },
-      { to: 'reliquary', label: 'reliquary' },
-      { to: 'waybill', label: 'waybill' },
-      { to: 'davit', label: 'davit' },
-      { to: 'voussoir', label: 'voussoir' },
-      { to: 'scuttle', label: 'scuttle' },
-      { to: 'fluke', label: 'fluke' },
-      { to: 'windlass', label: 'windlass' },
-      { to: 'parcel', label: 'parcel' },
-      { to: 'wherry', label: 'wherry' },
-      { to: 'kettle', label: 'kettle' },
-      { to: 'sluice', label: 'sluice' },
       { to: 'drop', label: 'drop' },
       { to: 'quay', label: 'quay' },
       { to: 'vault', label: 'vault' },
@@ -79,38 +58,15 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
-      { to: 'bilge', label: 'bilge' },
-      { to: 'futtock', label: 'futtock' },
-      { to: 'modillion', label: 'modillion' },
-      { to: 'quoin', label: 'quoin' },
-      { to: 'soffit', label: 'soffit' },
-      { to: 'rondel', label: 'rondel' },
-      { to: 'taffrail', label: 'taffrail' },
-      { to: 'spar', label: 'spar' },
-      { to: 'hawse', label: 'hawse' },
-      { to: 'porch', label: 'porch' },
-      { to: 'ledger', label: 'ledger' },
-      { to: 'lanyard', label: 'lanyard' },
       { to: 'courier', label: 'courier' },
-      { to: 'quire', label: 'quire' },
+      { to: 'lanyard', label: 'lanyard' },
       { to: 'slipway', label: 'slipway' },
       { to: 'binnacle', label: 'binnacle' },
-      { to: 'palimpsest', label: 'palimpsest' },
     ],
   },
   {
     title: 'tools',
     items: [
-      { to: 'scotia', label: 'scotia' },
-      { to: 'necking', label: 'necking' },
-      { to: 'abacus', label: 'abacus' },
-      { to: 'pallet', label: 'pallet' },
-      { to: 'sextant', label: 'sextant' },
-      { to: 'orrery', label: 'orrery' },
-      { to: 'catenary', label: 'catenary' },
-      { to: 'sundial', label: 'sundial' },
-      { to: 'gunwale', label: 'gunwale' },
-      { to: 'scupper', label: 'scupper' },
       { to: 'hash', label: 'hash' },
       { to: 'convert', label: 'convert' },
       { to: 'diff', label: 'diff' },
@@ -121,7 +77,7 @@ const groups: { title: string; items: NavItem[] }[] = [
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [openGroup, setOpenGroup] = useState<string | null>('files');
+  const [openGroup, setOpenGroup] = useState<string | null>('deck');
   const { user, isLoggedIn, logout } = useAuth();
   const { navigate } = useRouter();
   const userMenuRef = useRef<HTMLDivElement>(null);

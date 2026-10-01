@@ -5,11 +5,11 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
-  { to: 'keystone', label: 'keystone' },
-  { to: 'newel', label: 'newel' },
-  { to: 'transom', label: 'transom' },
-  { to: 'plinth', label: 'plinth' },
-  { to: 'corbel', label: 'corbel' },
+  { to: 'voussoir', label: 'voussoir' },
+  { to: 'scotia', label: 'scotia' },
+  { to: 'necking', label: 'necking' },
+  { to: 'abacus', label: 'abacus' },
+  { to: 'volute', label: 'volute' },
   { to: 'quoin', label: 'quoin' },
   { to: 'soffit', label: 'soffit' },
   { to: 'taffrail', label: 'taffrail' },
@@ -76,7 +76,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'files',
     items: [
-      { to: 'keystone', label: 'keystone' },
+      { to: 'voussoir', label: 'voussoir' },
       { to: 'scuttle', label: 'scuttle' },
       { to: 'ketch', label: 'ketch' },
       { to: 'fluke', label: 'fluke' },
@@ -110,7 +110,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
-      { to: 'corbel', label: 'corbel' },
+      { to: 'volute', label: 'volute' },
       { to: 'quoin', label: 'quoin' },
       { to: 'soffit', label: 'soffit' },
       { to: 'rondel', label: 'rondel' },
@@ -143,9 +143,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
-      { to: 'newel', label: 'newel' },
-      { to: 'transom', label: 'transom' },
-      { to: 'plinth', label: 'plinth' },
+      { to: 'scotia', label: 'scotia' },
+      { to: 'necking', label: 'necking' },
+      { to: 'abacus', label: 'abacus' },
       { to: 'pallet', label: 'pallet' },
       { to: 'sextant', label: 'sextant' },
       { to: 'orrery', label: 'orrery' },

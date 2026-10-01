@@ -17,9 +17,9 @@ export default function Hero() {
         </motion.p>
         <div className="flex flex-wrap gap-3 mb-12">
           <button onClick={() => navigate('vault')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black font-medium text-sm hover:bg-neutral-200 transition">open vault</button>
-          <button onClick={() => navigate('keystone')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">keystone</button>
-          <button onClick={() => navigate('newel')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">newel</button>
-          <button onClick={() => navigate('plinth')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">plinth</button>
+          <button onClick={() => navigate('voussoir')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">voussoir</button>
+          <button onClick={() => navigate('scotia')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">scotia</button>
+          <button onClick={() => navigate('abacus')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">abacus</button>
           <button onClick={() => navigate('copse')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">copse</button>
           <button onClick={() => navigate('riprap')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">riprap</button>
           <button onClick={() => navigate('wicket')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">wicket</button>

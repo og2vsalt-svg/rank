@@ -1,11 +1,11 @@
 import { motion } from 'framer-motion';
 
 const items = [
-  { title: 'keystone', body: 'set one local file in the public shares table, with a caption discord can unfurl. slowness warning only.' },
-  { title: 'newel', body: 'a stair of checkboxes. publish the list as markdown, not another vault drawer.' },
-  { title: 'transom', body: 'reshape a line — title, slug, case — then ship the pane if you want a card.' },
-  { title: 'plinth', body: 'time a passage at a calm reading pace. stays in the tab until you publish it.' },
-  { title: 'corbel', body: 'seat an address and a note on the links shelf. no files involved.' },
+  { title: 'voussoir', body: 'set one local file in the public shares table, with a caption discord can unfurl. slowness warning only.' },
+  { title: 'scotia', body: 'a stair of checkboxes. publish the list as markdown, not another vault drawer.' },
+  { title: 'necking', body: 'reshape a line — title, slug, case — then ship the pane if you want a card.' },
+  { title: 'abacus', body: 'time a passage at a calm reading pace. stays in the tab until you publish it.' },
+  { title: 'volute', body: 'seat an address and a note on the links shelf. no files involved.' },
   { title: 'quoin', body: 'paint a 1200×630 corner card in the tab and file the png so discord unfurls cleanly.' },
   { title: 'soffit', body: 'count words on the underside of a draft, then hang a .txt drop. not a vault drawer.' },
   { title: 'taffrail', body: 'lean on the public rail and read supabase drops that already landed.' },

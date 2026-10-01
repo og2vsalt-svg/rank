@@ -159,11 +159,11 @@ const PAGE_TITLES = {
   impost: 'impost — seat one file on the springing',
   fillet: 'fillet — a thin band of colour',
   ogee: 'ogee — a double curve of notes',
-  keystone: 'keystone — set one local in the arch',
-  newel: 'newel — a stair of small jobs',
-  transom: 'transom — a window for wording',
-  plinth: 'plinth — a stand for one passage',
-  corbel: 'corbel — a shelf for addresses',
+  voussoir: 'voussoir — set one local in the arch',
+  scotia: 'scotia — a stair of small jobs',
+  necking: 'necking — a window for wording',
+  abacus: 'abacus — a stand for one passage',
+  volute: 'volute — a shelf for addresses',
 };
 
 export default async function handler(req, res) {

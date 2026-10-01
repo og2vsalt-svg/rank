@@ -1,85 +1,76 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
+import { useVault } from './VaultContext';
 import { publishShare, shareUrls } from '../lib/cloudShare';
 
-function uid() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-}
-
 export default function PlinthPage() {
-  const [text, setText] = useState('read this once, slowly, then decide if it leaves the room.');
-  const [running, setRunning] = useState(false);
-  const [left, setLeft] = useState(0);
+  const { files } = useVault();
+  const [picked, setPicked] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [warn, setWarn] = useState('');
   const [link, setLink] = useState('');
   const [err, setErr] = useState('');
-  const [busy, setBusy] = useState(false);
 
-  const seconds = useMemo(() => {
-    const words = text.trim().split(/\s+/).filter(Boolean).length;
-    return Math.max(15, Math.round((words / 180) * 60));
-  }, [text]);
-
-  useEffect(() => {
-    if (!running) return;
-    const t = window.setInterval(() => {
-      setLeft((n) => {
-        if (n <= 1) {
-          setRunning(false);
-          return 0;
-        }
-        return n - 1;
-      });
-    }, 1000);
-    return () => window.clearInterval(t);
-  }, [running]);
+  const local = useMemo(() => files.slice(0, 40), [files]);
 
   const publish = async () => {
+    const f = local.find((x: any) => x.id === picked);
+    if (!f) {
+      setErr('pick a file from your vault first');
+      return;
+    }
     setBusy(true);
     setErr('');
+    setWarn('');
     try {
-      const id = uid();
+      const dataUrl = f.dataUrl || f.url;
+      if (!dataUrl) {
+        setErr('that file has no payload in this tab');
+        return;
+      }
+      if ((f.size || 0) > 40 * 1024 * 1024) setWarn('chunky file. encoding might feel slow. no hard cap.');
       const res = await publishShare({
-        id,
-        name: 'plinth.txt',
-        type: 'text/plain',
-        size: text.length,
-        dataUrl: `data:text/plain;base64,${btoa(unescape(encodeURIComponent(text)))}`,
+        id: f.id,
+        name: f.name,
+        type: f.type || 'application/octet-stream',
+        size: f.size || 0,
+        dataUrl,
         author: 'plinth',
-        caption: `${text.trim().split(/\s+/).filter(Boolean).length} words · a quiet reading`,
       });
-      if (!res.ok) throw new Error(res.error || 'could not set the passage');
-      const urls = shareUrls(res.id || id);
+      if (!res.ok) {
+        setErr(res.error || 'publish failed');
+        return;
+      }
+      if (res.warn) setWarn(res.warn);
+      const urls = shareUrls(res.id || f.id);
       setLink(urls.embed);
       try { await navigator.clipboard.writeText(urls.embed); } catch {}
     } catch (e: any) {
-      setErr(e?.message || 'failed');
+      setErr(e?.message || 'could not lift it onto the plinth');
+    } finally {
+      setBusy(false);
     }
-    setBusy(false);
   };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-7">
-          <p className="text-[#0a84ff] text-sm font-medium mb-2">plinth</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-2">a stand for one passage</h1>
-          <p className="text-neutral-400 text-sm mb-5">times a reading at a calm 180 words a minute. stays here unless you publish it.</p>
-          <textarea value={text} onChange={(e) => { setText(e.target.value); setRunning(false); }} rows={7} className="w-full rounded-3xl bg-white/5 border border-white/10 px-4 py-3 text-white text-sm leading-relaxed outline-none mb-4" />
-          <div className="flex items-center justify-between mb-5">
-            <p className="text-neutral-400 text-sm tabular-nums">{running || left ? `${left}s left` : `${seconds}s to read`}</p>
-            <button
-              onClick={() => { setLeft(seconds); setRunning(true); }}
-              className="px-4 py-2 rounded-full bg-white/10 text-sm"
-            >start</button>
-          </div>
-          <div className="h-1.5 rounded-full bg-white/10 overflow-hidden mb-5">
-            <motion.div className="h-full bg-[#0a84ff]" animate={{ width: `${seconds ? ((seconds - left) / seconds) * 100 : 0}%` }} transition={{ duration: 0.3 }} />
-          </div>
-          {err && <p className="text-xs text-red-400 mb-3">{err}</p>}
-          <button onClick={publish} disabled={busy || !text.trim()} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40">{busy ? 'setting…' : 'publish the passage'}</button>
-          {link && <p className="text-xs text-neutral-500 mt-4 break-all">discord card copied: {link}</p>}
+      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-8">
+          <p className="text-[#0a84ff] text-sm mb-2">plinth</p>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">put one file on a stand.</h1>
+          <p className="text-neutral-400 text-sm mb-6">pick something already in your vault and publish it to the cloud db. you get a /s/ card url made for discord embeds.</p>
+          <select value={picked} onChange={(e) => setPicked(e.target.value)} className="w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 text-sm text-white outline-none focus:border-[#0a84ff]/50 mb-4">
+            <option value="">choose a vault file</option>
+            {local.map((f: any) => (
+              <option key={f.id} value={f.id}>{f.name}</option>
+            ))}
+          </select>
+          <button onClick={publish} disabled={busy} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-50">{busy ? 'lifting…' : 'raise it'}</button>
+          {warn && <p className="text-xs text-amber-300/80 mt-4">{warn}</p>}
+          {err && <p className="text-xs text-red-400 mt-4">{err}</p>}
+          {link && <p className="text-xs text-neutral-400 mt-4 break-all">embed url copied: {link}</p>}
         </motion.div>
       </div>
     </div>

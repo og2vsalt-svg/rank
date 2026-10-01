@@ -1,75 +1,89 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
 
-const SB_URL = 'https://tqfocdktvjuwoiyfgesb.supabase.co';
-const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
+function pretty(n: number) {
+  if (n < 1024) return n + ' b';
+  if (n < 1024 * 1024) return Math.round(n / 1024) + ' kb';
+  if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(1) + ' mb';
+  return (n / (1024 * 1024 * 1024)).toFixed(2) + ' gb';
+}
 
-type LinkRow = { id: string; url: string; note: string | null; author: string | null; created_at: string };
+function fmt(sec: number) {
+  if (!isFinite(sec) || sec < 0) return '—';
+  const s = Math.round(sec);
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return m + ':' + String(r).padStart(2, '0');
+}
 
 export default function CorbelPage() {
-  const [url, setUrl] = useState('https://');
-  const [note, setNote] = useState('');
-  const [rows, setRows] = useState<LinkRow[]>([]);
-  const [err, setErr] = useState('');
   const [busy, setBusy] = useState(false);
+  const [warn, setWarn] = useState('');
+  const [err, setErr] = useState('');
+  const [info, setInfo] = useState('');
+  const [src, setSrc] = useState('');
 
-  const load = async () => {
-    const res = await fetch(`${SB_URL}/rest/v1/links?select=id,url,note,author,created_at&order=created_at.desc&limit=12`, {
-      headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` },
-    });
-    if (!res.ok) return;
-    const data = await res.json();
-    if (Array.isArray(data)) setRows(data);
-  };
-
-  useEffect(() => { load(); }, []);
-
-  const save = async () => {
-    setBusy(true);
+  const listen = async (file?: File) => {
+    if (!file) return;
     setErr('');
-    try {
-      const clean = url.trim();
-      if (!/^https?:\/\//i.test(clean)) throw new Error('needs a full http(s) address');
-      const res = await fetch(`${SB_URL}/rest/v1/links`, {
-        method: 'POST',
-        headers: {
-          apikey: SB_KEY,
-          Authorization: `Bearer ${SB_KEY}`,
-          'Content-Type': 'application/json',
-          Prefer: 'return=representation',
-        },
-        body: JSON.stringify({ url: clean, note: note.trim() || null, author: 'corbel' }),
-      });
-      if (!res.ok) throw new Error(await res.text());
-      setNote('');
-      await load();
-    } catch (e: any) {
-      setErr(e?.message || 'could not seat that link');
+    setInfo('');
+    if (src) URL.revokeObjectURL(src);
+    setSrc('');
+    setWarn(file.size > 80 * 1024 * 1024 ? 'no cap. a large sound file can make the tab feel sleepy while it loads.' : '');
+    if (!file.type.startsWith('audio/') && !file.type.startsWith('video/')) {
+      setErr('drop a sound or a moving picture so we can time it.');
+      return;
     }
-    setBusy(false);
+    setBusy(true);
+    try {
+      const url = URL.createObjectURL(file);
+      setSrc(url);
+      const el = document.createElement(file.type.startsWith('video/') ? 'video' : 'audio');
+      el.preload = 'metadata';
+      await new Promise<void>((resolve, reject) => {
+        el.onloadedmetadata = () => resolve();
+        el.onerror = () => reject(new Error('could not read media'));
+        el.src = url;
+      });
+      setInfo([file.name, file.type || 'unknown', pretty(file.size), fmt(el.duration)].join(' · '));
+    } catch (e: any) {
+      setErr(e?.message || 'corbel failed');
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.48, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-7">
-          <p className="text-[#0a84ff] text-sm font-medium mb-2">corbel</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-2">a shelf for addresses</h1>
-          <p className="text-neutral-400 text-sm mb-5">saves a link and a short note into the links table. no files, no cap.</p>
-          <input value={url} onChange={(e) => setUrl(e.target.value)} className="w-full rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-white outline-none mb-3" />
-          <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="why it is here" className="w-full rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-white outline-none mb-4" />
-          {err && <p className="text-xs text-red-400 mb-3 break-all">{err}</p>}
-          <button onClick={save} disabled={busy} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40">{busy ? 'seating…' : 'seat the link'}</button>
-          <ul className="mt-6 space-y-2">
-            {rows.map((r) => (
-              <li key={r.id} className="rounded-2xl bg-white/[0.04] px-4 py-3">
-                <a href={r.url} className="text-sm text-[#7cb4ff] break-all" target="_blank" rel="noreferrer">{r.url}</a>
-                {r.note && <p className="text-xs text-neutral-500 mt-1">{r.note}</p>}
-              </li>
-            ))}
-          </ul>
+      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          className="glass rounded-[32px] p-8"
+        >
+          <p className="text-[#0a84ff] text-sm mb-2">corbel</p>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">lean a sound file against the wall and time it.</h1>
+          <p className="text-neutral-400 text-sm mb-6">
+            stays local. duration, type, size. play it here if you want. nothing is uploaded.
+          </p>
+          <label
+            className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center"
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => { e.preventDefault(); listen(e.dataTransfer.files?.[0]); }}
+          >
+            <input type="file" accept="audio/*,video/*" className="hidden" onChange={(e) => listen(e.target.files?.[0] || undefined)} />
+            <p className="text-white font-medium">{busy ? 'listening…' : 'drop a sound'}</p>
+            <p className="text-xs text-neutral-500 mt-2">no hard limit. we only warn when it might feel slow.</p>
+          </label>
+          {warn && <p className="text-xs text-amber-300/80 mt-3">{warn}</p>}
+          {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
+          {info && <p className="text-xs text-neutral-300 mt-4">{info}</p>}
+          {src && (
+            <audio controls src={src} className="mt-5 w-full" />
+          )}
         </motion.div>
       </div>
     </div>

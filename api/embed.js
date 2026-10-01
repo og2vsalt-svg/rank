@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"')
     .replace(/'/g, '&#39;');
 }
 
@@ -115,6 +115,11 @@ const PAGE_TITLES = {
   vault: 'vault — rankvault',
   drop: 'drop — rankvault',
   share: 'share — rankvault',
+  quoin: 'quoin — a corner card',
+  soffit: 'soffit — write on the underside',
+  taffrail: 'taffrail — lean on the public rail',
+  rondel: 'rondel — three lines that return',
+  scuttle: 'scuttle — a hatch for one local',
   mere: 'mere — a still pool of words',
   glean: 'glean — walk the field of public drops',
   dewpond: 'dewpond — a drop that evaporates',

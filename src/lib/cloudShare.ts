@@ -60,53 +60,101 @@ async function fetchShareFromSupabase(id: string): Promise<CloudMeta | null> {
   return rowToMeta(row);
 }
 
-async function publishToSupabase(payload: {
-  id: string;
-  name: string;
-  type: string;
-  size: number;
-  dataUrl: string;
-  lockPass?: string;
-  expiresAt?: string | null;
-  author?: string;
-  caption?: string;
-}): Promise<{ ok: boolean; id?: string; url?: string; error?: string; warn?: string }> {
-  if (!payload.dataUrl || !payload.dataUrl.startsWith('data:')) {
-    return { ok: false, error: 'missing file data' };
-  }
-  const approx = Math.floor(((payload.dataUrl.split(',')[1] || '').length * 3) / 4);
-  const warn =
-    approx > 8 * 1024 * 1024 || payload.size > 8 * 1024 * 1024
-      ? 'big drop. the tab or host may feel slow. no hard cap on our side.'
-      : undefined;
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
 
-  const row = {
-    id: payload.id,
-    name: payload.name,
-    mime: payload.type || 'application/octet-stream',
-    size: payload.size || approx,
-    file_url: payload.dataUrl,
-    lock_pass: payload.lockPass || null,
-    expires_at: payload.expiresAt || null,
-    is_public: true,
-    download_count: 0,
-    author: payload.author || null,
-    meta: { source: 'rankvault-client', warn, caption: payload.caption || null },
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
+export function shareUrls(id: string) {
+  const origin = typeof window !== 'undefined' ? window.location.origin : '';
+  const path = typeof window !== 'undefined' ? window.location.pathname : '/';
+  const enc = encodeURIComponent(id);
+  return {
+    app: `${origin}${path}#share?f=${enc}`,
+    embed: `${origin}/s/${id}`,
+    card: `${origin}/s/${id}`,
+    file: `${origin}/f/${id}`,
+    open: `${origin}/open/${id}`,
+    go: `${origin}/go/${id}`,
+    link: `${origin}/link/${id}`,
   };
+}
 
-  const res = await fetch(`${SB_URL}/rest/v1/public_shares`, {
-    method: 'POST',
-    headers: sbHeaders({ Prefer: 'resolution=merge-duplicates,return=representation' }),
-    body: JSON.stringify(row),
-  });
+async function publishViaApi(file: File, opts: { caption?: string; author?: string; lockPass?: string; expiresAt?: string | null; color?: string }, id: string) {
+  const body = new FormData();
+  body.set('file', file, file.name || 'file');
+  body.set('id', id);
+  if (opts.caption) body.set('caption', opts.caption);
+  if (opts.author) body.set('author', opts.author);
+  if (opts.lockPass) body.set('lockPass', opts.lockPass);
+  if (opts.expiresAt) body.set('expiresAt', opts.expiresAt);
+  if (opts.color) body.set('color', opts.color);
+  const res = await fetch('/api/share', { method: 'POST', body });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) return { ok: false as const, error: data.error || `share api ${res.status}` };
+  return { ok: true as const, id: data.id || id, url: data.url, embed: `${location.origin}${data.embedPath || `/s/${id}`}`, warn: data.warn || null };
+}
 
-  if (!res.ok) {
-    const text = await res.text();
-    return { ok: false, error: text || `supabase ${res.status}`, warn };
+/** Upload a local File into Supabase storage + public_shares. Falls back to /api/share. No size cap. */
+export async function publishLocalFile(
+  file: File,
+  opts: { caption?: string; author?: string; lockPass?: string; expiresAt?: string | null; color?: string } = {},
+): Promise<{ ok: boolean; id?: string; url?: string; embed?: string; warn?: string | null; error?: string }> {
+  const id = uid();
+  const safeName = (file.name || 'file').replace(/[^a-zA-Z0-9._-]+/g, '_').slice(0, 180) || 'file';
+  const path = `${id}/${safeName}`;
+  const warn = file.size > 40 * 1024 * 1024 ? 'large drop. the browser may feel slow while it sends.' : null;
+  try {
+    const up = await fetch(`${SB_URL}/storage/v1/object/shares/${path}`, {
+      method: 'POST',
+      headers: {
+        apikey: SB_KEY,
+        Authorization: `Bearer ${SB_KEY}`,
+        'Content-Type': file.type || 'application/octet-stream',
+        'x-upsert': 'true',
+        'cache-control': 'public, max-age=31536000',
+      },
+      body: file,
+    });
+    if (!up.ok) {
+      const viaApi = await publishViaApi(file, opts, id).catch(() => null);
+      if (viaApi?.ok) return { ...viaApi, warn: viaApi.warn || warn };
+      const text = await up.text();
+      return { ok: false, error: viaApi?.error || `storage ${up.status}: ${text.slice(0, 180)}` };
+    }
+    const fileUrl = `${SB_URL}/storage/v1/object/public/shares/${path}`;
+    const row = {
+      id,
+      name: file.name || safeName,
+      mime: file.type || 'application/octet-stream',
+      size: file.size,
+      file_url: fileUrl,
+      lock_pass: opts.lockPass || null,
+      expires_at: opts.expiresAt || null,
+      is_public: true,
+      download_count: 0,
+      author: opts.author || null,
+      caption: opts.caption || null,
+      meta: { warn, source: 'rankvault', caption: opts.caption || null, color: opts.color || null },
+    };
+    const ins = await fetch(`${SB_URL}/rest/v1/public_shares`, {
+      method: 'POST',
+      headers: sbHeaders({ Prefer: 'resolution=merge-duplicates,return=representation' }),
+      body: JSON.stringify(row),
+    });
+    if (!ins.ok) {
+      const text = await ins.text();
+      return { ok: false, error: `shares table ${ins.status}: ${text.slice(0, 180)}` };
+    }
+    return { ok: true, id, url: fileUrl, embed: `${location.origin}/s/${id}`, warn };
+  } catch (e: any) {
+    try {
+      const viaApi = await publishViaApi(file, opts, id);
+      if (viaApi.ok) return { ...viaApi, warn: viaApi.warn || warn };
+      return { ok: false, error: viaApi.error || e?.message || 'upload failed' };
+    } catch {
+      return { ok: false, error: e?.message || 'upload failed' };
+    }
   }
-  return { ok: true, id: payload.id, url: payload.dataUrl, warn };
 }
 
 export async function publishShare(payload: {
@@ -133,12 +181,31 @@ export async function publishShare(payload: {
   } catch {
     // no api (static host) — fall through
   }
-
-  try {
-    return await publishToSupabase(payload);
-  } catch (e: any) {
-    return { ok: false, error: e?.message || 'network error' };
-  }
+  if (!payload.dataUrl || !payload.dataUrl.startsWith('data:')) return { ok: false, error: 'missing file data' };
+  const approx = Math.floor(((payload.dataUrl.split(',')[1] || '').length * 3) / 4);
+  const warn = approx > 8 * 1024 * 1024 || payload.size > 8 * 1024 * 1024 ? 'big drop. the tab or host may feel slow. no hard cap on our side.' : undefined;
+  const row = {
+    id: payload.id,
+    name: payload.name,
+    mime: payload.type || 'application/octet-stream',
+    size: payload.size || approx,
+    file_url: payload.dataUrl,
+    lock_pass: payload.lockPass || null,
+    expires_at: payload.expiresAt || null,
+    is_public: true,
+    download_count: 0,
+    author: payload.author || null,
+    meta: { source: 'rankvault-client', warn, caption: payload.caption || null },
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  };
+  const res = await fetch(`${SB_URL}/rest/v1/public_shares`, {
+    method: 'POST',
+    headers: sbHeaders({ Prefer: 'resolution=merge-duplicates,return=representation' }),
+    body: JSON.stringify(row),
+  });
+  if (!res.ok) return { ok: false, error: (await res.text()) || `supabase ${res.status}`, warn };
+  return { ok: true, id: payload.id, url: payload.dataUrl, warn };
 }
 
 export async function fetchShare(id: string): Promise<CloudMeta | null> {
@@ -148,7 +215,6 @@ export async function fetchShare(id: string): Promise<CloudMeta | null> {
   } catch {
     // fall through
   }
-
   try {
     return await fetchShareFromSupabase(id);
   } catch {
@@ -170,100 +236,5 @@ export async function listPublicShares(limit = 24): Promise<CloudMeta[]> {
       .map(rowToMeta);
   } catch {
     return [];
-  }
-}
-
-export function shareUrls(id: string) {
-  const origin = typeof window !== 'undefined' ? window.location.origin : '';
-  const path = typeof window !== 'undefined' ? window.location.pathname : '/';
-  const enc = encodeURIComponent(id);
-  return {
-    app: `${origin}${path}#share?f=${enc}`,
-    embed: `${origin}/s/${id}`,
-    card: `${origin}/s/${id}`,
-    file: `${origin}/f/${id}`,
-    open: `${origin}/open/${id}`,
-    go: `${origin}/go/${id}`,
-    link: `${origin}/link/${id}`,
-    raw: `${origin}/x/${id}`,
-    yarrow: `${origin}/y/${id}`,
-    quoin: `${origin}/q/${id}`,
-    lanyard: `${origin}/l/${id}`,
-    nook: `${origin}/n/${id}`,
-    keystone: `${origin}/k/${id}`,
-    wellhead: `${origin}/w/${id}`,
-    windlass: `${origin}/u/${id}`,
-    drop: `${origin}/d/${id}`,
-    hearth: `${origin}/h/${id}`,
-    lantern: `${origin}/r/${id}`,
-    belvedere: `${origin}/b/${id}`,
-    gazebo: `${origin}/g/${id}`,
-    conservatory: `${origin}/c/${id}`,
-    umbra: `${origin}/m/${id}`,
-    loggia: `${origin}/o/${id}`,
-    scriptorium: `${origin}/t/${id}`,
-    lintel: `${origin}/i/${id}`,
-    antechamber: `${origin}/a/${id}`,
-    camber: `${origin}/e/${id}`,
-    zenith: `${origin}/z/${id}`,
-  };
-}
-
-function uid() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-}
-
-/** Upload a local File straight into Supabase storage + public_shares. No size cap; large files only get a slowness warning. */
-export async function publishLocalFile(
-  file: File,
-  opts: { caption?: string; author?: string; lockPass?: string; expiresAt?: string | null; color?: string } = {},
-): Promise<{ ok: boolean; id?: string; url?: string; embed?: string; warn?: string | null; error?: string }> {
-  const id = uid();
-  const safeName = (file.name || 'file').replace(/[^a-zA-Z0-9._-]+/g, '_').slice(0, 180) || 'file';
-  const path = `${id}/${safeName}`;
-  const warn = file.size > 40 * 1024 * 1024 ? 'large drop. the browser may feel slow while it sends.' : null;
-  try {
-    const up = await fetch(`${SB_URL}/storage/v1/object/shares/${path}`, {
-      method: 'POST',
-      headers: {
-        apikey: SB_KEY,
-        Authorization: `Bearer ${SB_KEY}`,
-        'Content-Type': file.type || 'application/octet-stream',
-        'x-upsert': 'true',
-        'cache-control': 'public, max-age=31536000',
-      },
-      body: file,
-    });
-    if (!up.ok) {
-      const text = await up.text();
-      return { ok: false, error: `storage ${up.status}: ${text.slice(0, 180)}` };
-    }
-    const fileUrl = `${SB_URL}/storage/v1/object/public/shares/${path}`;
-    const row = {
-      id,
-      name: file.name || safeName,
-      mime: file.type || 'application/octet-stream',
-      size: file.size,
-      file_url: fileUrl,
-      lock_pass: opts.lockPass || null,
-      expires_at: opts.expiresAt || null,
-      is_public: true,
-      download_count: 0,
-      author: opts.author || null,
-      caption: opts.caption || null,
-      meta: { warn, source: 'reliquary', caption: opts.caption || null, color: opts.color || null },
-    };
-    const ins = await fetch(`${SB_URL}/rest/v1/public_shares`, {
-      method: 'POST',
-      headers: sbHeaders({ Prefer: 'resolution=merge-duplicates,return=representation' }),
-      body: JSON.stringify(row),
-    });
-    if (!ins.ok) {
-      const text = await ins.text();
-      return { ok: false, error: `shares table ${ins.status}: ${text.slice(0, 180)}` };
-    }
-    return { ok: true, id, url: fileUrl, embed: `${location.origin}/s/${id}`, warn };
-  } catch (e: any) {
-    return { ok: false, error: e?.message || 'upload failed' };
   }
 }

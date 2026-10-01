@@ -1,6 +1,10 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'pergola', body: 'a shade of layered noise. stays in the tab. not a filing cabinet.' },
+  { title: 'spinney', body: 'count words, letters, and syllables without sending a thing.' },
+  { title: 'cameo', body: 'cut a still into a circle. publish the png only if you want a discord card.' },
+  { title: 'holt', body: 'time a passage for reading or speaking. optional public .txt drop.' },
   { title: 'fathom', body: 'sound a local file with sha-256 in the tab, then hang the original on the share db. discord unfurls /s.' },
   { title: 'tannoy', body: 'hear a local clip as bars, then hang the original on the public board. discord unfurls /s.' },
   { title: 'sundial', body: 'a noon-stick from latitude and hour. stays in the tab.' },
@@ -37,14 +41,7 @@ export default function Features() {
         <p className="text-neutral-500 text-sm mb-8">a vault that feels like it belongs on a phone.</p>
         <div className="grid md:grid-cols-2 gap-4">
           {items.map((item, i) => (
-            <motion.div
-              key={item.title}
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: Math.min(i, 12) * 0.04, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="glass rounded-3xl p-6 hover:-translate-y-0.5"
-            >
+            <motion.div key={item.title} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: Math.min(i, 12) * 0.04, duration: 0.4, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-3xl p-6 hover:-translate-y-0.5">
               <h3 className="text-white font-medium mb-2">{item.title}</h3>
               <p className="text-sm text-neutral-400 leading-relaxed">{item.body}</p>
             </motion.div>

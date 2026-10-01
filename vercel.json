@@ -65,6 +65,10 @@
     { "source": "/hawse", "destination": "/api/embed?page=hawse" },
     { "source": "/fluke", "destination": "/api/embed?page=fluke" },
     { "source": "/thwart", "destination": "/api/embed?page=thwart" },
-    { "source": "/coaming", "destination": "/api/embed?page=coaming" }
+    { "source": "/coaming", "destination": "/api/embed?page=coaming" },
+    { "source": "/pergola", "destination": "/api/embed?page=pergola" },
+    { "source": "/spinney", "destination": "/api/embed?page=spinney" },
+    { "source": "/cameo", "destination": "/api/embed?page=cameo" },
+    { "source": "/holt", "destination": "/api/embed?page=holt" }
   ]
 }

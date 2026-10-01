@@ -1,6 +1,10 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'copse', body: 'sample a grove of colour from a still in the tab. publish only the palette json if you want a discord card.' },
+  { title: 'riprap', body: 'break a passage into numbered stones and hang the markdown on the share db. not a vault drawer.' },
+  { title: 'wicket', body: 'a spoken phrase locks a short note. the /s link still unfurls for discord.' },
+  { title: 'leat', body: 'a timed writing channel. pour the draft into supabase when the water stops.' },
   { title: 'pergola', body: 'a shade of layered noise. stays in the tab. not a filing cabinet.' },
   { title: 'spinney', body: 'count words, letters, and syllables without sending a thing.' },
   { title: 'cameo', body: 'cut a still into a circle. publish the png only if you want a discord card.' },

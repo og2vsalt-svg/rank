@@ -214,6 +214,7 @@ export default async function handler(req, res) {
       let expiresAt = null;
       let author = null;
       let caption = null;
+      let color = null;
 
       if (contentType.includes('multipart/form-data')) {
         const parts = parseMultipart(raw, contentType) || [];
@@ -231,6 +232,7 @@ export default async function handler(req, res) {
         caption = field('caption') || null;
         lockPass = field('lockPass') || null;
         expiresAt = field('expiresAt') || null;
+        color = field('color') || null;
       } else if (contentType.includes('application/json')) {
         const body = JSON.parse(raw.toString('utf8'));
         id = (body.id || id).toString().slice(0, 64);
@@ -251,6 +253,7 @@ export default async function handler(req, res) {
         expiresAt = body.expiresAt || null;
         author = body.author || null;
         caption = body.caption || null;
+        color = body.color || null;
       } else {
         res.status(400).json({ error: 'send a file or json dataUrl' });
         return;
@@ -285,7 +288,7 @@ export default async function handler(req, res) {
         download_count: 0,
         author,
         caption,
-        meta: { warn, source: 'rankvault', caption },
+        meta: { warn, source: 'rankvault', caption, color: /^#[0-9a-fA-F]{6}$/.test(color || '') ? color : null },
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };

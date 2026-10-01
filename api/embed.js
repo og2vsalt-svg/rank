@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 }
 
@@ -61,7 +61,7 @@ function pageHtml({ title, desc, image, url, color, mime }) {
     extra.push('<meta property="og:audio" content="' + esc(image) + '" />');
     extra.push('<meta property="og:audio:type" content="' + esc(mime) + '" />');
   }
-  return `<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8" />\n<title>${esc(title)}</title>\n<meta name="description" content="${esc(desc)}" />\n<meta name="theme-color" content="${esc(c)}" />\n<meta name="robots" content="noindex" />\n<meta property="og:type" content="website" />\n<meta property="og:site_name" content="rankvault" />\n<meta property="og:title" content="${esc(title)}" />\n<meta property="og:description" content="${esc(desc)}" />\n<meta property="og:image" content="${esc(safeImg)}" />\n<meta property="og:image:secure_url" content="${esc(safeImg)}" />\n<meta property="og:image:type" content="${esc(imgType)}" />\n<meta property="og:image:width" content="1200" />\n<meta property="og:image:height" content="630" />\n<meta property="og:url" content="${esc(url)}" />\n${extra.join('\\n')}\n<meta name="twitter:card" content="summary_large_image" />\n<meta name="twitter:title" content="${esc(title)}" />\n<meta name="twitter:description" content="${esc(desc)}" />\n<meta name="twitter:image" content="${esc(safeImg)}" />\n<link rel="canonical" href="${esc(url)}" />\n</head>\n<body style="margin:0;background:#050506;color:#f5f5f7;font-family:Inter,system-ui,-apple-system,sans-serif;padding:64px 28px;min-height:100vh">\n<div style="max-width:36rem">\n<p style="opacity:.55;font-size:13px;letter-spacing:.08em;text-transform:uppercase">rankvault</p>\n<h1 style="font-size:32px;letter-spacing:-.04em;font-weight:600;margin:12px 0 16px">${esc(title)}</h1>\n<p style="color:#a1a1aa;max-width:40rem;line-height:1.55">${esc(desc)}</p>\n<p style="margin-top:28px"><a href="${esc(url)}" style="color:#0a84ff;text-decoration:none">open in rankvault \u2192</a></p>\n</div>\n<script>if(!/discord|bot|embed|preview/i.test(navigator.userAgent||'')) location.replace(${JSON.stringify(url)});</script>\n</body>\n</html>`;
+  return `<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8" />\n<title>${esc(title)}</title>\n<meta name="description" content="${esc(desc)}" />\n<meta name="theme-color" content="${esc(c)}" />\n<meta name="robots" content="noindex" />\n<meta property="og:type" content="website" />\n<meta property="og:site_name" content="rankvault" />\n<meta property="og:title" content="${esc(title)}" />\n<meta property="og:description" content="${esc(desc)}" />\n<meta property="og:image" content="${esc(safeImg)}" />\n<meta property="og:image:secure_url" content="${esc(safeImg)}" />\n<meta property="og:image:type" content="${esc(imgType)}" />\n<meta property="og:image:width" content="1200" />\n<meta property="og:image:height" content="630" />\n<meta property="og:url" content="${esc(url)}" />\n${extra.join('\n')}\n<meta name="twitter:card" content="summary_large_image" />\n<meta name="twitter:title" content="${esc(title)}" />\n<meta name="twitter:description" content="${esc(desc)}" />\n<meta name="twitter:image" content="${esc(safeImg)}" />\n<link rel="canonical" href="${esc(url)}" />\n</head>\n<body style="margin:0;background:#050506;color:#f5f5f7;font-family:Inter,system-ui,-apple-system,sans-serif;padding:64px 28px;min-height:100vh">\n<div style="max-width:36rem">\n<p style="opacity:.55;font-size:13px;letter-spacing:.08em;text-transform:uppercase">rankvault</p>\n<h1 style="font-size:32px;letter-spacing:-.04em;font-weight:600;margin:12px 0 16px">${esc(title)}</h1>\n<p style="color:#a1a1aa;max-width:40rem;line-height:1.55">${esc(desc)}</p>\n<p style="margin-top:28px"><a href="${esc(url)}" style="color:#0a84ff;text-decoration:none">open in rankvault \u2192</a></p>\n</div>\n<script>if(!/discord|bot|embed|preview/i.test(navigator.userAgent||'')) location.replace(${JSON.stringify(url)});</script>\n</body>\n</html>`;
 }
 
 async function loadShare(id) {
@@ -132,6 +132,9 @@ const PAGE_TITLES = {
   volute: 'volute \u2014 a shelf for addresses',
   astragal: 'astragal \u2014 a file with a note attached',
   modillion: 'modillion \u2014 a bracket for names',
+  reliquary: 'reliquary \u2014 send a local file into the share database',
+  tint: 'tint \u2014 pull a palette from a still',
+  waybill: 'waybill \u2014 read a public drop and its discord card',
 };
 
 export default async function handler(req, res) {

@@ -1,129 +1,82 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishShare, shareUrls } from '../lib/cloudShare';
-
-function uid() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-}
-
-function readAsDataUrl(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const r = new FileReader();
-    r.onload = () => resolve(String(r.result || ''));
-    r.onerror = () => reject(new Error('could not read file'));
-    r.readAsDataURL(file);
-  });
-}
+import { publishLocalFile } from '../lib/cloudShare';
+import { shareUrls } from '../lib/cloudShare';
 
 export default function ReliquaryPage() {
-  const [busy, setBusy] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
   const [caption, setCaption] = useState('');
-  const [hours, setHours] = useState('');
-  const [pass, setPass] = useState('');
-  const [warn, setWarn] = useState('');
+  const [author, setAuthor] = useState('');
+  const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
-  const [link, setLink] = useState('');
-  const [embed, setEmbed] = useState('');
-  const [name, setName] = useState('');
+  const [warn, setWarn] = useState<string | null>(null);
+  const [id, setId] = useState('');
+  const [copied, setCopied] = useState('');
 
-  const onFile = async (list: FileList | null) => {
-    const f = list?.[0];
-    if (!f) return;
-    setErr('');
-    setLink('');
-    setEmbed('');
-    setName(f.name);
-    setWarn(f.size > 16 * 1024 * 1024 ? 'large relic. encoding may feel slow. no hard cap.' : '');
+  const send = async () => {
+    if (!file) return;
     setBusy(true);
-    try {
-      const dataUrl = await readAsDataUrl(f);
-      const id = uid();
-      const expiresAt = hours
-        ? new Date(Date.now() + Number(hours) * 3600 * 1000).toISOString()
-        : null;
-      const labeled = caption.trim() ? `${caption.trim()} — ${f.name}` : f.name;
-      const pub = await publishShare({
-        id,
-        name: labeled.slice(0, 180),
-        type: f.type || 'application/octet-stream',
-        size: f.size,
-        dataUrl,
-        lockPass: pass || undefined,
-        expiresAt,
-        author: caption.trim() || undefined,
-      });
-      if (!pub.ok) {
-        setErr(pub.error || 'could not publish');
-        return;
-      }
-      if (pub.warn) setWarn(pub.warn);
-      const urls = shareUrls(id);
-      setLink(urls.app);
-      setEmbed(urls.embed);
-      try {
-        await navigator.clipboard.writeText(urls.embed);
-      } catch {}
-    } catch (e: any) {
-      setErr(e?.message || 'reliquary failed');
-    } finally {
-      setBusy(false);
+    setErr('');
+    setWarn(file.size > 40 * 1024 * 1024 ? 'large drop. this can feel slow, nothing is blocked.' : null);
+    const res = await publishLocalFile(file, { caption, author });
+    setBusy(false);
+    if (!res.ok || !res.id) {
+      setErr(res.error || 'could not write the share');
+      return;
     }
+    setId(res.id);
+    setWarn(res.warn || null);
+  };
+
+  const urls = id ? shareUrls(id) : null;
+
+  const copy = async (label: string, value: string) => {
+    await navigator.clipboard.writeText(value);
+    setCopied(label);
+    setTimeout(() => setCopied(''), 1200);
   };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          className="glass rounded-[32px] p-8"
-        >
-          <p className="text-[#0a84ff] text-sm mb-2">reliquary</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">label a file, then lay it in the share db.</h1>
-          <p className="text-neutral-400 text-sm mb-6">
-            a caption becomes the discord card title. optional pass and tide. no size cap — only a slowness note.
+      <main className="mx-auto max-w-xl px-5 pb-24 pt-10">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}>
+          <p className="text-[12px] uppercase tracking-[0.16em] text-white/45">reliquary</p>
+          <h1 className="mt-2 text-[34px] font-semibold tracking-[-0.04em]">put a local file in the share table</h1>
+          <p className="mt-3 text-[15px] leading-relaxed text-white/60">
+            The bytes go into the shares bucket. The row lands in public_shares. Paste the /s link in Discord and the card uses the file name, size, and image when there is one.
           </p>
-          <div className="space-y-3 mb-5">
-            <input
-              value={caption}
-              onChange={(e) => setCaption(e.target.value)}
-              placeholder="caption for the card"
-              className="w-full px-4 py-2.5 rounded-full bg-white/5 border border-white/10 text-sm outline-none focus:border-[#0a84ff]/40"
-            />
-            <div className="flex gap-2">
-              <input
-                value={hours}
-                onChange={(e) => setHours(e.target.value)}
-                placeholder="hours until it fades"
-                inputMode="numeric"
-                className="flex-1 px-4 py-2.5 rounded-full bg-white/5 border border-white/10 text-sm outline-none"
-              />
-              <input
-                value={pass}
-                onChange={(e) => setPass(e.target.value)}
-                placeholder="optional pass"
-                className="flex-1 px-4 py-2.5 rounded-full bg-white/5 border border-white/10 text-sm outline-none"
-              />
+        </motion.div>
+
+        <label className="glass mt-8 block cursor-pointer rounded-3xl p-8 text-center">
+          <input className="hidden" type="file" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+          <div className="text-[15px] text-white/80">{file ? file.name : 'choose a file from this machine'}</div>
+          <div className="mt-1 text-[12px] text-white/40">{file ? `${(file.size / 1024).toFixed(1)} kb · no cap, just a warning if it is heavy` : 'any type'}</div>
+        </label>
+
+        <div className="mt-4 grid gap-3">
+          <input value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="caption for the discord card" className="glass rounded-2xl px-4 py-3 text-[14px] outline-none" />
+          <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="name on the card, optional" className="glass rounded-2xl px-4 py-3 text-[14px] outline-none" />
+        </div>
+
+        <button onClick={send} disabled={!file || busy} className="mt-4 w-full rounded-full bg-[#0A84FF] px-4 py-3 text-[15px] font-medium text-white disabled:opacity-40">
+          {busy ? 'sending…' : 'upload to the database'}
+        </button>
+        {warn && <p className="mt-3 text-[13px] text-amber-200/80">{warn}</p>}
+        {err && <p className="mt-3 text-[13px] text-red-300">{err}</p>}
+
+        {urls && (
+          <div className="glass mt-6 rounded-3xl p-5">
+            <p className="text-[13px] text-white/50">discord card</p>
+            <p className="mt-1 break-all text-[15px]">{urls.embed}</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <button onClick={() => copy('card', urls.embed)} className="rounded-full bg-white/10 px-3 py-1.5 text-[13px]">{copied === 'card' ? 'copied' : 'copy /s link'}</button>
+              <button onClick={() => copy('app', urls.app)} className="rounded-full bg-white/10 px-3 py-1.5 text-[13px]">{copied === 'app' ? 'copied' : 'copy app link'}</button>
             </div>
           </div>
-          <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition">
-            <input type="file" className="hidden" onChange={(e) => onFile(e.target.files)} />
-            <p className="text-white font-medium">{busy ? 'laying it down…' : name ? `swap ${name}` : 'drop a relic'}</p>
-            <p className="text-xs text-neutral-500 mt-2">the embed link copies itself.</p>
-          </label>
-          {warn && <p className="text-amber-300/90 text-xs mt-3">{warn}</p>}
-          {err && <p className="text-red-400 text-xs mt-3">{err}</p>}
-          {link && (
-            <div className="mt-6 space-y-2 text-xs text-neutral-400 break-all">
-              <p>app: {link}</p>
-              <p>discord embed (copied): {embed}</p>
-            </div>
-          )}
-        </motion.div>
-      </div>
+        )}
+      </main>
     </div>
   );
 }

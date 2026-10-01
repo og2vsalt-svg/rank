@@ -97,6 +97,9 @@
     { "source": "/scotia", "destination": "/api/embed?page=scotia" },
     { "source": "/necking", "destination": "/api/embed?page=necking" },
     { "source": "/abacus", "destination": "/api/embed?page=abacus" },
-    { "source": "/volute", "destination": "/api/embed?page=volute" }
+    { "source": "/volute", "destination": "/api/embed?page=volute" },
+    { "source": "/reliquary", "destination": "/api/embed?page=reliquary" },
+    { "source": "/tint", "destination": "/api/embed?page=tint" },
+    { "source": "/waybill", "destination": "/api/embed?page=waybill" }
   ]
 }

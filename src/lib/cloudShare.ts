@@ -213,3 +213,63 @@ export function shareUrls(id: string) {
     zenith: `${origin}/z/${id}`,
   };
 }
+
+
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+
+/** Upload a local File straight into Supabase storage + public_shares. No size cap; large files only get a slowness warning. */
+export async function publishLocalFile(
+  file: File,
+  opts: { caption?: string; author?: string; lockPass?: string; expiresAt?: string | null } = {},
+): Promise<{ ok: boolean; id?: string; url?: string; embed?: string; warn?: string | null; error?: string }> {
+  const id = uid();
+  const safeName = (file.name || 'file').replace(/[^a-zA-Z0-9._-]+/g, '_').slice(0, 180) || 'file';
+  const path = `${id}/${safeName}`;
+  const warn = file.size > 40 * 1024 * 1024 ? 'large drop. the browser may feel slow while it sends.' : null;
+  try {
+    const up = await fetch(`${SB_URL}/storage/v1/object/shares/${path}`, {
+      method: 'POST',
+      headers: {
+        apikey: SB_KEY,
+        Authorization: `Bearer ${SB_KEY}`,
+        'Content-Type': file.type || 'application/octet-stream',
+        'x-upsert': 'true',
+        'cache-control': 'public, max-age=31536000',
+      },
+      body: file,
+    });
+    if (!up.ok) {
+      const text = await up.text();
+      return { ok: false, error: `storage ${up.status}: ${text.slice(0, 180)}` };
+    }
+    const fileUrl = `${SB_URL}/storage/v1/object/public/shares/${path}`;
+    const row = {
+      id,
+      name: file.name || safeName,
+      mime: file.type || 'application/octet-stream',
+      size: file.size,
+      file_url: fileUrl,
+      lock_pass: opts.lockPass || null,
+      expires_at: opts.expiresAt || null,
+      is_public: true,
+      download_count: 0,
+      author: opts.author || null,
+      caption: opts.caption || null,
+      meta: { warn, source: 'reliquary', caption: opts.caption || null },
+    };
+    const ins = await fetch(`${SB_URL}/rest/v1/public_shares`, {
+      method: 'POST',
+      headers: sbHeaders({ Prefer: 'resolution=merge-duplicates,return=representation' }),
+      body: JSON.stringify(row),
+    });
+    if (!ins.ok) {
+      const text = await ins.text();
+      return { ok: false, error: `shares table ${ins.status}: ${text.slice(0, 180)}` };
+    }
+    return { ok: true, id, url: fileUrl, embed: `${location.origin}/s/${id}`, warn };
+  } catch (e: any) {
+    return { ok: false, error: e?.message || 'upload failed' };
+  }
+}

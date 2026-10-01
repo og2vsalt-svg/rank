@@ -162,18 +162,38 @@ export default async function handler(req, res) {
       const size = Number(body.size) || buf.length;
 
       let fileUrl = null;
-      const opts = blobOpts();
-      if (opts) {
-        const fileBlob = await put(`shares/${id}/${name}`, buf, {
-          access: 'public',
-          contentType: type,
-          addRandomSuffix: false,
-          allowOverwrite: true,
-          ...opts,
+      const safeName = name.replace(/[^a-zA-Z0-9._-]+/g, '_').slice(0, 180) || 'file';
+      const objectPath = `${id}/${safeName}`;
+      try {
+        const up = await fetch(`${SUPABASE_URL}/storage/v1/object/shares/${objectPath}`, {
+          method: 'POST',
+          headers: {
+            apikey: SUPABASE_KEY,
+            Authorization: `Bearer ${SUPABASE_KEY}`,
+            'Content-Type': type,
+            'x-upsert': 'true',
+            'cache-control': 'public, max-age=31536000',
+          },
+          body: buf,
         });
-        fileUrl = fileBlob.url;
-      } else {
-        fileUrl = dataUrl;
+        if (up.ok) {
+          fileUrl = `${SUPABASE_URL}/storage/v1/object/public/shares/${objectPath}`;
+        }
+      } catch {}
+      if (!fileUrl) {
+        const opts = blobOpts();
+        if (opts) {
+          const fileBlob = await put(`shares/${id}/${safeName}`, buf, {
+            access: 'public',
+            contentType: type,
+            addRandomSuffix: false,
+            allowOverwrite: true,
+            ...opts,
+          });
+          fileUrl = fileBlob.url;
+        } else {
+          fileUrl = dataUrl;
+        }
       }
 
       const warn = size > 40 * 1024 * 1024 ? 'large drop. preview clients may feel slow.' : null;

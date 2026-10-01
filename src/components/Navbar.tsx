@@ -78,6 +78,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'files',
     items: [
+      { to: 'reliquary', label: 'reliquary' },
+      { to: 'waybill', label: 'waybill' },
+      { to: 'tint', label: 'tint' },
       { to: 'astragal', label: 'astragal' },
       { to: 'voussoir', label: 'voussoir' },
       { to: 'scuttle', label: 'scuttle' },

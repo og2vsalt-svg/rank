@@ -1,82 +1,98 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { shareUrls } from '../lib/cloudShare';
+import { publishShare, shareUrls } from '../lib/cloudShare';
 
-function pretty(n: number) {
-  if (n < 1024) return n + ' b';
-  if (n < 1024 * 1024) return Math.round(n / 1024) + ' kb';
-  return (n / (1024 * 1024)).toFixed(1) + ' mb';
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
 
-function readAsDataUrl(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const r = new FileReader();
-    r.onload = () => resolve(String(r.result || ''));
-    r.onerror = () => reject(new Error('read failed'));
-    r.readAsDataURL(file);
-  });
+function drawCard(title: string, body: string, accent: string) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 1200;
+  canvas.height = 630;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return '';
+  ctx.fillStyle = '#08080a';
+  ctx.fillRect(0, 0, 1200, 630);
+  ctx.fillStyle = accent;
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.lineTo(180, 0);
+  ctx.lineTo(0, 180);
+  ctx.closePath();
+  ctx.fill();
+  ctx.fillStyle = '#f5f5f7';
+  ctx.font = '600 54px -apple-system, Inter, sans-serif';
+  ctx.fillText(title.slice(0, 28) || 'quoin', 80, 280);
+  ctx.fillStyle = '#a1a1aa';
+  ctx.font = '400 28px -apple-system, Inter, sans-serif';
+  const lines = (body || 'a corner card for discord').slice(0, 160);
+  ctx.fillText(lines.slice(0, 52), 80, 340);
+  ctx.fillText(lines.slice(52, 104), 80, 384);
+  ctx.fillStyle = '#0a84ff';
+  ctx.font = '500 20px -apple-system, Inter, sans-serif';
+  ctx.fillText('rankvault · quoin', 80, 560);
+  return canvas.toDataURL('image/png');
 }
 
 export default function QuoinPage() {
-  const [caption, setCaption] = useState('');
-  const [file, setFile] = useState<File | null>(null);
+  const [title, setTitle] = useState('');
+  const [body, setBody] = useState('');
+  const [accent, setAccent] = useState('#0A84FF');
   const [busy, setBusy] = useState(false);
-  const [embed, setEmbed] = useState('');
-  const [err, setErr] = useState('');
   const [warn, setWarn] = useState('');
+  const [err, setErr] = useState('');
+  const [link, setLink] = useState('');
+  const preview = drawCard(title, body, accent);
 
-  const wedge = async () => {
-    if (!file) return;
-    setBusy(true); setErr(''); setEmbed('');
-    setWarn(file.size > 40 * 1024 * 1024 ? 'large drop. preview clients may feel slow.' : '');
+  const publish = async () => {
+    setBusy(true);
+    setErr('');
     try {
-      const dataUrl = await readAsDataUrl(file);
-      const name = caption.trim() ? `${caption.trim().slice(0, 60)} — ${file.name}` : file.name;
-      const r = await fetch('/api/share', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name,
-          type: file.type || 'application/octet-stream',
-          size: file.size,
-          dataUrl,
-          author: caption.trim() || undefined,
-        }),
+      const dataUrl = drawCard(title.trim() || 'quoin', body, accent);
+      const id = uid();
+      const blob = await (await fetch(dataUrl)).blob();
+      const res = await publishShare({
+        id,
+        name: `${title.trim() || 'quoin'}.png`,
+        type: 'image/png',
+        size: blob.size,
+        dataUrl,
+        author: 'quoin',
       });
-      const json = await r.json();
-      if (!r.ok || !json?.ok) throw new Error(json?.error || 'share failed');
-      const urls = shareUrls(json.id);
-      setEmbed(urls.card);
-      try { await navigator.clipboard.writeText(urls.card); } catch {}
-      if (json.warn) setWarn(json.warn);
+      if (!res.ok) throw new Error(res.error || 'quoin slipped');
+      const urls = shareUrls(res.id || id);
+      setLink(urls.embed);
+      if (res.warn) setWarn(res.warn);
+      try { await navigator.clipboard.writeText(urls.embed); } catch {}
     } catch (e: any) {
-      setErr(e?.message || 'quoin failed');
-    } finally {
-      setBusy(false);
+      setErr(e?.message || 'failed');
     }
+    setBusy(false);
   };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-8">
+      <div className="pt-28 pb-20 px-5 max-w-xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[28px] p-7">
           <p className="text-[#0a84ff] text-sm mb-2">quoin</p>
-          <h1 className="text-3xl font-semibold mb-3">wedge a caption under a public drop.</h1>
-          <p className="text-neutral-400 text-sm mb-6">skips the vault. the caption becomes the share name so discord unfurls something readable.</p>
-          <input value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="caption for the card" className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white outline-none focus:border-[#0a84ff]/50 mb-4" />
-          <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center">
-            <input type="file" className="hidden" onChange={(e) => setFile(e.target.files?.[0] || null)} />
-            <p className="text-white font-medium">{file ? file.name : 'drop one file'}</p>
-            {file && <p className="text-xs text-neutral-500 mt-2">{pretty(file.size)}</p>}
-          </label>
-          <button disabled={!file || busy} onClick={wedge} className="mt-5 px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40">
-            {busy ? 'wedging…' : 'wedge into db'}
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">raise a corner card.</h1>
+          <p className="text-neutral-400 text-sm mb-6">a 1200×630 still painted in the tab, then filed so discord can unfurl it. not a vault drawer.</p>
+          <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="title on the stone" className="w-full mb-3 px-4 py-2.5 rounded-full bg-white/5 border border-white/10 text-sm outline-none" />
+          <textarea value={body} onChange={(e) => setBody(e.target.value)} placeholder="one quiet line" rows={3} className="w-full mb-3 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm outline-none resize-none" />
+          <div className="flex items-center gap-3 mb-5">
+            <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="h-9 w-9 rounded-full overflow-hidden bg-transparent" />
+            <span className="text-xs text-neutral-500">corner accent</span>
+          </div>
+          {preview && <img src={preview} alt="" className="w-full rounded-2xl mb-5 border border-white/10" />}
+          {warn && <p className="text-xs text-amber-300/80 mb-3">{warn}</p>}
+          {err && <p className="text-xs text-red-400 mb-3">{err}</p>}
+          <button onClick={publish} disabled={busy} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40">
+            {busy ? 'setting the stone…' : 'publish card'}
           </button>
-          {warn && <p className="text-xs text-amber-300/80 mt-4">{warn}</p>}
-          {err && <p className="text-xs text-red-400 mt-4">{err}</p>}
-          {embed && <p className="text-xs text-neutral-400 mt-4 break-all">discord: {embed}</p>}
+          {link && <p className="text-xs text-neutral-500 mt-4 break-all">discord embed copied: {link}</p>}
         </motion.div>
       </div>
     </div>

@@ -1,93 +1,101 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishShare, shareUrls } from '../lib/cloudShare';
+import { publishLocalFile, shareUrls } from '../lib/cloudShare';
 
-function uid() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-}
+const WINDOWS = [
+  { id: 'open', label: 'leave it', hours: 0 },
+  { id: 'day', label: 'a day', hours: 24 },
+  { id: 'week', label: 'a week', hours: 24 * 7 },
+];
 
 export default function HawserPage() {
-  const [ids, setIds] = useState('');
+  const [file, setFile] = useState<File | null>(null);
+  const [note, setNote] = useState('');
+  const [from, setFrom] = useState('');
+  const [windowId, setWindowId] = useState('open');
   const [busy, setBusy] = useState(false);
-  const [err, setErr] = useState('');
-  const [embed, setEmbed] = useState('');
+  const [card, setCard] = useState('');
+  const [plain, setPlain] = useState('');
+  const [error, setError] = useState('');
+  const [warn, setWarn] = useState<string | null>(null);
+  const [copied, setCopied] = useState('');
 
-  const braid = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const list = ids
-      .split(/[\s,]+/)
-      .map((s) => s.trim().replace(/^.*[\/=]/, ''))
-      .filter(Boolean);
-    if (!list.length) return;
+  const sizeLabel = useMemo(() => {
+    if (!file) return '';
+    const mb = file.size / (1024 * 1024);
+    return mb >= 1 ? `${mb.toFixed(1)} MB` : `${Math.max(1, Math.round(file.size / 1024))} KB`;
+  }, [file]);
+
+  const send = async () => {
+    if (!file) return;
     setBusy(true);
-    setErr('');
-    setEmbed('');
-    try {
-      const origin = window.location.origin;
-      const body = ['rankvault hawser', ...list.map((id) => `${origin}/s/${id}`)].join('\n');
-      const file = new File([body], 'hawser.txt', { type: 'text/plain' });
-      const dataUrl = await new Promise<string>((resolve, reject) => {
-        const r = new FileReader();
-        r.onload = () => resolve(String(r.result || ''));
-        r.onerror = () => reject(new Error('read failed'));
-        r.readAsDataURL(file);
-      });
-      const id = 'haws-' + uid();
-      const res = await publishShare({
-        id,
-        name: file.name,
-        type: file.type,
-        size: file.size,
-        dataUrl,
-        author: 'hawser',
-      });
-      if (!res.ok) throw new Error(res.error || 'could not braid');
-      const urls = shareUrls(res.id || id);
-      setEmbed(urls.embed);
-      try { await navigator.clipboard.writeText(urls.embed); } catch {}
-    } catch (e: any) {
-      setErr(e?.message || 'hawser failed');
-    } finally {
-      setBusy(false);
+    setError('');
+    setCopied('');
+    const picked = WINDOWS.find((w) => w.id === windowId);
+    const expiresAt = picked && picked.hours ? new Date(Date.now() + picked.hours * 3600 * 1000).toISOString() : null;
+    const res = await publishLocalFile(file, {
+      caption: note.trim().slice(0, 180),
+      author: from.trim(),
+      expiresAt,
+      color: '#5E5CE6',
+    });
+    setBusy(false);
+    if (!res.ok || !res.id) {
+      setError(res.error || 'the hawser did not take');
+      return;
     }
+    const urls = shareUrls(res.id);
+    setCard(res.embed || urls.embed);
+    setPlain(urls.open);
+    setWarn(res.warn || (file.size > 18 * 1024 * 1024 ? 'heavy line. the tab may pause while it pays out. nothing is refused.' : null));
+  };
+
+  const copy = async (which: string, value: string) => {
+    if (!value) return;
+    await navigator.clipboard.writeText(value);
+    setCopied(which);
   };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          className="glass rounded-[32px] p-8"
-        >
-          <p className="text-[#0a84ff] text-sm mb-2">hawser</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">braid existing drop ids into one line.</h1>
-          <p className="text-neutral-400 text-sm mb-6">
-            paste share ids. we publish a plain list of discord /s links as a new public drop.
-          </p>
-          <form onSubmit={braid}>
-            <textarea
-              value={ids}
-              onChange={(e) => setIds(e.target.value)}
-              rows={6}
-              placeholder="one id per line"
-              className="w-full px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm outline-none resize-none"
-            />
-            <button
-              type="submit"
-              disabled={busy}
-              className="mt-4 px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-50"
-            >
-              {busy ? 'braiding…' : 'publish hawser'}
-            </button>
-          </form>
-          {err && <p className="text-red-400 text-xs mt-3">{err}</p>}
-          {embed && <p className="text-xs text-neutral-400 mt-4 break-all">discord embed (copied): {embed}</p>}
+      <main className="mx-auto max-w-2xl px-5 pb-24 pt-10">
+        <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}>
+          <p className="text-[12px] uppercase tracking-[0.16em] text-white/45">hawser</p>
+          <h1 className="mt-2 text-[34px] font-semibold tracking-[-0.04em]">both ends of the line</h1>
+          <p className="mt-3 text-[15px] leading-relaxed text-white/60">A local file goes into the share table with a handoff note. Discord gets the card link. A person gets the plain open link. Expiry is a choice, not a ceiling.</p>
         </motion.div>
-      </div>
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.55 }} className="glass mt-8 rounded-3xl p-5">
+          <label className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-white/15 bg-black/25 px-4 py-10 text-center transition hover:border-white/30">
+            <span className="text-[15px] text-white">{file ? file.name : 'choose the file to pass'}</span>
+            <span className="mt-1 text-[13px] text-white/45">{file ? sizeLabel : 'from this machine'}</span>
+            <input type="file" className="sr-only" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+          </label>
+          <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="handoff note — what the other end should know" rows={3} className="mt-3 w-full resize-none rounded-2xl bg-black/30 px-4 py-3 text-[15px] outline-none placeholder:text-white/30" />
+          <input value={from} onChange={(e) => setFrom(e.target.value)} placeholder="from" className="mt-3 w-full rounded-2xl bg-black/30 px-4 py-3 text-[15px] outline-none placeholder:text-white/30" />
+          <div className="mt-3 flex flex-wrap gap-2">
+            {WINDOWS.map((w) => (
+              <button key={w.id} onClick={() => setWindowId(w.id)} className={`rounded-full px-3.5 py-1.5 text-[13px] transition ${windowId === w.id ? 'bg-white text-black' : 'bg-white/8 text-white/70 hover:bg-white/12'}`}>{w.label}</button>
+            ))}
+          </div>
+          <button onClick={send} disabled={!file || busy} className="mt-4 rounded-full bg-white px-5 py-2.5 text-[14px] font-medium text-black transition hover:bg-neutral-200 disabled:opacity-50">{busy ? 'paying out…' : 'make the hawser'}</button>
+          {warn && <p className="mt-3 text-[13px] text-amber-200/80">{warn}</p>}
+          {error && <p className="mt-3 text-[13px] text-red-300/90">{error}</p>}
+          {card && (
+            <div className="mt-4 space-y-2">
+              <div className="flex items-center gap-2">
+                <p className="min-w-0 flex-1 truncate text-[13px] text-white/70">{card}</p>
+                <button onClick={() => copy('card', card)} className="shrink-0 rounded-full bg-white/10 px-3 py-1.5 text-[12px] text-white">{copied === 'card' ? 'copied' : 'discord'}</button>
+              </div>
+              <div className="flex items-center gap-2">
+                <p className="min-w-0 flex-1 truncate text-[13px] text-white/50">{plain}</p>
+                <button onClick={() => copy('plain', plain)} className="shrink-0 rounded-full bg-white/10 px-3 py-1.5 text-[12px] text-white">{copied === 'plain' ? 'copied' : 'plain'}</button>
+              </div>
+            </div>
+          )}
+        </motion.div>
+      </main>
     </div>
   );
 }

@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 }
 
@@ -56,13 +56,22 @@ const PAGE_TITLES = {
   mooring: 'mooring \u2014 tie a local file to the quay',
   bellows: 'bellows \u2014 a breath you can time',
   inkwell: 'inkwell \u2014 a mark, not a cabinet',
+  hawser: 'hawser \u2014 both ends of the line',
+  bitts: 'bitts \u2014 a receipt, not a cabinet',
+  leadline: 'leadline \u2014 sound it, then send it',
+};
+
+const PAGE_DESC = {
+  hawser: 'Pass a local file with a handoff note. Discord unfurls the card. Expiry is optional.',
+  bitts: 'Fingerprint a file in the tab, then publish it with the digest on the card.',
+  leadline: 'Measure a local file, then write it to the share table. Large drops are warned, never refused.',
 };
 
 function pageHtml({ title, desc, image, url, color }) {
   const img = image || 'https://og2vsalt-svg.github.io/rank/og.png';
   const safeImg = /^https?:\/\//i.test(img) && !img.startsWith('data:') ? img : 'https://og2vsalt-svg.github.io/rank/og.png';
   const c = /^#[0-9a-fA-F]{6}$/.test(color || '') ? color : '#0A84FF';
-  return `<!doctype html><html lang="en"><head><meta charset="utf-8" /><title>${esc(title)}</title><meta name="description" content="${esc(desc)}" /><meta name="theme-color" content="${esc(c)}" /><meta property="og:type" content="website" /><meta property="og:site_name" content="rankvault" /><meta property="og:title" content="${esc(title)}" /><meta property="og:description" content="${esc(desc)}" /><meta property="og:image" content="${esc(safeImg)}" /><meta property="og:image:width" content="1200" /><meta property="og:image:height" content="630" /><meta property="og:url" content="${esc(url)}" /><meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content="${esc(title)}" /><meta name="twitter:description" content="${esc(desc)}" /><meta name="twitter:image" content="${esc(safeImg)}" /></head><body style="margin:0;background:#050506;color:#f5f5f7;font-family:Inter,system-ui,-apple-system,sans-serif;padding:64px 28px"><p style="opacity:.55;font-size:13px;letter-spacing:.08em;text-transform:uppercase">rankvault</p><h1 style="font-size:32px;letter-spacing:-.04em">${esc(title)}</h1><p style="color:#a1a1aa">${esc(desc)}</p><script>if(!/discord|bot|embed|preview/i.test(navigator.userAgent||'')) location.replace(${JSON.stringify(url)});</script></body></html>`;
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8" /><title>${esc(title)}</title><meta name="description" content="${esc(desc)}" /><meta name="theme-color" content="${esc(c)}" /><meta property="og:type" content="website" /><meta property="og:site_name" content="rankvault" /><meta property="og:title" content="${esc(title)}" /><meta property="og:description" content="${esc(desc)}" /><meta property="og:image" content="${esc(safeImg)}" /><meta property="og:image:alt" content="${esc(title)}" /><meta property="og:image:width" content="1200" /><meta property="og:image:height" content="630" /><meta property="og:url" content="${esc(url)}" /><meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content="${esc(title)}" /><meta name="twitter:description" content="${esc(desc)}" /><meta name="twitter:image" content="${esc(safeImg)}" /></head><body style="margin:0;background:#050506;color:#f5f5f7;font-family:Inter,system-ui,-apple-system,sans-serif;padding:64px 28px"><p style="opacity:.55;font-size:13px;letter-spacing:.08em;text-transform:uppercase">rankvault</p><h1 style="font-size:32px;letter-spacing:-.04em">${esc(title)}</h1><p style="color:#a1a1aa">${esc(desc)}</p><script>if(!/discord|bot|embed|preview/i.test(navigator.userAgent||'')) location.replace(${JSON.stringify(url)});</script></body></html>`;
 }
 
 export default async function handler(req, res) {
@@ -74,7 +83,7 @@ export default async function handler(req, res) {
   if (page && !id) {
     const dest = `${proto}://${host}/#${encodeURIComponent(page)}`;
     const title = PAGE_TITLES[page] || `${page} \u2014 rankvault`;
-    const desc = 'quiet file hosting. drop a file, share only if you want. discord cards on every /s link.';
+    const desc = PAGE_DESC[page] || 'quiet file hosting. drop a file, share only if you want. discord cards on every /s link.';
     if (!isBot(req.headers['user-agent']) && req.query.embed !== '1') {
       res.status(302).setHeader('Location', dest);
       res.end();

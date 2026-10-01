@@ -1,6 +1,10 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'inbox', body: 'hand a local file to the share database. discord unfurls /s. slowness warning only, no hard cap.' },
+  { title: 'transept', body: 'four city clocks at the crossing. not a vault drawer. the page link still unfurls.' },
+  { title: 'ambo', body: 'time a reading, then publish the markdown if you want a card.' },
+  { title: 'sedilia', body: 'three seats of notes on this device. publish them as one public drop.' },
   { title: 'voussoir', body: 'set one local file in the public shares table, with a caption discord can unfurl. slowness warning only.' },
   { title: 'scotia', body: 'a stair of checkboxes. publish the list as markdown, not another vault drawer.' },
   { title: 'necking', body: 'reshape a line — title, slug, case — then ship the pane if you want a card.' },

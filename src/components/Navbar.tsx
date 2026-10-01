@@ -5,6 +5,9 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'sheave', label: 'sheave' },
+  { to: 'dolphin', label: 'dolphin' },
+  { to: 'gudgeon', label: 'gudgeon' },
   { to: 'hawser', label: 'hawser' },
   { to: 'bitts', label: 'bitts' },
   { to: 'leadline', label: 'leadline' },
@@ -28,6 +31,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'deck',
     items: [
+      { to: 'sheave', label: 'sheave' },
+      { to: 'dolphin', label: 'dolphin' },
+      { to: 'gudgeon', label: 'gudgeon' },
       { to: 'hawser', label: 'hawser' },
       { to: 'bitts', label: 'bitts' },
       { to: 'leadline', label: 'leadline' },
@@ -67,6 +73,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'sheave', label: 'sheave' },
+      { to: 'dolphin', label: 'dolphin' },
       { to: 'mooring', label: 'mooring' },
       { to: 'inkwell', label: 'inkwell' },
       { to: 'courier', label: 'courier' },
@@ -78,6 +86,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'gudgeon', label: 'gudgeon' },
       { to: 'bellows', label: 'bellows' },
       { to: 'hash', label: 'hash' },
       { to: 'convert', label: 'convert' },

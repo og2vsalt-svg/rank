@@ -10,9 +10,9 @@ export default function Footer() {
         </span>
         <div className="flex gap-4 text-xs text-neutral-600">
           <button onClick={() => navigate('drop')}>drop</button>
-          <button onClick={() => navigate('record')}>record</button>
-          <button onClick={() => navigate('count')}>count</button>
-          <button onClick={() => navigate('units')}>units</button>
+          <button onClick={() => navigate('mere')}>mere</button>
+          <button onClick={() => navigate('glean')}>glean</button>
+          <button onClick={() => navigate('emboss')}>emboss</button>
         </div>
         <span className="text-xs text-neutral-700">
           &copy; {new Date().getFullYear()} rankvault

@@ -1,6 +1,11 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'quoin', body: 'paint a 1200×630 corner card in the tab and file the png so discord unfurls cleanly.' },
+  { title: 'soffit', body: 'count words on the underside of a draft, then hang a .txt drop. not a vault drawer.' },
+  { title: 'taffrail', body: 'lean on the public rail and read supabase drops that already landed.' },
+  { title: 'rondel', body: 'three lines that return as A B C A B A. the poem ships as a public card.' },
+  { title: 'scuttle', body: 'open a hatch and send one local through to the share db. slowness warning only.' },
   { title: 'copse', body: 'sample a grove of colour from a still in the tab. publish only the palette json if you want a discord card.' },
   { title: 'riprap', body: 'break a passage into numbered stones and hang the markdown on the share db. not a vault drawer.' },
   { title: 'wicket', body: 'a spoken phrase locks a short note. the /s link still unfurls for discord.' },

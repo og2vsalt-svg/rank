@@ -130,11 +130,6 @@ export async function publishShare(payload: {
       const data = await res.json();
       return { ok: true, id: data.id || payload.id, url: data.url, warn: data.warn };
     }
-    const data = await res.json().catch(() => ({}));
-    // api missed — still try the shares table so a local file can land
-    if (data.error && payload.size < 1500) {
-      return { ok: false, error: data.error };
-    }
   } catch {
     // no api (static host) — fall through
   }

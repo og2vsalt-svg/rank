@@ -1,94 +1,90 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishShare, shareUrls } from '../lib/cloudShare';
+import { sbRest } from '../lib/supabase';
+import { useRouter } from './Router';
 
-function uid() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-}
+type Row = {
+  id: string;
+  name: string;
+  mime: string | null;
+  size: number;
+  author: string | null;
+  created_at: string;
+  download_count: number;
+};
 
-function readAsDataUrl(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const r = new FileReader();
-    r.onload = () => resolve(String(r.result || ''));
-    r.onerror = () => reject(new Error('could not read file'));
-    r.readAsDataURL(file);
-  });
+function pretty(n: number) {
+  if (n < 1024) return `${n} B`;
+  if (n < 1024 * 1024) return `${Math.round(n / 1024)} KB`;
+  if (n < 1024 * 1024 * 1024) return `${(n / (1024 * 1024)).toFixed(1)} MB`;
+  return `${(n / (1024 * 1024 * 1024)).toFixed(2)} GB`;
 }
 
 export default function QuayPage() {
-  const [busy, setBusy] = useState(false);
-  const [warn, setWarn] = useState('');
+  const { navigate } = useRouter();
+  const [rows, setRows] = useState<Row[]>([]);
   const [err, setErr] = useState('');
-  const [link, setLink] = useState('');
-  const [embed, setEmbed] = useState('');
+  const [q, setQ] = useState('');
 
-  const onFile = async (list: FileList | null) => {
-    const f = list?.[0];
-    if (!f) return;
-    setErr('');
-    setLink('');
-    setEmbed('');
-    setWarn(f.size > 12 * 1024 * 1024 ? 'large drop. encoding may feel slow. no hard cap.' : '');
-    setBusy(true);
-    try {
-      const dataUrl = await readAsDataUrl(f);
-      const id = uid();
-      const pub = await publishShare({
-        id,
-        name: f.name,
-        type: f.type || 'application/octet-stream',
-        size: f.size,
-        dataUrl,
-      });
-      if (!pub.ok) {
-        setErr(pub.error || 'could not publish');
-        return;
-      }
-      if (pub.warn) setWarn(pub.warn);
-      const urls = shareUrls(id);
-      setLink(urls.app);
-      setEmbed(urls.embed);
-      try {
-        await navigator.clipboard.writeText(urls.embed);
-      } catch {}
-    } catch (e: any) {
-      setErr(e?.message || 'quay failed');
-    } finally {
-      setBusy(false);
-    }
-  };
+  useEffect(() => {
+    let live = true;
+    sbRest('public_shares?select=id,name,mime,size,author,created_at,download_count&is_public=eq.true&order=created_at.desc&limit=40')
+      .then(async (r) => {
+        if (!r.ok) throw new Error('the quay could not read the share table');
+        const data = await r.json();
+        if (live) setRows(Array.isArray(data) ? data : []);
+      })
+      .catch((e) => live && setErr(e.message || 'quiet failure'));
+    return () => {
+      live = false;
+    };
+  }, []);
+
+  const shown = rows.filter((r) => !q || `${r.name} ${r.author || ''}`.toLowerCase().includes(q.toLowerCase()));
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          className="glass rounded-[32px] p-8"
-        >
-          <p className="text-[#0a84ff] text-sm mb-2">quay</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">dock a local file into the share db.</h1>
-          <p className="text-neutral-400 text-sm mb-6">
-            uploads through the share api when it is up, otherwise writes straight to supabase. discord gets a proper card on the embed link.
-          </p>
-          <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition">
-            <input type="file" className="hidden" onChange={(e) => onFile(e.target.files)} />
-            <p className="text-white font-medium">{busy ? 'publishing…' : 'drop a local file to share'}</p>
-            <p className="text-xs text-neutral-500 mt-2">no file limit. just a slowness ping if it is huge.</p>
-          </label>
-          {warn && <p className="text-amber-300/90 text-xs mt-3">{warn}</p>}
-          {err && <p className="text-red-400 text-xs mt-3">{err}</p>}
-          {link && (
-            <div className="mt-6 space-y-2 text-xs text-neutral-400 break-all">
-              <p>app: {link}</p>
-              <p>discord embed (copied): {embed}</p>
-            </div>
-          )}
-        </motion.div>
-      </div>
+      <main className="pt-24 pb-20 px-5 max-w-3xl mx-auto">
+        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[#0a84ff] text-sm font-medium mb-3">
+          quay
+        </motion.p>
+        <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 }} className="text-4xl font-semibold tracking-tight text-white mb-3">
+          what already landed.
+        </motion.h1>
+        <p className="text-neutral-400 mb-6 leading-relaxed">
+          a public log of drops in the share database. not a vault drawer — nothing here is stored on this device.
+        </p>
+        <input
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="filter by name"
+          className="w-full mb-5 rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-white outline-none focus:border-[#0a84ff]/50"
+        />
+        {err && <p className="text-sm text-amber-300 mb-4">{err}</p>}
+        <div className="space-y-2">
+          {shown.map((row, i) => (
+            <motion.button
+              key={row.id}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: Math.min(i, 8) * 0.03 }}
+              onClick={() => navigate('share', row.id)}
+              className="w-full text-left glass rounded-2xl px-4 py-3 hover:-translate-y-0.5 transition"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-white text-sm truncate">{row.name}</p>
+                <span className="text-[12px] text-neutral-500 shrink-0">{pretty(Number(row.size) || 0)}</span>
+              </div>
+              <p className="text-[12px] text-neutral-500 mt-1">
+                {(row.mime || 'file').split(';')[0]} · {row.author || 'anon'} · {row.download_count || 0} opens · /s/{row.id}
+              </p>
+            </motion.button>
+          ))}
+          {!err && shown.length === 0 && <p className="text-sm text-neutral-500">nothing on the quay yet.</p>}
+        </div>
+      </main>
     </div>
   );
 }

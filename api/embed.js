@@ -53,6 +53,9 @@ const PAGE_TITLES = {
   orlop: 'orlop \u2014 notes under the waterline',
   vault: 'vault \u2014 rankvault',
   drop: 'drop \u2014 rankvault',
+  mooring: 'mooring \u2014 tie a local file to the quay',
+  bellows: 'bellows \u2014 a breath you can time',
+  inkwell: 'inkwell \u2014 a mark, not a cabinet',
 };
 
 function pageHtml({ title, desc, image, url, color }) {

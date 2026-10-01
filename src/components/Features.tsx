@@ -1,6 +1,9 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'mooring', body: 'pick a local file, set a caption and accent, and land it in the share database. discord unfurls /s. slowness warning only.' },
+  { title: 'bellows', body: 'a timed breath in the tab. file the session as a note if you want a card. not a drawer.' },
+  { title: 'inkwell', body: 'draw a mark, then publish the png so discord gets an image card.' },
   { title: 'stamp', body: 'hash a local file in the tab, then publish the bytes to the share database. discord gets the /s card. slowness warning only.' },
   { title: 'courier', body: 'send several locals in one run. each becomes its own public row and its own unfurl.' },
   { title: 'lanyard', body: 'retouch the title, caption, and accent on a drop that is already filed. no second upload.' },

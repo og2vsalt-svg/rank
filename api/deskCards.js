@@ -16,6 +16,9 @@ export const EXTRA_TITLES = {
   lantern: 'lantern — a lamp for one sitting',
   splice: 'splice — two drafts, one card',
   quayage: 'quayage — a tally, not a vault',
+  satchel: 'satchel — a pack, not a drawer',
+  vitrine: 'vitrine — the public shelf',
+  trammel: 'trammel — a timed drop',
 };
 
 export const EXTRA_DESC = {
@@ -36,4 +39,7 @@ export const EXTRA_DESC = {
   lantern: 'A warm timer for one sitting. File the note if you want a Discord card. Not a cabinet.',
   splice: 'Join two local texts and file the combined note. Discord unfurls /s. Large splices are warned, never cut.',
   quayage: 'A line tally that files as a receipt. Discord gets the card. Nothing is stored until you send it.',
+  satchel: 'Pack local files into one parcel. Each file lands in the share database. Discord unfurls the pack. Large packs are warned, never refused.',
+  vitrine: 'The public shelf of files already filed. Every card still unfurls on Discord.',
+  trammel: 'Pick a local file, optional pass, optional ready-by. Bytes land in the share table. Discord unfurls /s. Slowness warning only.',
 };

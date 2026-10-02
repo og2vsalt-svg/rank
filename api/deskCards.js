@@ -1,4 +1,5 @@
 export const EXTRA_TITLES = {
+  floorboard: 'floorboard — a preview, then a card',
   garboard: 'garboard — a memo, not a drawer',
   treenail: 'treenail — two files, one receipt',
   wales: 'wales — a reading list, filed',
@@ -50,6 +51,7 @@ export const EXTRA_TITLES = {
 };
 
 export const EXTRA_DESC = {
+  floorboard: 'Preview a local file in the tab, then file it into the share table. Discord unfurls /s and /floorboard. Large drops are warned, never refused.',
   garboard: 'Record a memo in the tab, or write the line. The audio lands in the share table. Discord unfurls the card. Long memos are warned, never refused.',
   treenail: 'Hash two local files and file the receipt. Discord unfurls same or different. The originals stay on your machine. Large pairs are warned, never refused.',
   wales: 'Stack addresses, then file one markdown list into the share table. Discord unfurls the card. Not a cabinet.',

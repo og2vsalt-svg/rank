@@ -1,5 +1,9 @@
 {
   "rewrites": [
+    { "source": "/outhaul", "destination": "/api/embed?page=outhaul" },
+    { "source": "/jackstay", "destination": "/api/embed?page=jackstay" },
+    { "source": "/parrel", "destination": "/api/embed?page=parrel" },
+    { "source": "/luff", "destination": "/api/embed?page=luff" },
     { "source": "/s/:id", "destination": "/api/embed?id=:id" },
     { "source": "/f/:id", "destination": "/api/embed?id=:id" },
     { "source": "/x/:id", "destination": "/api/embed?id=:id" },

@@ -5,10 +5,10 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
-  { to: 'painter', label: 'painter' },
-  { to: 'oakum', label: 'oakum' },
-  { to: 'scull', label: 'scull' },
-  { to: 'kevel', label: 'kevel' },
+  { to: 'cleat', label: 'cleat' },
+  { to: 'lantern', label: 'lantern' },
+  { to: 'splice', label: 'splice' },
+  { to: 'quayage', label: 'quayage' },
   { to: 'drop', label: 'drop' },
   { to: 'vault', label: 'vault' },
 ];
@@ -17,12 +17,12 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'new',
     items: [
+      { to: 'cleat', label: 'cleat' },
+      { to: 'lantern', label: 'lantern' },
+      { to: 'splice', label: 'splice' },
+      { to: 'quayage', label: 'quayage' },
       { to: 'painter', label: 'painter' },
-      { to: 'oakum', label: 'oakum' },
-      { to: 'scull', label: 'scull' },
       { to: 'kevel', label: 'kevel' },
-      { to: 'marline', label: 'marline' },
-      { to: 'fairlead', label: 'fairlead' },
     ],
   },
   {
@@ -103,12 +103,12 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'cleat', label: 'cleat' },
+      { to: 'lantern', label: 'lantern' },
+      { to: 'splice', label: 'splice' },
+      { to: 'quayage', label: 'quayage' },
       { to: 'billet', label: 'billet' },
       { to: 'gunnel', label: 'gunnel' },
-      { to: 'jackstay', label: 'jackstay' },
-      { to: 'parrel', label: 'parrel' },
-      { to: 'gudgeon', label: 'gudgeon' },
-      { to: 'bellows', label: 'bellows' },
       { to: 'hash', label: 'hash' },
       { to: 'convert', label: 'convert' },
       { to: 'diff', label: 'diff' },

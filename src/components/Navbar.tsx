@@ -6,10 +6,10 @@ type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
+  { to: 'washboard', label: 'washboard' },
+  { to: 'beakhead', label: 'beakhead' },
   { to: 'windlass', label: 'windlass' },
-  { to: 'limber', label: 'limber' },
-  { to: 'orlop', label: 'orlop' },
-  { to: 'chainplate', label: 'chainplate' },
+  { to: 'shelf', label: 'shelf' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -17,6 +17,8 @@ const groups: { title: string; items: NavItem[] }[] = [
     title: 'hosting',
     items: [
       { to: 'vault', label: 'vault' },
+      { to: 'washboard', label: 'washboard' },
+      { to: 'beakhead', label: 'beakhead' },
       { to: 'windlass', label: 'windlass' },
       { to: 'floorboard', label: 'floorboard' },
       { to: 'manifest', label: 'manifest' },
@@ -31,6 +33,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'new',
     items: [
+      { to: 'washboard', label: 'washboard' },
+      { to: 'beakhead', label: 'beakhead' },
       { to: 'limber', label: 'limber' },
       { to: 'orlop', label: 'orlop' },
       { to: 'chainplate', label: 'chainplate' },
@@ -62,6 +66,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'washboard', label: 'washboard' },
+      { to: 'beakhead', label: 'beakhead' },
       { to: 'thole', label: 'thole' },
       { to: 'transom', label: 'transom' },
       { to: 'courier', label: 'courier' },
@@ -180,7 +186,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">older desks stay on hash routes. paste /s, /windlass, /thole, /transom, or /shelf in Discord for a card.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">paste /washboard, /beakhead, or /s in Discord for a card. older desks stay on their hash routes.</p>
         </div>
       </div>
     </nav>

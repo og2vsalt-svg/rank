@@ -5,158 +5,45 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'painter', label: 'painter' },
+  { to: 'oakum', label: 'oakum' },
+  { to: 'scull', label: 'scull' },
   { to: 'kevel', label: 'kevel' },
   { to: 'marline', label: 'marline' },
-  { to: 'fairlead', label: 'fairlead' },
-  { to: 'topmark', label: 'topmark' },
-  { to: 'billet', label: 'billet' },
-  { to: 'gunnel', label: 'gunnel' },
-  { to: 'cringle', label: 'cringle' },
-  { to: 'bowline', label: 'bowline' },
-  { to: 'kedge', label: 'kedge' },
-  { to: 'topping', label: 'topping' },
-  { to: 'outhaul', label: 'outhaul' },
-  { to: 'jackstay', label: 'jackstay' },
-  { to: 'parrel', label: 'parrel' },
-  { to: 'luff', label: 'luff' },
-  { to: 'clew', label: 'clew' },
-  { to: 'sprit', label: 'sprit' },
-  { to: 'fid', label: 'fid' },
-  { to: 'wharf', label: 'wharf' },
-  { to: 'thrum', label: 'thrum' },
-  { to: 'limber', label: 'limber' },
-  { to: 'garnet', label: 'garnet' },
-  { to: 'sheave', label: 'sheave' },
-  { to: 'dolphin', label: 'dolphin' },
-  { to: 'gudgeon', label: 'gudgeon' },
-  { to: 'hawser', label: 'hawser' },
-  { to: 'bitts', label: 'bitts' },
-  { to: 'leadline', label: 'leadline' },
-  { to: 'mooring', label: 'mooring' },
-  { to: 'bellows', label: 'bellows' },
-  { to: 'inkwell', label: 'inkwell' },
-  { to: 'berth', label: 'berth' },
-  { to: 'sounding', label: 'sounding' },
-  { to: 'fender', label: 'fender' },
-  { to: 'lazaret', label: 'lazaret' },
-  { to: 'loam', label: 'loam' },
-  { to: 'orlop', label: 'orlop' },
-  { to: 'carrel', label: 'carrel' },
-  { to: 'bulkhead', label: 'bulkhead' },
-  { to: 'hold', label: 'hold' },
-  { to: 'vault', label: 'vault' },
   { to: 'drop', label: 'drop' },
+  { to: 'vault', label: 'vault' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'new',
     items: [
+      { to: 'painter', label: 'painter' },
+      { to: 'oakum', label: 'oakum' },
+      { to: 'scull', label: 'scull' },
       { to: 'kevel', label: 'kevel' },
       { to: 'marline', label: 'marline' },
       { to: 'fairlead', label: 'fairlead' },
-      { to: 'topmark', label: 'topmark' },
-      { to: 'billet', label: 'billet' },
-      { to: 'gunnel', label: 'gunnel' },
-    ],
-  },
-  {
-    title: 'yard',
-    items: [
-      { to: 'cringle', label: 'cringle' },
-      { to: 'bowline', label: 'bowline' },
-      { to: 'kedge', label: 'kedge' },
-      { to: 'topping', label: 'topping' },
-      { to: 'outhaul', label: 'outhaul' },
-      { to: 'jackstay', label: 'jackstay' },
-      { to: 'parrel', label: 'parrel' },
-      { to: 'luff', label: 'luff' },
-    ],
-  },
-  {
-    title: 'deck',
-    items: [
-      { to: 'clew', label: 'clew' },
-      { to: 'sprit', label: 'sprit' },
-      { to: 'fid', label: 'fid' },
-      { to: 'wharf', label: 'wharf' },
-      { to: 'thrum', label: 'thrum' },
-      { to: 'limber', label: 'limber' },
-      { to: 'garnet', label: 'garnet' },
-      { to: 'sheave', label: 'sheave' },
-      { to: 'dolphin', label: 'dolphin' },
-      { to: 'gudgeon', label: 'gudgeon' },
-      { to: 'hawser', label: 'hawser' },
-      { to: 'bitts', label: 'bitts' },
-      { to: 'leadline', label: 'leadline' },
-      { to: 'berth', label: 'berth' },
-      { to: 'sounding', label: 'sounding' },
-      { to: 'fender', label: 'fender' },
-      { to: 'lazaret', label: 'lazaret' },
-      { to: 'loam', label: 'loam' },
-      { to: 'orlop', label: 'orlop' },
-      { to: 'carrel', label: 'carrel' },
-      { to: 'hold', label: 'hold' },
-    ],
-  },
-  {
-    title: 'rooms',
-    items: [
-      { to: 'inbox', label: 'inbox' },
-      { to: 'transept', label: 'transept' },
-      { to: 'ambo', label: 'ambo' },
-      { to: 'sedilia', label: 'sedilia' },
-      { to: 'transom', label: 'transom' },
     ],
   },
   {
     title: 'files',
     items: [
-      { to: 'bulkhead', label: 'bulkhead' },
-      { to: 'crosstree', label: 'crosstree' },
-      { to: 'lattice', label: 'lattice' },
-      { to: 'folio', label: 'folio' },
-      { to: 'margin', label: 'margin' },
       { to: 'drop', label: 'drop' },
-      { to: 'quay', label: 'quay' },
       { to: 'vault', label: 'vault' },
+      { to: 'bulkhead', label: 'bulkhead' },
+      { to: 'hold', label: 'hold' },
+      { to: 'quay', label: 'quay' },
     ],
   },
   {
     title: 'share',
     items: [
-      { to: 'kevel', label: 'kevel' },
-      { to: 'marline', label: 'marline' },
-      { to: 'fairlead', label: 'fairlead' },
-      { to: 'topmark', label: 'topmark' },
-      { to: 'cringle', label: 'cringle' },
-      { to: 'bowline', label: 'bowline' },
-      { to: 'kedge', label: 'kedge' },
-      { to: 'topping', label: 'topping' },
-      { to: 'outhaul', label: 'outhaul' },
-      { to: 'luff', label: 'luff' },
-      { to: 'clew', label: 'clew' },
-      { to: 'sprit', label: 'sprit' },
-      { to: 'fid', label: 'fid' },
-      { to: 'wharf', label: 'wharf' },
-      { to: 'sheave', label: 'sheave' },
-      { to: 'dolphin', label: 'dolphin' },
+      { to: 'painter', label: 'painter' },
+      { to: 'oakum', label: 'oakum' },
+      { to: 'scull', label: 'scull' },
       { to: 'mooring', label: 'mooring' },
       { to: 'inkwell', label: 'inkwell' },
-    ],
-  },
-  {
-    title: 'tools',
-    items: [
-      { to: 'billet', label: 'billet' },
-      { to: 'gunnel', label: 'gunnel' },
-      { to: 'jackstay', label: 'jackstay' },
-      { to: 'parrel', label: 'parrel' },
-      { to: 'gudgeon', label: 'gudgeon' },
-      { to: 'bellows', label: 'bellows' },
-      { to: 'hash', label: 'hash' },
-      { to: 'convert', label: 'convert' },
-      { to: 'diff', label: 'diff' },
     ],
   },
 ];
@@ -194,7 +81,7 @@ export default function Navbar() {
       <div className="max-w-6xl mx-auto px-4 sm:px-5 h-14 flex items-center justify-between gap-3">
         <button onClick={() => navigate('home')} className="text-lg font-semibold tracking-tight text-white shrink-0">rank<span className="text-[#0a84ff]">vault</span></button>
         <div className="hidden lg:flex items-center gap-1 min-w-0">
-          {primary.slice(0, 6).map((l) => (
+          {primary.map((l) => (
             <button key={l.to} onClick={() => navigate(l.to)} className="text-[13px] text-neutral-400 hover:text-white px-2.5 py-1.5 rounded-full hover:bg-white/5 transition-colors">{l.label}</button>
           ))}
         </div>
@@ -250,7 +137,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">every desk is still a hash route. type #name for the older ones. paste /s links in Discord.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">older desks are still hash routes. type #name. paste /s or /painter in Discord.</p>
         </div>
       </div>
     </nav>

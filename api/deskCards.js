@@ -1,4 +1,7 @@
 export const EXTRA_TITLES = {
+  bowsprit: 'bowsprit — a cover, then the file',
+  skeg: 'skeg — a still, softened',
+  gripe: 'gripe — a handover list',
   cringle: 'cringle — a ring, then a card',
   bowline: 'bowline — a knot you can hand over',
   kedge: 'kedge — a pin, optional file',
@@ -28,6 +31,9 @@ export const EXTRA_TITLES = {
 };
 
 export const EXTRA_DESC = {
+  bowsprit: 'Write the Discord line, attach a local file if you have one, and file it into the share table. Large drops are warned, never refused.',
+  skeg: 'Soften a local still in the tab, then file the PNG. Image cards unfurl with the picture. Large stills are warned, never refused.',
+  gripe: 'A handover list. Filing writes a markdown receipt into the share table. Discord unfurls the card. Not a vault drawer.',
   cringle: 'Name the eye of a local file and file it. Discord unfurls the card. Large drops are warned, never refused.',
   bowline: 'Write a note in the tab. Filing turns it into a text drop. The /s link is the Discord card.',
   kedge: 'A pin in the desk table, with an optional local file in the share table. No size cutoff.',

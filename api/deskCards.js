@@ -19,6 +19,9 @@ export const EXTRA_TITLES = {
   satchel: 'satchel — a pack, not a drawer',
   vitrine: 'vitrine — the public shelf',
   trammel: 'trammel — a timed drop',
+  tiller: 'tiller — steer the discord card',
+  lodestone: 'lodestone — a bearing, not a drawer',
+  bosun: 'bosun — a watch, not a cabinet',
 };
 
 export const EXTRA_DESC = {
@@ -42,4 +45,7 @@ export const EXTRA_DESC = {
   satchel: 'Pack local files into one parcel. Each file lands in the share database. Discord unfurls the pack. Large packs are warned, never refused.',
   vitrine: 'The public shelf of files already filed. Every card still unfurls on Discord.',
   trammel: 'Pick a local file, optional pass, optional ready-by. Bytes land in the share table. Discord unfurls /s. Slowness warning only.',
+  tiller: 'Set the title, caption, and accent, then file a local file. Discord unfurls the card you steered. Large drops are warned, never refused.',
+  lodestone: 'Save an address on the links shelf and file a text card Discord can unfurl. Not a cabinet.',
+  bosun: 'A watch list in the tab. Filing writes one markdown drop. Discord unfurls the list. Not a vault drawer.',
 };

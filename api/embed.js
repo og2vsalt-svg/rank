@@ -76,6 +76,9 @@ const PAGE_TITLES = {
   sprit: 'sprit \u2014 a swatch board, not a cabinet',
   fid: 'fid \u2014 two drafts spliced into one drop',
   wharf: 'wharf \u2014 a link tied to the quay',
+  topmark: 'topmark \u2014 one mark, several files',
+  billet: 'billet \u2014 a slip for an address',
+  gunnel: 'gunnel \u2014 what stays, what leaves',
 };
 
 const PAGE_DESC = {
@@ -97,6 +100,9 @@ const PAGE_DESC = {
   sprit: 'Build a swatch in the tab, then file the board as JSON. Large boards are warned, never refused.',
   fid: 'Splice two local drafts into one text drop. The card names both ends.',
   wharf: 'Save a link to the quay table and file a small card so Discord unfurls it.',
+  topmark: 'Several local files land in the share table. Discord unfurls the pack note. Large packs are warned, never refused.',
+  billet: 'An address on the links shelf, plus a one-line card Discord can unfurl. Not a file cabinet.',
+  gunnel: 'Two columns, kept and sent, filed as one text drop. The /s link is the Discord card.',
 };
 
 function pageHtml({ title, desc, image, url, color }) {

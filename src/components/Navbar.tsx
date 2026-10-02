@@ -6,6 +6,7 @@ type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
+  { to: 'floorboard', label: 'floorboard' },
   { to: 'manifest', label: 'manifest' },
   { to: 'shelf', label: 'shelf' },
   { to: 'courier', label: 'courier' },
@@ -16,6 +17,7 @@ const groups: { title: string; items: NavItem[] }[] = [
     title: 'hosting',
     items: [
       { to: 'vault', label: 'vault' },
+      { to: 'floorboard', label: 'floorboard' },
       { to: 'manifest', label: 'manifest' },
       { to: 'shelf', label: 'shelf' },
       { to: 'courier', label: 'courier' },
@@ -28,6 +30,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'new',
     items: [
+      { to: 'floorboard', label: 'floorboard' },
       { to: 'spirketing', label: 'spirketing' },
       { to: 'keel', label: 'keel' },
       { to: 'coaming', label: 'coaming' },
@@ -180,7 +183,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">older desks stay on hash routes. paste /s, /manifest, /shelf, or /courier in Discord for a card.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">older desks stay on hash routes. paste /s, /floorboard, /manifest, /shelf, or /courier in Discord for a card.</p>
         </div>
       </div>
     </nav>

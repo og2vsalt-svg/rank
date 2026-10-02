@@ -9,7 +9,7 @@ function esc(s) {
     .replace(/&/g, '&')
     .replace(/</g, '<')
     .replace(/>/g, '>')
-    .replace(/\"/g, '"')
+    .replace(/"/g, '"')
     .replace(/'/g, '&#39;');
 }
 
@@ -41,6 +41,10 @@ async function loadShare(id) {
 }
 
 const PAGE_TITLES = {
+  outhaul: 'outhaul \u2014 a handoff, not a cabinet',
+  jackstay: 'jackstay \u2014 a list you can hand over',
+  parrel: 'parrel \u2014 a mark, then a card',
+  luff: 'luff \u2014 keep one, file that one',
   berth: 'berth \u2014 name the slip, then hand the file',
   sounding: 'sounding \u2014 what is already on the water',
   fender: 'fender \u2014 a note that leaves as a file',
@@ -72,6 +76,10 @@ const PAGE_TITLES = {
 };
 
 const PAGE_DESC = {
+  outhaul: 'Pick a local file, write who it is for, and file it. Discord unfurls the card. Large drops are warned, never refused.',
+  jackstay: 'A checklist that files as text. Not the vault. The /s link is the Discord card.',
+  parrel: 'Draw a mark in the tab and file it as a PNG. Image drops unfurl with the picture.',
+  luff: 'Keep one local file and file only that one. The others stay on the machine.',
   hawser: 'Pass a local file with a handoff note. Discord unfurls the card. Expiry is optional.',
   bitts: 'Fingerprint a file in the tab, then publish it with the digest on the card.',
   leadline: 'Measure a local file, then write it to the share table. Large drops are warned, never refused.',

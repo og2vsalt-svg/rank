@@ -55,3 +55,11 @@ button, a { -webkit-tap-highlight-color: transparent; }
   }
   .mesh { animation: apple-glow 1.1s cubic-bezier(0.22, 1, 0.36, 1); }
 }
+
+@keyframes apple-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.985); }
+  to { opacity: 1; transform: none; }
+}
+.apple-in { animation: apple-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.lift { transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.45s ease, background 0.45s ease; }
+.lift:hover { transform: translateY(-2px); }

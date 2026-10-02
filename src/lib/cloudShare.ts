@@ -22,6 +22,15 @@ export type CloudMeta = {
   author?: string | null;
 };
 
+export type ShareOpts = {
+  caption?: string;
+  author?: string;
+  lockPass?: string;
+  expiresAt?: string | null;
+  color?: string;
+  cardTitle?: string;
+};
+
 function sbHeaders(extra: Record<string, string> = {}) {
   return {
     apikey: SB_KEY,
@@ -79,7 +88,7 @@ export function shareUrls(id: string) {
   };
 }
 
-async function publishViaApi(file: File, opts: { caption?: string; author?: string; lockPass?: string; expiresAt?: string | null; color?: string }, id: string) {
+async function publishViaApi(file: File, opts: ShareOpts, id: string) {
   const body = new FormData();
   body.set('file', file, file.name || 'file');
   body.set('id', id);
@@ -88,16 +97,16 @@ async function publishViaApi(file: File, opts: { caption?: string; author?: stri
   if (opts.lockPass) body.set('lockPass', opts.lockPass);
   if (opts.expiresAt) body.set('expiresAt', opts.expiresAt);
   if (opts.color) body.set('color', opts.color);
+  if (opts.cardTitle) body.set('cardTitle', opts.cardTitle);
   const res = await fetch('/api/share', { method: 'POST', body });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) return { ok: false as const, error: data.error || `share api ${res.status}` };
   return { ok: true as const, id: data.id || id, url: data.url, embed: `${location.origin}${data.embedPath || `/s/${id}`}`, warn: data.warn || null };
 }
 
-/** Upload a local File into Supabase storage + public_shares. Falls back to /api/share. No size cap. */
 export async function publishLocalFile(
   file: File,
-  opts: { caption?: string; author?: string; lockPass?: string; expiresAt?: string | null; color?: string } = {},
+  opts: ShareOpts = {},
 ): Promise<{ ok: boolean; id?: string; url?: string; embed?: string; warn?: string | null; error?: string }> {
   const id = uid();
   const safeName = (file.name || 'file').replace(/[^a-zA-Z0-9._-]+/g, '_').slice(0, 180) || 'file';
@@ -118,13 +127,13 @@ export async function publishLocalFile(
     if (!up.ok) {
       const viaApi = await publishViaApi(file, opts, id).catch(() => null);
       if (viaApi?.ok) return { ...viaApi, warn: viaApi.warn || warn };
-      const text = await up.text();
+      const text = await up.text().catch(() => '');
       return { ok: false, error: viaApi?.error || `storage ${up.status}: ${text.slice(0, 180)}` };
     }
     const fileUrl = `${SB_URL}/storage/v1/object/public/shares/${path}`;
     const row = {
       id,
-      name: file.name || safeName,
+      name: opts.cardTitle || file.name || safeName,
       mime: file.type || 'application/octet-stream',
       size: file.size,
       file_url: fileUrl,
@@ -134,7 +143,7 @@ export async function publishLocalFile(
       download_count: 0,
       author: opts.author || null,
       caption: opts.caption || null,
-      meta: { warn, source: 'rankvault', caption: opts.caption || null, color: opts.color || null },
+      meta: { warn, source: 'rankvault', caption: opts.caption || null, color: opts.color || null, cardTitle: opts.cardTitle || null },
     };
     const ins = await fetch(`${SB_URL}/rest/v1/public_shares`, {
       method: 'POST',
@@ -195,6 +204,7 @@ export async function publishShare(payload: {
     is_public: true,
     download_count: 0,
     author: payload.author || null,
+    caption: payload.caption || null,
     meta: { source: 'rankvault-client', warn, caption: payload.caption || null },
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),

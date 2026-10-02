@@ -23,8 +23,11 @@ function uid() {
 }
 
 async function readBody(req) {
+  if (Buffer.isBuffer(req.body)) return req.body;
+  if (typeof req.body === 'string') return Buffer.from(req.body);
+  if (req.body && typeof req.body === 'object' && !req.readable) return Buffer.from(JSON.stringify(req.body));
   const chunks = [];
-  for await (const chunk of req) chunks.push(chunk);
+  for await (const chunk of req) chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
   return Buffer.concat(chunks);
 }
 
@@ -235,8 +238,8 @@ export default async function handler(req, res) {
         expiresAt = field('expiresAt') || null;
         color = field('color') || null;
         cardTitle = field('cardTitle') || null;
-      } else if (contentType.includes('application/json')) {
-        const body = JSON.parse(raw.toString('utf8'));
+      } else if (contentType.includes('application/json') || (req.body && typeof req.body === 'object')) {
+        const body = contentType.includes('application/json') ? JSON.parse(raw.toString('utf8')) : req.body;
         id = (body.id || id).toString().slice(0, 64);
         name = (body.name || 'file').toString().slice(0, 512);
         type = (body.type || 'application/octet-stream').toString();

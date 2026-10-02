@@ -5,16 +5,20 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
-  { to: 'garboard', label: 'garboard' },
-  { to: 'treenail', label: 'treenail' },
-  { to: 'wales', label: 'wales' },
-  { to: 'rudder', label: 'rudder' },
+  { to: 'sheer', label: 'sheer' },
+  { to: 'coping', label: 'coping' },
+  { to: 'archivolt', label: 'archivolt' },
+  { to: 'arris', label: 'arris' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'new',
     items: [
+      { to: 'sheer', label: 'sheer' },
+      { to: 'coping', label: 'coping' },
+      { to: 'archivolt', label: 'archivolt' },
+      { to: 'arris', label: 'arris' },
       { to: 'garboard', label: 'garboard' },
       { to: 'treenail', label: 'treenail' },
       { to: 'wales', label: 'wales' },
@@ -91,6 +95,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'sheer', label: 'sheer' },
       { to: 'rudder', label: 'rudder' },
       { to: 'tiller', label: 'tiller' },
       { to: 'painter', label: 'painter' },
@@ -107,6 +112,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'coping', label: 'coping' },
+      { to: 'archivolt', label: 'archivolt' },
+      { to: 'arris', label: 'arris' },
       { to: 'garboard', label: 'garboard' },
       { to: 'treenail', label: 'treenail' },
       { to: 'wales', label: 'wales' },

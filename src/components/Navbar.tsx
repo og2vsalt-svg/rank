@@ -5,26 +5,24 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
-  { to: 'hawse', label: 'hawse' },
-  { to: 'tiller', label: 'tiller' },
-  { to: 'drop', label: 'drop' },
-  { to: 'vault', label: 'vault' },
+  { to: 'garboard', label: 'garboard' },
+  { to: 'treenail', label: 'treenail' },
+  { to: 'wales', label: 'wales' },
+  { to: 'rudder', label: 'rudder' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'new',
     items: [
+      { to: 'garboard', label: 'garboard' },
+      { to: 'treenail', label: 'treenail' },
+      { to: 'wales', label: 'wales' },
+      { to: 'rudder', label: 'rudder' },
       { to: 'hawse', label: 'hawse' },
       { to: 'deadeye', label: 'deadeye' },
       { to: 'futtock', label: 'futtock' },
       { to: 'tiller', label: 'tiller' },
-      { to: 'lodestone', label: 'lodestone' },
-      { to: 'bosun', label: 'bosun' },
-      { to: 'stemson', label: 'stemson' },
-      { to: 'gammon', label: 'gammon' },
-      { to: 'knighthead', label: 'knighthead' },
-      { to: 'cathead', label: 'cathead' },
     ],
   },
   {
@@ -93,6 +91,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'rudder', label: 'rudder' },
       { to: 'tiller', label: 'tiller' },
       { to: 'painter', label: 'painter' },
       { to: 'oakum', label: 'oakum' },
@@ -108,6 +107,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'garboard', label: 'garboard' },
+      { to: 'treenail', label: 'treenail' },
+      { to: 'wales', label: 'wales' },
       { to: 'futtock', label: 'futtock' },
       { to: 'lodestone', label: 'lodestone' },
       { to: 'bosun', label: 'bosun' },

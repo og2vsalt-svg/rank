@@ -1,5 +1,9 @@
 {
   "rewrites": [
+    { "source": "/cringle", "destination": "/api/embed?page=cringle" },
+    { "source": "/bowline", "destination": "/api/embed?page=bowline" },
+    { "source": "/kedge", "destination": "/api/embed?page=kedge" },
+    { "source": "/topping", "destination": "/api/embed?page=topping" },
     { "source": "/outhaul", "destination": "/api/embed?page=outhaul" },
     { "source": "/jackstay", "destination": "/api/embed?page=jackstay" },
     { "source": "/parrel", "destination": "/api/embed?page=parrel" },

@@ -5,6 +5,9 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'kevel', label: 'kevel' },
+  { to: 'marline', label: 'marline' },
+  { to: 'fairlead', label: 'fairlead' },
   { to: 'topmark', label: 'topmark' },
   { to: 'billet', label: 'billet' },
   { to: 'gunnel', label: 'gunnel' },
@@ -49,6 +52,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'new',
     items: [
+      { to: 'kevel', label: 'kevel' },
+      { to: 'marline', label: 'marline' },
+      { to: 'fairlead', label: 'fairlead' },
       { to: 'topmark', label: 'topmark' },
       { to: 'billet', label: 'billet' },
       { to: 'gunnel', label: 'gunnel' },
@@ -119,6 +125,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'kevel', label: 'kevel' },
+      { to: 'marline', label: 'marline' },
+      { to: 'fairlead', label: 'fairlead' },
       { to: 'topmark', label: 'topmark' },
       { to: 'cringle', label: 'cringle' },
       { to: 'bowline', label: 'bowline' },
@@ -130,17 +139,10 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'sprit', label: 'sprit' },
       { to: 'fid', label: 'fid' },
       { to: 'wharf', label: 'wharf' },
-      { to: 'thrum', label: 'thrum' },
-      { to: 'limber', label: 'limber' },
-      { to: 'garnet', label: 'garnet' },
       { to: 'sheave', label: 'sheave' },
       { to: 'dolphin', label: 'dolphin' },
       { to: 'mooring', label: 'mooring' },
       { to: 'inkwell', label: 'inkwell' },
-      { to: 'courier', label: 'courier' },
-      { to: 'lanyard', label: 'lanyard' },
-      { to: 'slipway', label: 'slipway' },
-      { to: 'binnacle', label: 'binnacle' },
     ],
   },
   {
@@ -190,9 +192,7 @@ export default function Navbar() {
   return (
     <nav className="fixed top-0 inset-x-0 z-50 glass">
       <div className="max-w-6xl mx-auto px-4 sm:px-5 h-14 flex items-center justify-between gap-3">
-        <button onClick={() => navigate('home')} className="text-lg font-semibold tracking-tight text-white shrink-0">
-          rank<span className="text-[#0a84ff]">vault</span>
-        </button>
+        <button onClick={() => navigate('home')} className="text-lg font-semibold tracking-tight text-white shrink-0">rank<span className="text-[#0a84ff]">vault</span></button>
         <div className="hidden lg:flex items-center gap-1 min-w-0">
           {primary.slice(0, 6).map((l) => (
             <button key={l.to} onClick={() => navigate(l.to)} className="text-[13px] text-neutral-400 hover:text-white px-2.5 py-1.5 rounded-full hover:bg-white/5 transition-colors">{l.label}</button>
@@ -207,9 +207,7 @@ export default function Navbar() {
                 </div>
               </button>
               <div className={`absolute right-0 top-full mt-1 w-52 rounded-2xl glass overflow-hidden transition-all duration-200 origin-top-right ${userMenuOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}>
-                <div className="px-4 py-3 border-b border-white/5">
-                  <p className="text-sm font-medium text-white truncate">{user!.username}</p>
-                </div>
+                <div className="px-4 py-3 border-b border-white/5"><p className="text-sm font-medium text-white truncate">{user!.username}</p></div>
                 <button onClick={() => { setUserMenuOpen(false); navigate('vault'); }} className="w-full text-left px-4 py-3 text-sm text-neutral-300 hover:bg-white/5">open vault</button>
                 <button onClick={() => { logout(); setUserMenuOpen(false); }} className="w-full text-left px-4 py-2.5 text-sm text-neutral-400 hover:text-red-400 hover:bg-white/5">log out</button>
               </div>

@@ -1,6 +1,18 @@
 {
   "rewrites": [
     {
+      "source": "/carling",
+      "destination": "/api/embed?page=carling"
+    },
+    {
+      "source": "/deadwood",
+      "destination": "/api/embed?page=deadwood"
+    },
+    {
+      "source": "/fashion",
+      "destination": "/api/embed?page=fashion"
+    },
+    {
       "source": "/marline",
       "destination": "/api/embed?page=marline"
     },

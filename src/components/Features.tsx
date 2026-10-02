@@ -1,6 +1,9 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'carling', body: 'several locals, then a markdown index of their discord cards. each file lands in the share table. slowness warning only.' },
+  { title: 'deadwood', body: 'hash a local file in the tab, compare a pasted digest, and file only the receipt.' },
+  { title: 'fashion', body: 'paint a 1200x630 cover and file the png so discord unfurls a real image. optional companion file.' },
   { title: 'stemson', body: 'send a local pile into the share database. each file gets a discord card. slowness warning only.' },
   { title: 'gammon', body: 'open a shared room, then drop local files into it. the room lives in the database, not the vault grid.' },
   { title: 'knighthead', body: 'hash a local file in the tab and file only the receipt so discord can unfurl the proof.' },

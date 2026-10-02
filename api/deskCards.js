@@ -36,6 +36,9 @@ export const EXTRA_TITLES = {
   coping: 'coping — a contrast, not a drawer',
   archivolt: 'archivolt — chapter marks',
   arris: 'arris — one edge of the day',
+  carling: 'carling — a pile, then an index',
+  deadwood: 'deadwood — a hash, not the file',
+  fashion: 'fashion — a cover discord can see',
 };
 
 export const EXTRA_DESC = {
@@ -79,4 +82,7 @@ export const EXTRA_DESC = {
   coping: 'Check a colour pair in the tab. Filing writes the spec. Discord unfurls the card. Not a cabinet.',
   archivolt: 'Chapter marks stay in the browser until you file the list. Discord unfurls /s.',
   arris: 'A sitting timer. File the note if you want a Discord card. Not a vault drawer.',
+  carling: 'Several local files land in the share table. Carling then files a markdown index of the Discord cards. Large piles are warned, never refused.',
+  deadwood: 'Hash a local file in the tab and compare a pasted digest. Only the receipt is filed. The original stays on your machine.',
+  fashion: 'Paint a 1200x630 cover and file the PNG so Discord unfurls a real image. An optional companion file rides along as its own row.',
 };

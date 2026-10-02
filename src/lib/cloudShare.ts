@@ -145,7 +145,7 @@ export async function publishLocalFile(
       caption: opts.caption || null,
       meta: { warn, source: 'rankvault', caption: opts.caption || null, color: opts.color || null, cardTitle: opts.cardTitle || null },
     };
-    const ins = await fetch(`${SB_URL}/rest/v1/public_shares`, {
+    const ins = await fetch(`${SB_URL}/rest/v1/public_shares?on_conflict=id`, {
       method: 'POST',
       headers: sbHeaders({ Prefer: 'resolution=merge-duplicates,return=representation' }),
       body: JSON.stringify(row),

@@ -9,6 +9,9 @@ export const EXTRA_TITLES = {
   kevel: 'kevel — a file with a time on it',
   marline: 'marline — a caption on the still',
   fairlead: 'fairlead — an address, with a card',
+  painter: 'painter — a colour on the discord card',
+  oakum: 'oakum — a pack, filed one by one',
+  scull: 'scull — a note rowed across',
 };
 
 export const EXTRA_DESC = {
@@ -22,4 +25,7 @@ export const EXTRA_DESC = {
   kevel: 'Pick a local file and a ready-by time. The bytes land in the share table. Discord unfurls the card. Large drops are warned, never refused.',
   marline: 'Burn a caption onto a still in the tab, then file the PNG. Image cards unfurl with the picture.',
   fairlead: 'Save a link on the quay and file a card Discord can unfurl. Optional cover. Not a cabinet.',
+  painter: 'Pick a local file, write the card line, stamp a colour. Bytes land in the share table. Large drops are warned, never refused.',
+  oakum: 'Each local file is written to the share database. The shelf keeps the list. Discord unfurls the first card.',
+  scull: 'Open a local text file or type a note. Filing writes a real file into the share table and hands Discord a card.',
 };

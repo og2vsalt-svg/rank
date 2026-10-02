@@ -3,7 +3,7 @@ export const config = {
 };
 
 const BOT = /discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|skype|redditbot|applebot|iframely|unfurl|pinterest|notion|embedly|slack-imgproxy|discordbot/i;
-const ID_PREFIX = new Set(['s', 'f', 'x', 'd', 'go', 'open', 'link', 'card', 'embed', 'y', 'q', 'l', 'n', 'k', 'w', 'u', 'r', 'b', 'g', 'c', 'm', 'o', 't', 'i', 'a', 'e', 'z', 'h', 'v', 'j', 'p', 'room', 'parcel', 'spirket']);
+const ID_PREFIX = new Set(['breastwork', 'scantling', 's', 'f', 'x', 'd', 'go', 'open', 'link', 'card', 'embed', 'y', 'q', 'l', 'n', 'k', 'w', 'u', 'r', 'b', 'g', 'c', 'm', 'o', 't', 'i', 'a', 'e', 'z', 'h', 'v', 'j', 'p', 'room', 'parcel', 'spirket']);
 
 export default function middleware(request) {
   const ua = request.headers.get('user-agent') || '';
@@ -20,6 +20,8 @@ export default function middleware(request) {
   if (!parts.length) dest.searchParams.set('page', 'home');
   else if (parts[0] === 'parcel' && parts[1]) dest.searchParams.set('parcel', decodeURIComponent(parts[1]));
   else if (parts[0] === 'room' && parts[1]) dest.searchParams.set('room', decodeURIComponent(parts[1]));
+  else if (parts[0] === 'breastwork' && parts[1]) dest.searchParams.set('breastwork', decodeURIComponent(parts[1]));
+  else if (parts[0] === 'scantling' && parts[1]) dest.searchParams.set('scantling', decodeURIComponent(parts[1]));
   else if (parts.length >= 2 && ID_PREFIX.has(parts[0])) dest.searchParams.set('id', decodeURIComponent(parts[1]));
   else dest.searchParams.set('page', decodeURIComponent(parts[0]).toLowerCase());
   return Response.redirect(dest.toString(), 307);

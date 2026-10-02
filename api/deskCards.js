@@ -1,11 +1,14 @@
 export const EXTRA_TITLES = {
-  cringle: 'cringle \u2014 a ring, then a card',
-  bowline: 'bowline \u2014 a knot you can hand over',
-  kedge: 'kedge \u2014 a pin, optional file',
-  topping: 'topping \u2014 a colour on the lift',
-  topmark: 'topmark \u2014 one mark, several files',
-  billet: 'billet \u2014 a slip for an address',
-  gunnel: 'gunnel \u2014 what stays, what leaves',
+  cringle: 'cringle — a ring, then a card',
+  bowline: 'bowline — a knot you can hand over',
+  kedge: 'kedge — a pin, optional file',
+  topping: 'topping — a colour on the lift',
+  topmark: 'topmark — one mark, several files',
+  billet: 'billet — a slip for an address',
+  gunnel: 'gunnel — what stays, what leaves',
+  kevel: 'kevel — a file with a time on it',
+  marline: 'marline — a caption on the still',
+  fairlead: 'fairlead — an address, with a card',
 };
 
 export const EXTRA_DESC = {
@@ -16,4 +19,7 @@ export const EXTRA_DESC = {
   topmark: 'Several local files land in the share table. Discord unfurls the pack note. Large packs are warned, never refused.',
   billet: 'An address on the links shelf, plus a one-line card Discord can unfurl. Not a file cabinet.',
   gunnel: 'Two columns — kept and sent — filed as one text drop. The /s link is the Discord card.',
+  kevel: 'Pick a local file and a ready-by time. The bytes land in the share table. Discord unfurls the card. Large drops are warned, never refused.',
+  marline: 'Burn a caption onto a still in the tab, then file the PNG. Image cards unfurl with the picture.',
+  fairlead: 'Save a link on the quay and file a card Discord can unfurl. Optional cover. Not a cabinet.',
 };

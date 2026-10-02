@@ -1,91 +1,94 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { shareUrls } from '../lib/cloudShare';
-
-function slugify(s: string) {
-  return s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 48) || ('cleat-' + Date.now().toString(36));
-}
-
-function readAsDataUrl(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const r = new FileReader();
-    r.onload = () => resolve(String(r.result || ''));
-    r.onerror = () => reject(new Error('could not read file'));
-    r.readAsDataURL(file);
-  });
-}
+import { publishLocalFile } from '../lib/cloudShare';
 
 export default function CleatPage() {
-  const [hook, setHook] = useState('');
+  const [bpm, setBpm] = useState(84);
+  const [on, setOn] = useState(false);
+  const [beats, setBeats] = useState(0);
+  const [accent, setAccent] = useState(4);
+  const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
-  const [warn, setWarn] = useState('');
-  const [err, setErr] = useState('');
-  const [embed, setEmbed] = useState('');
+  const [card, setCard] = useState('');
+  const [error, setError] = useState('');
+  const ctx = useRef<AudioContext | null>(null);
+  const timer = useRef<number | null>(null);
+  const beatRef = useRef(0);
 
-  const send = async (file?: File) => {
-    if (!file) return;
-    setErr('');
-    setEmbed('');
-    setWarn(file.size > 40 * 1024 * 1024 ? 'no hard limit. large files can stall the encode step.' : '');
-    setBusy(true);
-    try {
-      const id = slugify(hook || file.name.replace(/\.[^.]+$/, ''));
-      const dataUrl = await readAsDataUrl(file);
-      const r = await fetch('/api/share', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id,
-          name: file.name,
-          type: file.type || 'application/octet-stream',
-          size: file.size,
-          dataUrl,
-        }),
-      });
-      const json = await r.json();
-      if (!r.ok || !json?.ok) throw new Error(json?.error || 'share failed');
-      const urls = shareUrls(json.id);
-      setEmbed(urls.embed);
-      try { await navigator.clipboard.writeText(urls.embed); } catch {}
-      if (json.warn) setWarn(json.warn);
-    } catch (e: any) {
-      setErr(e?.message || 'cleat failed');
-    } finally {
-      setBusy(false);
+  const pulse = useMemo(() => (on ? 60000 / bpm : 0), [on, bpm]);
+
+  useEffect(() => {
+    if (!on) {
+      if (timer.current) window.clearInterval(timer.current);
+      timer.current = null;
+      return;
     }
+    const tick = () => {
+      const audio = ctx.current || new AudioContext();
+      ctx.current = audio;
+      const osc = audio.createOscillator();
+      const gain = audio.createGain();
+      beatRef.current += 1;
+      const beat = beatRef.current;
+      osc.frequency.value = beat % accent === 1 ? 880 : 520;
+      gain.gain.setValueAtTime(0.0001, audio.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.18, audio.currentTime + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audio.currentTime + 0.09);
+      osc.connect(gain);
+      gain.connect(audio.destination);
+      osc.start();
+      osc.stop(audio.currentTime + 0.1);
+      setBeats(beat);
+    };
+    tick();
+    timer.current = window.setInterval(tick, pulse);
+    return () => {
+      if (timer.current) window.clearInterval(timer.current);
+    };
+  }, [on, pulse, accent]);
+
+  const fileSession = async () => {
+    setBusy(true);
+    setError('');
+    const body = `cleat session\nbpm ${bpm}\naccent every ${accent}\nbeats counted ${beats}\n${note.trim()}\n`;
+    const file = new File([body], 'cleat-session.txt', { type: 'text/plain' });
+    const res = await publishLocalFile(file, { caption: `cleat · ${bpm} bpm`, color: '#0A84FF' });
+    setBusy(false);
+    if (!res.ok) {
+      setError(res.error || 'the session did not land');
+      return;
+    }
+    setCard(res.embed || '');
   };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          className="glass rounded-[32px] p-8"
-        >
-          <p className="text-[#0a84ff] text-sm mb-2">cleat</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">name the hook, then tie the file.</h1>
-          <p className="text-neutral-400 text-sm mb-6">
-            you choose the public id first. same id can be overwritten. discord reads /s/that-id.
-          </p>
-          <input
-            value={hook}
-            onChange={(e) => setHook(e.target.value)}
-            placeholder="hook name"
-            className="w-full rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-white outline-none focus:border-[#0a84ff]/50 mb-4"
-          />
-          <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center">
-            <input type="file" className="hidden" onChange={(e) => send(e.target.files?.[0] || undefined)} />
-            <p className="text-white font-medium">{busy ? 'tying…' : 'tie a local file'}</p>
-          </label>
-          {warn && <p className="text-xs text-amber-300/80 mt-3">{warn}</p>}
-          {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
-          {embed && <p className="text-xs text-neutral-400 mt-4 break-all">discord: {embed}</p>}
+      <main className="mx-auto max-w-3xl px-5 pb-24 pt-28">
+        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[13px] uppercase tracking-[0.16em] text-zinc-500">cleat</motion.p>
+        <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05, ease: [0.22, 1, 0.36, 1] }} className="mt-2 text-4xl font-semibold tracking-tight text-zinc-50">A tempo, not a drawer.</motion.h1>
+        <p className="mt-3 max-w-xl text-zinc-400">Tap a click in the tab. Filing the session writes a small text note into the share table so Discord can unfurl it. Nothing is cut for size.</p>
+        <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }} className="mt-8 rounded-[28px] border border-white/10 bg-white/[0.04] p-6 shadow-[0_24px_80px_rgba(0,0,0,0.35)] backdrop-blur-xl">
+          <div className="flex items-end justify-between">
+            <p className="text-6xl font-semibold tracking-tight text-white tabular-nums">{bpm}</p>
+            <p className="text-sm text-zinc-500">{beats} beats</p>
+          </div>
+          <input type="range" min={40} max={200} value={bpm} onChange={(e) => setBpm(Number(e.target.value))} className="mt-4 w-full accent-[#0A84FF]" />
+          <div className="mt-4 flex items-center gap-3">
+            <button onClick={() => setOn((v) => !v)} className="rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition hover:bg-zinc-200">{on ? 'stop' : 'start'}</button>
+            <label className="text-sm text-zinc-400">accent
+              <input type="number" min={1} max={12} value={accent} onChange={(e) => setAccent(Math.max(1, Number(e.target.value) || 1))} className="ml-2 w-16 rounded-xl border border-white/10 bg-black/30 px-2 py-1 text-zinc-100" />
+            </label>
+            <button onClick={() => { beatRef.current = 0; setBeats(0); }} className="text-sm text-zinc-500">reset</button>
+          </div>
+          <motion.div animate={{ scale: on ? [1, 1.04, 1] : 1 }} transition={{ duration: pulse / 1000 || 0.7, repeat: on ? Infinity : 0 }} className="mt-6 h-2 rounded-full bg-[#0A84FF]/70" />
+          <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="what you were keeping time for" className="mt-5 h-24 w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-zinc-100 outline-none focus:border-[#0A84FF]" />
+          <button disabled={busy} onClick={fileSession} className="mt-4 rounded-full bg-[#0A84FF] px-5 py-2.5 text-sm font-medium text-white transition hover:brightness-110 disabled:opacity-40">{busy ? 'filing…' : 'file the session'}</button>
+          {error && <p className="mt-3 text-sm text-red-300">{error}</p>}
+          {card && <a className="mt-3 block text-sm text-[#7ab8ff] underline" href={card}>{card}</a>}
         </motion.div>
-      </div>
+      </main>
     </div>
   );
 }

@@ -12,6 +12,10 @@ export const EXTRA_TITLES = {
   painter: 'painter — a colour on the discord card',
   oakum: 'oakum — a pack, filed one by one',
   scull: 'scull — a note rowed across',
+  cleat: 'cleat — a tempo, not a drawer',
+  lantern: 'lantern — a lamp for one sitting',
+  splice: 'splice — two drafts, one card',
+  quayage: 'quayage — a tally, not a vault',
 };
 
 export const EXTRA_DESC = {
@@ -28,4 +32,8 @@ export const EXTRA_DESC = {
   painter: 'Pick a local file, write the card line, stamp a colour. Bytes land in the share table. Large drops are warned, never refused.',
   oakum: 'Each local file is written to the share database. The shelf keeps the list. Discord unfurls the first card.',
   scull: 'Open a local text file or type a note. Filing writes a real file into the share table and hands Discord a card.',
+  cleat: 'A click in the tab. Filing the session writes a text note into the share table. Discord unfurls the card. Nothing is refused for size.',
+  lantern: 'A warm timer for one sitting. File the note if you want a Discord card. Not a cabinet.',
+  splice: 'Join two local texts and file the combined note. Discord unfurls /s. Large splices are warned, never cut.',
+  quayage: 'A line tally that files as a receipt. Discord gets the card. Nothing is stored until you send it.',
 };

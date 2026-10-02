@@ -9,7 +9,6 @@ const primary: NavItem[] = [
   { to: 'oakum', label: 'oakum' },
   { to: 'scull', label: 'scull' },
   { to: 'kevel', label: 'kevel' },
-  { to: 'marline', label: 'marline' },
   { to: 'drop', label: 'drop' },
   { to: 'vault', label: 'vault' },
 ];
@@ -27,13 +26,65 @@ const groups: { title: string; items: NavItem[] }[] = [
     ],
   },
   {
+    title: 'yard',
+    items: [
+      { to: 'cringle', label: 'cringle' },
+      { to: 'bowline', label: 'bowline' },
+      { to: 'kedge', label: 'kedge' },
+      { to: 'topping', label: 'topping' },
+      { to: 'outhaul', label: 'outhaul' },
+      { to: 'jackstay', label: 'jackstay' },
+      { to: 'parrel', label: 'parrel' },
+      { to: 'luff', label: 'luff' },
+    ],
+  },
+  {
+    title: 'deck',
+    items: [
+      { to: 'clew', label: 'clew' },
+      { to: 'sprit', label: 'sprit' },
+      { to: 'fid', label: 'fid' },
+      { to: 'wharf', label: 'wharf' },
+      { to: 'thrum', label: 'thrum' },
+      { to: 'limber', label: 'limber' },
+      { to: 'garnet', label: 'garnet' },
+      { to: 'sheave', label: 'sheave' },
+      { to: 'dolphin', label: 'dolphin' },
+      { to: 'gudgeon', label: 'gudgeon' },
+      { to: 'hawser', label: 'hawser' },
+      { to: 'bitts', label: 'bitts' },
+      { to: 'leadline', label: 'leadline' },
+      { to: 'berth', label: 'berth' },
+      { to: 'sounding', label: 'sounding' },
+      { to: 'fender', label: 'fender' },
+      { to: 'lazaret', label: 'lazaret' },
+      { to: 'loam', label: 'loam' },
+      { to: 'orlop', label: 'orlop' },
+      { to: 'carrel', label: 'carrel' },
+      { to: 'hold', label: 'hold' },
+    ],
+  },
+  {
+    title: 'rooms',
+    items: [
+      { to: 'inbox', label: 'inbox' },
+      { to: 'transept', label: 'transept' },
+      { to: 'ambo', label: 'ambo' },
+      { to: 'sedilia', label: 'sedilia' },
+      { to: 'transom', label: 'transom' },
+    ],
+  },
+  {
     title: 'files',
     items: [
-      { to: 'drop', label: 'drop' },
-      { to: 'vault', label: 'vault' },
       { to: 'bulkhead', label: 'bulkhead' },
-      { to: 'hold', label: 'hold' },
+      { to: 'crosstree', label: 'crosstree' },
+      { to: 'lattice', label: 'lattice' },
+      { to: 'folio', label: 'folio' },
+      { to: 'margin', label: 'margin' },
+      { to: 'drop', label: 'drop' },
       { to: 'quay', label: 'quay' },
+      { to: 'vault', label: 'vault' },
     ],
   },
   {
@@ -42,8 +93,25 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'painter', label: 'painter' },
       { to: 'oakum', label: 'oakum' },
       { to: 'scull', label: 'scull' },
+      { to: 'kevel', label: 'kevel' },
+      { to: 'marline', label: 'marline' },
+      { to: 'fairlead', label: 'fairlead' },
       { to: 'mooring', label: 'mooring' },
       { to: 'inkwell', label: 'inkwell' },
+    ],
+  },
+  {
+    title: 'tools',
+    items: [
+      { to: 'billet', label: 'billet' },
+      { to: 'gunnel', label: 'gunnel' },
+      { to: 'jackstay', label: 'jackstay' },
+      { to: 'parrel', label: 'parrel' },
+      { to: 'gudgeon', label: 'gudgeon' },
+      { to: 'bellows', label: 'bellows' },
+      { to: 'hash', label: 'hash' },
+      { to: 'convert', label: 'convert' },
+      { to: 'diff', label: 'diff' },
     ],
   },
 ];
@@ -137,7 +205,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">older desks are still hash routes. type #name. paste /s or /painter in Discord.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">older desks stay on hash routes. type #name. paste /s or a desk path in Discord.</p>
         </div>
       </div>
     </nav>

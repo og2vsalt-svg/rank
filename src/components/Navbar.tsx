@@ -5,26 +5,35 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
-  { to: 'breastwork', label: 'breastwork' },
-  { to: 'scantling', label: 'scantling' },
-  { to: 'spirketing', label: 'spirketing' },
-  { to: 'strake', label: 'strake' },
+  { to: 'vault', label: 'vault' },
+  { to: 'manifest', label: 'manifest' },
+  { to: 'shelf', label: 'shelf' },
+  { to: 'courier', label: 'courier' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
   {
-    title: 'new',
+    title: 'hosting',
     items: [
+      { to: 'vault', label: 'vault' },
+      { to: 'manifest', label: 'manifest' },
+      { to: 'shelf', label: 'shelf' },
+      { to: 'courier', label: 'courier' },
+      { to: 'strake', label: 'strake' },
+      { to: 'sheer', label: 'sheer' },
       { to: 'breastwork', label: 'breastwork' },
       { to: 'scantling', label: 'scantling' },
+    ],
+  },
+  {
+    title: 'new',
+    items: [
       { to: 'spirketing', label: 'spirketing' },
-      { to: 'strake', label: 'strake' },
       { to: 'keel', label: 'keel' },
       { to: 'coaming', label: 'coaming' },
       { to: 'carling', label: 'carling' },
       { to: 'deadwood', label: 'deadwood' },
       { to: 'fashion', label: 'fashion' },
-      { to: 'sheer', label: 'sheer' },
       { to: 'coping', label: 'coping' },
       { to: 'archivolt', label: 'archivolt' },
       { to: 'arris', label: 'arris' },
@@ -49,67 +58,11 @@ const groups: { title: string; items: NavItem[] }[] = [
     ],
   },
   {
-    title: 'deck',
-    items: [
-      { to: 'clew', label: 'clew' },
-      { to: 'sprit', label: 'sprit' },
-      { to: 'fid', label: 'fid' },
-      { to: 'wharf', label: 'wharf' },
-      { to: 'thrum', label: 'thrum' },
-      { to: 'limber', label: 'limber' },
-      { to: 'garnet', label: 'garnet' },
-      { to: 'sheave', label: 'sheave' },
-      { to: 'dolphin', label: 'dolphin' },
-      { to: 'gudgeon', label: 'gudgeon' },
-      { to: 'hawser', label: 'hawser' },
-      { to: 'bitts', label: 'bitts' },
-      { to: 'leadline', label: 'leadline' },
-      { to: 'berth', label: 'berth' },
-      { to: 'sounding', label: 'sounding' },
-      { to: 'fender', label: 'fender' },
-      { to: 'lazaret', label: 'lazaret' },
-      { to: 'loam', label: 'loam' },
-      { to: 'orlop', label: 'orlop' },
-      { to: 'carrel', label: 'carrel' },
-      { to: 'hold', label: 'hold' },
-    ],
-  },
-  {
-    title: 'rooms',
-    items: [
-      { to: 'inbox', label: 'inbox' },
-      { to: 'transept', label: 'transept' },
-      { to: 'ambo', label: 'ambo' },
-      { to: 'sedilia', label: 'sedilia' },
-      { to: 'transom', label: 'transom' },
-      { to: 'deadeye', label: 'deadeye' },
-      { to: 'coaming', label: 'coaming' },
-      { to: 'keel', label: 'keel' },
-    ],
-  },
-  {
-    title: 'files',
-    items: [
-      { to: 'bulkhead', label: 'bulkhead' },
-      { to: 'crosstree', label: 'crosstree' },
-      { to: 'lattice', label: 'lattice' },
-      { to: 'folio', label: 'folio' },
-      { to: 'margin', label: 'margin' },
-      { to: 'drop', label: 'drop' },
-      { to: 'quay', label: 'quay' },
-      { to: 'vault', label: 'vault' },
-      { to: 'strake', label: 'strake' },
-    ],
-  },
-  {
     title: 'share',
     items: [
-      { to: 'breastwork', label: 'breastwork' },
-      { to: 'scantling', label: 'scantling' },
-      { to: 'spirketing', label: 'spirketing' },
-      { to: 'strake', label: 'strake' },
-      { to: 'sheer', label: 'sheer' },
-      { to: 'rudder', label: 'rudder' },
+      { to: 'courier', label: 'courier' },
+      { to: 'manifest', label: 'manifest' },
+      { to: 'shelf', label: 'shelf' },
       { to: 'tiller', label: 'tiller' },
       { to: 'painter', label: 'painter' },
       { to: 'oakum', label: 'oakum' },
@@ -119,21 +72,14 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'fairlead', label: 'fairlead' },
       { to: 'mooring', label: 'mooring' },
       { to: 'inkwell', label: 'inkwell' },
-      { to: 'hawse', label: 'hawse' },
     ],
   },
   {
     title: 'tools',
     items: [
-      { to: 'coping', label: 'coping' },
-      { to: 'archivolt', label: 'archivolt' },
-      { to: 'arris', label: 'arris' },
-      { to: 'garboard', label: 'garboard' },
-      { to: 'treenail', label: 'treenail' },
-      { to: 'wales', label: 'wales' },
-      { to: 'futtock', label: 'futtock' },
-      { to: 'lodestone', label: 'lodestone' },
-      { to: 'bosun', label: 'bosun' },
+      { to: 'hash', label: 'hash' },
+      { to: 'convert', label: 'convert' },
+      { to: 'diff', label: 'diff' },
       { to: 'stemson', label: 'stemson' },
       { to: 'gammon', label: 'gammon' },
       { to: 'knighthead', label: 'knighthead' },
@@ -141,12 +87,6 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'cleat', label: 'cleat' },
       { to: 'lantern', label: 'lantern' },
       { to: 'splice', label: 'splice' },
-      { to: 'quayage', label: 'quayage' },
-      { to: 'billet', label: 'billet' },
-      { to: 'gunnel', label: 'gunnel' },
-      { to: 'hash', label: 'hash' },
-      { to: 'convert', label: 'convert' },
-      { to: 'diff', label: 'diff' },
     ],
   },
 ];
@@ -154,7 +94,7 @@ const groups: { title: string; items: NavItem[] }[] = [
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [openGroup, setOpenGroup] = useState<string | null>('new');
+  const [openGroup, setOpenGroup] = useState<string | null>('hosting');
   const { user, isLoggedIn, logout } = useAuth();
   const { navigate } = useRouter();
   const userMenuRef = useRef<HTMLDivElement>(null);
@@ -240,7 +180,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">older desks stay on hash routes. type #name. paste /s or a desk path in Discord.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">older desks stay on hash routes. paste /s, /manifest, /shelf, or /courier in Discord for a card.</p>
         </div>
       </div>
     </nav>

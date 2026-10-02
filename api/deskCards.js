@@ -22,6 +22,9 @@ export const EXTRA_TITLES = {
   tiller: 'tiller — steer the discord card',
   lodestone: 'lodestone — a bearing, not a drawer',
   bosun: 'bosun — a watch, not a cabinet',
+  hawse: 'hawse — a split, not a cabinet',
+  deadeye: 'deadeye — a sitting, not a drawer',
+  futtock: 'futtock — a colour ramp',
 };
 
 export const EXTRA_DESC = {
@@ -48,4 +51,7 @@ export const EXTRA_DESC = {
   tiller: 'Set the title, caption, and accent, then file a local file. Discord unfurls the card you steered. Large drops are warned, never refused.',
   lodestone: 'Save an address on the links shelf and file a text card Discord can unfurl. Not a cabinet.',
   bosun: 'A watch list in the tab. Filing writes one markdown drop. Discord unfurls the list. Not a vault drawer.',
+  hawse: 'Split a bill in the tab. Filing writes the note, and an optional receipt, into the share database. Discord unfurls the card. Large slips are warned, never refused.',
+  deadeye: 'A sitting timer. File the note if you want a Discord card. Not a cabinet.',
+  futtock: 'Mix a colour ramp, then file it with an optional reference image. Discord takes the accent. Large references are warned, never refused.',
 };

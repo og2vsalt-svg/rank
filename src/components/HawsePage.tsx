@@ -1,108 +1,97 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishShare, shareUrls } from '../lib/cloudShare';
+import { publishLocalFile } from '../lib/cloudShare';
 
-function uid() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-}
+const ease = [0.22, 1, 0.36, 1] as const;
 
-function phrase() {
-  const a = ['quiet', 'salt', 'ember', 'linen', 'cedar', 'amber', 'hollow', 'silver'];
-  const b = ['hawse', 'cleat', 'sill', 'ridge', 'cove', 'lantern', 'harbor', 'glen'];
-  const pick = (xs: string[]) => xs[Math.floor(Math.random() * xs.length)];
-  return `${pick(a)}-${pick(b)}-${Math.floor(100 + Math.random() * 900)}`;
+function money(n: number) {
+  if (!Number.isFinite(n)) return '0.00';
+  return n.toFixed(2);
 }
 
 export default function HawsePage() {
-  const [note, setNote] = useState('');
-  const [pass, setPass] = useState(phrase());
+  const [total, setTotal] = useState('86.40');
+  const [people, setPeople] = useState('3');
+  const [tip, setTip] = useState('12');
+  const [note, setNote] = useState('dinner, including the shared bottle');
+  const [file, setFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
-  const [err, setErr] = useState('');
-  const [embed, setEmbed] = useState('');
+  const [result, setResult] = useState<{ embed?: string; warn?: string | null; error?: string } | null>(null);
+
+  const split = useMemo(() => {
+    const bill = Number(total) || 0;
+    const n = Math.max(1, Math.round(Number(people) || 1));
+    const tipRate = Math.max(0, Number(tip) || 0) / 100;
+    const withTip = bill * (1 + tipRate);
+    return { n, each: withTip / n, withTip };
+  }, [total, people, tip]);
+
+  const heavy = !!file && file.size > 40 * 1024 * 1024;
 
   const send = async () => {
-    if (!note.trim()) return;
     setBusy(true);
-    setErr('');
-    try {
-      const file = new File([note], 'hawse.txt', { type: 'text/plain' });
-      const dataUrl = await new Promise<string>((resolve, reject) => {
-        const r = new FileReader();
-        r.onload = () => resolve(String(r.result || ''));
-        r.onerror = () => reject(new Error('read failed'));
-        r.readAsDataURL(file);
-      });
-      const id = uid();
-      const res = await publishShare({
-        id,
-        name: file.name,
-        type: 'text/plain',
-        size: file.size,
-        dataUrl,
-        lockPass: pass,
-        author: 'hawse',
-      });
-      if (!res.ok) throw new Error(res.error || 'send failed');
-      const urls = shareUrls(res.id || id);
-      setEmbed(urls.embed);
-      try {
-        await navigator.clipboard.writeText(`${urls.embed} · phrase: ${pass}`);
-      } catch {}
-    } catch (e: any) {
-      setErr(e?.message || 'send failed');
-    } finally {
-      setBusy(false);
+    setResult(null);
+    const body = [
+      `hawse split`,
+      `bill ${money(Number(total) || 0)}`,
+      `tip ${tip || 0}%`,
+      `${split.n} people`,
+      `each ${money(split.each)}`,
+      note.trim(),
+    ].filter(Boolean).join('\n');
+    const receipt = new File([body], 'hawse-split.txt', { type: 'text/plain' });
+    const caption = `${split.n} ways · ${money(split.each)} each`;
+    const first = await publishLocalFile(file || receipt, {
+      caption,
+      cardTitle: note.trim() || 'hawse split',
+      color: '#30D158',
+    });
+    if (file && first.ok) {
+      await publishLocalFile(receipt, { caption, cardTitle: 'hawse note', color: '#30D158' });
     }
+    setResult(first.ok ? { embed: first.embed, warn: first.warn } : { error: first.error || 'did not land' });
+    setBusy(false);
   };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          className="glass rounded-[32px] p-8"
-        >
-          <p className="text-[#0a84ff] text-sm mb-2">hawse</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">thread a note through a spoken phrase.</h1>
-          <p className="text-neutral-400 text-sm mb-6">
-            the file still lives on the share db. the phrase is a soft lock so the card can travel on discord without shouting.
-          </p>
-          <textarea
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            rows={6}
-            className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white outline-none focus:border-[#0a84ff]/50 mb-4"
-            placeholder="a note that should not sit in the vault"
-          />
-          <div className="flex items-center gap-2 mb-5">
-            <input
-              value={pass}
-              onChange={(e) => setPass(e.target.value)}
-              className="flex-1 bg-white/5 border border-white/10 rounded-2xl px-4 py-2.5 text-sm text-white outline-none"
-            />
-            <button onClick={() => setPass(phrase())} className="text-xs text-neutral-400 px-3 py-2 rounded-full hover:bg-white/5">
-              new phrase
-            </button>
-          </div>
-          <button
-            disabled={busy || !note.trim()}
-            onClick={send}
-            className="px-4 py-2 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40"
-          >
-            {busy ? 'threading…' : 'send through the hawse'}
-          </button>
-          {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
-          {embed && (
-            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-5 text-xs text-neutral-400 break-all">
-              discord (copied): {embed}
-            </motion.p>
-          )}
-        </motion.div>
-      </div>
+      <main className="mx-auto max-w-5xl px-5 pb-24 pt-28">
+        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[13px] uppercase tracking-[0.18em] text-zinc-500">hawse</motion.p>
+        <motion.h1 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease }} className="mt-2 text-4xl font-semibold tracking-tight text-zinc-50 sm:text-5xl">Split the bill. Keep the slip.</motion.h1>
+        <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-zinc-400">This is a table, not a cabinet. The math stays in the tab until you file it. An optional photo of the receipt lands in the same share database, and Discord unfurls the card.</p>
+        <div className="mt-10 grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+          <motion.section initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06, duration: 0.55, ease }} className="rounded-[28px] border border-white/10 bg-white/[0.04] p-6 shadow-[0_24px_70px_rgba(0,0,0,0.32)] backdrop-blur-xl">
+            <div className="grid gap-3 sm:grid-cols-3">
+              <label className="text-xs text-zinc-500">bill
+                <input value={total} onChange={(e) => setTotal(e.target.value)} inputMode="decimal" className="mt-1 w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-zinc-100 outline-none transition focus:border-[#30D158]/70" />
+              </label>
+              <label className="text-xs text-zinc-500">people
+                <input value={people} onChange={(e) => setPeople(e.target.value)} inputMode="numeric" className="mt-1 w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-zinc-100 outline-none transition focus:border-[#30D158]/70" />
+              </label>
+              <label className="text-xs text-zinc-500">tip %
+                <input value={tip} onChange={(e) => setTip(e.target.value)} inputMode="decimal" className="mt-1 w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-zinc-100 outline-none transition focus:border-[#30D158]/70" />
+              </label>
+            </div>
+            <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={3} className="mt-3 w-full resize-none rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none transition focus:border-[#30D158]/70" />
+            <label className="mt-3 block cursor-pointer rounded-2xl border border-dashed border-white/15 bg-black/25 px-5 py-8 text-center transition duration-300 hover:border-[#30D158]/70">
+              <input type="file" className="sr-only" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+              <span className="text-sm text-zinc-200">{file ? file.name : 'optional receipt photo or pdf'}</span>
+            </label>
+            {heavy && <p className="mt-3 text-xs text-amber-200/90">large slip. the tab may feel slow while it sends. there is no size cap.</p>}
+            <button disabled={busy} onClick={send} className="mt-4 rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition duration-200 hover:bg-zinc-200 active:scale-[0.98] disabled:opacity-40">{busy ? 'filing…' : 'file the split'}</button>
+            {result?.error && <p className="mt-3 text-sm text-rose-300">{result.error}</p>}
+            {result?.warn && <p className="mt-3 text-xs text-amber-200/80">{result.warn}</p>}
+            {result?.embed && <a className="mt-3 inline-block text-sm text-[#30D158]" href={result.embed}>{result.embed}</a>}
+          </motion.section>
+          <motion.aside initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12, duration: 0.55, ease }} className="rounded-[28px] border border-white/10 bg-[#0b0b0d] p-6">
+            <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-500">each person</p>
+            <p className="mt-3 text-6xl font-semibold tracking-tight text-white">{money(split.each)}</p>
+            <p className="mt-2 text-sm text-zinc-400">{money(split.withTip)} after tip, across {split.n}.</p>
+          </motion.aside>
+        </div>
+      </main>
     </div>
   );
 }

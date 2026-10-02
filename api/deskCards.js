@@ -32,6 +32,10 @@ export const EXTRA_TITLES = {
   hawse: 'hawse — a split, not a cabinet',
   deadeye: 'deadeye — a sitting, not a drawer',
   futtock: 'futtock — a colour ramp',
+  sheer: 'sheer — a local file, filed',
+  coping: 'coping — a contrast, not a drawer',
+  archivolt: 'archivolt — chapter marks',
+  arris: 'arris — one edge of the day',
 };
 
 export const EXTRA_DESC = {
@@ -68,4 +72,11 @@ export const EXTRA_DESC = {
   hawse: 'Split a bill in the tab. Filing writes the note, and an optional receipt, into the share database. Discord unfurls the card. Large slips are warned, never refused.',
   deadeye: 'A sitting timer. File the note if you want a Discord card. Not a cabinet.',
   futtock: 'Mix a colour ramp, then file it with an optional reference image. Discord takes the accent. Large references are warned, never refused.',
+  reliquary: 'Drop a local file into the share database. Discord unfurls /s. Large drops are warned, never refused.',
+  quoin: 'Set a reading measure in the tab. Filing writes the spec, not a cabinet. Discord unfurls the card.',
+  wick: 'A sitting timer. File the note if you want a Discord card. Not a vault drawer.',
+  sheer: 'Drop a local file into the share database. Discord unfurls /s. Large drops are warned, never refused.',
+  coping: 'Check a colour pair in the tab. Filing writes the spec. Discord unfurls the card. Not a cabinet.',
+  archivolt: 'Chapter marks stay in the browser until you file the list. Discord unfurls /s.',
+  arris: 'A sitting timer. File the note if you want a Discord card. Not a vault drawer.',
 };

@@ -5,6 +5,9 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'topmark', label: 'topmark' },
+  { to: 'billet', label: 'billet' },
+  { to: 'gunnel', label: 'gunnel' },
   { to: 'cringle', label: 'cringle' },
   { to: 'bowline', label: 'bowline' },
   { to: 'kedge', label: 'kedge' },
@@ -43,6 +46,14 @@ const primary: NavItem[] = [
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
+  {
+    title: 'new',
+    items: [
+      { to: 'topmark', label: 'topmark' },
+      { to: 'billet', label: 'billet' },
+      { to: 'gunnel', label: 'gunnel' },
+    ],
+  },
   {
     title: 'yard',
     items: [
@@ -108,6 +119,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'topmark', label: 'topmark' },
       { to: 'cringle', label: 'cringle' },
       { to: 'bowline', label: 'bowline' },
       { to: 'kedge', label: 'kedge' },
@@ -134,6 +146,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'billet', label: 'billet' },
+      { to: 'gunnel', label: 'gunnel' },
       { to: 'jackstay', label: 'jackstay' },
       { to: 'parrel', label: 'parrel' },
       { to: 'gudgeon', label: 'gudgeon' },
@@ -148,7 +162,7 @@ const groups: { title: string; items: NavItem[] }[] = [
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [openGroup, setOpenGroup] = useState<string | null>('yard');
+  const [openGroup, setOpenGroup] = useState<string | null>('new');
   const { user, isLoggedIn, logout } = useAuth();
   const { navigate } = useRouter();
   const userMenuRef = useRef<HTMLDivElement>(null);

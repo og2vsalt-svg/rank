@@ -1,3 +1,5 @@
+import { EXTRA_TITLES, EXTRA_DESC } from './deskCards.js';
+
 const SUPABASE_URL = (process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || 'https://tqfocdktvjuwoiyfgesb.supabase.co').replace(/\/$/, '');
 const SUPABASE_KEY =
   process.env.SUPABASE_ANON_KEY ||
@@ -41,6 +43,7 @@ async function loadShare(id) {
 }
 
 const PAGE_TITLES = {
+  ...EXTRA_TITLES,
   outhaul: 'outhaul \u2014 a handoff, not a cabinet',
   jackstay: 'jackstay \u2014 a list you can hand over',
   parrel: 'parrel \u2014 a mark, then a card',
@@ -76,6 +79,7 @@ const PAGE_TITLES = {
 };
 
 const PAGE_DESC = {
+  ...EXTRA_DESC,
   outhaul: 'Pick a local file, write who it is for, and file it. Discord unfurls the card. Large drops are warned, never refused.',
   jackstay: 'A checklist that files as text. Not the vault. The /s link is the Discord card.',
   parrel: 'Draw a mark in the tab and file it as a PNG. Image drops unfurl with the picture.',

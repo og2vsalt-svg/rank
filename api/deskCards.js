@@ -1,4 +1,7 @@
 export const EXTRA_TITLES = {
+  windlass: 'windlass — read the head, then file it',
+  thole: 'thole — a pin for a person',
+  transom: 'transom — a still, lifted',
   floorboard: 'floorboard — a preview, then a card',
   garboard: 'garboard — a memo, not a drawer',
   treenail: 'treenail — two files, one receipt',
@@ -51,6 +54,9 @@ export const EXTRA_TITLES = {
 };
 
 export const EXTRA_DESC = {
+  windlass: 'Read the first sixteen bytes of a local file, then file it into the share table. Discord unfurls /windlass and /s. Large drops are warned, never refused.',
+  thole: 'A named slip. The line lands as a text row, and an optional local file rides as its own card. Discord unfurls both. Not a cabinet.',
+  transom: 'Lift a local still in the tab and file the PNG. Image cards unfurl with the picture. Large stills are warned, never refused.',
   floorboard: 'Preview a local file in the tab, then file it into the share table. Discord unfurls /s and /floorboard. Large drops are warned, never refused.',
   garboard: 'Record a memo in the tab, or write the line. The audio lands in the share table. Discord unfurls the card. Long memos are warned, never refused.',
   treenail: 'Hash two local files and file the receipt. Discord unfurls same or different. The originals stay on your machine. Large pairs are warned, never refused.',

@@ -6,10 +6,10 @@ type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
-  { to: 'floorboard', label: 'floorboard' },
-  { to: 'manifest', label: 'manifest' },
+  { to: 'windlass', label: 'windlass' },
+  { to: 'thole', label: 'thole' },
+  { to: 'transom', label: 'transom' },
   { to: 'shelf', label: 'shelf' },
-  { to: 'courier', label: 'courier' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -17,6 +17,7 @@ const groups: { title: string; items: NavItem[] }[] = [
     title: 'hosting',
     items: [
       { to: 'vault', label: 'vault' },
+      { to: 'windlass', label: 'windlass' },
       { to: 'floorboard', label: 'floorboard' },
       { to: 'manifest', label: 'manifest' },
       { to: 'shelf', label: 'shelf' },
@@ -30,6 +31,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'new',
     items: [
+      { to: 'windlass', label: 'windlass' },
+      { to: 'thole', label: 'thole' },
+      { to: 'transom', label: 'transom' },
       { to: 'floorboard', label: 'floorboard' },
       { to: 'spirketing', label: 'spirketing' },
       { to: 'keel', label: 'keel' },
@@ -37,14 +41,6 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'carling', label: 'carling' },
       { to: 'deadwood', label: 'deadwood' },
       { to: 'fashion', label: 'fashion' },
-      { to: 'coping', label: 'coping' },
-      { to: 'archivolt', label: 'archivolt' },
-      { to: 'arris', label: 'arris' },
-      { to: 'garboard', label: 'garboard' },
-      { to: 'treenail', label: 'treenail' },
-      { to: 'wales', label: 'wales' },
-      { to: 'rudder', label: 'rudder' },
-      { to: 'hawse', label: 'hawse' },
     ],
   },
   {
@@ -63,6 +59,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'thole', label: 'thole' },
+      { to: 'transom', label: 'transom' },
       { to: 'courier', label: 'courier' },
       { to: 'manifest', label: 'manifest' },
       { to: 'shelf', label: 'shelf' },
@@ -71,10 +69,6 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'oakum', label: 'oakum' },
       { to: 'scull', label: 'scull' },
       { to: 'kevel', label: 'kevel' },
-      { to: 'marline', label: 'marline' },
-      { to: 'fairlead', label: 'fairlead' },
-      { to: 'mooring', label: 'mooring' },
-      { to: 'inkwell', label: 'inkwell' },
     ],
   },
   {
@@ -183,7 +177,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">older desks stay on hash routes. paste /s, /floorboard, /manifest, /shelf, or /courier in Discord for a card.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">older desks stay on hash routes. paste /s, /windlass, /thole, /transom, or /shelf in Discord for a card.</p>
         </div>
       </div>
     </nav>

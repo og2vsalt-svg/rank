@@ -43,6 +43,10 @@ export const EXTRA_TITLES = {
   strake: 'strake — one local file, one card',
   coaming: 'coaming — a sitting, not a cabinet',
   spirketing: 'spirketing — a handover slip, not a drawer',
+  manifest: 'manifest — several files, one handover',
+  shelf: 'shelf — what already landed',
+  courier: 'courier — a file with a time on it',
+  vault: 'vault — files on this device',
 };
 
 export const EXTRA_DESC = {
@@ -61,7 +65,7 @@ export const EXTRA_DESC = {
   billet: 'An address on the links shelf, plus a one-line card Discord can unfurl. Not a file cabinet.',
   gunnel: 'Two columns — kept and sent — filed as one text drop. The /s link is the Discord card.',
   kevel: 'Pick a local file and a ready-by time. The bytes land in the share table. Discord unfurls the card. Large drops are warned, never refused.',
-  marline: 'Burn a caption onto a still in the tab, then file the PNG. Image cards unfurls with the picture.',
+  marline: 'Burn a caption onto a still in the tab, then file the PNG. Image cards unfurl with the picture.',
   fairlead: 'Save a link on the quay and file a card Discord can unfurl. Optional cover. Not a cabinet.',
   painter: 'Pick a local file, write the card line, stamp a colour. Bytes land in the share table. Large drops are warned, never refused.',
   oakum: 'Each local file is written to the share database. The shelf keeps the list. Discord unfurls the first card.',
@@ -93,4 +97,8 @@ export const EXTRA_DESC = {
   strake: 'One local file lands in the share database. Discord unfurls /s. Large drops are warned, never refused.',
   coaming: 'A twenty-five minute sitting. Notes go to the reading table, not the vault. Discord unfurls /coaming.',
   spirketing: 'A named slip with an optional local file. The file lands in the share table. Discord unfurls /spirket. Large files are warned, never refused.',
+  manifest: 'Several local files land in the share table, then a pack row is written. Discord unfurls each /s card. Large packs are warned, never refused.',
+  shelf: 'The public log of files already in the share table. Every card still unfurls on Discord.',
+  courier: 'A local file with an optional passcode and expiry, filed into the share table. Discord unfurls /s. Slowness warning only.',
+  vault: 'Files kept on this device. Public links still land in the share table. No size cap, only a warning if a drop may feel slow.',
 };

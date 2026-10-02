@@ -1,98 +1,101 @@
-import { useEffect, useState } from 'react';
+import { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-
-const SB_URL = (
-  (import.meta as any).env?.VITE_SUPABASE_URL ||
-  'https://tqfocdktvjuwoiyfgesb.supabase.co'
-).replace(/\/$/, '');
-const SB_KEY =
-  (import.meta as any).env?.VITE_SUPABASE_ANON_KEY ||
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
-
-type LinkRow = { id: string; url: string; note: string | null; author: string | null; created_at: string };
+import { publishLocalFile, shareUrls } from '../lib/cloudShare';
 
 export default function TransomPage() {
-  const [url, setUrl] = useState('');
-  const [note, setNote] = useState('');
-  const [author, setAuthor] = useState('');
-  const [rows, setRows] = useState<LinkRow[]>([]);
-  const [err, setErr] = useState('');
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [name, setName] = useState('');
+  const [lift, setLift] = useState(8);
+  const [warn, setWarn] = useState('');
   const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState('');
+  const [card, setCard] = useState('');
+  const [ready, setReady] = useState(false);
 
-  const load = async () => {
-    const res = await fetch(`${SB_URL}/rest/v1/links?select=id,url,note,author,created_at&order=created_at.desc&limit=20`, {
-      headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` },
-    });
-    if (!res.ok) return;
-    const data = await res.json();
-    if (Array.isArray(data)) setRows(data);
+  const paint = (file: File) => {
+    setErr('');
+    setCard('');
+    setName(file.name);
+    setWarn(file.size > 18 * 1024 * 1024 ? 'large still. drawing it may hitch. it is not refused.' : '');
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const max = 1400;
+      const scale = Math.min(1, max / Math.max(img.width, img.height));
+      canvas.width = Math.max(1, Math.round(img.width * scale));
+      canvas.height = Math.max(1, Math.round(img.height * scale));
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      ctx.filter = `brightness(${1 + lift / 100}) contrast(1.04)`;
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      ctx.filter = 'none';
+      setReady(true);
+      URL.revokeObjectURL(url);
+    };
+    img.onerror = () => {
+      setErr('that file did not draw as an image');
+      URL.revokeObjectURL(url);
+    };
+    img.src = url;
   };
 
-  useEffect(() => {
-    load();
-  }, []);
-
-  const save = async () => {
-    const clean = url.trim();
-    if (!/^https?:\/\//i.test(clean)) {
-      setErr('needs a full http link');
-      return;
-    }
+  const fileIt = async () => {
+    const canvas = canvasRef.current;
+    if (!canvas || !ready) return;
     setBusy(true);
     setErr('');
-    const res = await fetch(`${SB_URL}/rest/v1/links`, {
-      method: 'POST',
-      headers: {
-        apikey: SB_KEY,
-        Authorization: `Bearer ${SB_KEY}`,
-        'Content-Type': 'application/json',
-        Prefer: 'return=representation',
-      },
-      body: JSON.stringify({ url: clean, note: note.slice(0, 240) || null, author: author.slice(0, 80) || null }),
-    });
-    setBusy(false);
-    if (!res.ok) {
-      setErr('the links table did not take that row');
-      return;
+    try {
+      const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
+      if (!blob) {
+        setErr('could not flatten the still');
+        return;
+      }
+      const file = new File([blob], (name.replace(/\.[^.]+$/, '') || 'transom') + '.png', { type: 'image/png' });
+      const result = await publishLocalFile(file, {
+        caption: 'a transom still',
+        cardTitle: file.name,
+        author: 'transom',
+        color: '#64D2FF',
+      });
+      if (!result.ok || !result.id) {
+        setErr(result.error || 'share table refused the still');
+        return;
+      }
+      const urls = shareUrls(result.id);
+      setCard(urls.embed);
+      try { await navigator.clipboard.writeText(urls.embed); } catch {}
+    } catch (e: any) {
+      setErr(e?.message || 'file failed');
+    } finally {
+      setBusy(false);
     }
-    setUrl('');
-    setNote('');
-    load();
   };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <main className="mx-auto max-w-xl px-5 pb-24 pt-10">
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}>
-          <p className="text-[12px] uppercase tracking-[0.16em] text-white/45">transom</p>
-          <h1 className="mt-2 text-[34px] font-semibold tracking-[-0.04em]">a window for links, not files</h1>
-          <p className="mt-3 text-[15px] leading-relaxed text-white/60">
-            This desk writes to the links table. It does not touch the vault. Leave an address and a short note; the public list reads back what the table allows.
-          </p>
+      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-8">
+          <p className="text-[#64d2ff] text-sm mb-2">transom</p>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">a still, lifted, then filed.</h1>
+          <p className="text-neutral-400 text-sm mb-6">the original stays on the machine. the PNG that lands in the share table is what Discord unfurls.</p>
+          <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#64d2ff]/50 p-8 text-center transition duration-300 mb-5">
+            <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) paint(f); }} />
+            <p className="text-white font-medium">{name || 'choose a local still'}</p>
+          </label>
+          <label className="block text-xs text-neutral-500 mb-4">lift {lift}
+            <input type="range" min={0} max={40} value={lift} onChange={(e) => setLift(Number(e.target.value))} className="w-full mt-2" />
+          </label>
+          <canvas ref={canvasRef} className="w-full rounded-2xl bg-black/30 mb-5" />
+          <button onClick={fileIt} disabled={!ready || busy} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-50">{busy ? 'filing…' : 'file the still'}</button>
+          {warn && <p className="text-xs text-amber-300/80 mt-4">{warn}</p>}
+          {err && <p className="text-xs text-red-400 mt-4">{err}</p>}
+          {card && <p className="text-xs text-neutral-400 mt-4 break-all">discord card copied: {card}</p>}
         </motion.div>
-
-        <div className="mt-8 grid gap-3">
-          <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://" className="glass rounded-2xl px-4 py-3 text-[14px] outline-none" />
-          <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="why it is here" className="glass rounded-2xl px-4 py-3 text-[14px] outline-none" />
-          <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="name, optional" className="glass rounded-2xl px-4 py-3 text-[14px] outline-none" />
-        </div>
-        <button onClick={save} disabled={busy} className="mt-4 w-full rounded-full bg-white px-4 py-3 text-[15px] font-medium text-black disabled:opacity-40">
-          {busy ? 'saving…' : 'set it on the transom'}
-        </button>
-        {err && <p className="mt-3 text-[13px] text-red-300">{err}</p>}
-
-        <div className="mt-8 space-y-2">
-          {rows.map((r) => (
-            <a key={r.id} href={r.url} className="glass block rounded-2xl px-4 py-3">
-              <p className="truncate text-[14px] text-white">{r.note || r.url}</p>
-              <p className="mt-1 truncate text-[12px] text-white/40">{r.url}{r.author ? ` · ${r.author}` : ''}</p>
-            </a>
-          ))}
-          {!rows.length && <p className="text-[13px] text-white/40">no public links yet, or the table is closed to reads.</p>}
-        </div>
-      </main>
+      </div>
     </div>
   );
 }

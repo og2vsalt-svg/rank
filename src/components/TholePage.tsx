@@ -1,66 +1,63 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishShare, shareUrls } from '../lib/cloudShare';
-
-function pretty(n: number) {
-  if (n < 1024) return n + ' B';
-  if (n < 1024 * 1024) return Math.round(n / 1024) + ' KB';
-  if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(1) + ' MB';
-  return (n / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
-}
-
-async function sha256(file: File) {
-  const buf = await file.arrayBuffer();
-  const hash = await crypto.subtle.digest('SHA-256', buf);
-  return [...new Uint8Array(hash)].map((b) => b.toString(16).padStart(2, '0')).join('');
-}
+import { publishLocalFile, shareUrls } from '../lib/cloudShare';
 
 export default function TholePage() {
-  const [pin, setPin] = useState<{ name: string; size: number; type: string; hash: string } | null>(null);
+  const [to, setTo] = useState('');
+  const [line, setLine] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
-  const [warn, setWarn] = useState('');
   const [err, setErr] = useState('');
-  const [embed, setEmbed] = useState('');
+  const [warn, setWarn] = useState('');
+  const [cards, setCards] = useState<string[]>([]);
 
-  const inspect = async (f: File) => {
-    setErr('');
-    setEmbed('');
-    setFile(f);
-    setWarn(f.size > 40 * 1024 * 1024 ? 'heavy pin. hashing stays in this tab but may take a moment. no cap.' : '');
-    setBusy(true);
-    try {
-      const hash = await sha256(f);
-      setPin({ name: f.name, size: f.size, type: f.type || 'application/octet-stream', hash });
-    } catch (e: any) {
-      setErr(e?.message || 'could not pin');
-    } finally {
-      setBusy(false);
+  const send = async () => {
+    if (!line.trim() && !file) {
+      setErr('write a line, or attach a local file');
+      return;
     }
-  };
-
-  const publishCard = async () => {
-    if (!pin) return;
     setBusy(true);
     setErr('');
+    setCards([]);
+    const next: string[] = [];
     try {
-      const text = `thole pin\nname: ${pin.name}\nsize: ${pin.size}\ntype: ${pin.type}\nsha256: ${pin.hash}\n`;
-      const blob = new File([text], `${pin.name}.thole.txt`, { type: 'text/plain' });
-      const dataUrl = await new Promise<string>((resolve, reject) => {
-        const r = new FileReader();
-        r.onload = () => resolve(String(r.result || ''));
-        r.onerror = () => reject(new Error('read failed'));
-        r.readAsDataURL(blob);
+      const note = new File(
+        [`to: ${to || 'whoever'}\n\n${line.trim()}\n`],
+        `${(to || 'thole').replace(/[^a-z0-9]+/gi, '-').slice(0, 40) || 'thole'}.txt`,
+        { type: 'text/plain' },
+      );
+      const slip = await publishLocalFile(note, {
+        caption: line.trim().slice(0, 180) || 'a thole slip',
+        cardTitle: to ? `for ${to}` : 'thole slip',
+        author: 'thole',
+        color: '#AF52DE',
       });
-      const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-      const res = await publishShare({ id, name: blob.name, type: blob.type, size: blob.size, dataUrl, author: 'thole' });
-      if (!res.ok) throw new Error(res.error || 'publish failed');
-      const urls = shareUrls(res.id || id);
-      setEmbed(urls.embed);
-      try { await navigator.clipboard.writeText(urls.embed); } catch {}
+      if (!slip.ok || !slip.id) {
+        setErr(slip.error || 'the slip did not land');
+        return;
+      }
+      next.push(shareUrls(slip.id).embed);
+      if (file) {
+        if (file.size > 30 * 1024 * 1024) setWarn('the attachment is large. the send may feel slow. it is not refused.');
+        const attached = await publishLocalFile(file, {
+          caption: line.trim().slice(0, 180) || file.name,
+          cardTitle: file.name,
+          author: to || 'thole',
+          color: '#0A84FF',
+        });
+        if (!attached.ok || !attached.id) {
+          setErr(attached.error || 'slip filed, attachment did not');
+          setCards(next);
+          return;
+        }
+        next.push(shareUrls(attached.id).embed);
+        if (attached.warn) setWarn(attached.warn);
+      }
+      setCards(next);
+      try { await navigator.clipboard.writeText(next[0]); } catch {}
     } catch (e: any) {
-      setErr(e?.message || 'publish failed');
+      setErr(e?.message || 'send failed');
     } finally {
       setBusy(false);
     }
@@ -70,26 +67,26 @@ export default function TholePage() {
     <div className="mesh min-h-screen">
       <Navbar />
       <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-8">
-          <p className="text-[#0a84ff] text-sm mb-2">thole</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">pin a local file. share only the receipt.</h1>
-          <p className="text-neutral-400 text-sm mb-6">hashing stays on this device. the original never leaves unless you later drop it elsewhere.</p>
-          <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition-all duration-300" onDragOver={(e) => e.preventDefault()} onDrop={(e) => { e.preventDefault(); const f = e.dataTransfer.files?.[0]; if (f) inspect(f); }}>
-            <input type="file" className="hidden" onChange={(e) => e.target.files?.[0] && inspect(e.target.files[0])} />
-            <p className="text-white font-medium">{busy ? 'pinning…' : 'drop a file onto the thole'}</p>
-            <p className="text-xs text-neutral-500 mt-2">sha-256 in the tab. publish a card if you want.</p>
-          </label>
-          {pin && (
-            <div className="mt-6 text-sm text-neutral-300 space-y-1 break-all">
-              <p>{pin.name}</p>
-              <p className="text-neutral-500">{pretty(pin.size)} · {pin.type}</p>
-              <p className="font-mono text-xs text-neutral-400">{pin.hash}</p>
-              <button disabled={busy} onClick={publishCard} className="mt-4 px-4 py-2 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40">publish pin card</button>
+        <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-8">
+          <p className="text-[#af52de] text-sm mb-2">thole</p>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">a pin for a person, not a drawer.</h1>
+          <p className="text-neutral-400 text-sm mb-6">the line becomes a text row in the share table. an optional local file rides as its own card. Discord unfurls both.</p>
+          <div className="space-y-3">
+            <input value={to} onChange={(e) => setTo(e.target.value)} placeholder="who it is for" className="w-full rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#af52de]/40" />
+            <textarea value={line} onChange={(e) => setLine(e.target.value)} placeholder="the line they should see on the card" rows={4} className="w-full rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#af52de]/40 resize-none" />
+            <label className="block rounded-2xl border border-dashed border-white/10 px-4 py-3 text-sm text-neutral-400 cursor-pointer hover:border-white/25 transition">
+              <input type="file" className="hidden" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+              {file ? file.name : 'optional local file'}
+            </label>
+            <button onClick={send} disabled={busy} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-50">{busy ? 'filing…' : 'file the slip'}</button>
+          </div>
+          {warn && <p className="text-xs text-amber-300/80 mt-4">{warn}</p>}
+          {err && <p className="text-xs text-red-400 mt-4">{err}</p>}
+          {cards.length > 0 && (
+            <div className="mt-5 space-y-1">
+              {cards.map((c) => <p key={c} className="text-xs text-neutral-400 break-all">{c}</p>)}
             </div>
           )}
-          {warn && <p className="text-xs text-amber-300/90 mt-3">{warn}</p>}
-          {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
-          {embed && <p className="text-xs text-neutral-400 mt-4 break-all">discord (copied): {embed}</p>}
         </motion.div>
       </div>
     </div>

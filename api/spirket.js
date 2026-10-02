@@ -6,15 +6,14 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"');
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 export default async function handler(req, res) {
   const id = (req.query.id || '').toString().trim();
-  const page = (req.query.page || '').toString().trim();
   const proto = (req.headers['x-forwarded-proto'] || 'https').toString();
   const host = (req.headers['x-forwarded-host'] || req.headers.host || '').toString();
   let row = null;

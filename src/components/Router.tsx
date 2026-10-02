@@ -41,6 +41,7 @@ export function RouterProvider({ children }: { children: ReactNode }) {
   const navigate = useCallback((to: Route, extra?: string) => {
     if (to === 'home') {
       history.pushState(null, '', window.location.pathname);
+      window.location.hash = '';
       setState({ route: 'home', shareId: null });
     } else if ((to === 'share' || to === 'paste' || to === 'clip' || to === 'inlet') && extra) {
       window.location.hash = `${to}?f=${extra}`;

@@ -45,6 +45,16 @@ async function loadShare(id) {
 
 const PAGE_TITLES = {
   ...EXTRA_TITLES,
+  stemson: 'stemson — rankvault',
+  gammon: 'gammon — rankvault',
+  knighthead: 'knighthead — rankvault',
+  cathead: 'cathead — rankvault',
+};
+const PAGE_DESC_EXTRA = {
+  stemson: 'send local files into the share database. discord cards on every link. no size cap.',
+  gammon: 'a shared room for local files. each drop still unfurls on discord.',
+  knighthead: 'a sha-256 receipt filed to the share database.',
+  cathead: 'the public log of files already landed.',
 };
 
 const PAGE_DESC = {
@@ -61,13 +71,28 @@ function pageHtml({ title, desc, image, url, color }) {
 export default async function handler(req, res) {
   const id = (req.query.id || '').toString().trim();
   const page = (req.query.page || '').toString().trim().toLowerCase();
+  const room = (req.query.room || '').toString().trim();
   const proto = (req.headers['x-forwarded-proto'] || 'https').toString();
   const host = (req.headers['x-forwarded-host'] || req.headers.host || '').toString();
+
+  if (room && !id) {
+    const dest = `${proto}://${host}/#gammon?f=${encodeURIComponent(room)}`;
+    const title = 'gammon room — rankvault';
+    const desc = 'a shared file room. discord cards on the drops inside.';
+    if (!isBot(req.headers['user-agent']) && req.query.embed !== '1') {
+      res.status(302).setHeader('Location', dest);
+      res.end();
+      return;
+    }
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.status(200).send(pageHtml({ title, desc, url: dest, color: '#0A84FF' }));
+    return;
+  }
 
   if (page && !id) {
     const dest = `${proto}://${host}/#${encodeURIComponent(page)}`;
     const title = PAGE_TITLES[page] || `${page} \u2014 rankvault`;
-    const desc = PAGE_DESC[page] || 'quiet file hosting. drop a file, share only if you want. discord cards on every link.';
+    const desc = PAGE_DESC[page] || PAGE_DESC_EXTRA[page] || 'quiet file hosting. drop a file, share only if you want. discord cards on every link.';
     if (!isBot(req.headers['user-agent']) && req.query.embed !== '1') {
       res.status(302).setHeader('Location', dest);
       res.end();

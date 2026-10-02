@@ -1,6 +1,10 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'stemson', body: 'send a local pile into the share database. each file gets a discord card. slowness warning only.' },
+  { title: 'gammon', body: 'open a shared room, then drop local files into it. the room lives in the database, not the vault grid.' },
+  { title: 'knighthead', body: 'hash a local file in the tab and file only the receipt so discord can unfurl the proof.' },
+  { title: 'cathead', body: 'read the public share log and copy a discord card without opening the drawer.' },
   { title: 'sheave', body: 'several locals, one index card. each file lands in the share table, and discord unfurls the pack note. slowness warning only.' },
   { title: 'dolphin', body: 'record a take in the tab and file the clip. not a drawer, and not a size gate.' },
   { title: 'gudgeon', body: 'hinge two drafts in the tab. publish the line diff only if you want a discord card.' },

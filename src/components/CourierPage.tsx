@@ -3,69 +3,66 @@ import { motion } from 'framer-motion';
 import Navbar from './Navbar';
 import { publishLocalFile, shareUrls } from '../lib/cloudShare';
 
-type Row = { name: string; embed: string; warn?: string | null };
-
 export default function CourierPage() {
-  const [note, setNote] = useState('');
-  const [rows, setRows] = useState<Row[]>([]);
+  const [file, setFile] = useState<File | null>(null);
+  const [pass, setPass] = useState('');
+  const [hours, setHours] = useState('48');
+  const [caption, setCaption] = useState('');
   const [busy, setBusy] = useState(false);
   const [warn, setWarn] = useState('');
-  const [err, setErr] = useState('');
+  const [error, setError] = useState('');
+  const [links, setLinks] = useState<{ embed: string; app: string } | null>(null);
 
-  const send = async (list: FileList | null) => {
-    if (!list?.length) return;
-    const files = [...list];
-    if (files.some((f) => f.size > 40 * 1024 * 1024)) {
-      setWarn('one or more are heavy. the tab may pause while they travel. nothing is blocked.');
-    } else setWarn('');
-    setBusy(true);
-    setErr('');
-    const next: Row[] = [];
-    for (const file of files) {
-      const res = await publishLocalFile(file, { caption: note.trim() || undefined, author: 'courier' });
-      if (!res.ok || !res.id) {
-        setErr(res.error || `missed ${file.name}`);
-        continue;
-      }
-      next.push({ name: file.name, embed: shareUrls(res.id).embed, warn: res.warn });
+  const send = async () => {
+    if (!file) {
+      setError('pick a local file');
+      return;
     }
-    setRows((prev) => [...next, ...prev]);
+    setBusy(true);
+    setError('');
+    const hrs = Number(hours);
+    const expiresAt = Number.isFinite(hrs) && hrs > 0 ? new Date(Date.now() + hrs * 3600 * 1000).toISOString() : null;
+    const res = await publishLocalFile(file, { lockPass: pass || undefined, expiresAt, caption: caption || undefined, cardTitle: file.name });
     setBusy(false);
-  };
-
-  const copyAll = async () => {
-    await navigator.clipboard.writeText(rows.map((r) => r.embed).join('\n'));
+    if (!res.ok || !res.id) {
+      setError(res.error || 'could not file');
+      return;
+    }
+    const urls = shareUrls(res.id);
+    setLinks({ embed: res.embed || urls.embed, app: urls.app });
+    setWarn(res.warn || (file.size > 20 * 1024 * 1024 ? 'large drop. the send may feel slow. it is not refused.' : ''));
   };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <main className="max-w-xl mx-auto px-5 pt-28 pb-24">
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }}>
-          <p className="text-[12px] tracking-[0.18em] uppercase text-white/40">courier</p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight">a run of files, each with a card</h1>
-          <p className="mt-2 text-sm text-white/55 leading-relaxed">Several locals go up together. Each lands as its own row in the share database, with the same note on the Discord unfurl.</p>
-          <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="note for every card" rows={2} className="mt-6 w-full rounded-2xl bg-white/[0.04] border border-white/10 px-4 py-3 text-sm outline-none" />
-          <label className="mt-3 inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium cursor-pointer">
-            {busy ? 'carrying…' : 'choose files'}
-            <input type="file" multiple className="sr-only" onChange={(e) => send(e.target.files)} />
-          </label>
-          {warn && <p className="mt-3 text-xs text-amber-200/80">{warn}</p>}
-          {err && <p className="mt-3 text-xs text-red-300">{err}</p>}
-          {rows.length > 0 && (
-            <div className="mt-6">
-              <button onClick={copyAll} className="text-xs text-white/50 hover:text-white">copy all discord links</button>
-              <ul className="mt-3 space-y-2">
-                {rows.map((r) => (
-                  <li key={r.embed} className="rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-3">
-                    <p className="text-sm">{r.name}</p>
-                    <a href={r.embed} className="text-xs text-sky-300 break-all">{r.embed}</a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+      <main className="pt-24 pb-20 px-5 max-w-xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}>
+          <p className="text-[#0a84ff] text-sm font-medium mb-2">courier</p>
+          <h1 className="text-4xl font-semibold tracking-tight text-white mb-3">a file with a time on it.</h1>
+          <p className="text-neutral-400 mb-8">Uploads the local file into the share database. Optional passcode, optional expiry. The /s link is the Discord card.</p>
         </motion.div>
+        <div className="glass rounded-3xl p-6 space-y-4">
+          <label className="block rounded-2xl border border-dashed border-white/15 px-4 py-8 text-center cursor-pointer">
+            <input type="file" className="hidden" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+            <span className="text-sm text-white">{file ? file.name : 'choose a file'}</span>
+          </label>
+          <input value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="caption on the card" className="w-full px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm outline-none" />
+          <input value={pass} onChange={(e) => setPass(e.target.value)} placeholder="passcode, optional" className="w-full px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm outline-none" />
+          <label className="block text-xs text-neutral-500">hours until it expires
+            <input value={hours} onChange={(e) => setHours(e.target.value)} className="mt-1 w-full px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm text-white outline-none" />
+          </label>
+          {warn && <p className="text-xs text-amber-300/90">{warn}</p>}
+          {error && <p className="text-xs text-red-300">{error}</p>}
+          <button disabled={busy} onClick={send} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-50">{busy ? 'sending…' : 'file and share'}</button>
+        </div>
+        {links && (
+          <div className="mt-5 glass rounded-3xl p-5 text-sm space-y-2">
+            <p className="text-neutral-400">discord card</p>
+            <p className="text-white break-all">{links.embed}</p>
+            <button onClick={() => navigator.clipboard.writeText(links.embed)} className="text-xs px-3 py-1.5 rounded-full bg-white text-black">copy card link</button>
+          </div>
+        )}
       </main>
     </div>
   );

@@ -6,10 +6,10 @@ const SUPABASE_KEY =
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/\"/g, '&quot;')
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/\"/g, '"')
     .replace(/'/g, '&#39;');
 }
 
@@ -62,6 +62,13 @@ const PAGE_TITLES = {
   sheave: 'sheave \u2014 several files, one card',
   dolphin: 'dolphin \u2014 a voice on the pile',
   gudgeon: 'gudgeon \u2014 the hinge between two drafts',
+  thrum: 'thrum \u2014 a loose end, filed',
+  limber: 'limber \u2014 water finding its way',
+  garnet: 'garnet \u2014 a deep red card',
+  clew: 'clew \u2014 a letter that leaves as a file',
+  sprit: 'sprit \u2014 a swatch board, not a cabinet',
+  fid: 'fid \u2014 two drafts spliced into one drop',
+  wharf: 'wharf \u2014 a link tied to the quay',
 };
 
 const PAGE_DESC = {
@@ -71,6 +78,13 @@ const PAGE_DESC = {
   sheave: 'Each local file lands in the share table. The index card is what Discord unfurls.',
   dolphin: 'Record a take in the tab and file it. No size ceiling, only a slowness note.',
   gudgeon: 'Compare two drafts locally, then file the hinge as a public text drop.',
+  thrum: 'A short desk on rankvault. Discord unfurls this card. Files still land in the share table.',
+  limber: 'A quiet desk on rankvault. Open the link for the room. Share cards stay on /s.',
+  garnet: 'A colour desk on rankvault. The card is what Discord shows.',
+  clew: 'Write a letter in the tab. Sending files it as text and gives you a Discord card. No size cutoff.',
+  sprit: 'Build a swatch in the tab, then file the board as JSON. Large boards are warned, never refused.',
+  fid: 'Splice two local drafts into one text drop. The card names both ends.',
+  wharf: 'Save a link to the quay table and file a small card so Discord unfurls it.',
 };
 
 function pageHtml({ title, desc, image, url, color }) {

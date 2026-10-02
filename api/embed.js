@@ -79,6 +79,9 @@ const PAGE_TITLES = {
   topmark: 'topmark \u2014 one mark, several files',
   billet: 'billet \u2014 a slip for an address',
   gunnel: 'gunnel \u2014 what stays, what leaves',
+  painter: 'painter \u2014 a colour on the discord card',
+  oakum: 'oakum \u2014 a pack, filed one by one',
+  scull: 'scull \u2014 a note rowed across',
 };
 
 const PAGE_DESC = {
@@ -103,6 +106,9 @@ const PAGE_DESC = {
   topmark: 'Several local files land in the share table. Discord unfurls the pack note. Large packs are warned, never refused.',
   billet: 'An address on the links shelf, plus a one-line card Discord can unfurl. Not a file cabinet.',
   gunnel: 'Two columns, kept and sent, filed as one text drop. The /s link is the Discord card.',
+  painter: 'Pick a local file, write the card line, stamp a colour. Bytes land in the share table. Large drops are warned, never refused.',
+  oakum: 'Each local file is written to the share database. The shelf keeps the list. Discord unfurls the first card.',
+  scull: 'Open a local text file or type a note. Filing writes a real file into the share table and hands Discord a card.',
 };
 
 function pageHtml({ title, desc, image, url, color }) {
@@ -121,7 +127,7 @@ export default async function handler(req, res) {
   if (page && !id) {
     const dest = `${proto}://${host}/#${encodeURIComponent(page)}`;
     const title = PAGE_TITLES[page] || `${page} \u2014 rankvault`;
-    const desc = PAGE_DESC[page] || 'quiet file hosting. drop a file, share only if you want. discord cards on every /s link.';
+    const desc = PAGE_DESC[page] || 'quiet file hosting. drop a file, share only if you want. discord cards on every link.';
     if (!isBot(req.headers['user-agent']) && req.query.embed !== '1') {
       res.status(302).setHeader('Location', dest);
       res.end();

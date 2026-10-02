@@ -215,6 +215,7 @@ export default async function handler(req, res) {
       let author = null;
       let caption = null;
       let color = null;
+      let cardTitle = null;
 
       if (contentType.includes('multipart/form-data')) {
         const parts = parseMultipart(raw, contentType) || [];
@@ -233,6 +234,7 @@ export default async function handler(req, res) {
         lockPass = field('lockPass') || null;
         expiresAt = field('expiresAt') || null;
         color = field('color') || null;
+        cardTitle = field('cardTitle') || null;
       } else if (contentType.includes('application/json')) {
         const body = JSON.parse(raw.toString('utf8'));
         id = (body.id || id).toString().slice(0, 64);
@@ -254,15 +256,16 @@ export default async function handler(req, res) {
         author = body.author || null;
         caption = body.caption || null;
         color = body.color || null;
+        cardTitle = body.cardTitle || null;
       } else {
         res.status(400).json({ error: 'send a file or json dataUrl' });
         return;
       }
 
-      name = name.toString().slice(0, 512);
+      name = (cardTitle || name).toString().slice(0, 512);
       const size = buf.length;
       const warn = size > 12 * 1024 * 1024 ? 'large drop. preview clients may feel slow.' : null;
-      const stored = await storeBytes({ id, name, type, buf });
+      const stored = await storeBytes({ id, name: name || 'file', type, buf });
       let fileUrl = stored.fileUrl;
       if (!fileUrl && size <= 900 * 1024) {
         fileUrl = `data:${type};base64,${buf.toString('base64')}`;
@@ -288,7 +291,13 @@ export default async function handler(req, res) {
         download_count: 0,
         author,
         caption,
-        meta: { warn, source: 'rankvault', caption, color: /^#[0-9a-fA-F]{6}$/.test(color || '') ? color : null },
+        meta: {
+          warn,
+          source: 'rankvault',
+          caption,
+          color: /^#[0-9a-fA-F]{6}$/.test(color || '') ? color : null,
+          cardTitle: cardTitle ? String(cardTitle).slice(0, 120) : null,
+        },
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };

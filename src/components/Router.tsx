@@ -16,26 +16,38 @@ export function useRouter() {
   return ctx;
 }
 
-function parseHash() {
+function parseLocation() {
+  const pathName = window.location.pathname.replace(/\/+$/, '');
+  const parts = pathName.split('/').filter(Boolean);
   const raw = window.location.hash.replace('#', '');
   const [path, qs] = raw.split('?');
-  const params = new URLSearchParams(qs || '');
+  const params = new URLSearchParams(qs || window.location.search.replace(/^\?/, ''));
   const slug = (path || '').replace(/[^a-z0-9/_-]/gi, '').toLowerCase();
   if (slug === 'share' || slug.startsWith('file/')) {
     return { route: 'share', shareId: params.get('f') || slug.replace('file/', '') };
   }
   if (params.get('f') && !slug) return { route: 'share', shareId: params.get('f') };
   if (slug) return { route: slug, shareId: params.get('f') };
+  if (parts.length >= 2 && ['s', 'f', 'open', 'go', 'link', 'card'].includes(parts[0])) {
+    return { route: 'share', shareId: decodeURIComponent(parts[1]) };
+  }
+  if (parts.length === 1 && parts[0] !== 'index.html') {
+    return { route: parts[0].toLowerCase(), shareId: null };
+  }
   return { route: 'home', shareId: null };
 }
 
 export function RouterProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState(() => parseHash());
+  const [state, setState] = useState(() => parseLocation());
 
   useEffect(() => {
-    const handler = () => setState(parseHash());
+    const handler = () => setState(parseLocation());
     window.addEventListener('hashchange', handler);
-    return () => window.removeEventListener('hashchange', handler);
+    window.addEventListener('popstate', handler);
+    return () => {
+      window.removeEventListener('hashchange', handler);
+      window.removeEventListener('popstate', handler);
+    };
   }, []);
 
   const navigate = useCallback((to: Route, extra?: string) => {

@@ -2447,6 +2447,22 @@
     {
       "source": "/room/:id",
       "destination": "/api/embed?room=:id"
+    },
+    {
+      "source": "/limber",
+      "destination": "/api/embed?page=limber"
+    },
+    {
+      "source": "/orlop",
+      "destination": "/api/embed?page=orlop"
+    },
+    {
+      "source": "/chainplate",
+      "destination": "/api/embed?page=chainplate"
+    },
+    {
+      "source": "/((?!api/|assets/|src/|favicon.ico|og.png).*)",
+      "destination": "/index.html"
     }
   ]
 }

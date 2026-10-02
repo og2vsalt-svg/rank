@@ -51,6 +51,9 @@ export const EXTRA_TITLES = {
   shelf: 'shelf — what already landed',
   courier: 'courier — a file with a time on it',
   vault: 'vault — files on this device',
+  limber: 'limber — a pin, not a drawer',
+  orlop: 'orlop — a board under the deck',
+  chainplate: 'chainplate — a list that holds',
 };
 
 export const EXTRA_DESC = {
@@ -109,4 +112,7 @@ export const EXTRA_DESC = {
   shelf: 'The public log of files already in the share table. Every card still unfurls on Discord.',
   courier: 'A local file with an optional passcode and expiry, filed into the share table. Discord unfurls /s. Slowness warning only.',
   vault: 'Files kept on this device. Public links still land in the share table. No size cap, only a warning if a drop may feel slow.',
+  limber: 'Pin an address on the links shelf. An optional local file still lands in the share table. Discord unfurls /limber and /s. Large companions are warned, never refused.',
+  orlop: 'A shared line board in its own table. Not a file cabinet. Discord unfurls /orlop.',
+  chainplate: 'A shared tick list. Attach a local file only if the item needs one. Bytes land in the share table. Discord unfurls the card. No size cap.',
 };

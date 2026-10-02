@@ -5,16 +5,19 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'strake', label: 'strake' },
+  { to: 'keel', label: 'keel' },
+  { to: 'coaming', label: 'coaming' },
   { to: 'carling', label: 'carling' },
-  { to: 'deadwood', label: 'deadwood' },
-  { to: 'fashion', label: 'fashion' },
-  { to: 'sheer', label: 'sheer' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'new',
     items: [
+      { to: 'strake', label: 'strake' },
+      { to: 'keel', label: 'keel' },
+      { to: 'coaming', label: 'coaming' },
       { to: 'carling', label: 'carling' },
       { to: 'deadwood', label: 'deadwood' },
       { to: 'fashion', label: 'fashion' },
@@ -27,9 +30,6 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'wales', label: 'wales' },
       { to: 'rudder', label: 'rudder' },
       { to: 'hawse', label: 'hawse' },
-      { to: 'deadeye', label: 'deadeye' },
-      { to: 'futtock', label: 'futtock' },
-      { to: 'tiller', label: 'tiller' },
     ],
   },
   {
@@ -80,6 +80,8 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'sedilia', label: 'sedilia' },
       { to: 'transom', label: 'transom' },
       { to: 'deadeye', label: 'deadeye' },
+      { to: 'coaming', label: 'coaming' },
+      { to: 'keel', label: 'keel' },
     ],
   },
   {
@@ -93,11 +95,13 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'drop', label: 'drop' },
       { to: 'quay', label: 'quay' },
       { to: 'vault', label: 'vault' },
+      { to: 'strake', label: 'strake' },
     ],
   },
   {
     title: 'share',
     items: [
+      { to: 'strake', label: 'strake' },
       { to: 'sheer', label: 'sheer' },
       { to: 'rudder', label: 'rudder' },
       { to: 'tiller', label: 'tiller' },

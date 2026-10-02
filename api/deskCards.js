@@ -39,6 +39,9 @@ export const EXTRA_TITLES = {
   carling: 'carling — a pile, then an index',
   deadwood: 'deadwood — a hash, not the file',
   fashion: 'fashion — a cover discord can see',
+  keel: 'keel — a reading mark, not a drawer',
+  strake: 'strake — one local file, one card',
+  coaming: 'coaming — a sitting, not a cabinet',
 };
 
 export const EXTRA_DESC = {
@@ -85,4 +88,7 @@ export const EXTRA_DESC = {
   carling: 'Several local files land in the share table. Carling then files a markdown index of the Discord cards. Large piles are warned, never refused.',
   deadwood: 'Hash a local file in the tab and compare a pasted digest. Only the receipt is filed. The original stays on your machine.',
   fashion: 'Paint a 1200x630 cover and file the PNG so Discord unfurls a real image. An optional companion file rides along as its own row.',
+  keel: 'A reading mark on its own shelf. Not a file cabinet. Discord unfurls /keel.',
+  strake: 'One local file lands in the share database. Discord unfurls /s. Large drops are warned, never refused.',
+  coaming: 'A twenty-five minute sitting. Notes go to the reading table, not the vault. Discord unfurls /coaming.',
 };

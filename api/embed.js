@@ -43,23 +43,14 @@ async function loadShare(id) {
   }
 }
 
-const PAGE_TITLES = {
-  ...EXTRA_TITLES,
-  stemson: 'stemson — rankvault',
-  gammon: 'gammon — rankvault',
-  knighthead: 'knighthead — rankvault',
-  cathead: 'cathead — rankvault',
-};
+const PAGE_TITLES = { ...EXTRA_TITLES, stemson: 'stemson — rankvault', gammon: 'gammon — rankvault', knighthead: 'knighthead — rankvault', cathead: 'cathead — rankvault' };
 const PAGE_DESC_EXTRA = {
   stemson: 'send local files into the share database. discord cards on every link. no size cap.',
   gammon: 'a shared room for local files. each drop still unfurls on discord.',
   knighthead: 'a sha-256 receipt filed to the share database.',
   cathead: 'the public log of files already landed.',
 };
-
-const PAGE_DESC = {
-  ...EXTRA_DESC,
-};
+const PAGE_DESC = { ...EXTRA_DESC };
 
 function pageHtml({ title, desc, image, url, color }) {
   const fallback = 'https://og2vsalt-svg.github.io/rank/og.png';
@@ -91,7 +82,7 @@ export default async function handler(req, res) {
 
   if (page && !id) {
     const dest = `${proto}://${host}/#${encodeURIComponent(page)}`;
-    const title = PAGE_TITLES[page] || `${page} \u2014 rankvault`;
+    const title = PAGE_TITLES[page] || `${page} — rankvault`;
     const desc = PAGE_DESC[page] || PAGE_DESC_EXTRA[page] || 'quiet file hosting. drop a file, share only if you want. discord cards on every link.';
     if (!isBot(req.headers['user-agent']) && req.query.embed !== '1') {
       res.status(302).setHeader('Location', dest);
@@ -116,7 +107,7 @@ export default async function handler(req, res) {
   const kind = live && row.mime ? String(row.mime).split(';')[0] : 'file';
   const caption = live ? String((row.meta && row.meta.caption) || row.caption || '') : '';
   const desc = live
-    ? `${caption ? caption + ' \u00b7 ' : ''}${kind} \u00b7 ${prettySize(row.size)}${row.author ? ' \u00b7 ' + row.author : ''} \u00b7 public drop on rankvault`
+    ? `${caption ? caption + ' · ' : ''}${kind} · ${prettySize(row.size)}${row.author ? ' · ' + row.author : ''} · public drop on rankvault`
     : 'a quiet file drop. open to download.';
   const mime = String((live && row.mime) || '');
   const fileUrl = String((live && row.file_url) || '');

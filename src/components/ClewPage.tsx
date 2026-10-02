@@ -1,79 +1,73 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishShare, shareUrls } from '../lib/cloudShare';
-
-function uid() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-}
+import { publishLocalFile } from '../lib/cloudShare';
 
 export default function ClewPage() {
-  const [lines, setLines] = useState(['', '', '']);
+  const [title, setTitle] = useState('');
+  const [body, setBody] = useState('');
+  const [sign, setSign] = useState('');
   const [busy, setBusy] = useState(false);
-  const [err, setErr] = useState('');
   const [embed, setEmbed] = useState('');
+  const [error, setError] = useState('');
+  const [copied, setCopied] = useState(false);
+  const [warn, setWarn] = useState<string | null>(null);
 
-  const setLine = (i: number, v: string) => {
-    setLines((prev) => prev.map((x, idx) => (idx === i ? v : x)));
-  };
+  const letter = useMemo(() => {
+    const head = title.trim() || 'untitled letter';
+    const who = sign.trim() ? `\n\n— ${sign.trim()}` : '';
+    return `${head}\n\n${body.trim()}${who}\n`;
+  }, [title, body, sign]);
 
-  const wind = async () => {
-    const body = lines.map((l, i) => `${i + 1}. ${l.trim()}`).filter((l) => !/^\d+\.\s*$/.test(l)).join('\n');
-    if (!body.trim()) { setErr('wind at least one thread'); return; }
-    setErr('');
+  const send = async () => {
+    if (!body.trim()) return;
     setBusy(true);
-    try {
-      const dataUrl = `data:text/plain;base64,${btoa(unescape(encodeURIComponent(body)))}`;
-      const id = uid();
-      const res = await publishShare({
-        id,
-        name: 'clew.txt',
-        type: 'text/plain',
-        size: new Blob([body]).size,
-        dataUrl,
-        author: 'clew',
-      });
-      if (!res.ok) throw new Error(res.error || 'clew slipped');
-      const urls = shareUrls(res.id || id);
-      setEmbed(urls.embed);
-      try { await navigator.clipboard.writeText(urls.embed); } catch {}
-    } catch (e: any) {
-      setErr(e?.message || 'clew slipped');
-    } finally {
-      setBusy(false);
+    setError('');
+    const file = new File([letter], `${(title.trim() || 'letter').slice(0, 48).replace(/[^\w.-]+/g, '-')}.txt`, {
+      type: 'text/plain',
+    });
+    const res = await publishLocalFile(file, {
+      caption: title.trim().slice(0, 140) || 'a letter from clew',
+      author: sign.trim() || undefined,
+      color: '#64D2FF',
+    });
+    setBusy(false);
+    if (!res.ok || !res.id) {
+      setError(res.error || 'the letter did not leave');
+      return;
     }
+    setEmbed(res.embed || '');
+    setWarn(res.warn || (file.size > 200_000 ? 'long letter. the send may feel slow. there is no cutoff.' : null));
   };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-8">
-          <p className="text-[#0a84ff] text-sm mb-2">clew</p>
-          <h1 className="text-3xl font-semibold mb-3 tracking-tight">wind a few notes into one thread.</h1>
-          <p className="text-neutral-400 text-sm mb-6">not a file vault. three short lines become a single public drop with a discord /s card.</p>
-          <div className="space-y-3">
-            {lines.map((l, i) => (
-              <input
-                key={i}
-                value={l}
-                onChange={(e) => setLine(i, e.target.value)}
-                placeholder={`thread ${i + 1}`}
-                className="w-full rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-white placeholder:text-neutral-600 outline-none focus:border-[#0a84ff]/50 transition"
-              />
-            ))}
-          </div>
-          <button
-            onClick={() => void wind()}
-            disabled={busy}
-            className="mt-5 px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 disabled:opacity-50 transition"
-          >
-            {busy ? 'winding…' : 'publish thread'}
-          </button>
-          {err && <p className="text-xs text-red-400 mt-4">{err}</p>}
-          {embed && <p className="text-xs text-neutral-400 mt-4 break-all">discord card copied · {embed}</p>}
+      <main className="mx-auto max-w-2xl px-5 pb-24 pt-10">
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}>
+          <p className="text-[12px] uppercase tracking-[0.16em] text-white/45">clew</p>
+          <h1 className="mt-2 text-[34px] font-semibold tracking-[-0.04em]">a letter, not a cabinet</h1>
+          <p className="mt-3 text-[15px] leading-relaxed text-white/60">
+            Write in the tab. Sending turns the letter into a text file on the share table and hands you a Discord card. Nothing is refused for length — a very long one may just feel slow.
+          </p>
         </motion.div>
-      </div>
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }} className="glass mt-8 rounded-3xl p-5">
+          <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="subject" className="w-full rounded-2xl bg-black/30 px-4 py-3 text-[15px] outline-none placeholder:text-white/30" />
+          <textarea value={body} onChange={(e) => setBody(e.target.value)} placeholder="the letter" rows={8} className="mt-3 w-full resize-y rounded-2xl bg-black/30 px-4 py-3 text-[15px] leading-relaxed outline-none placeholder:text-white/30" />
+          <input value={sign} onChange={(e) => setSign(e.target.value)} placeholder="signed" className="mt-3 w-full rounded-2xl bg-black/30 px-4 py-3 text-[15px] outline-none placeholder:text-white/30" />
+          <button onClick={send} disabled={!body.trim() || busy} className="mt-4 rounded-full bg-white px-5 py-2.5 text-[14px] font-medium text-black transition hover:bg-neutral-200 disabled:opacity-50">
+            {busy ? 'filing…' : 'file the letter'}
+          </button>
+          {warn && <p className="mt-3 text-[13px] text-amber-200/80">{warn}</p>}
+          {error && <p className="mt-3 text-[13px] text-red-300/90">{error}</p>}
+          {embed && (
+            <div className="mt-4 flex items-center gap-2">
+              <p className="min-w-0 flex-1 truncate text-[13px] text-white/70">{embed}</p>
+              <button onClick={async () => { await navigator.clipboard.writeText(embed); setCopied(true); }} className="shrink-0 rounded-full bg-white/10 px-3 py-1.5 text-[12px] text-white">{copied ? 'copied' : 'copy'}</button>
+            </div>
+          )}
+        </motion.div>
+      </main>
     </div>
   );
 }

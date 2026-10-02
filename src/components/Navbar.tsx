@@ -5,6 +5,10 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'outhaul', label: 'outhaul' },
+  { to: 'jackstay', label: 'jackstay' },
+  { to: 'parrel', label: 'parrel' },
+  { to: 'luff', label: 'luff' },
   { to: 'clew', label: 'clew' },
   { to: 'sprit', label: 'sprit' },
   { to: 'fid', label: 'fid' },
@@ -35,6 +39,15 @@ const primary: NavItem[] = [
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
+  {
+    title: 'yard',
+    items: [
+      { to: 'outhaul', label: 'outhaul' },
+      { to: 'jackstay', label: 'jackstay' },
+      { to: 'parrel', label: 'parrel' },
+      { to: 'luff', label: 'luff' },
+    ],
+  },
   {
     title: 'deck',
     items: [
@@ -87,6 +100,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'outhaul', label: 'outhaul' },
+      { to: 'luff', label: 'luff' },
       { to: 'clew', label: 'clew' },
       { to: 'sprit', label: 'sprit' },
       { to: 'fid', label: 'fid' },
@@ -107,6 +122,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'jackstay', label: 'jackstay' },
+      { to: 'parrel', label: 'parrel' },
       { to: 'gudgeon', label: 'gudgeon' },
       { to: 'bellows', label: 'bellows' },
       { to: 'hash', label: 'hash' },
@@ -119,7 +136,7 @@ const groups: { title: string; items: NavItem[] }[] = [
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [openGroup, setOpenGroup] = useState<string | null>('deck');
+  const [openGroup, setOpenGroup] = useState<string | null>('yard');
   const { user, isLoggedIn, logout } = useAuth();
   const { navigate } = useRouter();
   const userMenuRef = useRef<HTMLDivElement>(null);

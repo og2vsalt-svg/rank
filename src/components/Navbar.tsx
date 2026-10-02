@@ -5,10 +5,9 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
-  { to: 'stemson', label: 'stemson' },
-  { to: 'gammon', label: 'gammon' },
-  { to: 'knighthead', label: 'knighthead' },
-  { to: 'cathead', label: 'cathead' },
+  { to: 'tiller', label: 'tiller' },
+  { to: 'lodestone', label: 'lodestone' },
+  { to: 'bosun', label: 'bosun' },
   { to: 'drop', label: 'drop' },
   { to: 'vault', label: 'vault' },
 ];
@@ -17,6 +16,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'new',
     items: [
+      { to: 'tiller', label: 'tiller' },
+      { to: 'lodestone', label: 'lodestone' },
+      { to: 'bosun', label: 'bosun' },
       { to: 'stemson', label: 'stemson' },
       { to: 'gammon', label: 'gammon' },
       { to: 'knighthead', label: 'knighthead' },
@@ -24,9 +26,6 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'cleat', label: 'cleat' },
       { to: 'lantern', label: 'lantern' },
       { to: 'splice', label: 'splice' },
-      { to: 'quayage', label: 'quayage' },
-      { to: 'painter', label: 'painter' },
-      { to: 'kevel', label: 'kevel' },
     ],
   },
   {
@@ -94,6 +93,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'tiller', label: 'tiller' },
       { to: 'painter', label: 'painter' },
       { to: 'oakum', label: 'oakum' },
       { to: 'scull', label: 'scull' },
@@ -107,6 +107,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'lodestone', label: 'lodestone' },
+      { to: 'bosun', label: 'bosun' },
       { to: 'stemson', label: 'stemson' },
       { to: 'gammon', label: 'gammon' },
       { to: 'knighthead', label: 'knighthead' },

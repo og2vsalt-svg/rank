@@ -9,13 +9,16 @@ export default function middleware(request) {
   const ua = request.headers.get('user-agent') || '';
   const url = new URL(request.url);
   const parts = url.pathname.split('/').filter(Boolean);
-  const slip = parts[0] === 'spirket' || parts[0] === 'spirketing';
-  if (!BOT.test(ua) && !slip) return;
+  if (parts[0] === 'spirket' || parts[0] === 'spirketing') {
+    const dest = new URL('/api/spirket', request.url);
+    if (parts[0] === 'spirket' && parts[1]) dest.searchParams.set('id', decodeURIComponent(parts[1]));
+    else dest.searchParams.set('page', 'spirketing');
+    return Response.redirect(dest.toString(), 307);
+  }
+  if (!BOT.test(ua)) return;
   const dest = new URL('/api/embed', request.url);
   if (!parts.length) dest.searchParams.set('page', 'home');
   else if (parts[0] === 'parcel' && parts[1]) dest.searchParams.set('parcel', decodeURIComponent(parts[1]));
-  else if (parts[0] === 'spirket' && parts[1]) dest.searchParams.set('spirket', decodeURIComponent(parts[1]));
-  else if (parts[0] === 'spirketing') dest.searchParams.set('page', 'spirketing');
   else if (parts[0] === 'room' && parts[1]) dest.searchParams.set('room', decodeURIComponent(parts[1]));
   else if (parts.length >= 2 && ID_PREFIX.has(parts[0])) dest.searchParams.set('id', decodeURIComponent(parts[1]));
   else dest.searchParams.set('page', decodeURIComponent(parts[0]).toLowerCase());

@@ -1,4 +1,6 @@
 export const EXTRA_TITLES = {
+  washboard: 'washboard — rinse a local file into the share table',
+  beakhead: 'beakhead — a handover, not a drawer',
   windlass: 'windlass — read the head, then file it',
   thole: 'thole — a pin for a person',
   transom: 'transom — a still, lifted',
@@ -57,6 +59,8 @@ export const EXTRA_TITLES = {
 };
 
 export const EXTRA_DESC = {
+  washboard: 'Drop a local file into the share table and stamp a Discord accent. Large drops are warned, never refused. Paste /washboard or /s.',
+  beakhead: 'A handover slip, plus an optional local file. Both land in the share table. Discord unfurls each card. Not a cabinet.',
   windlass: 'Read the first sixteen bytes of a local file, then file it into the share table. Discord unfurls /windlass and /s. Large drops are warned, never refused.',
   thole: 'A named slip. The line lands as a text row, and an optional local file rides as its own card. Discord unfurls both. Not a cabinet.',
   transom: 'Lift a local still in the tab and file the PNG. Image cards unfurl with the picture. Large stills are warned, never refused.',

@@ -5,9 +5,8 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'hawse', label: 'hawse' },
   { to: 'tiller', label: 'tiller' },
-  { to: 'lodestone', label: 'lodestone' },
-  { to: 'bosun', label: 'bosun' },
   { to: 'drop', label: 'drop' },
   { to: 'vault', label: 'vault' },
 ];
@@ -16,6 +15,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'new',
     items: [
+      { to: 'hawse', label: 'hawse' },
+      { to: 'deadeye', label: 'deadeye' },
+      { to: 'futtock', label: 'futtock' },
       { to: 'tiller', label: 'tiller' },
       { to: 'lodestone', label: 'lodestone' },
       { to: 'bosun', label: 'bosun' },
@@ -23,9 +25,6 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'gammon', label: 'gammon' },
       { to: 'knighthead', label: 'knighthead' },
       { to: 'cathead', label: 'cathead' },
-      { to: 'cleat', label: 'cleat' },
-      { to: 'lantern', label: 'lantern' },
-      { to: 'splice', label: 'splice' },
     ],
   },
   {
@@ -75,6 +74,7 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'ambo', label: 'ambo' },
       { to: 'sedilia', label: 'sedilia' },
       { to: 'transom', label: 'transom' },
+      { to: 'deadeye', label: 'deadeye' },
     ],
   },
   {
@@ -102,11 +102,13 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'fairlead', label: 'fairlead' },
       { to: 'mooring', label: 'mooring' },
       { to: 'inkwell', label: 'inkwell' },
+      { to: 'hawse', label: 'hawse' },
     ],
   },
   {
     title: 'tools',
     items: [
+      { to: 'futtock', label: 'futtock' },
       { to: 'lodestone', label: 'lodestone' },
       { to: 'bosun', label: 'bosun' },
       { to: 'stemson', label: 'stemson' },

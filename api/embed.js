@@ -43,6 +43,20 @@ async function loadShare(id) {
   }
 }
 
+async function loadParcel(id) {
+  try {
+    const url = `${SUPABASE_URL}/rest/v1/parcels?id=eq.${encodeURIComponent(id)}&select=id,title,note,author,accent,items&limit=1`;
+    const r = await fetch(url, {
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
+    });
+    if (!r.ok) return null;
+    const rows = await r.json();
+    return Array.isArray(rows) && rows[0] ? rows[0] : null;
+  } catch {
+    return null;
+  }
+}
+
 const PAGE_TITLES = { ...EXTRA_TITLES, stemson: 'stemson — rankvault', gammon: 'gammon — rankvault', knighthead: 'knighthead — rankvault', cathead: 'cathead — rankvault' };
 const PAGE_DESC_EXTRA = {
   stemson: 'send local files into the share database. discord cards on every link. no size cap.',
@@ -63,8 +77,31 @@ export default async function handler(req, res) {
   const id = (req.query.id || '').toString().trim();
   const page = (req.query.page || '').toString().trim().toLowerCase();
   const room = (req.query.room || '').toString().trim();
+  const parcel = (req.query.parcel || '').toString().trim();
   const proto = (req.headers['x-forwarded-proto'] || 'https').toString();
   const host = (req.headers['x-forwarded-host'] || req.headers.host || '').toString();
+
+  if (parcel && !id) {
+    const row = await loadParcel(parcel);
+    const dest = `${proto}://${host}/#satchel?f=${encodeURIComponent(parcel)}`;
+    const count = row && Array.isArray(row.items) ? row.items.length : 0;
+    const title = row ? `${row.title || 'parcel'} — rankvault` : 'parcel — rankvault';
+    const desc = row
+      ? `${row.note ? row.note + ' · ' : ''}${count} file${count === 1 ? '' : 's'} filed in the share table`
+      : 'a pack of filed files. discord cards on the drops inside.';
+    const image = row && Array.isArray(row.items)
+      ? (row.items.find((it) => String(it.mime || '').startsWith('image/') && /^https?:\/\//i.test(it.file_url || '')) || {}).file_url
+      : undefined;
+    if (!isBot(req.headers['user-agent']) && req.query.embed !== '1') {
+      res.status(302).setHeader('Location', dest);
+      res.end();
+      return;
+    }
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
+    res.status(200).send(pageHtml({ title, desc, image, url: dest, color: (row && row.accent) || '#0A84FF' }));
+    return;
+  }
 
   if (room && !id) {
     const dest = `${proto}://${host}/#gammon?f=${encodeURIComponent(room)}`;

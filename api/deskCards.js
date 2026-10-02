@@ -1,4 +1,8 @@
 export const EXTRA_TITLES = {
+  garboard: 'garboard — a memo, not a drawer',
+  treenail: 'treenail — two files, one receipt',
+  wales: 'wales — a reading list, filed',
+  rudder: 'rudder — point it, then hand it over',
   bowsprit: 'bowsprit — a cover, then the file',
   skeg: 'skeg — a still, softened',
   gripe: 'gripe — a handover list',
@@ -31,6 +35,10 @@ export const EXTRA_TITLES = {
 };
 
 export const EXTRA_DESC = {
+  garboard: 'Record a memo in the tab, or write the line. The audio lands in the share table. Discord unfurls the card. Long memos are warned, never refused.',
+  treenail: 'Hash two local files and file the receipt. Discord unfurls same or different. The originals stay on your machine. Large pairs are warned, never refused.',
+  wales: 'Stack addresses, then file one markdown list into the share table. Discord unfurls the card. Not a cabinet.',
+  rudder: 'A heading, a note, and an optional local file filed into the share table. Discord unfurls the handover. Large drops are warned, never refused.',
   bowsprit: 'Write the Discord line, attach a local file if you have one, and file it into the share table. Large drops are warned, never refused.',
   skeg: 'Soften a local still in the tab, then file the PNG. Image cards unfurl with the picture. Large stills are warned, never refused.',
   gripe: 'A handover list. Filing writes a markdown receipt into the share table. Discord unfurls the card. Not a vault drawer.',

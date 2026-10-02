@@ -5,6 +5,10 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'clew', label: 'clew' },
+  { to: 'sprit', label: 'sprit' },
+  { to: 'fid', label: 'fid' },
+  { to: 'wharf', label: 'wharf' },
   { to: 'thrum', label: 'thrum' },
   { to: 'limber', label: 'limber' },
   { to: 'garnet', label: 'garnet' },
@@ -34,6 +38,10 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'deck',
     items: [
+      { to: 'clew', label: 'clew' },
+      { to: 'sprit', label: 'sprit' },
+      { to: 'fid', label: 'fid' },
+      { to: 'wharf', label: 'wharf' },
       { to: 'thrum', label: 'thrum' },
       { to: 'limber', label: 'limber' },
       { to: 'garnet', label: 'garnet' },
@@ -79,6 +87,10 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'clew', label: 'clew' },
+      { to: 'sprit', label: 'sprit' },
+      { to: 'fid', label: 'fid' },
+      { to: 'wharf', label: 'wharf' },
       { to: 'thrum', label: 'thrum' },
       { to: 'limber', label: 'limber' },
       { to: 'garnet', label: 'garnet' },
@@ -197,7 +209,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">every desk is still a hash route. type #name for the older ones.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">every desk is still a hash route. type #name for the older ones. paste /s links in Discord.</p>
         </div>
       </div>
     </nav>

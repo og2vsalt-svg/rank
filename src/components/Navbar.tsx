@@ -6,16 +6,17 @@ type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
+  { to: 'hawse', label: 'hawse' },
   { to: 'fid', label: 'fid' },
-  { to: 'cuddy', label: 'cuddy' },
-  { to: 'pelorus', label: 'pelorus' },
-  { to: 'shelf', label: 'shelf' },
+  { to: 'futtock', label: 'futtock' },
+  { to: 'samson', label: 'samson' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'hosting',
     items: [
+      { to: 'hawse', label: 'hawse' },
       { to: 'fid', label: 'fid' },
       { to: 'vault', label: 'vault' },
       { to: 'waybill', label: 'waybill' },
@@ -35,6 +36,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'new',
     items: [
+      { to: 'hawse', label: 'hawse' },
+      { to: 'futtock', label: 'futtock' },
+      { to: 'samson', label: 'samson' },
       { to: 'fid', label: 'fid' },
       { to: 'cuddy', label: 'cuddy' },
       { to: 'pelorus', label: 'pelorus' },
@@ -73,6 +77,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'hawse', label: 'hawse' },
+      { to: 'futtock', label: 'futtock' },
+      { to: 'samson', label: 'samson' },
       { to: 'waybill', label: 'waybill' },
       { to: 'washboard', label: 'washboard' },
       { to: 'beakhead', label: 'beakhead' },
@@ -91,6 +98,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'samson', label: 'samson' },
       { to: 'telltale', label: 'telltale' },
       { to: 'hash', label: 'hash' },
       { to: 'convert', label: 'convert' },
@@ -195,7 +203,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">paste /waybill, /telltale, or /s in Discord for a card. older desks stay on their hash routes.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">paste /hawse, /futtock, /samson, /parcel, or /s in Discord for a card. older desks stay on their routes.</p>
         </div>
       </div>
     </nav>

@@ -57,12 +57,24 @@ async function loadParcel(id) {
   }
 }
 
-const PAGE_TITLES = { ...EXTRA_TITLES, stemson: 'stemson — rankvault', gammon: 'gammon — rankvault', knighthead: 'knighthead — rankvault', cathead: 'cathead — rankvault' };
+const PAGE_TITLES = {
+  ...EXTRA_TITLES,
+  stemson: 'stemson — rankvault',
+  gammon: 'gammon — rankvault',
+  knighthead: 'knighthead — rankvault',
+  cathead: 'cathead — rankvault',
+  hawse: 'hawse — rankvault',
+  futtock: 'futtock — rankvault',
+  samson: 'samson — rankvault',
+};
 const PAGE_DESC_EXTRA = {
   stemson: 'send local files into the share database. discord cards on every link. no size cap.',
   gammon: 'a shared room for local files. each drop still unfurls on discord.',
   knighthead: 'a sha-256 receipt filed to the share database.',
   cathead: 'the public log of files already landed.',
+  hawse: 'file several local files as one parcel. the link unfurls on discord.',
+  futtock: 'a reading desk. text files land in the share database with an excerpt on the card.',
+  samson: 'paint the title, caption, and accent on a filed drop before you paste it in discord.',
 };
 const PAGE_DESC = { ...EXTRA_DESC };
 
@@ -83,9 +95,9 @@ export default async function handler(req, res) {
 
   if (parcel && !id) {
     const row = await loadParcel(parcel);
-    const dest = `${proto}://${host}/#satchel?f=${encodeURIComponent(parcel)}`;
+    const dest = `${proto}://${host}/#hawse?f=${encodeURIComponent(parcel)}`;
     const count = row && Array.isArray(row.items) ? row.items.length : 0;
-    const title = row ? `${row.title || 'parcel'} — rankvault` : 'parcel — rankvault';
+    const title = row ? `${row.title || 'parcel'} — rankvault` : 'hawse parcel — rankvault';
     const desc = row
       ? `${row.note ? row.note + ' · ' : ''}${count} file${count === 1 ? '' : 's'} filed in the share table`
       : 'a pack of filed files. discord cards on the drops inside.';

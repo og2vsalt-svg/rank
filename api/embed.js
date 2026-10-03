@@ -230,6 +230,20 @@ export default async function handler(req, res) {
     sendCard(res, ua, req.query.embed, dest, { title: 'gammon room — rankvault', desc: 'a shared file room.', url: dest, color: '#0A84FF' });
     return;
   }
+  if (page === 'counter' && id) {
+    const row = await sbGet(`counter_marks?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
+    const dest = `${proto}://${host}/counter/${encodeURIComponent(id)}`;
+    const share = row && row.share_id ? await loadShare(row.share_id) : null;
+    const image = share && String(share.mime || '').startsWith('image/') && /^https?:\/\//i.test(share.file_url || '') ? share.file_url : undefined;
+    sendCard(res, ua, req.query.embed, dest, {
+      title: row ? `${row.mark} — counter` : 'counter — rankvault',
+      desc: row ? `${row.for_whom ? 'for ' + row.for_whom + ' · ' : ''}${share ? prettySize(share.size) + ' · ' : ''}a mark under the stern` : 'a mark, not a drawer.',
+      image,
+      url: dest,
+      color: (row && row.hue) || '#5AC8FA',
+    });
+    return;
+  }
   if (page && !id) {
     const dest = `${proto}://${host}/#${encodeURIComponent(page)}`;
     sendCard(res, ua, req.query.embed, dest, {

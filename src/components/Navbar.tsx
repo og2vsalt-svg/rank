@@ -11,6 +11,7 @@ const primary: NavItem[] = [
   { to: 'limber', label: 'limber' },
   { to: 'lazarette', label: 'lazarette' },
   { to: 'vault', label: 'vault' },
+  { to: 'counter', label: 'counter' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -34,6 +35,7 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'folio', label: 'folio' },
       { to: 'vault', label: 'vault' },
       { to: 'waybill', label: 'waybill' },
+      { to: 'counter', label: 'counter' },
     ],
   },
   {

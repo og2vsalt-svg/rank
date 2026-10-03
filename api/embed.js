@@ -12,7 +12,7 @@ function esc(s) {
     .replace(/&/g, amp + 'amp;')
     .replace(/</g, amp + 'lt;')
     .replace(/>/g, amp + 'gt;')
-    .replace(/"/g, amp + 'quot;')
+    .replace(/\"/g, amp + 'quot;')
     .replace(/'/g, amp + '#39;');
 }
 
@@ -46,74 +46,13 @@ async function loadShare(id) {
   return sbGet(`public_shares?id=eq.${encodeURIComponent(id)}&select=id,name,mime,size,file_url,expires_at,is_public,author,download_count,meta,caption&limit=1`);
 }
 
-async function loadParcel(id) {
-  return sbGet(`parcels?id=eq.${encodeURIComponent(id)}&select=id,title,note,author,accent,items&limit=1`);
-}
-
-async function loadAsk(id) {
-  return sbGet(`file_requests?id=eq.${encodeURIComponent(id)}&select=id,title,note,author,fulfilled_share_id&limit=1`);
-}
-
-async function loadReceipt(id) {
-  return sbGet(`keelson_receipts?id=eq.${encodeURIComponent(id)}&select=id,share_id,from_name,to_name,note,file_name,size&limit=1`);
-}
-
-async function loadWatch(id) {
-  return sbGet(`capstan_watches?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
-}
-
-async function loadPin(id) {
-  return sbGet(`treenails?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
-}
-
-async function loadCheck(id) {
-  return sbGet(`fairlead_checks?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
-}
-
 const PAGE_TITLES = {
   ...EXTRA_TITLES,
+  sounding: 'sounding — a reading, not a drawer',
+  marline: 'marline — a log line, not a drawer',
   folio: 'folio — a local file, filed',
-  ledger: 'ledger — addresses, not drawers',
-  stemson: 'stemson — rankvault',
-  gammon: 'gammon — rankvault',
-  knighthead: 'knighthead — rankvault',
-  cathead: 'cathead — rankvault',
-  hawse: 'hawse — rankvault',
-  futtock: 'futtock — rankvault',
-  samson: 'samson — rankvault',
-  pintle: 'pintle — a margin beside the file',
-  bobstay: 'bobstay — ask for a file',
-  keelson: 'keelson — a handoff, not a drawer',
-  garboard: 'garboard — a seam between two drops',
-  sternpost: 'sternpost — a berth for one file',
-  breasthook: 'breasthook — problem, change, proof',
-  treenail: 'treenail — a pin, not a drawer',
-  fairlead: 'fairlead — a checklist, not a drawer',
-  hounds: 'hounds — a line, not a drawer',
-  seizing: 'seizing — a pile on one line',
   deadeye: 'deadeye — a witness, not a drawer',
-};
-const PAGE_DESC_EXTRA = {
-  folio: 'Drop a local file into the share table. Discord unfurls /s. Large drops are warned, never refused.',
-  ledger: 'Pin an address on the links shelf. Not a file cabinet. Discord unfurls /ledger.',
-  stemson: 'send local files into the share database. discord cards on every link. no size cap.',
-  gammon: 'a shared room for local files. each drop still unfurls on discord.',
-  knighthead: 'a sha-256 receipt filed to the share database.',
-  cathead: 'the public log of files already landed.',
-  hawse: 'file several local files as one parcel. the link unfurls on discord.',
-  futtock: 'a reading desk. text files land in the share database with an excerpt on the card.',
-  samson: 'paint the title, caption, and accent on a filed drop before you paste it in discord.',
-  pintle: 'file a local drop, then leave a margin beside it. discord unfurls /s and /pintle. large drops are warned, never refused.',
-  bobstay: 'ask for a file. an answer lands in the share table. discord unfurls /bobstay.',
-  keelson: 'hand a local file to someone by name. bytes land in the share table. discord unfurls /keelson.',
-  garboard: 'note the seam between two files already filed. discord unfurls /garboard.',
-  sternpost: 'name a berth and file a local drop into the share table. discord unfurls /sternpost. large drops are warned, never refused.',
-  breasthook: 'a three-line brief filed as markdown, with an optional local attachment. discord unfurls /breasthook.',
-  treenail: 'name why a drop exists. an optional local file lands in the share table. discord unfurls /treenail. large drops are warned, never refused.',
-  fairlead: 'a checklist with an optional proof file in the share table. discord unfurls /fairlead. large drops are warned, never refused.',
-  hounds: 'pair a line with a local file. the row lands in the hounds table. discord unfurls /hounds. large drops are warned, never refused.',
-  seizing: 'file several local drops onto one line. each row unfurls on discord. large drops are warned, never refused.',
-  deadeye: 'name who saw the file and write one line. the local drop lands in the deadeyes table. discord unfurls /deadeye. large drops are warned, never refused.',
+  hounds: 'hounds — a line, not a drawer',
 };
 const PAGE_DESC = { ...EXTRA_DESC };
 
@@ -138,122 +77,43 @@ function sendCard(res, ua, embedFlag, dest, card) {
 export default async function handler(req, res) {
   const id = (req.query.id || '').toString().trim();
   const page = (req.query.page || '').toString().trim().toLowerCase();
-  const room = (req.query.room || '').toString().trim();
-  const parcel = (req.query.parcel || '').toString().trim();
-  const ask = (req.query.ask || '').toString().trim();
-  const receipt = (req.query.receipt || '').toString().trim();
-  const pin = (req.query.pin || '').toString().trim();
-  const check = (req.query.check || '').toString().trim();
   const proto = (req.headers['x-forwarded-proto'] || 'https').toString();
   const host = (req.headers['x-forwarded-host'] || req.headers.host || '').toString();
   const ua = req.headers['user-agent'];
+
+  if (page === 'sounding' && id) {
+    const row = await sbGet(`soundings?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
+    const dest = `${proto}://${host}/sounding/${encodeURIComponent(id)}`;
+    const title = row ? `${row.ok ? 'answered' : 'no answer'} — sounding` : 'sounding — rankvault';
+    const desc = row ? `${row.target} · ${row.status_code || 0} · ${row.elapsed_ms || 0} ms` : 'a reading, not a drawer.';
+    sendCard(res, ua, req.query.embed, dest, { title, desc, url: dest, color: '#64D2FF' });
+    return;
+  }
+
+  if (page === 'marline' && id) {
+    const row = await sbGet(`marlines?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
+    const dest = `${proto}://${host}/marline/${encodeURIComponent(id)}`;
+    const title = row ? `${row.watch} watch — ${row.name}` : 'marline — rankvault';
+    const desc = row ? `${row.entry} · ${prettySize(row.size)}` : 'a log line and a file. not a drawer.';
+    const image = row && String(row.mime || '').startsWith('image/') && /^https?:\/\//i.test(row.file_url || '') ? row.file_url : undefined;
+    sendCard(res, ua, req.query.embed, dest, { title, desc, image, url: dest, color: '#30D158' });
+    return;
+  }
 
   if (page === 'deadeye' && id) {
     const row = await sbGet(`deadeyes?id=eq.${encodeURIComponent(id)}&select=id,witness,saw,name,mime,size,author,file_url&limit=1`);
     const dest = `${proto}://${host}/deadeye/${encodeURIComponent(id)}`;
     const title = row ? `${row.witness} — ${row.name}` : 'deadeye — rankvault';
-    const desc = row
-      ? `${row.saw} · ${prettySize(row.size)}${row.author ? ' · ' + row.author : ''} · witness on rankvault`
-      : 'a witness and a file. not a drawer.';
+    const desc = row ? `${row.saw} · ${prettySize(row.size)}` : 'a witness and a file. not a drawer.';
     const image = row && String(row.mime || '').startsWith('image/') && /^https?:\/\//i.test(row.file_url || '') ? row.file_url : undefined;
     sendCard(res, ua, req.query.embed, dest, { title, desc, image, url: dest, color: '#64D2FF' });
-    return;
-  }
-
-  if (page === 'hounds' && id) {
-    const row = await sbGet(`hounds?id=eq.${encodeURIComponent(id)}&select=id,line,name,mime,size,note,author,file_url&limit=1`);
-    const dest = `${proto}://${host}/hounds/${encodeURIComponent(id)}`;
-    const title = row ? `${row.line} — ${row.name}` : 'hounds — rankvault';
-    const desc = row
-      ? `${row.note ? row.note + ' · ' : ''}${prettySize(row.size)}${row.author ? ' · ' + row.author : ''} · paired on rankvault`
-      : 'a line and a file. not a drawer.';
-    const image = row && String(row.mime || '').startsWith('image/') && /^https?:\/\//i.test(row.file_url || '') ? row.file_url : undefined;
-    sendCard(res, ua, req.query.embed, dest, { title, desc, image, url: dest, color: '#64D2FF' });
-    return;
-  }
-
-  if (check || (page === 'fairlead' && id)) {
-    const key = check || id;
-    const row = await loadCheck(key);
-    const dest = `${proto}://${host}/fairlead/${encodeURIComponent(key)}`;
-    const count = row && Array.isArray(row.steps) ? row.steps.length : 0;
-    const done = row && Array.isArray(row.steps) ? row.steps.filter((step) => step.done).length : 0;
-    const title = row ? `${row.title} — fairlead` : 'fairlead — rankvault';
-    const desc = row
-      ? `${row.note ? row.note + ' · ' : ''}${done}/${count} steps${row.file_name ? ' · ' + row.file_name : ''}`
-      : 'a checklist beside the share table. not a drawer.';
-    let image;
-    if (row && row.share_id) {
-      const share = await loadShare(row.share_id);
-      if (share && String(share.mime || '').startsWith('image/') && /^https?:\/\//i.test(share.file_url || '')) image = share.file_url;
-    }
-    sendCard(res, ua, req.query.embed, dest, { title, desc, image, url: dest, color: '#64D2FF' });
-    return;
-  }
-
-  if (pin && (page === 'treenail' || page === 'capstan')) {
-    const row = page === 'treenail' ? await loadPin(pin) : await loadWatch(pin);
-    const dest = `${proto}://${host}/${page}/${encodeURIComponent(pin)}`;
-    const title = row ? `${row.label || row.title || 'pin'} — ${page}` : `${page} — rankvault`;
-    const desc = row
-      ? `${row.note ? row.note + ' · ' : ''}${row.file_name || 'note only'}${row.share_id ? ' · filed' : ''}`
-      : 'a pin beside the share table. not a drawer.';
-    let image;
-    if (row && row.share_id) {
-      const share = await loadShare(row.share_id);
-      if (share && String(share.mime || '').startsWith('image/') && /^https?:\/\//i.test(share.file_url || '')) image = share.file_url;
-    }
-    sendCard(res, ua, req.query.embed, dest, { title, desc, image, url: dest, color: (row && row.accent) || '#30D158' });
-    return;
-  }
-
-  if (receipt) {
-    const row = await loadReceipt(receipt);
-    const dest = `${proto}://${host}/keelson/${encodeURIComponent(receipt)}`;
-    const title = row ? `${row.file_name || 'file'} — for ${row.to_name || 'someone'}` : 'keelson — rankvault';
-    const desc = row
-      ? `${row.note ? row.note + ' · ' : ''}from ${row.from_name || 'keelson'} · ${prettySize(row.size)} · handoff on rankvault`
-      : 'a named handoff. the file lives in the share table.';
-    sendCard(res, ua, req.query.embed, dest, { title, desc, url: dest, color: '#0A84FF' });
-    return;
-  }
-
-  if (ask) {
-    const row = await loadAsk(ask);
-    const dest = `${proto}://${host}/bobstay/${encodeURIComponent(ask)}`;
-    const title = row ? `${row.title} — bobstay` : 'bobstay — rankvault';
-    const desc = row
-      ? `${row.note ? row.note + ' · ' : ''}${row.fulfilled_share_id ? 'answered' : 'open ask'}${row.author ? ' · ' + row.author : ''}`
-      : 'a request for a file. answers land in the share table.';
-    sendCard(res, ua, req.query.embed, dest, { title, desc, url: dest, color: '#0A84FF' });
-    return;
-  }
-
-  if (parcel && !id) {
-    const row = await loadParcel(parcel);
-    const dest = `${proto}://${host}/#hawse?f=${encodeURIComponent(parcel)}`;
-    const count = row && Array.isArray(row.items) ? row.items.length : 0;
-    const title = row ? `${row.title || 'parcel'} — rankvault` : 'hawse parcel — rankvault';
-    const desc = row
-      ? `${row.note ? row.note + ' · ' : ''}${count} file${count === 1 ? '' : 's'} filed in the share table`
-      : 'a pack of filed files. discord cards on the drops inside.';
-    const image = row && Array.isArray(row.items)
-      ? (row.items.find((it) => String(it.mime || '').startsWith('image/') && /^https?:\/\//i.test(it.file_url || '')) || {}).file_url
-      : undefined;
-    sendCard(res, ua, req.query.embed, dest, { title, desc, image, url: dest, color: (row && row.accent) || '#0A84FF' });
-    return;
-  }
-
-  if (room && !id) {
-    const dest = `${proto}://${host}/#gammon?f=${encodeURIComponent(room)}`;
-    sendCard(res, ua, req.query.embed, dest, { title: 'gammon room — rankvault', desc: 'a shared file room. discord cards on the drops inside.', url: dest, color: '#0A84FF' });
     return;
   }
 
   if (page && !id) {
     const dest = `${proto}://${host}/#${encodeURIComponent(page)}`;
     const title = PAGE_TITLES[page] || `${page} — rankvault`;
-    const desc = PAGE_DESC[page] || PAGE_DESC_EXTRA[page] || 'quiet file hosting. drop a file, share only if you want. discord cards on every link.';
+    const desc = PAGE_DESC[page] || 'quiet file hosting. drop a file, share only if you want. discord cards on every link.';
     sendCard(res, ua, req.query.embed, dest, { title, desc, url: dest, color: '#0A84FF' });
     return;
   }
@@ -264,18 +124,14 @@ export default async function handler(req, res) {
     res.end();
     return;
   }
-
   const row = await loadShare(id);
   const live = row && row.is_public && (!row.expires_at || +new Date(row.expires_at) > Date.now());
   const title = live ? ((row.meta && row.meta.cardTitle) || row.name) : 'rankvault drop';
   const kind = live && row.mime ? String(row.mime).split(';')[0] : 'file';
   const caption = live ? String((row.meta && row.meta.caption) || row.caption || '') : '';
-  const desc = live
-    ? `${caption ? caption + ' · ' : ''}${kind} · ${prettySize(row.size)}${row.author ? ' · ' + row.author : ''} · public drop on rankvault`
-    : 'a quiet file drop. open to download.';
+  const desc = live ? `${caption ? caption + ' · ' : ''}${kind} · ${prettySize(row.size)} · public drop on rankvault` : 'a quiet file drop. open to download.';
   const mime = String((live && row.mime) || '');
   const fileUrl = String((live && row.file_url) || '');
   const image = live && mime.startsWith('image/') && /^https?:\/\//i.test(fileUrl) ? fileUrl : undefined;
-  const accent = live && row.meta && row.meta.color ? String(row.meta.color) : '#0A84FF';
-  sendCard(res, ua, req.query.embed, appUrl, { title, desc, image, url: appUrl, color: accent });
+  sendCard(res, ua, req.query.embed, appUrl, { title, desc, image, url: appUrl, color: '#0A84FF' });
 }

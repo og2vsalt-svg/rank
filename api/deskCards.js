@@ -1,4 +1,6 @@
 export const EXTRA_TITLES = {
+  waybill: 'waybill — a handoff, not a drawer',
+  telltale: 'telltale — is the desk awake',
   garland: 'garland — a file, with a colour on the card',
   partners: 'partners — a board, not a cabinet',
   washboard: 'washboard — rinse a local file into the share table',
@@ -61,6 +63,8 @@ export const EXTRA_TITLES = {
 };
 
 export const EXTRA_DESC = {
+  waybill: 'A destination, a note, and an optional local file. The file lands in the share table. Discord unfurls /waybill and /s. Large drops are warned, never refused.',
+  telltale: 'A quiet check that the share database and waybill table are answering. Paste /telltale for the card.',
   garland: 'Pick a local file, stamp a colour, and file it into the share table. Discord unfurls /s. Large drops are warned, never refused.',
   partners: 'A shared board in its own table. An optional local file still lands in the share database. Discord unfurls the card. Not a cabinet.',
   washboard: 'Drop a local file into the share table and stamp a Discord accent. Large drops are warned, never refused. Paste /washboard or /s.',
@@ -84,7 +88,7 @@ export const EXTRA_DESC = {
   billet: 'An address on the links shelf, plus a one-line card Discord can unfurl. Not a file cabinet.',
   gunnel: 'Two columns — kept and sent — filed as one text drop. The /s link is the Discord card.',
   kevel: 'Pick a local file and a ready-by time. The bytes land in the share table. Discord unfurls the card. Large drops are warned, never refused.',
-  marline: 'Burn a caption onto a still in the tab, then file the PNG. Image cards unfurls with the picture.',
+  marline: 'Burn a caption onto a still in the tab, then file the PNG. Image cards unfurl with the picture.',
   fairlead: 'Save a link on the quay and file a card Discord can unfurl. Optional cover. Not a cabinet.',
   painter: 'Pick a local file, write the card line, stamp a colour. Bytes land in the share table. Large drops are warned, never refused.',
   oakum: 'Each local file is written to the share database. The shelf keeps the list. Discord unfurls the first card.',

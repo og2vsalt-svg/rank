@@ -1,93 +1,159 @@
-import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 import Navbar from './Navbar';
-import { publishLocalFile, shareUrls } from '../lib/cloudShare';
+import { useRouter } from './Router';
 
-async function digest(file: File) {
-  const buf = await file.arrayBuffer();
-  const hash = await crypto.subtle.digest('SHA-256', buf);
-  return [...new Uint8Array(hash)].map((b) => b.toString(16).padStart(2, '0')).join('');
-}
+const ease = [0.22, 1, 0.36, 1] as const;
+
+type Pin = {
+  id: string;
+  label: string;
+  note?: string | null;
+  share_id?: string | null;
+  file_name?: string | null;
+  created_at?: string;
+};
 
 function pretty(n: number) {
   if (n < 1024) return `${n} B`;
-  if (n < 1024 * 1024) return `${Math.round(n / 1024)} KB`;
-  return `${(n / (1024 * 1024)).toFixed(1)} MB`;
+  if (n < 1024 * 1024) return `${Math.max(1, Math.round(n / 1024))} KB`;
+  if (n < 1024 * 1024 * 1024) return `${(n / (1024 * 1024)).toFixed(1)} MB`;
+  return `${(n / (1024 * 1024 * 1024)).toFixed(2)} GB`;
 }
 
 export default function TreenailPage() {
-  const [a, setA] = useState<File | null>(null);
-  const [b, setB] = useState<File | null>(null);
-  const [line, setLine] = useState('');
-  const [busy, setBusy] = useState(false);
-  const [err, setErr] = useState('');
+  const { shareId } = useRouter();
+  const [label, setLabel] = useState('');
+  const [note, setNote] = useState('');
+  const [file, setFile] = useState<File | null>(null);
   const [warn, setWarn] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [status, setStatus] = useState('a pin, not a drawer.');
   const [card, setCard] = useState('');
-  const [match, setMatch] = useState<string>('');
+  const [pins, setPins] = useState<Pin[]>([]);
+  const [open, setOpen] = useState<Pin | null>(null);
 
-  async function fileIt() {
-    setErr('');
-    setMatch('');
-    if (!a || !b) {
-      setErr('pick both local files.');
+  async function load() {
+    const r = await fetch('/api/treenail');
+    const data = await r.json().catch(() => ({}));
+    if (r.ok && Array.isArray(data.pins)) setPins(data.pins);
+  }
+
+  useEffect(() => {
+    load().catch(() => setStatus('the pin board is quiet right now.'));
+  }, []);
+
+  useEffect(() => {
+    if (!shareId) return;
+    fetch(`/api/treenail?id=${encodeURIComponent(shareId)}`)
+      .then((r) => r.json())
+      .then((row) => {
+        if (row && row.id) setOpen(row);
+      })
+      .catch(() => {});
+  }, [shareId]);
+
+  function pick(next: File | null) {
+    setFile(next);
+    setWarn(next && next.size > 12 * 1024 * 1024 ? 'this file is heavy. the send can feel slow. it is still accepted.' : '');
+  }
+
+  async function publish() {
+    if (busy) return;
+    if (!label.trim()) {
+      setStatus('name the pin first.');
       return;
     }
     setBusy(true);
-    const slow = a.size + b.size > 24 * 1024 * 1024;
-    if (slow) setWarn('large pair. hashing and sending may feel slow. nothing is refused.');
-    const [ha, hb] = await Promise.all([digest(a), digest(b)]);
-    const same = ha === hb;
-    setMatch(same ? 'same bytes' : 'different bytes');
-    const body = [
-      line.trim(),
-      '',
-      `a  ${a.name}  ${pretty(a.size)}`,
-      ha,
-      `b  ${b.name}  ${pretty(b.size)}`,
-      hb,
-      '',
-      same ? 'the hashes match.' : 'the hashes do not match.',
-    ].filter((row, i) => i !== 0 || row).join('\n');
-    const file = new File([body], 'treenail.txt', { type: 'text/plain' });
-    const res = await publishLocalFile(file, {
-      cardTitle: same ? 'treenail · same' : 'treenail · different',
-      caption: (line.trim() || (same ? 'the two files match' : 'the two files differ')).slice(0, 280),
-      author: 'treenail',
-      color: same ? '#30D158' : '#FF9F0A',
-    });
-    setBusy(false);
-    if (!res.ok || !res.id) {
-      setErr(res.error || 'the share table did not take the receipt.');
-      return;
+    setStatus(file ? 'filing the local file, then the pin…' : 'setting the pin…');
+    try {
+      let share = '';
+      let fileName = '';
+      if (file) {
+        const body = new FormData();
+        body.append('file', file, file.name);
+        body.append('caption', (note || label).slice(0, 280));
+        body.append('cardTitle', label.trim());
+        body.append('author', 'treenail');
+        body.append('color', '#30D158');
+        const fr = await fetch('/api/share', { method: 'POST', body });
+        const fd = await fr.json();
+        if (!fr.ok) throw new Error(fd.error || 'the share table did not take the file');
+        share = fd.id;
+        fileName = file.name;
+        if (fd.warn) setWarn(String(fd.warn));
+      }
+      const r = await fetch('/api/treenail', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ label: label.trim(), note: note.trim(), shareId: share, fileName }),
+      });
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.error || 'the pin was not written');
+      const origin = window.location.origin;
+      const lines = [`${origin}/treenail/${data.id}`];
+      if (share) lines.push(`${origin}/s/${share}`);
+      setCard(lines.join('\n'));
+      setStatus('pinned. paste either link in Discord for a card.');
+      setLabel('');
+      setNote('');
+      setFile(null);
+      await load();
+    } catch (err) {
+      setStatus(err instanceof Error ? err.message : 'could not set the pin');
+    } finally {
+      setBusy(false);
     }
-    setCard(res.embed || shareUrls(res.id).embed);
-    if (res.warn) setWarn(res.warn);
   }
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <main className="mx-auto max-w-xl px-5 pb-24 pt-28">
-        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[13px] uppercase tracking-[0.16em] text-zinc-500">treenail</motion.p>
-        <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }} className="mt-2 text-4xl font-semibold tracking-tight">Two files, one receipt.</motion.h1>
-        <p className="mt-3 text-[15px] leading-relaxed text-zinc-400">Hash a pair in the tab, then file the comparison. Discord unfurls the receipt. The originals stay on your machine.</p>
-        <div className="mt-8 space-y-3 rounded-[28px] border border-white/10 bg-white/[0.04] p-4 shadow-[0_20px_60px_rgba(0,0,0,0.25)] backdrop-blur-xl">
-          <label className="block cursor-pointer rounded-2xl border border-dashed border-white/15 px-4 py-4 text-sm text-zinc-400 transition hover:border-white/30">
-            {a ? `a · ${a.name}` : 'first local file'}
-            <input type="file" className="hidden" onChange={(e) => setA(e.target.files?.[0] || null)} />
+      <main className="max-w-xl mx-auto px-5 pt-28 pb-24">
+        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[#30d158] text-sm font-medium tracking-wide">treenail</motion.p>
+        <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease }} className="mt-2 text-4xl font-semibold tracking-tight text-white">pin the why.</motion.h1>
+        <p className="mt-3 text-neutral-400 leading-relaxed">a short board of reasons, not another vault. an optional file from this machine still lands in the share table, and both links unfurl on Discord.</p>
+        {open && (
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mt-6 rounded-3xl bg-white/[0.05] border border-white/10 px-4 py-4">
+            <p className="text-white font-medium">{open.label}</p>
+            {open.note && <p className="mt-1 text-sm text-white/55">{open.note}</p>}
+            {open.share_id && (
+              <a href={`/s/${open.share_id}`} className="mt-2 inline-block text-sm text-[#30d158]">{open.file_name || 'open the filed drop'}</a>
+            )}
+          </motion.div>
+        )}
+        <div className="mt-8 space-y-3">
+          <input value={label} onChange={(e) => setLabel(e.target.value)} placeholder="what this pin is for" className="w-full rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-white placeholder:text-white/30 outline-none focus:border-[#30d158]/60 transition" />
+          <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="a line of context" rows={3} className="w-full rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-white placeholder:text-white/30 outline-none focus:border-[#30d158]/60 transition" />
+          <label className="block rounded-2xl border border-dashed border-white/15 bg-white/[0.03] px-4 py-6 text-center cursor-pointer hover:bg-white/[0.05] transition">
+            <input type="file" className="hidden" onChange={(e) => pick(e.target.files?.[0] || null)} />
+            <span className="text-white/80">{file ? file.name : 'optional local file'}</span>
+            {file && <span className="block mt-1 text-xs text-white/40">{pretty(file.size)}</span>}
           </label>
-          <label className="block cursor-pointer rounded-2xl border border-dashed border-white/15 px-4 py-4 text-sm text-zinc-400 transition hover:border-white/30">
-            {b ? `b · ${b.name}` : 'second local file'}
-            <input type="file" className="hidden" onChange={(e) => setB(e.target.files?.[0] || null)} />
-          </label>
-          <input value={line} onChange={(e) => setLine(e.target.value)} placeholder="optional line on the card" className="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none transition focus:border-[#30D158]/50" />
-          {match && <p className="text-sm text-zinc-300">{match}</p>}
-          {warn && <p className="text-xs text-amber-200/80">{warn}</p>}
-          <button onClick={fileIt} disabled={busy} className="w-full rounded-full bg-white py-3 text-sm font-medium text-black transition active:scale-[0.98] disabled:opacity-60">{busy ? 'hashing…' : 'file the receipt'}</button>
-          {err && <p className="text-sm text-red-300">{err}</p>}
+          {warn && <p className="text-amber-200/90 text-sm">{warn}</p>}
+          <button onClick={publish} disabled={busy} className="w-full rounded-full bg-white text-black font-medium py-3 disabled:opacity-40 transition active:scale-[0.99]">
+            {busy ? 'pinning…' : 'set the pin'}
+          </button>
+          <p className="text-sm text-white/45">{status}</p>
           {card && (
-            <button onClick={() => navigator.clipboard.writeText(card)} className="w-full rounded-2xl bg-white/8 px-3 py-3 text-left text-xs text-zinc-200">{card}<span className="mt-1 block text-[11px] text-zinc-400">copied when you tap. paste it in Discord.</span></button>
+            <button onClick={() => navigator.clipboard.writeText(card)} className="w-full text-left rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-[#30d158] text-sm whitespace-pre-wrap break-all">
+              {card}
+            </button>
           )}
+        </div>
+        <div className="mt-10 space-y-2">
+          {pins.map((pin) => (
+            <motion.button
+              key={pin.id}
+              initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, ease }}
+              onClick={() => navigator.clipboard.writeText(`${window.location.origin}/treenail/${pin.id}`)}
+              className="w-full text-left rounded-2xl bg-white/[0.04] border border-white/8 px-4 py-3 hover:bg-white/[0.07] transition"
+            >
+              <span className="block text-white">{pin.label}</span>
+              {pin.note && <span className="block mt-1 text-sm text-white/45">{pin.note}</span>}
+              {pin.file_name && <span className="block mt-1 text-xs text-[#30d158]">{pin.file_name}</span>}
+            </motion.button>
+          ))}
         </div>
       </main>
     </div>

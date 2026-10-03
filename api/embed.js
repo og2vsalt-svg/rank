@@ -79,6 +79,27 @@ export default async function handler(req, res) {
   const host = (req.headers['x-forwarded-host'] || req.headers.host || '').toString();
   const ua = req.headers['user-agent'];
 
+  if (page === 'passage' && id) {
+    const row = await sbGet(`passages?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
+    const dest = `${proto}://${host}/passage/${encodeURIComponent(id)}`;
+    sendCard(res, ua, req.query.embed, dest, {
+      title: row ? `${row.file_name || 'file'} for ${row.to_name}` : 'passage — rankvault',
+      desc: row ? `${row.note || 'a named handoff'} · ${prettySize(row.size)}` : 'a named handoff. large files are warned, never refused.',
+      url: dest,
+      color: '#64D2FF',
+    });
+    return;
+  }
+  if (page === 'lantern') {
+    const dest = `${proto}://${host}/lantern`;
+    sendCard(res, ua, req.query.embed, dest, {
+      title: 'lantern — rankvault',
+      desc: 'a short note on the board. not a file cabinet.',
+      url: dest,
+      color: '#FFD60A',
+    });
+    return;
+  }
   if (page === 'sounding' && id) {
     const row = await sbGet(`soundings?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
     const dest = `${proto}://${host}/sounding/${encodeURIComponent(id)}`;
@@ -88,125 +109,6 @@ export default async function handler(req, res) {
       url: dest,
       color: '#64D2FF',
     });
-    return;
-  }
-  if (page === 'orlop' && id) {
-    const row = await sbGet(`handoffs?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
-    const dest = `${proto}://${host}/orlop/${encodeURIComponent(id)}`;
-    const image = row && String(row.mime || '').startsWith('image/') && /^https?:\/\//i.test(row.file_url || '') ? row.file_url : undefined;
-    sendCard(res, ua, req.query.embed, dest, {
-      title: row ? `${row.recipient || 'handoff'} — ${row.name}` : 'orlop — rankvault',
-      desc: row ? `${row.note || 'a locker receipt'} · ${prettySize(row.size)}` : 'a locker under the vault. large files are warned, never refused.',
-      image,
-      url: dest,
-      color: '#0A84FF',
-    });
-    return;
-  }
-  if (page === 'cleat') {
-    const dest = `${proto}://${host}/cleat`;
-    sendCard(res, ua, req.query.embed, dest, {
-      title: 'cleat — rankvault',
-      desc: 'pin an address on the rail. not a file cabinet.',
-      url: dest,
-      color: '#64D2FF',
-    });
-    return;
-  }
-  if (page === 'marline' && id) {
-    const row = await sbGet(`marlines?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
-    const dest = `${proto}://${host}/marline/${encodeURIComponent(id)}`;
-    const image = row && String(row.mime || '').startsWith('image/') && /^https?:\/\//i.test(row.file_url || '') ? row.file_url : undefined;
-    sendCard(res, ua, req.query.embed, dest, {
-      title: row ? `${row.watch} watch — ${row.name}` : 'marline — rankvault',
-      desc: row ? `${row.entry} · ${prettySize(row.size)}` : 'a log line and a file. not a drawer.',
-      image,
-      url: dest,
-      color: '#30D158',
-    });
-    return;
-  }
-  if (page === 'deadeye' && id) {
-    const row = await sbGet(`deadeyes?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
-    const dest = `${proto}://${host}/deadeye/${encodeURIComponent(id)}`;
-    const image = row && String(row.mime || '').startsWith('image/') && /^https?:\/\//i.test(row.file_url || '') ? row.file_url : undefined;
-    sendCard(res, ua, req.query.embed, dest, {
-      title: row ? `${row.witness} — ${row.name}` : 'deadeye — rankvault',
-      desc: row ? `${row.saw} · ${prettySize(row.size)}` : 'a witness and a file. not a drawer.',
-      image,
-      url: dest,
-      color: '#64D2FF',
-    });
-    return;
-  }
-  if (page === 'hounds' && id) {
-    const row = await sbGet(`hounds?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
-    const dest = `${proto}://${host}/hounds/${encodeURIComponent(id)}`;
-    const image = row && String(row.mime || '').startsWith('image/') && /^https?:\/\//i.test(row.file_url || '') ? row.file_url : undefined;
-    sendCard(res, ua, req.query.embed, dest, {
-      title: row ? `${row.line} — ${row.name}` : 'hounds — rankvault',
-      desc: row ? `${row.note ? row.note + ' · ' : ''}${prettySize(row.size)}` : 'a line and a file. not a drawer.',
-      image,
-      url: dest,
-      color: '#64D2FF',
-    });
-    return;
-  }
-  if (check || (page === 'fairlead' && id)) {
-    const key = check || id;
-    const row = await sbGet(`fairlead_checks?id=eq.${encodeURIComponent(key)}&select=*&limit=1`);
-    const dest = `${proto}://${host}/fairlead/${encodeURIComponent(key)}`;
-    sendCard(res, ua, req.query.embed, dest, {
-      title: row ? `${row.title} — fairlead` : 'fairlead — rankvault',
-      desc: row ? (row.note || 'a checklist beside the share table.') : 'a checklist, not a drawer.',
-      url: dest,
-      color: '#64D2FF',
-    });
-    return;
-  }
-  if (pin && (page === 'treenail' || page === 'capstan')) {
-    const row = page === 'treenail'
-      ? await sbGet(`treenails?id=eq.${encodeURIComponent(pin)}&select=*&limit=1`)
-      : await sbGet(`capstan_watches?id=eq.${encodeURIComponent(pin)}&select=*&limit=1`);
-    const dest = `${proto}://${host}/${page}/${encodeURIComponent(pin)}`;
-    sendCard(res, ua, req.query.embed, dest, {
-      title: row ? `${row.label || row.title || 'pin'} — ${page}` : `${page} — rankvault`,
-      desc: row ? (row.note || row.file_name || 'a pin beside the share table.') : 'a pin, not a drawer.',
-      url: dest,
-      color: '#30D158',
-    });
-    return;
-  }
-  if (receipt) {
-    const row = await sbGet(`keelson_receipts?id=eq.${encodeURIComponent(receipt)}&select=*&limit=1`);
-    const dest = `${proto}://${host}/keelson/${encodeURIComponent(receipt)}`;
-    sendCard(res, ua, req.query.embed, dest, {
-      title: row ? `${row.file_name || 'file'} — for ${row.to_name || 'someone'}` : 'keelson — rankvault',
-      desc: row ? `from ${row.from_name || 'keelson'} · ${prettySize(row.size)}` : 'a named handoff.',
-      url: dest,
-      color: '#0A84FF',
-    });
-    return;
-  }
-  if (ask) {
-    const row = await sbGet(`file_requests?id=eq.${encodeURIComponent(ask)}&select=*&limit=1`);
-    const dest = `${proto}://${host}/bobstay/${encodeURIComponent(ask)}`;
-    sendCard(res, ua, req.query.embed, dest, {
-      title: row ? `${row.title} — bobstay` : 'bobstay — rankvault',
-      desc: row ? (row.note || 'a request for a file.') : 'a request for a file.',
-      url: dest,
-      color: '#0A84FF',
-    });
-    return;
-  }
-  if (parcel && !id) {
-    const dest = `${proto}://${host}/#hawse?f=${encodeURIComponent(parcel)}`;
-    sendCard(res, ua, req.query.embed, dest, { title: 'hawse parcel — rankvault', desc: 'a pack of filed files.', url: dest, color: '#0A84FF' });
-    return;
-  }
-  if (room && !id) {
-    const dest = `${proto}://${host}/#gammon?f=${encodeURIComponent(room)}`;
-    sendCard(res, ua, req.query.embed, dest, { title: 'gammon room — rankvault', desc: 'a shared file room.', url: dest, color: '#0A84FF' });
     return;
   }
   if (page && !id) {
@@ -233,6 +135,6 @@ export default async function handler(req, res) {
     desc: live ? `${prettySize(row.size)} · public drop on rankvault` : 'a quiet file drop. open to download.',
     image,
     url: appUrl,
-    color: '#0A84FF',
+    color: (live && row.meta && row.meta.color) || '#0A84FF',
   });
 }

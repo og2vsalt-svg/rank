@@ -13,31 +13,14 @@ export default function Hero() {
           drop a file.<br />share only if you want.
         </motion.h1>
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.12 }} className="text-neutral-400 text-lg leading-relaxed max-w-xl mb-8">
-          a quiet vault for clips, docs, and dumps. windlass reads the head, thole pins a slip, transom lifts a still. no size lock. just a heads up if the tab might lag.
+          a quiet vault for clips, docs, and dumps. treenail pins the why, sternpost names a berth. no size lock. just a heads up if the tab might lag.
         </motion.p>
         <div className="flex flex-wrap gap-3 mb-12">
-          <button onClick={() => navigate('sternpost')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition">sternpost</button>
+          <button onClick={() => navigate('treenail')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition">treenail</button>
+          <button onClick={() => navigate('sternpost')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">sternpost</button>
           <button onClick={() => navigate('breasthook')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">breasthook</button>
-          <button onClick={() => navigate('fid')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black font-medium text-sm hover:bg-neutral-200 transition">file a drop</button>
+          <button onClick={() => navigate('fid')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">file a drop</button>
           <button onClick={() => navigate('vault')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">open vault</button>
-          <button onClick={() => navigate('cuddy')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">cuddy</button>
-          <button onClick={() => navigate('pelorus')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">pelorus</button>
-          <button onClick={() => navigate('windlass')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">windlass</button>
-          <button onClick={() => navigate('thole')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">thole</button>
-          <button onClick={() => navigate('transom')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">transom</button>
-          <button onClick={() => navigate('astragal')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">astragal</button>
-          <button onClick={() => navigate('modillion')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">modillion</button>
-          <button onClick={() => navigate('scotia')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">scotia</button>
-          <button onClick={() => navigate('abacus')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">abacus</button>
-          <button onClick={() => navigate('copse')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">copse</button>
-          <button onClick={() => navigate('riprap')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">riprap</button>
-          <button onClick={() => navigate('wicket')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">wicket</button>
-          <button onClick={() => navigate('leat')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">leat</button>
-          <button onClick={() => navigate('mere')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">mere</button>
-          <button onClick={() => navigate('drop')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">drop</button>
-          <button onClick={() => navigate('limber')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">limber</button>
-          <button onClick={() => navigate('orlop')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">orlop</button>
-          <button onClick={() => navigate('chainplate')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">chainplate</button>
           <a href="#features" className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">see features</a>
         </div>
       </div>

@@ -244,6 +244,20 @@ export default async function handler(req, res) {
     });
     return;
   }
+  if (page === 'scupper' && id) {
+    const row = await sbGet(`scupper_drips?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
+    const dest = `${proto}://${host}/scupper/${encodeURIComponent(id)}`;
+    const share = row && row.share_id ? await loadShare(row.share_id) : null;
+    const image = share && String(share.mime || '').startsWith('image/') && /^https?:\/\//i.test(share.file_url || '') ? share.file_url : undefined;
+    sendCard(res, ua, req.query.embed, dest, {
+      title: row ? `${row.drain} — scupper` : 'scupper — rankvault',
+      desc: row ? `${row.where_to ? 'to ' + row.where_to + ' · ' : ''}${share ? prettySize(share.size) + ' · ' : ''}a drain, not a drawer` : 'a drain note beside a filed file.',
+      image,
+      url: dest,
+      color: '#64D2FF',
+    });
+    return;
+  }
   if (page && !id) {
     const dest = `${proto}://${host}/#${encodeURIComponent(page)}`;
     sendCard(res, ua, req.query.embed, dest, {

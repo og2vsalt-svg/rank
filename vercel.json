@@ -3,15 +3,105 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "rewrites": [
-    { "source": "/api/cuddy", "destination": "/api/desk?desk=cuddy" },
-    { "source": "/api/ferry", "destination": "/api/desk?desk=ferry" },
-    { "source": "/api/margins", "destination": "/api/desk?desk=margins" },
-    { "source": "/api/waybill", "destination": "/api/desk?desk=waybill" },
-    { "source": "/api/manifest", "destination": "/api/desk?desk=manifest" },
-    { "source": "/api/partners", "destination": "/api/desk?desk=partners" },
-    { "source": "/api/paircard", "destination": "/api/desk?desk=paircard" },
-    { "source": "/api/spirket", "destination": "/api/desk?desk=spirket" },
-    { "source": "/api/capstan", "destination": "/api/desk?desk=capstan" },
-    { "source": "/((?!api/).*)", "destination": "/index.html" }
+    {
+      "source": "/api/belaying",
+      "destination": "/api/desk?desk=belaying"
+    },
+    {
+      "source": "/api/cleat",
+      "destination": "/api/desk?desk=cleat"
+    },
+    {
+      "source": "/api/deadeye",
+      "destination": "/api/desk?desk=deadeye"
+    },
+    {
+      "source": "/api/fairlead",
+      "destination": "/api/desk?desk=fairlead"
+    },
+    {
+      "source": "/api/garboard",
+      "destination": "/api/desk?desk=garboard"
+    },
+    {
+      "source": "/api/hounds",
+      "destination": "/api/desk?desk=hounds"
+    },
+    {
+      "source": "/api/keelson",
+      "destination": "/api/desk?desk=keelson"
+    },
+    {
+      "source": "/api/marline",
+      "destination": "/api/desk?desk=marline"
+    },
+    {
+      "source": "/api/orlop",
+      "destination": "/api/desk?desk=orlop"
+    },
+    {
+      "source": "/api/parcel",
+      "destination": "/api/desk?desk=parcel"
+    },
+    {
+      "source": "/api/requests",
+      "destination": "/api/desk?desk=requests"
+    },
+    {
+      "source": "/api/sounding",
+      "destination": "/api/desk?desk=sounding"
+    },
+    {
+      "source": "/api/taffrail",
+      "destination": "/api/desk?desk=taffrail"
+    },
+    {
+      "source": "/api/treenail",
+      "destination": "/api/desk?desk=treenail"
+    },
+    {
+      "source": "/api/counter",
+      "destination": "/api/desk?desk=counter"
+    },
+    {
+      "source": "/api/cuddy",
+      "destination": "/api/desk?desk=cuddy"
+    },
+    {
+      "source": "/api/ferry",
+      "destination": "/api/desk?desk=ferry"
+    },
+    {
+      "source": "/api/margins",
+      "destination": "/api/desk?desk=margins"
+    },
+    {
+      "source": "/api/waybill",
+      "destination": "/api/desk?desk=waybill"
+    },
+    {
+      "source": "/api/manifest",
+      "destination": "/api/desk?desk=manifest"
+    },
+    {
+      "source": "/api/partners",
+      "destination": "/api/desk?desk=partners"
+    },
+    {
+      "source": "/api/paircard",
+      "destination": "/api/desk?desk=paircard"
+    },
+    {
+      "source": "/api/spirket",
+      "destination": "/api/desk?desk=spirket"
+    },
+    {
+      "source": "/api/capstan",
+      "destination": "/api/desk?desk=capstan"
+    },
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/index.html"
+    }
   ]
 }

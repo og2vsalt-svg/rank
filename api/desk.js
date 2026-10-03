@@ -1,3 +1,19 @@
+import belaying from '../lib/routes/belaying.js';
+import cleat from '../lib/routes/cleat.js';
+import deadeye from '../lib/routes/deadeye.js';
+import fairlead from '../lib/routes/fairlead.js';
+import garboard from '../lib/routes/garboard.js';
+import hounds from '../lib/routes/hounds.js';
+import keelson from '../lib/routes/keelson.js';
+import marline from '../lib/routes/marline.js';
+import orlop from '../lib/routes/orlop.js';
+import parcel from '../lib/routes/parcel.js';
+import requests from '../lib/routes/requests.js';
+import sounding from '../lib/routes/sounding.js';
+import taffrail from '../lib/routes/taffrail.js';
+import treenail from '../lib/routes/treenail.js';
+import counter from '../lib/routes/counter.js';
+
 const SUPABASE_URL = (process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || 'https://tqfocdktvjuwoiyfgesb.supabase.co').replace(/\/$/, '');
 const SUPABASE_KEY =
   process.env.SUPABASE_ANON_KEY ||
@@ -270,6 +286,9 @@ export default async function handler(req, res) {
     if (desk === 'capstan') return capstan(req, res);
     if (desk === 'paircard') return paircard(req, res);
     if (desk === 'spirket') return spirket(req, res);
+
+    const routed = { belaying, cleat, deadeye, fairlead, garboard, hounds, keelson, marline, orlop, parcel, requests, sounding, taffrail, treenail, counter };
+    if (routed[desk]) return routed[desk](req, res);
     res.status(404).json({ error: 'unknown desk' });
   } catch (err) {
     res.status(500).json({ error: err.message || 'desk failed' });

@@ -1,67 +1,207 @@
-import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 import Navbar from './Navbar';
-import { publishLocalFile } from '../lib/cloudShare';
+import { useRouter } from './Router';
 
-const SB_URL = (
-  (import.meta as any).env?.VITE_SUPABASE_URL ||
-  'https://tqfocdktvjuwoiyfgesb.supabase.co'
-).replace(/\/$/, '');
-const SB_KEY =
-  (import.meta as any).env?.VITE_SUPABASE_ANON_KEY ||
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
+const ease = [0.22, 1, 0.36, 1] as const;
+
+type Step = { id: string; text: string; done: boolean };
+type Check = {
+  id: string;
+  title: string;
+  steps: Step[];
+  note?: string | null;
+  share_id?: string | null;
+  file_name?: string | null;
+  created_at?: string;
+};
+
+function pretty(n: number) {
+  if (n < 1024) return `${n} B`;
+  if (n < 1024 * 1024) return `${Math.max(1, Math.round(n / 1024))} KB`;
+  if (n < 1024 * 1024 * 1024) return `${(n / (1024 * 1024)).toFixed(1)} MB`;
+  return `${(n / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+}
 
 export default function FairleadPage() {
-  const [url, setUrl] = useState('');
+  const { shareId } = useRouter();
+  const [title, setTitle] = useState('');
   const [note, setNote] = useState('');
-  const [author, setAuthor] = useState('');
+  const [draft, setDraft] = useState('');
+  const [steps, setSteps] = useState<Step[]>([]);
   const [file, setFile] = useState<File | null>(null);
+  const [warn, setWarn] = useState('');
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
-  const [warn, setWarn] = useState<string | null>(null);
+  const [status, setStatus] = useState('a checklist, not a drawer.');
   const [card, setCard] = useState('');
+  const [checks, setChecks] = useState<Check[]>([]);
+  const [open, setOpen] = useState<Check | null>(null);
 
-  const send = async () => {
-    let parsed: URL;
-    try { parsed = new URL(url.trim()); } catch { setError('that is not a url'); return; }
+  async function load() {
+    const r = await fetch('/api/fairlead');
+    const data = await r.json().catch(() => ({}));
+    if (r.ok && Array.isArray(data.checks)) setChecks(data.checks);
+  }
+
+  useEffect(() => {
+    load().catch(() => setStatus('the checklist shelf is quiet right now.'));
+  }, []);
+
+  useEffect(() => {
+    if (!shareId) return;
+    fetch(`/api/fairlead?id=${encodeURIComponent(shareId)}`)
+      .then((r) => r.json())
+      .then((row) => {
+        if (row && row.id) setOpen(row);
+      })
+      .catch(() => {});
+  }, [shareId]);
+
+  function addStep() {
+    const text = draft.trim();
+    if (!text) return;
+    setSteps((prev) => [...prev, { id: Math.random().toString(36).slice(2, 8), text, done: false }]);
+    setDraft('');
+  }
+
+  function pick(next: File | null) {
+    setFile(next);
+    setWarn(next && next.size > 12 * 1024 * 1024 ? 'this file is heavy. the send can feel slow. it is still accepted.' : '');
+  }
+
+  async function toggle(stepId: string) {
+    if (!open) return;
+    const next = open.steps.map((step) => (step.id === stepId ? { ...step, done: !step.done } : step));
+    setOpen({ ...open, steps: next });
+    await fetch('/api/fairlead', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: open.id, steps: next }),
+    }).catch(() => setStatus('the tick did not land. try again.'));
+  }
+
+  async function publish() {
+    if (busy) return;
+    if (!title.trim() || !steps.length) {
+      setStatus('name the list and add a step.');
+      return;
+    }
     setBusy(true);
-    setError('');
-    const slip = await fetch(`${SB_URL}/rest/v1/links`, {
-      method: 'POST',
-      headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}`, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
-      body: JSON.stringify({ url: parsed.toString(), note: note.trim() || null, author: author.trim() || null }),
-    });
-    if (!slip.ok) { setBusy(false); setError('the quay did not take the address'); return; }
-    const body = [parsed.toString(), note.trim(), author.trim() ? '- ' + author.trim() : ''].filter(Boolean).join('\n');
-    const text = new File([body], 'fairlead.txt', { type: 'text/plain' });
-    const cover = file
-      ? await publishLocalFile(file, { caption: note.trim().slice(0, 180) || parsed.host, author: author.trim() || undefined, color: '#0A84FF' })
-      : await publishLocalFile(text, { caption: note.trim().slice(0, 180) || parsed.host, author: author.trim() || undefined, color: '#0A84FF' });
-    setBusy(false);
-    if (!cover.ok) { setError(cover.error || 'address saved, card did not file'); return; }
-    setWarn(cover.warn || (file && file.size > 20 * 1024 * 1024 ? 'cover is large. preview may feel slow.' : null));
-    setCard(cover.embed || '');
-    setUrl('');
-    setNote('');
-  };
+    setStatus(file ? 'filing the proof, then the list…' : 'writing the list…');
+    try {
+      let share = '';
+      let fileName = '';
+      if (file) {
+        const body = new FormData();
+        body.append('file', file, file.name);
+        body.append('caption', (note || title).slice(0, 280));
+        body.append('cardTitle', title.trim());
+        body.append('author', 'fairlead');
+        body.append('color', '#64D2FF');
+        const fr = await fetch('/api/share', { method: 'POST', body });
+        const fd = await fr.json();
+        if (!fr.ok) throw new Error(fd.error || 'the share table did not take the file');
+        share = fd.id;
+        fileName = file.name;
+        if (fd.warn) setWarn(String(fd.warn));
+      }
+      const r = await fetch('/api/fairlead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: title.trim(), note: note.trim(), steps, shareId: share, fileName }),
+      });
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.error || 'the list was not written');
+      const origin = window.location.origin;
+      const lines = [`${origin}/fairlead/${data.id}`];
+      if (share) lines.push(`${origin}/s/${share}`);
+      setCard(lines.join('\n'));
+      setStatus('filed. paste either link in Discord for a card.');
+      setTitle('');
+      setNote('');
+      setSteps([]);
+      setFile(null);
+      await load();
+    } catch (err) {
+      setStatus(err instanceof Error ? err.message : 'could not write the list');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const shown = open;
+  const doneCount = shown ? shown.steps.filter((step) => step.done).length : 0;
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <main className="mx-auto max-w-3xl px-5 pb-24 pt-28">
-        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[13px] uppercase tracking-[0.16em] text-zinc-500">fairlead</motion.p>
-        <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="mt-2 text-4xl font-semibold tracking-tight text-zinc-50">An address, with a card.</motion.h1>
-        <p className="mt-3 max-w-xl text-zinc-400">Save a link on the quay, then file a small card so Discord can unfurl it. A cover image is optional. Not a file cabinet.</p>
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mt-8 rounded-3xl border border-white/10 bg-white/[0.04] p-5 backdrop-blur-xl">
-          <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://" className="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-zinc-100 outline-none focus:border-[#0A84FF]" />
-          <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="why this link" className="mt-3 w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-zinc-100 outline-none focus:border-[#0A84FF]" />
-          <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="from (optional)" className="mt-3 w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-zinc-100 outline-none focus:border-[#0A84FF]" />
-          <label className="mt-3 block text-sm text-zinc-400">optional cover<input type="file" className="mt-2 block w-full text-sm text-zinc-500" onChange={(e) => setFile(e.target.files?.[0] || null)} /></label>
-          <button disabled={busy || !url.trim()} onClick={send} className="mt-4 rounded-full bg-[#0A84FF] px-5 py-2.5 text-sm font-medium text-white transition hover:brightness-110 disabled:opacity-40">{busy ? 'tying…' : 'tie the address'}</button>
-          {error && <p className="mt-3 text-sm text-red-300">{error}</p>}
-          {warn && <p className="mt-3 text-sm text-amber-200">{warn}</p>}
-          {card && <a className="mt-4 block text-sm text-[#7ab8ff] underline" href={card}>{card}</a>}
-        </motion.div>
+      <main className="max-w-xl mx-auto px-5 pt-28 pb-24">
+        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[#64d2ff] text-sm font-medium tracking-wide">fairlead</motion.p>
+        <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease }} className="mt-2 text-4xl font-semibold tracking-tight text-white">a list, not a cabinet.</motion.h1>
+        <p className="mt-3 text-neutral-400 leading-relaxed">steps live on their own shelf. a proof file from this machine is optional, and still lands in the share table. both links unfurl on Discord. large files are warned, never refused.</p>
+        {shown && (
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mt-6 rounded-3xl bg-white/[0.05] border border-white/10 px-4 py-4">
+            <div className="flex items-baseline justify-between gap-3">
+              <p className="text-white font-medium">{shown.title}</p>
+              <span className="text-xs text-white/40">{doneCount}/{shown.steps.length}</span>
+            </div>
+            {shown.note && <p className="mt-1 text-sm text-white/55">{shown.note}</p>}
+            <div className="mt-3 space-y-1.5">
+              {shown.steps.map((step) => (
+                <button key={step.id} onClick={() => toggle(step.id)} className="w-full text-left flex items-center gap-3 rounded-2xl px-2 py-2 hover:bg-white/5 transition">
+                  <span className={`w-4 h-4 rounded-full border ${step.done ? 'bg-[#64d2ff] border-[#64d2ff]' : 'border-white/30'}`} />
+                  <span className={step.done ? 'text-white/40 line-through' : 'text-white/85'}>{step.text}</span>
+                </button>
+              ))}
+            </div>
+            {shown.share_id && (
+              <a href={`/s/${shown.share_id}`} className="mt-3 inline-block text-sm text-[#64d2ff]">{shown.file_name || 'open the filed proof'}</a>
+            )}
+          </motion.div>
+        )}
+        <div className="mt-8 space-y-3">
+          <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="what this list is for" className="w-full rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-white placeholder:text-white/30 outline-none focus:border-[#64d2ff]/60 transition" />
+          <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="a line of context" rows={2} className="w-full rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-white placeholder:text-white/30 outline-none focus:border-[#64d2ff]/60 transition" />
+          <div className="flex gap-2">
+            <input value={draft} onChange={(e) => setDraft(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addStep(); } }} placeholder="add a step" className="flex-1 rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-white placeholder:text-white/30 outline-none focus:border-[#64d2ff]/60 transition" />
+            <button onClick={addStep} className="rounded-full px-4 bg-white/10 text-white text-sm">add</button>
+          </div>
+          {steps.length > 0 && (
+            <ul className="space-y-1">
+              {steps.map((step) => (
+                <li key={step.id} className="text-sm text-white/70 px-1">{step.text}</li>
+              ))}
+            </ul>
+          )}
+          <label className="block rounded-2xl border border-dashed border-white/15 bg-white/[0.03] px-4 py-6 text-center cursor-pointer hover:bg-white/[0.05] transition">
+            <input type="file" className="hidden" onChange={(e) => pick(e.target.files?.[0] || null)} />
+            <span className="text-white/80">{file ? file.name : 'optional proof file'}</span>
+            {file && <span className="block mt-1 text-xs text-white/40">{pretty(file.size)}</span>}
+          </label>
+          {warn && <p className="text-amber-200/90 text-sm">{warn}</p>}
+          <button onClick={publish} disabled={busy} className="w-full rounded-full bg-white text-black font-medium py-3 disabled:opacity-40 transition active:scale-[0.99]">
+            {busy ? 'writing…' : 'file the list'}
+          </button>
+          <p className="text-sm text-white/45">{status}</p>
+          {card && (
+            <button onClick={() => navigator.clipboard.writeText(card)} className="w-full text-left rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-[#64d2ff] text-sm whitespace-pre-wrap break-all">
+              {card}
+            </button>
+          )}
+        </div>
+        <div className="mt-10 space-y-2">
+          {checks.map((check) => (
+            <motion.button
+              key={check.id}
+              initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, ease }}
+              onClick={() => navigator.clipboard.writeText(`${window.location.origin}/fairlead/${check.id}`)}
+              className="w-full text-left rounded-2xl bg-white/[0.04] border border-white/8 px-4 py-3 hover:bg-white/[0.07] transition"
+            >
+              <span className="block text-white">{check.title}</span>
+              <span className="block mt-1 text-xs text-white/40">{Array.isArray(check.steps) ? check.steps.length : 0} steps{check.file_name ? ` · ${check.file_name}` : ''}</span>
+            </motion.button>
+          ))}
+        </div>
       </main>
     </div>
   );

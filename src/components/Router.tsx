@@ -60,12 +60,13 @@ export function RouterProvider({ children }: { children: ReactNode }) {
 
   const navigate = useCallback((to: Route, extra?: string) => {
     if (to === 'home') {
-      history.pushState(null, '', window.location.pathname);
-      window.location.hash = '';
+      history.pushState(null, '', '/');
       setState({ route: 'home', shareId: null });
       return;
     }
-    window.location.hash = extra ? `${to}?f=${extra}` : to;
+    const hash = extra ? `${to}?f=${extra}` : to;
+    history.pushState(null, '', `/#${hash}`);
+    setState({ route: to, shareId: extra || null });
   }, []);
 
   return (

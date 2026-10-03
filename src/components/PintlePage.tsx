@@ -1,109 +1,135 @@
-import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useEffect, useMemo, useState } from 'react';
 import Navbar from './Navbar';
-import { publishShare, shareUrls } from '../lib/cloudShare';
+import { useRouter } from './Router';
 
-function uid() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-}
+const ease = [0.22, 1, 0.36, 1] as const;
+
+type Margin = { id: string; body: string; author: string | null; created_at: string };
 
 function pretty(n: number) {
-  if (n < 1024) return n + ' B';
-  if (n < 1024 * 1024) return Math.round(n / 1024) + ' KB';
-  return (n / (1024 * 1024)).toFixed(1) + ' MB';
+  if (n < 1024) return `${n} B`;
+  if (n < 1024 * 1024) return `${Math.max(1, Math.round(n / 1024))} KB`;
+  if (n < 1024 * 1024 * 1024) return `${(n / (1024 * 1024)).toFixed(1)} MB`;
+  return `${(n / (1024 * 1024 * 1024)).toFixed(2)} GB`;
 }
 
 export default function PintlePage() {
+  const { shareId } = useRouter();
   const [file, setFile] = useState<File | null>(null);
+  const [author, setAuthor] = useState('');
+  const [caption, setCaption] = useState('');
+  const [line, setLine] = useState('');
   const [busy, setBusy] = useState(false);
-  const [warn, setWarn] = useState('');
-  const [err, setErr] = useState('');
-  const [embed, setEmbed] = useState('');
-  const [app, setApp] = useState('');
+  const [status, setStatus] = useState('file a local drop, then leave a margin on it. the bytes go to the share table. the note goes beside it.');
+  const [id, setId] = useState(shareId || '');
+  const [margins, setMargins] = useState<Margin[]>([]);
+  const [card, setCard] = useState('');
 
-  const hinge = async () => {
-    setErr('');
-    if (!file) {
-      setErr('hinge a local file first');
-      return;
+  const slow = useMemo(() => (file && file.size > 12 * 1024 * 1024 ? `${pretty(file.size)}. preview clients may feel slow. the desk still files it.` : ''), [file]);
+
+  async function load(nextId: string) {
+    if (!nextId) return;
+    const r = await fetch(`/api/margins?shareId=${encodeURIComponent(nextId)}`);
+    const data = await r.json();
+    if (r.ok) setMargins(Array.isArray(data.margins) ? data.margins : []);
+  }
+
+  useEffect(() => {
+    if (shareId) {
+      setId(shareId);
+      setCard(`${window.location.origin}/s/${shareId}`);
+      load(shareId).catch(() => setStatus('could not read margins'));
     }
-    setWarn(file.size > 4 * 1024 * 1024 ? 'large hinge. the tab may feel slow. no hard cap.' : '');
+  }, [shareId]);
+
+  async function fileDrop() {
+    if (!file) return;
     setBusy(true);
+    setStatus('filing the drop');
     try {
-      const dataUrl = await new Promise<string>((resolve, reject) => {
-        const r = new FileReader();
-        r.onload = () => resolve(String(r.result || ''));
-        r.onerror = () => reject(new Error('read failed'));
-        r.readAsDataURL(file);
-      });
-      const id = uid();
-      const res = await publishShare({
-        id,
-        name: file.name,
-        type: file.type || 'application/octet-stream',
-        size: file.size,
-        dataUrl,
-        author: 'pintle',
-      });
-      if (!res.ok) throw new Error(res.error || 'hinge failed');
-      const urls = shareUrls(res.id || id);
-      setEmbed(urls.embed);
-      setApp(urls.app);
-      try {
-        await navigator.clipboard.writeText(urls.embed);
-      } catch {}
-    } catch (e: any) {
-      setErr(e?.message || 'hinge failed');
+      const body = new FormData();
+      body.append('file', file, file.name);
+      body.append('author', author.trim() || 'pintle');
+      body.append('caption', caption.trim() || 'pintle drop');
+      body.append('cardTitle', file.name);
+      const r = await fetch('/api/share', { method: 'POST', body });
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.error || 'the share table did not take the file');
+      setId(data.id);
+      setCard(`${window.location.origin}/s/${data.id}`);
+      history.replaceState(null, '', `/pintle/${data.id}`);
+      setStatus('filed. the Discord card is ready. margins sit beside the file, not inside the vault.');
+      await load(data.id);
+    } catch (err) {
+      setStatus(err instanceof Error ? err.message : 'filing failed');
     } finally {
       setBusy(false);
     }
-  };
+  }
+
+  async function leaveMargin() {
+    if (!id || !line.trim()) return;
+    setBusy(true);
+    try {
+      const r = await fetch('/api/margins', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ shareId: id, body: line.trim(), author: author.trim() || 'pintle' }),
+      });
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.error || 'margin was not written');
+      setLine('');
+      setStatus('margin written next to the drop.');
+      await load(id);
+    } catch (err) {
+      setStatus(err instanceof Error ? err.message : 'margin failed');
+    } finally {
+      setBusy(false);
+    }
+  }
 
   return (
-    <div className="mesh min-h-screen">
+    <div className="mesh min-h-screen text-white">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          className="glass rounded-[32px] p-8"
-        >
-          <p className="text-[#0a84ff] text-sm mb-2">pintle</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">hinge a local file onto the public pin.</h1>
-          <p className="text-neutral-400 text-sm mb-6">
-            not a vault. pick anything from disk, upload it to the share db. discord cards on /s.
-          </p>
-          <label className="block rounded-[28px] border border-dashed border-white/15 bg-white/[0.03] px-5 py-10 text-center cursor-pointer hover:border-[#0a84ff]/40 transition-colors mb-5">
-            <input
-              type="file"
-              className="hidden"
-              onChange={(e) => {
-                const f = e.target.files?.[0] || null;
-                setFile(f);
-                setWarn(f && f.size > 4 * 1024 * 1024 ? 'large hinge. the tab may feel slow. no hard cap.' : '');
-              }}
-            />
-            <p className="text-sm text-neutral-300">{file ? file.name : 'drop or choose a file'}</p>
-            {file && <p className="text-xs text-neutral-500 mt-2">{pretty(file.size)}</p>}
-          </label>
-          <button
-            disabled={busy}
-            onClick={hinge}
-            className="px-4 py-2 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40"
-          >
-            {busy ? 'hinging…' : 'publish hinge'}
-          </button>
-          {warn && <p className="text-xs text-amber-300/90 mt-3">{warn}</p>}
-          {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
-          {embed && (
-            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mt-6 space-y-2 text-xs text-neutral-400 break-all">
-              <p>discord (copied): {embed}</p>
-              <p>app: {app}</p>
-            </motion.div>
-          )}
-        </motion.div>
-      </div>
+      <main className="max-w-3xl mx-auto px-5 pt-28 pb-24">
+        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease }} className="text-[#0a84ff] text-[13px] tracking-wide">margin desk</motion.p>
+        <motion.h1 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease }} className="mt-3 text-4xl sm:text-5xl font-semibold tracking-tight">pintle</motion.h1>
+        <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.05, ease }} className="mt-4 text-neutral-400 text-lg max-w-xl leading-relaxed">
+          The file lands in the share table. Notes land beside it. Paste the card in Discord. Nothing is refused for size.
+        </motion.p>
+
+        <label className="mt-8 block rounded-3xl border border-white/10 bg-white/[0.04] p-5 cursor-pointer hover:bg-white/[0.06] transition-colors">
+          <span className="text-xs text-neutral-500">local file</span>
+          <span className="mt-2 block text-sm text-white truncate">{file ? file.name : 'choose a file on this machine'}</span>
+          <span className="mt-1 block text-xs text-neutral-500">{file ? pretty(file.size) : 'no size cutoff'}</span>
+          <input type="file" className="sr-only" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+        </label>
+        {slow && <p className="mt-3 text-sm text-amber-200/80">{slow}</p>}
+        <div className="mt-3 grid sm:grid-cols-2 gap-3">
+          <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="your name" className="rounded-2xl bg-black/30 border border-white/10 px-4 py-3 outline-none focus:border-white/25 transition-colors" />
+          <input value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="card caption" className="rounded-2xl bg-black/30 border border-white/10 px-4 py-3 outline-none focus:border-white/25 transition-colors" />
+        </div>
+        <button disabled={!file || busy} onClick={fileDrop} className="mt-4 px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40 active:scale-[0.98] transition-transform">file the drop</button>
+
+        <div className="mt-8 rounded-3xl border border-white/10 bg-white/[0.04] p-5">
+          <p className="text-xs text-neutral-500">margin on a share</p>
+          <input value={id} onChange={(e) => setId(e.target.value.trim())} placeholder="share id" className="mt-3 w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 outline-none focus:border-white/25" />
+          <textarea value={line} onChange={(e) => setLine(e.target.value)} rows={3} placeholder="a note beside the file" className="mt-3 w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 outline-none focus:border-white/25 resize-none" />
+          <button disabled={!id || !line.trim() || busy} onClick={leaveMargin} className="mt-3 px-4 py-2 rounded-full bg-white/10 text-sm hover:bg-white/15 disabled:opacity-40">leave the margin</button>
+          {card && <a href={card} className="mt-4 block break-all text-[#0a84ff] text-sm">{card}</a>}
+          <div className="mt-4 space-y-2">
+            {margins.map((m) => (
+              <motion.div key={m.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="rounded-2xl bg-black/30 px-3 py-2">
+                <p className="text-sm text-neutral-100">{m.body}</p>
+                <p className="text-xs text-neutral-500 mt-1">{m.author || 'pintle'} · {new Date(m.created_at).toLocaleString()}</p>
+              </motion.div>
+            ))}
+            {!margins.length && <p className="text-sm text-neutral-500">no margins yet.</p>}
+          </div>
+        </div>
+        <p className="mt-4 text-sm text-neutral-400">{status}</p>
+      </main>
     </div>
   );
 }

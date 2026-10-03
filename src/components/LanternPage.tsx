@@ -1,76 +1,86 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishLocalFile } from '../lib/cloudShare';
 
-const PRESETS = [15, 25, 45];
+const SB_URL = 'https://tqfocdktvjuwoiyfgesb.supabase.co';
+const SB_KEY =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
+
+type Whisper = { id: string; body: string; author: string | null; created_at: string; kind: string | null };
+
+function headers() {
+  return {
+    apikey: SB_KEY,
+    Authorization: `Bearer ${SB_KEY}`,
+    'Content-Type': 'application/json',
+    Prefer: 'return=representation',
+  };
+}
 
 export default function LanternPage() {
-  const [minutes, setMinutes] = useState(25);
-  const [left, setLeft] = useState(25 * 60);
-  const [running, setRunning] = useState(false);
-  const [warmth, setWarmth] = useState(42);
-  const [line, setLine] = useState('');
+  const [body, setBody] = useState('');
+  const [author, setAuthor] = useState('');
+  const [rows, setRows] = useState<Whisper[]>([]);
+  const [status, setStatus] = useState('a short note. no file, no drawer.');
   const [busy, setBusy] = useState(false);
-  const [card, setCard] = useState('');
-  const [error, setError] = useState('');
+
+  async function load() {
+    const r = await fetch(`${SB_URL}/rest/v1/whispers?select=id,body,author,created_at,kind&order=created_at.desc&limit=24`, { headers: headers() });
+    const data = await r.json();
+    if (r.ok && Array.isArray(data)) setRows(data);
+    else setStatus('the lantern could not read notes');
+  }
 
   useEffect(() => {
-    if (!running) return;
-    const id = window.setInterval(() => setLeft((n) => (n > 0 ? n - 1 : 0)), 1000);
-    return () => window.clearInterval(id);
-  }, [running]);
+    load().catch(() => setStatus('the lantern could not read notes'));
+  }, []);
 
-  useEffect(() => {
-    if (left === 0) setRunning(false);
-  }, [left]);
-
-  const mm = String(Math.floor(left / 60)).padStart(2, '0');
-  const ss = String(left % 60).padStart(2, '0');
-
-  const fileIt = async () => {
-    setBusy(true);
-    setError('');
-    const body = `lantern\nset for ${minutes} minutes\nleft ${mm}:${ss}\nwarmth ${warmth}\n${line.trim()}\n`;
-    const file = new File([body], 'lantern.txt', { type: 'text/plain' });
-    const res = await publishLocalFile(file, { caption: `lantern · ${minutes}m`, color: '#C4A574' });
-    setBusy(false);
-    if (!res.ok) {
-      setError(res.error || 'the note did not land');
+  async function leave() {
+    const text = body.trim();
+    if (!text || busy) return;
+    if (text.length > 280) {
+      setStatus('keep it under 280 characters. that is a note length, not a file cap.');
       return;
     }
-    setCard(res.embed || '');
-  };
+    setBusy(true);
+    const r = await fetch(`${SB_URL}/rest/v1/whispers`, {
+      method: 'POST',
+      headers: headers(),
+      body: JSON.stringify({ body: text, author: author.trim().slice(0, 80) || 'lantern', kind: 'status' }),
+    });
+    setBusy(false);
+    if (!r.ok) {
+      setStatus('that note did not land');
+      return;
+    }
+    setBody('');
+    setStatus('left on the lantern. paste /lantern in Discord for the card.');
+    await load();
+  }
 
   return (
-    <div className="mesh min-h-screen">
+    <div className="mesh min-h-screen text-white">
       <Navbar />
-      <main className="mx-auto max-w-3xl px-5 pb-24 pt-28">
-        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[13px] uppercase tracking-[0.16em] text-zinc-500">lantern</motion.p>
-        <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="mt-2 text-4xl font-semibold tracking-tight text-zinc-50">A lamp for one sitting.</motion.h1>
-        <p className="mt-3 max-w-xl text-zinc-400">A timer and a warm wash. Not a cabinet. If you want the sitting on Discord, file the note — it lands in the share table as text.</p>
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="relative mt-8 overflow-hidden rounded-[28px] border border-white/10 bg-white/[0.04] p-6 backdrop-blur-xl">
-          <motion.div animate={{ opacity: warmth / 140 }} className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,196,120,0.45),transparent_62%)]" />
-          <div className="relative">
-            <p className="text-7xl font-semibold tracking-tight text-white tabular-nums">{mm}:{ss}</p>
-            <div className="mt-4 flex gap-2">
-              {PRESETS.map((n) => (
-                <button key={n} onClick={() => { setMinutes(n); setLeft(n * 60); setRunning(false); }} className={`rounded-full px-3 py-1.5 text-sm ${minutes === n ? 'bg-white text-black' : 'bg-white/10 text-zinc-300'}`}>{n}m</button>
-              ))}
-            </div>
-            <label className="mt-5 block text-sm text-zinc-400">warmth
-              <input type="range" min={8} max={100} value={warmth} onChange={(e) => setWarmth(Number(e.target.value))} className="mt-2 w-full accent-[#C4A574]" />
-            </label>
-            <div className="mt-4 flex gap-2">
-              <button onClick={() => setRunning((v) => !v)} className="rounded-full bg-[#0A84FF] px-5 py-2.5 text-sm font-medium text-white">{running ? 'pause' : 'light'}</button>
-              <button onClick={() => { setRunning(false); setLeft(minutes * 60); }} className="rounded-full px-4 py-2.5 text-sm text-zinc-400">reset</button>
-            </div>
-            <textarea value={line} onChange={(e) => setLine(e.target.value)} placeholder="what the sitting was for" className="mt-5 h-24 w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-zinc-100 outline-none focus:border-[#0A84FF]" />
-            <button disabled={busy} onClick={fileIt} className="mt-4 rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black disabled:opacity-40">{busy ? 'filing…' : 'file the sitting'}</button>
-            {error && <p className="mt-3 text-sm text-red-300">{error}</p>}
-            {card && <a className="mt-3 block text-sm text-[#7ab8ff] underline" href={card}>{card}</a>}
+      <main className="max-w-2xl mx-auto px-5 pt-28 pb-24">
+        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[13px] tracking-[0.16em] uppercase text-[#ffd60a]">lantern</motion.p>
+        <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }} className="mt-2 text-[44px] font-semibold tracking-[-0.045em]">Leave a light on.</motion.h1>
+        <p className="mt-3 text-[16px] text-white/60">A board of short notes in the whispers table. Files stay on shuttle, folio, and passage.</p>
+        <div className="mt-8 rounded-[28px] border border-white/10 bg-white/[0.04] p-5 backdrop-blur-xl">
+          <textarea value={body} onChange={(e) => setBody(e.target.value)} maxLength={280} placeholder="what should the next person see" className="min-h-28 w-full resize-none bg-transparent text-[16px] outline-none" />
+          <div className="mt-3 flex items-center gap-3">
+            <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="name" className="flex-1 rounded-full border border-white/10 bg-black/20 px-4 py-2 text-[14px] outline-none" />
+            <button onClick={leave} disabled={busy || !body.trim()} className="rounded-full bg-white px-4 py-2 text-[14px] font-medium text-black disabled:opacity-40">{busy ? 'leaving' : 'leave it'}</button>
           </div>
-        </motion.div>
+          <p className="mt-3 text-[12px] text-white/40">{body.length}/280 · {status}</p>
+        </div>
+        <ul className="mt-6 space-y-2">
+          {rows.map((row, i) => (
+            <motion.li key={row.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i, 8) * 0.04 }} className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3">
+              <p className="text-[15px] leading-relaxed text-white/85">{row.body}</p>
+              <p className="mt-1 text-[12px] text-white/35">{row.author || 'someone'} · {new Date(row.created_at).toLocaleString()}</p>
+            </motion.li>
+          ))}
+        </ul>
       </main>
     </div>
   );

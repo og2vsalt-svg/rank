@@ -90,7 +90,7 @@ const PAGE_TITLES = {
   treenail: 'treenail — a pin, not a drawer',
   fairlead: 'fairlead — a checklist, not a drawer',
   hounds: 'hounds — a line, not a drawer',
-  ratline: 'ratline — a pile on one line',
+  seizing: 'seizing — a pile on one line',
 };
 const PAGE_DESC_EXTRA = {
   folio: 'Drop a local file into the share table. Discord unfurls /s. Large drops are warned, never refused.',
@@ -111,7 +111,7 @@ const PAGE_DESC_EXTRA = {
   treenail: 'name why a drop exists. an optional local file lands in the share table. discord unfurls /treenail. large drops are warned, never refused.',
   fairlead: 'a checklist with an optional proof file in the share table. discord unfurls /fairlead. large drops are warned, never refused.',
   hounds: 'pair a line with a local file. the row lands in the hounds table. discord unfurls /hounds. large drops are warned, never refused.',
-  ratline: 'file several local drops onto one line. each row unfurls on discord. large drops are warned, never refused.',
+  seizing: 'file several local drops onto one line. each row unfurls on discord. large drops are warned, never refused.',
 };
 const PAGE_DESC = { ...EXTRA_DESC };
 

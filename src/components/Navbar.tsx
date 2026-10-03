@@ -6,7 +6,7 @@ type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
   { to: 'hounds', label: 'hounds' },
-      { to: 'ratline', label: 'ratline' },
+      { to: 'seizing', label: 'seizing' },
       { to: 'fairlead', label: 'fairlead' },
   { to: 'treenail', label: 'treenail' },
   { to: 'vault', label: 'vault' },
@@ -239,7 +239,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">paste /hounds, /ratline, /fairlead, /treenail, /folio, /s, or /parcel in Discord for a card. older desks stay on their routes.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">paste /hounds, /seizing, /fairlead, /treenail, /folio, /s, or /parcel in Discord for a card. older desks stay on their routes.</p>
         </div>
       </div>
     </nav>

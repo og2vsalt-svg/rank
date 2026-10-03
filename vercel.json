@@ -3,6 +3,15 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "rewrites": [
+    { "source": "/api/cuddy", "destination": "/api/desk?desk=cuddy" },
+    { "source": "/api/ferry", "destination": "/api/desk?desk=ferry" },
+    { "source": "/api/margins", "destination": "/api/desk?desk=margins" },
+    { "source": "/api/waybill", "destination": "/api/desk?desk=waybill" },
+    { "source": "/api/manifest", "destination": "/api/desk?desk=manifest" },
+    { "source": "/api/partners", "destination": "/api/desk?desk=partners" },
+    { "source": "/api/paircard", "destination": "/api/desk?desk=paircard" },
+    { "source": "/api/spirket", "destination": "/api/desk?desk=spirket" },
+    { "source": "/api/capstan", "destination": "/api/desk?desk=capstan" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }

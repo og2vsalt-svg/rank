@@ -1,4 +1,4 @@
-import { EXTRA_TITLES, EXTRA_DESC } from './deskCards.js';
+import { EXTRA_TITLES, EXTRA_DESC } from '../lib/deskCards.js';
 
 const SUPABASE_URL = (process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || 'https://tqfocdktvjuwoiyfgesb.supabase.co').replace(/\/$/, '');
 const SUPABASE_KEY =
@@ -73,6 +73,8 @@ async function loadAsk(id) {
 
 const PAGE_TITLES = {
   ...EXTRA_TITLES,
+  folio: 'folio — a local file, filed',
+  ledger: 'ledger — addresses, not drawers',
   stemson: 'stemson — rankvault',
   gammon: 'gammon — rankvault',
   knighthead: 'knighthead — rankvault',
@@ -84,6 +86,8 @@ const PAGE_TITLES = {
   bobstay: 'bobstay — ask for a file',
 };
 const PAGE_DESC_EXTRA = {
+  folio: 'Drop a local file into the share table. Discord unfurls /s. Large drops are warned, never refused.',
+  ledger: 'Pin an address on the links shelf. Not a file cabinet. Discord unfurls /ledger.',
   stemson: 'send local files into the share database. discord cards on every link. no size cap.',
   gammon: 'a shared room for local files. each drop still unfurls on discord.',
   knighthead: 'a sha-256 receipt filed to the share database.',
@@ -176,6 +180,7 @@ export default async function handler(req, res) {
       return;
     }
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
     res.status(200).send(pageHtml({ title, desc, url: dest, color: '#0A84FF' }));
     return;
   }

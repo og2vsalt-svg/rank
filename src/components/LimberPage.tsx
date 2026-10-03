@@ -1,108 +1,101 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishLocalFile, shareUrls } from '../lib/cloudShare';
+import { publishShare, shareUrls } from '../lib/cloudShare';
 
-const SB_URL = 'https://tqfocdktvjuwoiyfgesb.supabase.co';
-const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
-
-type LinkRow = { id: string; url: string; note: string | null; author: string | null; created_at: string };
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
 
 export default function LimberPage() {
-  const [url, setUrl] = useState('');
-  const [note, setNote] = useState('');
-  const [author, setAuthor] = useState('');
-  const [file, setFile] = useState<File | null>(null);
-  const [rows, setRows] = useState<LinkRow[]>([]);
+  const [title, setTitle] = useState('');
+  const [body, setBody] = useState('');
+  const [running, setRunning] = useState(false);
+  const [seconds, setSeconds] = useState(0);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
-  const [warn, setWarn] = useState<string | null>(null);
-  const [card, setCard] = useState('');
+  const [embed, setEmbed] = useState('');
+  const [warn, setWarn] = useState('');
 
-  const load = async () => {
-    const res = await fetch(`${SB_URL}/rest/v1/links?select=id,url,note,author,created_at&order=created_at.desc&limit=12`, {
-      headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` },
-    });
-    if (!res.ok) return;
-    const data = await res.json();
-    if (Array.isArray(data)) setRows(data);
-  };
+  useEffect(() => {
+    if (!running) return;
+    const id = window.setInterval(() => setSeconds((n) => n + 1), 1000);
+    return () => window.clearInterval(id);
+  }, [running]);
 
-  useEffect(() => { load(); }, []);
+  const pace = useMemo(() => {
+    const words = body.trim() ? body.trim().split(/\s+/).length : 0;
+    if (!seconds || !words) return 'start the clock, then write';
+    const wpm = Math.round((words / seconds) * 60);
+    return `${words} words · ${wpm} wpm`;
+  }, [body, seconds]);
 
-  const save = async () => {
-    const clean = url.trim();
-    if (!/^https?:\/\//i.test(clean)) {
-      setError('start the link with http');
-      return;
-    }
+  const clock = `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
+
+  const publish = async () => {
+    const text = body.trim();
+    if (!text) return;
     setBusy(true);
     setError('');
-    setCard('');
-    const res = await fetch(`${SB_URL}/rest/v1/links`, {
-      method: 'POST',
-      headers: {
-        apikey: SB_KEY,
-        Authorization: `Bearer ${SB_KEY}`,
-        'Content-Type': 'application/json',
-        Prefer: 'return=representation',
-      },
-      body: JSON.stringify({ url: clean, note: note.trim() || null, author: author.trim() || null }),
+    const id = uid();
+    const name = `${(title.trim() || 'limber').replace(/[^a-z0-9._-]+/gi, '-').slice(0, 60)}.md`;
+    const markdown = `# ${title.trim() || 'limber'}
+
+${text}
+
+_timed ${clock} · ${pace}_
+`;
+    const dataUrl = `data:text/markdown;base64,${btoa(unescape(encodeURIComponent(markdown)))}`;
+    const res = await publishShare({
+      id,
+      name,
+      type: 'text/markdown',
+      size: markdown.length,
+      dataUrl,
+      author: 'limber',
+      caption: title.trim() || 'a timed note',
     });
-    if (!res.ok) {
-      setBusy(false);
-      setError('the shelf did not take that link');
+    setBusy(false);
+    if (!res.ok || !res.id) {
+      setError(res.error || 'the share table did not take the note');
       return;
     }
-    if (file) {
-      if (file.size > 30 * 1024 * 1024) setWarn('large companion file. nothing is refused, the send may just feel slow.');
-      const filed = await publishLocalFile(file, {
-        caption: note.trim() || clean,
-        author: author.trim() || 'limber',
-        color: '#64D2FF',
-      });
-      if (filed.ok && filed.id) setCard(filed.embed || shareUrls(filed.id).embed);
-      else setError(filed.error || 'link saved, file did not');
-      setWarn(filed.warn || null);
-    }
-    setBusy(false);
-    setUrl('');
-    setNote('');
-    setFile(null);
-    load();
+    setEmbed(shareUrls(res.id).embed);
+    setWarn(res.warn || '');
   };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <main className="mx-auto max-w-2xl px-5 pb-24 pt-10">
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}>
-          <p className="text-[12px] uppercase tracking-[0.16em] text-white/45">limber</p>
-          <h1 className="mt-2 text-[34px] font-semibold tracking-[-0.04em]">a shelf, not a cabinet</h1>
-          <p className="mt-3 text-[15px] leading-relaxed text-white/60">Park a link on the shared shelf. If a local file should travel with it, that file goes into the share table and you get a Discord card. The shelf itself stays a list of addresses.</p>
+      <main className="pt-24 pb-20 px-5 max-w-2xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}>
+          <p className="text-[#64D2FF] text-sm font-medium mb-2">limber</p>
+          <h1 className="text-4xl font-semibold tracking-tight text-white mb-3">time a note, then file the page.</h1>
+          <p className="text-neutral-400 text-sm mb-8">this is a writing desk, not a drawer. the draft stays in the tab until you publish it as markdown in the share table. Discord unfurls /limber and the /s card. nothing is refused for length — a long page may just feel slow to send.</p>
         </motion.div>
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }} className="glass mt-8 rounded-3xl p-5">
-          <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://" className="w-full rounded-2xl bg-black/30 px-4 py-3 text-[15px] outline-none placeholder:text-white/30" />
-          <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="why it is here" rows={2} className="mt-3 w-full resize-none rounded-2xl bg-black/30 px-4 py-3 text-[15px] outline-none placeholder:text-white/30" />
-          <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="signed" className="mt-3 w-full rounded-2xl bg-black/30 px-4 py-3 text-[15px] outline-none placeholder:text-white/30" />
-          <label className="mt-3 flex cursor-pointer items-center justify-between rounded-2xl bg-black/30 px-4 py-3 text-[14px] text-white/70">
-            <span>{file ? file.name : 'optional file to send with it'}</span>
-            <input type="file" className="sr-only" onChange={(e) => setFile(e.target.files?.[0] || null)} />
-          </label>
-          <button onClick={save} disabled={busy} className="mt-4 rounded-full bg-white px-5 py-2.5 text-[14px] font-medium text-black transition hover:bg-neutral-200 disabled:opacity-50">{busy ? 'setting it down…' : 'put it on the shelf'}</button>
-          {warn && <p className="mt-3 text-[13px] text-amber-200/80">{warn}</p>}
-          {error && <p className="mt-3 text-[13px] text-red-300/90">{error}</p>}
-          {card && <p className="mt-3 truncate text-[13px] text-white/70">discord card {card}</p>}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08, duration: 0.45, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[28px] p-6 sm:p-8">
+          <div className="flex items-end justify-between gap-4 mb-5">
+            <p className="text-5xl font-semibold tracking-tight tabular-nums text-white">{clock}</p>
+            <p className="text-xs text-neutral-500 text-right">{pace}</p>
+          </div>
+          <div className="flex gap-2 mb-4">
+            <button onClick={() => setRunning((v) => !v)} className="rounded-full bg-white text-black px-4 py-2 text-sm font-medium">{running ? 'pause' : 'start'}</button>
+            <button onClick={() => { setRunning(false); setSeconds(0); }} className="rounded-full bg-white/8 text-white px-4 py-2 text-sm">reset</button>
+          </div>
+          <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="title" className="w-full rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#64D2FF]/50" />
+          <textarea value={body} onChange={(e) => setBody(e.target.value)} rows={8} placeholder="write while the clock runs" className="mt-3 w-full rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#64D2FF]/50 resize-none" />
+          {body.length > 20000 && <p className="mt-3 text-xs text-amber-300/90">long note. it will still publish, but the send may feel slow.</p>}
+          {error && <p className="mt-3 text-xs text-red-300">{error}</p>}
+          <button disabled={busy || !body.trim()} onClick={publish} className="mt-4 rounded-full bg-[#64D2FF] text-black px-5 py-2.5 text-sm font-medium disabled:opacity-40">{busy ? 'filing…' : 'file the note'}</button>
         </motion.div>
-        <div className="mt-6 space-y-2">
-          {rows.map((row) => (
-            <a key={row.id} href={row.url} target="_blank" rel="noreferrer" className="block rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-3 transition hover:bg-white/[0.06]">
-              <p className="truncate text-[14px] text-white">{row.note || row.url}</p>
-              <p className="mt-1 truncate text-[12px] text-white/40">{row.url}{row.author ? ` · ${row.author}` : ''}</p>
-            </a>
-          ))}
-          {rows.length === 0 && <p className="px-1 text-[13px] text-white/35">the shelf is empty for now.</p>}
-        </div>
+        {embed && (
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-3xl p-5 mt-4">
+            <p className="text-sm text-white">filed. paste this in Discord.</p>
+            <p className="text-xs text-neutral-500 mt-1 break-all">{embed}</p>
+            {warn && <p className="text-xs text-amber-300/90 mt-2">{warn}</p>}
+            <button onClick={() => navigator.clipboard.writeText(embed)} className="mt-3 text-xs px-3 py-1.5 rounded-full bg-white text-black">copy card link</button>
+          </motion.div>
+        )}
       </main>
     </div>
   );

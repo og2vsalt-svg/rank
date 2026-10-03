@@ -6,11 +6,11 @@ type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
   { to: 'forepeak', label: 'forepeak' },
+  { to: 'bitt', label: 'bitt' },
+  { to: 'limber', label: 'limber' },
   { to: 'lazarette', label: 'lazarette' },
   { to: 'passage', label: 'passage' },
   { to: 'vault', label: 'vault' },
-  { to: 'lantern', label: 'lantern' },
-  { to: 'folio', label: 'folio' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -18,6 +18,7 @@ const groups: { title: string; items: NavItem[] }[] = [
     title: 'hosting',
     items: [
       { to: 'forepeak', label: 'forepeak' },
+      { to: 'bitt', label: 'bitt' },
       { to: 'lazarette', label: 'lazarette' },
       { to: 'skylight', label: 'skylight' },
       { to: 'passage', label: 'passage' },
@@ -37,6 +38,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'new',
     items: [
+      { to: 'limber', label: 'limber' },
+      { to: 'bitt', label: 'bitt' },
       { to: 'forepeak', label: 'forepeak' },
       { to: 'lazarette', label: 'lazarette' },
       { to: 'passage', label: 'passage' },
@@ -60,6 +63,7 @@ const groups: { title: string; items: NavItem[] }[] = [
     title: 'share',
     items: [
       { to: 'forepeak', label: 'forepeak' },
+      { to: 'bitt', label: 'bitt' },
       { to: 'passage', label: 'passage' },
       { to: 'shuttle', label: 'shuttle' },
       { to: 'marline', label: 'marline' },
@@ -73,6 +77,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'limber', label: 'limber' },
       { to: 'lantern', label: 'lantern' },
       { to: 'skylight', label: 'skylight' },
       { to: 'sounding', label: 'sounding' },
@@ -174,7 +179,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">paste /forepeak, /lazarette, /passage, /lantern, or /s in Discord for a card. older desks stay on their routes.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">paste /bitt, /limber, /forepeak, or /s in Discord for a card. older desks stay on their routes.</p>
         </div>
       </div>
     </nav>

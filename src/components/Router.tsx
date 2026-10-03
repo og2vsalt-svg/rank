@@ -31,6 +31,9 @@ function parseLocation() {
   if (parts.length >= 2 && ['s', 'f', 'open', 'go', 'link', 'card'].includes(parts[0])) {
     return { route: 'share', shareId: decodeURIComponent(parts[1]) };
   }
+  if (parts.length >= 2 && parts[0] === 'parcel') {
+    return { route: 'hawse', shareId: decodeURIComponent(parts[1]) };
+  }
   if (parts.length === 1 && parts[0] !== 'index.html') {
     return { route: parts[0].toLowerCase(), shareId: null };
   }
@@ -55,7 +58,7 @@ export function RouterProvider({ children }: { children: ReactNode }) {
       history.pushState(null, '', window.location.pathname);
       window.location.hash = '';
       setState({ route: 'home', shareId: null });
-    } else if ((to === 'share' || to === 'paste' || to === 'clip' || to === 'inlet') && extra) {
+    } else if ((to === 'share' || to === 'paste' || to === 'clip' || to === 'inlet' || to === 'hawse') && extra) {
       window.location.hash = `${to}?f=${extra}`;
     } else {
       window.location.hash = to;

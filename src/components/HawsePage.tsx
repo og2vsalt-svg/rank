@@ -1,96 +1,138 @@
-import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 import Navbar from './Navbar';
-import { publishLocalFile } from '../lib/cloudShare';
+import { useRouter } from './Router';
 
-const ease = [0.22, 1, 0.36, 1] as const;
+const SUPABASE_URL = 'https://tqfocdktvjuwoiyfgesb.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
 
-function money(n: number) {
-  if (!Number.isFinite(n)) return '0.00';
-  return n.toFixed(2);
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
 
+type Item = { id: string; name: string; mime: string; size: number; file_url: string };
+
 export default function HawsePage() {
-  const [total, setTotal] = useState('86.40');
-  const [people, setPeople] = useState('3');
-  const [tip, setTip] = useState('12');
-  const [note, setNote] = useState('dinner, including the shared bottle');
-  const [file, setFile] = useState<File | null>(null);
+  const { shareId } = useRouter();
+  const [files, setFiles] = useState<File[]>([]);
+  const [title, setTitle] = useState('');
+  const [note, setNote] = useState('');
+  const [author, setAuthor] = useState('');
+  const [status, setStatus] = useState('several local files, one parcel row, one Discord card.');
+  const [warn, setWarn] = useState('');
+  const [card, setCard] = useState('');
   const [busy, setBusy] = useState(false);
-  const [result, setResult] = useState<{ embed?: string; warn?: string | null; error?: string } | null>(null);
+  const [opened, setOpened] = useState<Item[] | null>(null);
 
-  const split = useMemo(() => {
-    const bill = Number(total) || 0;
-    const n = Math.max(1, Math.round(Number(people) || 1));
-    const tipRate = Math.max(0, Number(tip) || 0) / 100;
-    const withTip = bill * (1 + tipRate);
-    return { n, each: withTip / n, withTip };
-  }, [total, people, tip]);
+  useEffect(() => {
+    if (!shareId) return;
+    fetch(`/api/parcel?id=${encodeURIComponent(shareId)}`)
+      .then((r) => r.json())
+      .then((row) => {
+        if (row && Array.isArray(row.items)) {
+          setOpened(row.items);
+          setTitle(row.title || '');
+          setNote(row.note || '');
+          setStatus('parcel opened from the database.');
+        }
+      })
+      .catch(() => setStatus('could not read that parcel.'));
+  }, [shareId]);
 
-  const heavy = !!file && file.size > 40 * 1024 * 1024;
+  function pick(list: FileList | null) {
+    const next = Array.from(list || []);
+    setFiles(next);
+    setCard('');
+    const heavy = next.find((f) => f.size > 12 * 1024 * 1024);
+    setWarn(heavy ? 'a large file is in the set. the tab may feel slow while it uploads. nothing is refused.' : '');
+  }
 
-  const send = async () => {
+  async function send() {
+    if (!files.length) return;
     setBusy(true);
-    setResult(null);
-    const body = [
-      `hawse split`,
-      `bill ${money(Number(total) || 0)}`,
-      `tip ${tip || 0}%`,
-      `${split.n} people`,
-      `each ${money(split.each)}`,
-      note.trim(),
-    ].filter(Boolean).join('\n');
-    const receipt = new File([body], 'hawse-split.txt', { type: 'text/plain' });
-    const caption = `${split.n} ways · ${money(split.each)} each`;
-    const first = await publishLocalFile(file || receipt, {
-      caption,
-      cardTitle: note.trim() || 'hawse split',
-      color: '#30D158',
-    });
-    if (file && first.ok) {
-      await publishLocalFile(receipt, { caption, cardTitle: 'hawse note', color: '#30D158' });
+    const items: Item[] = [];
+    for (const file of files) {
+      setStatus(`sending ${file.name}…`);
+      const id = uid();
+      const safe = file.name.replace(/[^a-zA-Z0-9._-]+/g, '_').slice(0, 180) || 'file';
+      const path = `${id}/${safe}`;
+      const up = await fetch(`${SUPABASE_URL}/storage/v1/object/shares/${path}`, {
+        method: 'POST',
+        headers: {
+          apikey: SUPABASE_KEY,
+          Authorization: `Bearer ${SUPABASE_KEY}`,
+          'Content-Type': file.type || 'application/octet-stream',
+          'x-upsert': 'true',
+        },
+        body: file,
+      });
+      if (!up.ok) {
+        setBusy(false);
+        setStatus(`${file.name} did not land in storage.`);
+        return;
+      }
+      items.push({
+        id,
+        name: file.name,
+        mime: file.type || 'application/octet-stream',
+        size: file.size,
+        file_url: `${SUPABASE_URL}/storage/v1/object/public/shares/${path}`,
+      });
     }
-    setResult(first.ok ? { embed: first.embed, warn: first.warn } : { error: first.error || 'did not land' });
+    setStatus('writing the parcel row…');
+    const id = uid();
+    const r = await fetch('/api/parcel', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, title: title || 'hawse parcel', note, author, accent: '#0A84FF', items }),
+    });
+    const data = await r.json();
     setBusy(false);
-  };
+    if (!r.ok) {
+      setStatus(data.error || 'parcel row did not land');
+      return;
+    }
+    const link = `${window.location.origin}/parcel/${data.id}`;
+    setCard(link);
+    setOpened(items);
+    setStatus('parcel filed. paste the card link in Discord.');
+  }
 
   return (
-    <div className="mesh min-h-screen">
+    <div className="mesh min-h-screen text-white">
       <Navbar />
-      <main className="mx-auto max-w-5xl px-5 pb-24 pt-28">
-        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[13px] uppercase tracking-[0.18em] text-zinc-500">hawse</motion.p>
-        <motion.h1 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease }} className="mt-2 text-4xl font-semibold tracking-tight text-zinc-50 sm:text-5xl">Split the bill. Keep the slip.</motion.h1>
-        <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-zinc-400">This is a table, not a cabinet. The math stays in the tab until you file it. An optional photo of the receipt lands in the same share database, and Discord unfurls the card.</p>
-        <div className="mt-10 grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-          <motion.section initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06, duration: 0.55, ease }} className="rounded-[28px] border border-white/10 bg-white/[0.04] p-6 shadow-[0_24px_70px_rgba(0,0,0,0.32)] backdrop-blur-xl">
-            <div className="grid gap-3 sm:grid-cols-3">
-              <label className="text-xs text-zinc-500">bill
-                <input value={total} onChange={(e) => setTotal(e.target.value)} inputMode="decimal" className="mt-1 w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-zinc-100 outline-none transition focus:border-[#30D158]/70" />
-              </label>
-              <label className="text-xs text-zinc-500">people
-                <input value={people} onChange={(e) => setPeople(e.target.value)} inputMode="numeric" className="mt-1 w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-zinc-100 outline-none transition focus:border-[#30D158]/70" />
-              </label>
-              <label className="text-xs text-zinc-500">tip %
-                <input value={tip} onChange={(e) => setTip(e.target.value)} inputMode="decimal" className="mt-1 w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-zinc-100 outline-none transition focus:border-[#30D158]/70" />
-              </label>
-            </div>
-            <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={3} className="mt-3 w-full resize-none rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none transition focus:border-[#30D158]/70" />
-            <label className="mt-3 block cursor-pointer rounded-2xl border border-dashed border-white/15 bg-black/25 px-5 py-8 text-center transition duration-300 hover:border-[#30D158]/70">
-              <input type="file" className="sr-only" onChange={(e) => setFile(e.target.files?.[0] || null)} />
-              <span className="text-sm text-zinc-200">{file ? file.name : 'optional receipt photo or pdf'}</span>
-            </label>
-            {heavy && <p className="mt-3 text-xs text-amber-200/90">large slip. the tab may feel slow while it sends. there is no size cap.</p>}
-            <button disabled={busy} onClick={send} className="mt-4 rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition duration-200 hover:bg-zinc-200 active:scale-[0.98] disabled:opacity-40">{busy ? 'filing…' : 'file the split'}</button>
-            {result?.error && <p className="mt-3 text-sm text-rose-300">{result.error}</p>}
-            {result?.warn && <p className="mt-3 text-xs text-amber-200/80">{result.warn}</p>}
-            {result?.embed && <a className="mt-3 inline-block text-sm text-[#30D158]" href={result.embed}>{result.embed}</a>}
-          </motion.section>
-          <motion.aside initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12, duration: 0.55, ease }} className="rounded-[28px] border border-white/10 bg-[#0b0b0d] p-6">
-            <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-500">each person</p>
-            <p className="mt-3 text-6xl font-semibold tracking-tight text-white">{money(split.each)}</p>
-            <p className="mt-2 text-sm text-zinc-400">{money(split.withTip)} after tip, across {split.n}.</p>
-          </motion.aside>
+      <main className="max-w-3xl mx-auto px-5 pt-28 pb-20">
+        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[#0a84ff] text-sm">parcel desk</motion.p>
+        <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }} className="mt-3 text-4xl sm:text-5xl font-semibold tracking-tight">hawse</motion.h1>
+        <p className="mt-4 text-neutral-400 text-lg max-w-xl">not a single vault slot. a handful of local files filed together, then one link that unfurls on Discord.</p>
+        <motion.label initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }} className="mt-8 block rounded-3xl border border-dashed border-white/15 bg-white/[0.03] p-8 text-center cursor-pointer hover:border-[#0a84ff]/40 transition">
+          <input type="file" multiple className="hidden" onChange={(e) => pick(e.target.files)} />
+          <span className="text-neutral-200">{files.length ? `${files.length} file${files.length === 1 ? '' : 's'} ready` : 'choose local files'}</span>
+        </motion.label>
+        {warn && <p className="mt-3 text-sm text-amber-200/90">{warn}</p>}
+        <div className="mt-4 grid sm:grid-cols-2 gap-3">
+          <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="parcel title" className="rounded-2xl bg-black/30 border border-white/10 px-4 py-3 outline-none" />
+          <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="your name, optional" className="rounded-2xl bg-black/30 border border-white/10 px-4 py-3 outline-none" />
         </div>
+        <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="note on the Discord card" className="mt-3 w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 outline-none" />
+        <button disabled={!files.length || busy} onClick={send} className="mt-4 px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40">{busy ? 'filing' : 'file the parcel'}</button>
+        <p className="mt-4 text-sm text-neutral-400">{status}</p>
+        {card && (
+          <div className="mt-4 rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+            <p className="text-xs text-neutral-500">Discord card</p>
+            <a className="block mt-1 break-all text-[#0a84ff]" href={card}>{card}</a>
+          </div>
+        )}
+        {opened && (
+          <ul className="mt-6 space-y-2">
+            {opened.map((it) => (
+              <li key={it.id || it.name} className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 flex items-center justify-between gap-3">
+                <span className="truncate">{it.name}</span>
+                <a className="text-sm text-[#0a84ff] shrink-0" href={it.file_url} target="_blank" rel="noreferrer">open</a>
+              </li>
+            ))}
+          </ul>
+        )}
       </main>
     </div>
   );

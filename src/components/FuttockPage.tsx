@@ -1,69 +1,109 @@
-import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useState } from 'react';
 import Navbar from './Navbar';
-import { publishLocalFile } from '../lib/cloudShare';
 
-const ease = [0.22, 1, 0.36, 1] as const;
+const SUPABASE_URL = 'https://tqfocdktvjuwoiyfgesb.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
 
-function mix(hex: string, toward: string, t: number) {
-  const parse = (h: string) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
-  const a = parse(hex);
-  const b = parse(toward);
-  const c = a.map((v, i) => Math.round(v + (b[i] - v) * t));
-  return '#' + c.map((v) => v.toString(16).padStart(2, '0')).join('');
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
 
 export default function FuttockPage() {
-  const [base, setBase] = useState('#0A84FF');
-  const [name, setName] = useState('harbour blue');
   const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState('');
+  const [caption, setCaption] = useState('');
+  const [author, setAuthor] = useState('');
+  const [status, setStatus] = useState('a reading desk. text and notes stay readable after the file is filed.');
+  const [warn, setWarn] = useState('');
+  const [card, setCard] = useState('');
   const [busy, setBusy] = useState(false);
-  const [result, setResult] = useState<{ embed?: string; warn?: string | null; error?: string } | null>(null);
-  const steps = useMemo(() => [0, 0.22, 0.45, 0.68, 1].map((t) => mix(base, '#F5F5F7', t)), [base]);
-  const heavy = !!file && file.size > 40 * 1024 * 1024;
 
-  const send = async () => {
+  function pick(next: File | null) {
+    setFile(next);
+    setCard('');
+    setPreview('');
+    if (!next) return;
+    if (next.size > 12 * 1024 * 1024) setWarn('large drop. preview may feel slow. the file is still accepted.');
+    else setWarn('');
+    if (next.type.startsWith('text/') || /\.(md|txt|csv|json)$/i.test(next.name)) {
+      next.slice(0, 8000).text().then(setPreview).catch(() => setPreview(''));
+    }
+  }
+
+  async function send() {
+    if (!file) return;
     setBusy(true);
-    setResult(null);
-    const swatch = new File([JSON.stringify({ name, base, steps }, null, 2)], 'futtock.json', { type: 'application/json' });
-    const res = await publishLocalFile(file || swatch, {
-      caption: `${name} · ${base}`,
-      cardTitle: name || 'futtock',
-      color: base,
+    setStatus('sending the file to storage…');
+    const id = uid();
+    const safe = file.name.replace(/[^a-zA-Z0-9._-]+/g, '_').slice(0, 180) || 'file';
+    const path = `${id}/${safe}`;
+    const up = await fetch(`${SUPABASE_URL}/storage/v1/object/shares/${path}`, {
+      method: 'POST',
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': file.type || 'application/octet-stream',
+        'x-upsert': 'true',
+      },
+      body: file,
     });
-    if (file && res.ok) await publishLocalFile(swatch, { caption: name, cardTitle: name, color: base });
-    setResult(res.ok ? { embed: res.embed, warn: res.warn } : { error: res.error || 'did not land' });
+    if (!up.ok) {
+      setBusy(false);
+      setStatus('storage did not take it.');
+      return;
+    }
+    const fileUrl = `${SUPABASE_URL}/storage/v1/object/public/shares/${path}`;
+    const r = await fetch('/api/share', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id,
+        name: file.name,
+        type: file.type || 'text/plain',
+        size: file.size,
+        fileUrl,
+        caption: caption || preview.slice(0, 180),
+        author,
+        cardTitle: file.name,
+        color: '#5E5CE6',
+      }),
+    });
+    const data = await r.json();
     setBusy(false);
-  };
+    if (!r.ok) {
+      setStatus(data.error || 'the row did not land');
+      return;
+    }
+    setCard(`${window.location.origin}${data.embedPath}`);
+    setStatus(data.warn || 'filed. the excerpt rides on the Discord card.');
+  }
 
   return (
-    <div className="mesh min-h-screen">
+    <div className="mesh min-h-screen text-white">
       <Navbar />
-      <main className="mx-auto max-w-5xl px-5 pb-24 pt-28">
-        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[13px] uppercase tracking-[0.18em] text-zinc-500">futtock</motion.p>
-        <motion.h1 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease }} className="mt-2 text-4xl font-semibold tracking-tight text-zinc-50 sm:text-5xl">A ramp, not a folder.</motion.h1>
-        <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-zinc-400">Mix a colour in the tab. File the ramp, and an optional reference image, into the share database. Discord takes the accent.</p>
-        <motion.section initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08, duration: 0.55, ease }} className="mt-10 rounded-[28px] border border-white/10 bg-white/[0.04] p-6 shadow-[0_24px_70px_rgba(0,0,0,0.32)] backdrop-blur-xl">
-          <div className="flex flex-wrap items-center gap-3">
-            <input type="color" value={base} onChange={(e) => setBase(e.target.value)} className="h-12 w-16 cursor-pointer rounded-xl border-0 bg-transparent" />
-            <input value={name} onChange={(e) => setName(e.target.value)} className="min-w-[180px] flex-1 rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none transition focus:border-white/30" />
-            <span className="font-mono text-sm text-zinc-400">{base}</span>
+      <main className="max-w-3xl mx-auto px-5 pt-28 pb-20">
+        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[#5e5ce6] text-sm">reading desk</motion.p>
+        <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }} className="mt-3 text-4xl sm:text-5xl font-semibold tracking-tight">futtock</motion.h1>
+        <p className="mt-4 text-neutral-400 text-lg max-w-xl">drop a note, markdown, or csv. the opening lines stay on the page and on the Discord card. no size cap.</p>
+        <motion.label initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="mt-8 block rounded-3xl border border-dashed border-white/15 bg-white/[0.03] p-8 text-center cursor-pointer hover:border-[#5e5ce6]/40 transition">
+          <input type="file" className="hidden" onChange={(e) => pick(e.target.files?.[0] || null)} />
+          <span className="text-neutral-200">{file ? file.name : 'choose a text file'}</span>
+        </motion.label>
+        {warn && <p className="mt-3 text-sm text-amber-200/90">{warn}</p>}
+        {preview && <pre className="mt-4 max-h-48 overflow-auto rounded-2xl bg-black/40 border border-white/10 p-4 text-sm text-neutral-300 whitespace-pre-wrap">{preview}</pre>}
+        <div className="mt-4 grid sm:grid-cols-2 gap-3">
+          <input value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="card caption, or leave the excerpt" className="rounded-2xl bg-black/30 border border-white/10 px-4 py-3 outline-none" />
+          <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="your name, optional" className="rounded-2xl bg-black/30 border border-white/10 px-4 py-3 outline-none" />
+        </div>
+        <button disabled={!file || busy} onClick={send} className="mt-4 px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40">{busy ? 'filing' : 'file the note'}</button>
+        <p className="mt-4 text-sm text-neutral-400">{status}</p>
+        {card && (
+          <div className="mt-4 rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+            <p className="text-xs text-neutral-500">Discord card</p>
+            <a className="block mt-1 break-all text-[#5e5ce6]" href={card}>{card}</a>
           </div>
-          <div className="mt-6 grid grid-cols-5 overflow-hidden rounded-3xl border border-white/10">
-            {steps.map((c) => (
-              <div key={c} className="h-28 transition duration-500" style={{ background: c }} />
-            ))}
-          </div>
-          <label className="mt-4 block cursor-pointer rounded-2xl border border-dashed border-white/15 bg-black/25 px-5 py-8 text-center transition hover:border-white/30">
-            <input type="file" className="sr-only" onChange={(e) => setFile(e.target.files?.[0] || null)} />
-            <span className="text-sm text-zinc-200">{file ? file.name : 'optional reference file'}</span>
-          </label>
-          {heavy && <p className="mt-3 text-xs text-amber-200/90">large reference. sending may feel slow. nothing is refused for size.</p>}
-          <button disabled={busy} onClick={send} className="mt-4 rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition active:scale-[0.98] disabled:opacity-40">{busy ? 'filing…' : 'file the ramp'}</button>
-          {result?.error && <p className="mt-3 text-sm text-rose-300">{result.error}</p>}
-          {result?.warn && <p className="mt-3 text-xs text-amber-200/80">{result.warn}</p>}
-          {result?.embed && <a className="mt-3 inline-block text-sm text-[#0A84FF]" href={result.embed}>{result.embed}</a>}
-        </motion.section>
+        )}
       </main>
     </div>
   );

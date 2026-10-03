@@ -5,19 +5,20 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'scupper', label: 'scupper' },
   { to: 'taffrail', label: 'taffrail' },
   { to: 'forepeak', label: 'forepeak' },
   { to: 'bitt', label: 'bitt' },
   { to: 'limber', label: 'limber' },
   { to: 'lazarette', label: 'lazarette' },
   { to: 'vault', label: 'vault' },
-  { to: 'counter', label: 'counter' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'hosting',
     items: [
+      { to: 'scupper', label: 'scupper' },
       { to: 'taffrail', label: 'taffrail' },
       { to: 'forepeak', label: 'forepeak' },
       { to: 'bitt', label: 'bitt' },
@@ -41,6 +42,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'new',
     items: [
+      { to: 'scupper', label: 'scupper' },
       { to: 'taffrail', label: 'taffrail' },
       { to: 'limber', label: 'limber' },
       { to: 'bitt', label: 'bitt' },
@@ -66,6 +68,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'scupper', label: 'scupper' },
       { to: 'taffrail', label: 'taffrail' },
       { to: 'forepeak', label: 'forepeak' },
       { to: 'bitt', label: 'bitt' },
@@ -184,7 +187,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">paste /taffrail, /bitt, /forepeak, or /s in Discord for a card. older desks stay on their routes.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">paste /scupper, /taffrail, /bitt, /forepeak, or /s in Discord for a card. older desks stay on their routes.</p>
         </div>
       </div>
     </nav>

@@ -7,9 +7,9 @@ type NavItem = { to: Route; label: string };
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'folio', label: 'folio' },
+  { to: 'keelson', label: 'keelson' },
+  { to: 'garboard', label: 'garboard' },
   { to: 'ledger', label: 'ledger' },
-  { to: 'pintle', label: 'pintle' },
-  { to: 'hawse', label: 'hawse' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
@@ -17,6 +17,8 @@ const groups: { title: string; items: NavItem[] }[] = [
     title: 'hosting',
     items: [
       { to: 'folio', label: 'folio' },
+      { to: 'keelson', label: 'keelson' },
+      { to: 'garboard', label: 'garboard' },
       { to: 'ledger', label: 'ledger' },
       { to: 'pintle', label: 'pintle' },
       { to: 'bobstay', label: 'bobstay' },
@@ -41,6 +43,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'new',
     items: [
+      { to: 'keelson', label: 'keelson' },
+      { to: 'garboard', label: 'garboard' },
       { to: 'folio', label: 'folio' },
       { to: 'ledger', label: 'ledger' },
       { to: 'pintle', label: 'pintle' },
@@ -87,6 +91,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'keelson', label: 'keelson' },
+      { to: 'garboard', label: 'garboard' },
       { to: 'folio', label: 'folio' },
       { to: 'pintle', label: 'pintle' },
       { to: 'bobstay', label: 'bobstay' },
@@ -217,7 +223,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">paste /folio, /ledger, /pintle, /s, or /parcel in Discord for a card. older desks stay on their routes.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">paste /keelson, /garboard, /folio, /s, or /parcel in Discord for a card. older desks stay on their routes.</p>
         </div>
       </div>
     </nav>

@@ -7,6 +7,8 @@ type NavItem = { to: Route; label: string };
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'folio', label: 'folio' },
+  { to: 'sternpost', label: 'sternpost' },
+  { to: 'breasthook', label: 'breasthook' },
   { to: 'keelson', label: 'keelson' },
   { to: 'garboard', label: 'garboard' },
   { to: 'ledger', label: 'ledger' },
@@ -16,6 +18,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'hosting',
     items: [
+      { to: 'sternpost', label: 'sternpost' },
+      { to: 'breasthook', label: 'breasthook' },
       { to: 'folio', label: 'folio' },
       { to: 'keelson', label: 'keelson' },
       { to: 'garboard', label: 'garboard' },
@@ -43,6 +47,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'new',
     items: [
+      { to: 'sternpost', label: 'sternpost' },
+      { to: 'breasthook', label: 'breasthook' },
       { to: 'keelson', label: 'keelson' },
       { to: 'garboard', label: 'garboard' },
       { to: 'folio', label: 'folio' },
@@ -223,7 +229,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">paste /keelson, /garboard, /folio, /s, or /parcel in Discord for a card. older desks stay on their routes.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">paste /sternpost, /breasthook, /keelson, /garboard, /folio, /s, or /parcel in Discord for a card. older desks stay on their routes.</p>
         </div>
       </div>
     </nav>

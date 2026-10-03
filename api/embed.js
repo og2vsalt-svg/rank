@@ -73,6 +73,8 @@ const PAGE_TITLES = {
   bobstay: 'bobstay — ask for a file',
   keelson: 'keelson — a handoff, not a drawer',
   garboard: 'garboard — a seam between two drops',
+  sternpost: 'sternpost — a berth for one file',
+  breasthook: 'breasthook — problem, change, proof',
 };
 const PAGE_DESC_EXTRA = {
   folio: 'Drop a local file into the share table. Discord unfurls /s. Large drops are warned, never refused.',
@@ -88,6 +90,8 @@ const PAGE_DESC_EXTRA = {
   bobstay: 'ask for a file. an answer lands in the share table. discord unfurls /bobstay.',
   keelson: 'hand a local file to someone by name. bytes land in the share table. discord unfurls /keelson.',
   garboard: 'note the seam between two files already filed. discord unfurls /garboard.',
+  sternpost: 'name a berth and file a local drop into the share table. discord unfurls /sternpost. large drops are warned, never refused.',
+  breasthook: 'a three-line brief filed as markdown, with an optional local attachment. discord unfurls /breasthook.',
 };
 const PAGE_DESC = { ...EXTRA_DESC };
 

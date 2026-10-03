@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'sternpost', body: 'name a berth, pin a time, and file one local drop into the share table. discord unfurls /s and /sternpost. heavy files are warned, never refused.' },
+  { title: 'breasthook', body: 'a three-line brief — problem, change, proof — filed as markdown. an optional local attachment rides along. not a vault drawer.' },
   { title: 'waybill', body: 'a destination, a note, and an optional local file. the file lands in the share table. the slip has its own table. discord unfurls /waybill and /s. slowness warning only.' },
   { title: 'telltale', body: 'a quiet check that the share database and waybill table are answering. paste /telltale for the card.' },
   { title: 'carling', body: 'several locals, then a markdown index of their discord cards. each file lands in the share table. slowness warning only.' },

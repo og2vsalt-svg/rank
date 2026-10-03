@@ -3,7 +3,7 @@ export const config = {
 };
 
 const BOT = /discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|skype|redditbot|applebot|iframely|unfurl|pinterest|notion|embedly|slack-imgproxy|discordbot/i;
-const ID_PREFIX = new Set(['s', 'f', 'x', 'd', 'go', 'open', 'link', 'card', 'embed', 'y', 'q', 'l', 'n', 'k', 'w', 'u', 'r', 'b', 'g', 'c', 'm', 'o', 't', 'i', 'a', 'e', 'z', 'h', 'v', 'j', 'p', 'room', 'parcel', 'spirket', 'washboard', 'beakhead', 'garland', 'partners', 'waybill', 'fid', 'pelorus', 'cuddy', 'hawse', 'futtock', 'samson', 'gudgeon', 'pintle']);
+const ID_PREFIX = new Set(['s', 'f', 'x', 'd', 'go', 'open', 'link', 'card', 'embed', 'y', 'q', 'l', 'n', 'k', 'w', 'u', 'r', 'b', 'g', 'c', 'm', 'o', 't', 'i', 'a', 'e', 'z', 'h', 'v', 'j', 'p', 'room', 'parcel', 'spirket', 'washboard', 'beakhead', 'garland', 'partners', 'waybill', 'fid', 'pelorus', 'cuddy', 'hawse', 'futtock', 'samson', 'gudgeon', 'pintle', 'sternpost', 'breasthook']);
 
 export default function middleware(request) {
   const ua = request.headers.get('user-agent') || '';
@@ -47,6 +47,8 @@ export default function middleware(request) {
   else if (parts[0] === 'samson' && !parts[1]) dest.searchParams.set('page', 'samson');
   else if (parts[0] === 'gudgeon' && !parts[1]) dest.searchParams.set('page', 'gudgeon');
   else if (parts[0] === 'pintle' && !parts[1]) dest.searchParams.set('page', 'pintle');
+  else if (parts[0] === 'sternpost' && !parts[1]) dest.searchParams.set('page', 'sternpost');
+  else if (parts[0] === 'breasthook' && !parts[1]) dest.searchParams.set('page', 'breasthook');
   else if (parts.length >= 2 && ID_PREFIX.has(parts[0])) dest.searchParams.set('id', decodeURIComponent(parts[1]));
   else dest.searchParams.set('page', decodeURIComponent(parts[0]).toLowerCase());
   return Response.redirect(dest.toString(), 307);

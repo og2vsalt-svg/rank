@@ -16,6 +16,8 @@ export default function Hero() {
           a quiet vault for clips, docs, and dumps. windlass reads the head, thole pins a slip, transom lifts a still. no size lock. just a heads up if the tab might lag.
         </motion.p>
         <div className="flex flex-wrap gap-3 mb-12">
+          <button onClick={() => navigate('sternpost')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition">sternpost</button>
+          <button onClick={() => navigate('breasthook')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">breasthook</button>
           <button onClick={() => navigate('fid')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black font-medium text-sm hover:bg-neutral-200 transition">file a drop</button>
           <button onClick={() => navigate('vault')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">open vault</button>
           <button onClick={() => navigate('cuddy')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">cuddy</button>

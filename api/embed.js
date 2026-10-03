@@ -57,6 +57,20 @@ async function loadParcel(id) {
   }
 }
 
+async function loadAsk(id) {
+  try {
+    const url = `${SUPABASE_URL}/rest/v1/file_requests?id=eq.${encodeURIComponent(id)}&select=id,title,note,author,fulfilled_share_id&limit=1`;
+    const r = await fetch(url, {
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
+    });
+    if (!r.ok) return null;
+    const rows = await r.json();
+    return Array.isArray(rows) && rows[0] ? rows[0] : null;
+  } catch {
+    return null;
+  }
+}
+
 const PAGE_TITLES = {
   ...EXTRA_TITLES,
   stemson: 'stemson — rankvault',
@@ -66,6 +80,8 @@ const PAGE_TITLES = {
   hawse: 'hawse — rankvault',
   futtock: 'futtock — rankvault',
   samson: 'samson — rankvault',
+  pintle: 'pintle — a margin beside the file',
+  bobstay: 'bobstay — ask for a file',
 };
 const PAGE_DESC_EXTRA = {
   stemson: 'send local files into the share database. discord cards on every link. no size cap.',
@@ -75,6 +91,8 @@ const PAGE_DESC_EXTRA = {
   hawse: 'file several local files as one parcel. the link unfurls on discord.',
   futtock: 'a reading desk. text files land in the share database with an excerpt on the card.',
   samson: 'paint the title, caption, and accent on a filed drop before you paste it in discord.',
+  pintle: 'file a local drop, then leave a margin beside it. discord unfurls /s and /pintle. large drops are warned, never refused.',
+  bobstay: 'ask for a file. an answer lands in the share table. discord unfurls /bobstay.',
 };
 const PAGE_DESC = { ...EXTRA_DESC };
 
@@ -90,8 +108,27 @@ export default async function handler(req, res) {
   const page = (req.query.page || '').toString().trim().toLowerCase();
   const room = (req.query.room || '').toString().trim();
   const parcel = (req.query.parcel || '').toString().trim();
+  const ask = (req.query.ask || '').toString().trim();
   const proto = (req.headers['x-forwarded-proto'] || 'https').toString();
   const host = (req.headers['x-forwarded-host'] || req.headers.host || '').toString();
+
+  if (ask) {
+    const row = await loadAsk(ask);
+    const dest = `${proto}://${host}/bobstay/${encodeURIComponent(ask)}`;
+    const title = row ? `${row.title} — bobstay` : 'bobstay — rankvault';
+    const desc = row
+      ? `${row.note ? row.note + ' · ' : ''}${row.fulfilled_share_id ? 'answered' : 'open ask'}${row.author ? ' · ' + row.author : ''}`
+      : 'a request for a file. answers land in the share table.';
+    if (!isBot(req.headers['user-agent']) && req.query.embed !== '1') {
+      res.status(302).setHeader('Location', dest);
+      res.end();
+      return;
+    }
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
+    res.status(200).send(pageHtml({ title, desc, url: dest, color: '#0A84FF' }));
+    return;
+  }
 
   if (parcel && !id) {
     const row = await loadParcel(parcel);

@@ -29,10 +29,9 @@ function prettySize(n) {
   return (x / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
 }
 
-async function loadShare(id) {
+async function sbGet(path) {
   try {
-    const url = `${SUPABASE_URL}/rest/v1/public_shares?id=eq.${encodeURIComponent(id)}&select=id,name,mime,size,file_url,expires_at,is_public,author,download_count,meta,caption&limit=1`;
-    const r = await fetch(url, {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
       headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
     });
     if (!r.ok) return null;
@@ -41,34 +40,22 @@ async function loadShare(id) {
   } catch {
     return null;
   }
+}
+
+async function loadShare(id) {
+  return sbGet(`public_shares?id=eq.${encodeURIComponent(id)}&select=id,name,mime,size,file_url,expires_at,is_public,author,download_count,meta,caption&limit=1`);
 }
 
 async function loadParcel(id) {
-  try {
-    const url = `${SUPABASE_URL}/rest/v1/parcels?id=eq.${encodeURIComponent(id)}&select=id,title,note,author,accent,items&limit=1`;
-    const r = await fetch(url, {
-      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
-    });
-    if (!r.ok) return null;
-    const rows = await r.json();
-    return Array.isArray(rows) && rows[0] ? rows[0] : null;
-  } catch {
-    return null;
-  }
+  return sbGet(`parcels?id=eq.${encodeURIComponent(id)}&select=id,title,note,author,accent,items&limit=1`);
 }
 
 async function loadAsk(id) {
-  try {
-    const url = `${SUPABASE_URL}/rest/v1/file_requests?id=eq.${encodeURIComponent(id)}&select=id,title,note,author,fulfilled_share_id&limit=1`;
-    const r = await fetch(url, {
-      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
-    });
-    if (!r.ok) return null;
-    const rows = await r.json();
-    return Array.isArray(rows) && rows[0] ? rows[0] : null;
-  } catch {
-    return null;
-  }
+  return sbGet(`file_requests?id=eq.${encodeURIComponent(id)}&select=id,title,note,author,fulfilled_share_id&limit=1`);
+}
+
+async function loadReceipt(id) {
+  return sbGet(`keelson_receipts?id=eq.${encodeURIComponent(id)}&select=id,share_id,from_name,to_name,note,file_name,size&limit=1`);
 }
 
 const PAGE_TITLES = {
@@ -84,6 +71,8 @@ const PAGE_TITLES = {
   samson: 'samson — rankvault',
   pintle: 'pintle — a margin beside the file',
   bobstay: 'bobstay — ask for a file',
+  keelson: 'keelson — a handoff, not a drawer',
+  garboard: 'garboard — a seam between two drops',
 };
 const PAGE_DESC_EXTRA = {
   folio: 'Drop a local file into the share table. Discord unfurls /s. Large drops are warned, never refused.',
@@ -97,6 +86,8 @@ const PAGE_DESC_EXTRA = {
   samson: 'paint the title, caption, and accent on a filed drop before you paste it in discord.',
   pintle: 'file a local drop, then leave a margin beside it. discord unfurls /s and /pintle. large drops are warned, never refused.',
   bobstay: 'ask for a file. an answer lands in the share table. discord unfurls /bobstay.',
+  keelson: 'hand a local file to someone by name. bytes land in the share table. discord unfurls /keelson.',
+  garboard: 'note the seam between two files already filed. discord unfurls /garboard.',
 };
 const PAGE_DESC = { ...EXTRA_DESC };
 
@@ -107,14 +98,38 @@ function pageHtml({ title, desc, image, url, color }) {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8" /><title>${esc(title)}</title><meta name="description" content="${esc(desc)}" /><meta name="theme-color" content="${esc(c)}" /><meta property="og:type" content="website" /><meta property="og:site_name" content="rankvault" /><meta property="og:title" content="${esc(title)}" /><meta property="og:description" content="${esc(desc)}" /><meta property="og:image" content="${esc(safeImg)}" /><meta property="og:image:secure_url" content="${esc(safeImg)}" /><meta property="og:image:alt" content="${esc(title)}" /><meta property="og:image:width" content="1200" /><meta property="og:image:height" content="630" /><meta property="og:url" content="${esc(url)}" /><meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content="${esc(title)}" /><meta name="twitter:description" content="${esc(desc)}" /><meta name="twitter:image" content="${esc(safeImg)}" /></head><body style="margin:0;background:#050506;color:#f5f5f7;font-family:Inter,system-ui,-apple-system,sans-serif;padding:64px 28px"><p style="opacity:.55;font-size:13px;letter-spacing:.08em;text-transform:uppercase">rankvault</p><h1 style="font-size:32px;letter-spacing:-.04em">${esc(title)}</h1><p style="color:#a1a1aa">${esc(desc)}</p><script>if(!/discord|bot|embed|preview/i.test(navigator.userAgent||'')) location.replace(${JSON.stringify(url)});</script></body></html>`;
 }
 
+function sendCard(res, ua, embedFlag, dest, card) {
+  if (!isBot(ua) && embedFlag !== '1') {
+    res.status(302).setHeader('Location', dest);
+    res.end();
+    return;
+  }
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
+  res.status(200).send(pageHtml(card));
+}
+
 export default async function handler(req, res) {
   const id = (req.query.id || '').toString().trim();
   const page = (req.query.page || '').toString().trim().toLowerCase();
   const room = (req.query.room || '').toString().trim();
   const parcel = (req.query.parcel || '').toString().trim();
   const ask = (req.query.ask || '').toString().trim();
+  const receipt = (req.query.receipt || '').toString().trim();
   const proto = (req.headers['x-forwarded-proto'] || 'https').toString();
   const host = (req.headers['x-forwarded-host'] || req.headers.host || '').toString();
+  const ua = req.headers['user-agent'];
+
+  if (receipt) {
+    const row = await loadReceipt(receipt);
+    const dest = `${proto}://${host}/keelson/${encodeURIComponent(receipt)}`;
+    const title = row ? `${row.file_name || 'file'} — for ${row.to_name || 'someone'}` : 'keelson — rankvault';
+    const desc = row
+      ? `${row.note ? row.note + ' · ' : ''}from ${row.from_name || 'keelson'} · ${prettySize(row.size)} · handoff on rankvault`
+      : 'a named handoff. the file lives in the share table.';
+    sendCard(res, ua, req.query.embed, dest, { title, desc, url: dest, color: '#0A84FF' });
+    return;
+  }
 
   if (ask) {
     const row = await loadAsk(ask);
@@ -123,14 +138,7 @@ export default async function handler(req, res) {
     const desc = row
       ? `${row.note ? row.note + ' · ' : ''}${row.fulfilled_share_id ? 'answered' : 'open ask'}${row.author ? ' · ' + row.author : ''}`
       : 'a request for a file. answers land in the share table.';
-    if (!isBot(req.headers['user-agent']) && req.query.embed !== '1') {
-      res.status(302).setHeader('Location', dest);
-      res.end();
-      return;
-    }
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
-    res.status(200).send(pageHtml({ title, desc, url: dest, color: '#0A84FF' }));
+    sendCard(res, ua, req.query.embed, dest, { title, desc, url: dest, color: '#0A84FF' });
     return;
   }
 
@@ -145,28 +153,13 @@ export default async function handler(req, res) {
     const image = row && Array.isArray(row.items)
       ? (row.items.find((it) => String(it.mime || '').startsWith('image/') && /^https?:\/\//i.test(it.file_url || '')) || {}).file_url
       : undefined;
-    if (!isBot(req.headers['user-agent']) && req.query.embed !== '1') {
-      res.status(302).setHeader('Location', dest);
-      res.end();
-      return;
-    }
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
-    res.status(200).send(pageHtml({ title, desc, image, url: dest, color: (row && row.accent) || '#0A84FF' }));
+    sendCard(res, ua, req.query.embed, dest, { title, desc, image, url: dest, color: (row && row.accent) || '#0A84FF' });
     return;
   }
 
   if (room && !id) {
     const dest = `${proto}://${host}/#gammon?f=${encodeURIComponent(room)}`;
-    const title = 'gammon room — rankvault';
-    const desc = 'a shared file room. discord cards on the drops inside.';
-    if (!isBot(req.headers['user-agent']) && req.query.embed !== '1') {
-      res.status(302).setHeader('Location', dest);
-      res.end();
-      return;
-    }
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.status(200).send(pageHtml({ title, desc, url: dest, color: '#0A84FF' }));
+    sendCard(res, ua, req.query.embed, dest, { title: 'gammon room — rankvault', desc: 'a shared file room. discord cards on the drops inside.', url: dest, color: '#0A84FF' });
     return;
   }
 
@@ -174,14 +167,7 @@ export default async function handler(req, res) {
     const dest = `${proto}://${host}/#${encodeURIComponent(page)}`;
     const title = PAGE_TITLES[page] || `${page} — rankvault`;
     const desc = PAGE_DESC[page] || PAGE_DESC_EXTRA[page] || 'quiet file hosting. drop a file, share only if you want. discord cards on every link.';
-    if (!isBot(req.headers['user-agent']) && req.query.embed !== '1') {
-      res.status(302).setHeader('Location', dest);
-      res.end();
-      return;
-    }
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
-    res.status(200).send(pageHtml({ title, desc, url: dest, color: '#0A84FF' }));
+    sendCard(res, ua, req.query.embed, dest, { title, desc, url: dest, color: '#0A84FF' });
     return;
   }
 
@@ -203,15 +189,6 @@ export default async function handler(req, res) {
   const mime = String((live && row.mime) || '');
   const fileUrl = String((live && row.file_url) || '');
   const image = live && mime.startsWith('image/') && /^https?:\/\//i.test(fileUrl) ? fileUrl : undefined;
-
-  if (!isBot(req.headers['user-agent']) && req.query.embed !== '1') {
-    res.status(302).setHeader('Location', appUrl);
-    res.end();
-    return;
-  }
-
-  res.setHeader('Content-Type', 'text/html; charset=utf-8');
-  res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
   const accent = live && row.meta && row.meta.color ? String(row.meta.color) : '#0A84FF';
-  res.status(200).send(pageHtml({ title, desc, image, url: appUrl, color: accent }));
+  sendCard(res, ua, req.query.embed, appUrl, { title, desc, image, url: appUrl, color: accent });
 }

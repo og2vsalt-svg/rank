@@ -5,10 +5,10 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'passage', label: 'passage' },
+  { to: 'lantern', label: 'lantern' },
   { to: 'shuttle', label: 'shuttle' },
   { to: 'orlop', label: 'orlop' },
-  { to: 'cleat', label: 'cleat' },
-  { to: 'sounding', label: 'sounding' },
   { to: 'vault', label: 'vault' },
   { to: 'folio', label: 'folio' },
 ];
@@ -17,6 +17,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'hosting',
     items: [
+      { to: 'passage', label: 'passage' },
       { to: 'shuttle', label: 'shuttle' },
       { to: 'marline', label: 'marline' },
       { to: 'deadeye', label: 'deadeye' },
@@ -33,6 +34,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'new',
     items: [
+      { to: 'passage', label: 'passage' },
+      { to: 'lantern', label: 'lantern' },
       { to: 'shuttle', label: 'shuttle' },
       { to: 'sounding', label: 'sounding' },
       { to: 'marline', label: 'marline' },
@@ -51,6 +54,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'passage', label: 'passage' },
       { to: 'shuttle', label: 'shuttle' },
       { to: 'marline', label: 'marline' },
       { to: 'deadeye', label: 'deadeye' },
@@ -63,6 +67,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'lantern', label: 'lantern' },
       { to: 'sounding', label: 'sounding' },
       { to: 'samson', label: 'samson' },
       { to: 'telltale', label: 'telltale' },
@@ -162,7 +167,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">paste /shuttle, /orlop, /cleat, /sounding, /s, or /folio in Discord for a card. older desks stay on their routes.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">paste /passage, /lantern, /shuttle, /orlop, or /s in Discord for a card. older desks stay on their routes.</p>
         </div>
       </div>
     </nav>

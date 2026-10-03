@@ -91,6 +91,7 @@ const PAGE_TITLES = {
   fairlead: 'fairlead — a checklist, not a drawer',
   hounds: 'hounds — a line, not a drawer',
   seizing: 'seizing — a pile on one line',
+  deadeye: 'deadeye — a witness, not a drawer',
 };
 const PAGE_DESC_EXTRA = {
   folio: 'Drop a local file into the share table. Discord unfurls /s. Large drops are warned, never refused.',
@@ -112,6 +113,7 @@ const PAGE_DESC_EXTRA = {
   fairlead: 'a checklist with an optional proof file in the share table. discord unfurls /fairlead. large drops are warned, never refused.',
   hounds: 'pair a line with a local file. the row lands in the hounds table. discord unfurls /hounds. large drops are warned, never refused.',
   seizing: 'file several local drops onto one line. each row unfurls on discord. large drops are warned, never refused.',
+  deadeye: 'name who saw the file and write one line. the local drop lands in the deadeyes table. discord unfurls /deadeye. large drops are warned, never refused.',
 };
 const PAGE_DESC = { ...EXTRA_DESC };
 
@@ -145,6 +147,18 @@ export default async function handler(req, res) {
   const proto = (req.headers['x-forwarded-proto'] || 'https').toString();
   const host = (req.headers['x-forwarded-host'] || req.headers.host || '').toString();
   const ua = req.headers['user-agent'];
+
+  if (page === 'deadeye' && id) {
+    const row = await sbGet(`deadeyes?id=eq.${encodeURIComponent(id)}&select=id,witness,saw,name,mime,size,author,file_url&limit=1`);
+    const dest = `${proto}://${host}/deadeye/${encodeURIComponent(id)}`;
+    const title = row ? `${row.witness} — ${row.name}` : 'deadeye — rankvault';
+    const desc = row
+      ? `${row.saw} · ${prettySize(row.size)}${row.author ? ' · ' + row.author : ''} · witness on rankvault`
+      : 'a witness and a file. not a drawer.';
+    const image = row && String(row.mime || '').startsWith('image/') && /^https?:\/\//i.test(row.file_url || '') ? row.file_url : undefined;
+    sendCard(res, ua, req.query.embed, dest, { title, desc, image, url: dest, color: '#64D2FF' });
+    return;
+  }
 
   if (page === 'hounds' && id) {
     const row = await sbGet(`hounds?id=eq.${encodeURIComponent(id)}&select=id,line,name,mime,size,note,author,file_url&limit=1`);

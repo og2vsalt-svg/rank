@@ -5,11 +5,11 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'forepeak', label: 'forepeak' },
+  { to: 'lazarette', label: 'lazarette' },
   { to: 'passage', label: 'passage' },
-  { to: 'lantern', label: 'lantern' },
-  { to: 'shuttle', label: 'shuttle' },
-  { to: 'orlop', label: 'orlop' },
   { to: 'vault', label: 'vault' },
+  { to: 'lantern', label: 'lantern' },
   { to: 'folio', label: 'folio' },
 ];
 
@@ -17,6 +17,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'hosting',
     items: [
+      { to: 'forepeak', label: 'forepeak' },
+      { to: 'lazarette', label: 'lazarette' },
+      { to: 'skylight', label: 'skylight' },
       { to: 'passage', label: 'passage' },
       { to: 'shuttle', label: 'shuttle' },
       { to: 'marline', label: 'marline' },
@@ -34,6 +37,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'new',
     items: [
+      { to: 'forepeak', label: 'forepeak' },
+      { to: 'lazarette', label: 'lazarette' },
       { to: 'passage', label: 'passage' },
       { to: 'lantern', label: 'lantern' },
       { to: 'shuttle', label: 'shuttle' },
@@ -54,6 +59,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'forepeak', label: 'forepeak' },
       { to: 'passage', label: 'passage' },
       { to: 'shuttle', label: 'shuttle' },
       { to: 'marline', label: 'marline' },
@@ -68,6 +74,7 @@ const groups: { title: string; items: NavItem[] }[] = [
     title: 'tools',
     items: [
       { to: 'lantern', label: 'lantern' },
+      { to: 'skylight', label: 'skylight' },
       { to: 'sounding', label: 'sounding' },
       { to: 'samson', label: 'samson' },
       { to: 'telltale', label: 'telltale' },
@@ -167,7 +174,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">paste /passage, /lantern, /shuttle, /orlop, or /s in Discord for a card. older desks stay on their routes.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">paste /forepeak, /lazarette, /passage, /lantern, or /s in Discord for a card. older desks stay on their routes.</p>
         </div>
       </div>
     </nav>

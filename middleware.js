@@ -27,6 +27,12 @@ export default function middleware(request) {
     if (parts[1]) dest.searchParams.set('ask', decodeURIComponent(parts[1]));
     return Response.redirect(dest.toString(), 307);
   }
+  if (parts[0] === 'keelson' && BOT.test(ua)) {
+    const dest = new URL('/api/embed', request.url);
+    dest.searchParams.set('page', 'keelson');
+    if (parts[1]) dest.searchParams.set('receipt', decodeURIComponent(parts[1]));
+    return Response.redirect(dest.toString(), 307);
+  }
   if (!BOT.test(ua)) return;
   const dest = new URL('/api/embed', request.url);
   if (!parts.length) dest.searchParams.set('page', 'home');
@@ -35,6 +41,7 @@ export default function middleware(request) {
   else if (parts[0] === 'partners' && parts[1]) dest.searchParams.set('page', 'partners');
   else if (parts[0] === 'waybill') dest.searchParams.set('page', 'waybill');
   else if (parts[0] === 'telltale') dest.searchParams.set('page', 'telltale');
+  else if (parts[0] === 'garboard') dest.searchParams.set('page', 'garboard');
   else if (parts[0] === 'hawse' && !parts[1]) dest.searchParams.set('page', 'hawse');
   else if (parts[0] === 'futtock' && !parts[1]) dest.searchParams.set('page', 'futtock');
   else if (parts[0] === 'samson' && !parts[1]) dest.searchParams.set('page', 'samson');

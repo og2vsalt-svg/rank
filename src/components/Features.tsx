@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'scupper', body: 'one local file into the share table, plus a drain note in its own table. discord unfurls /scupper and /s. slowness warning only.' },
   { title: 'counter', body: 'one local file into the share table, plus a countermark in its own table. discord unfurls /counter and /s. slowness warning only.' },
   { title: 'hounds', body: 'name a line, file a local drop into the hounds table, and paste /hounds in discord.' },
   { title: 'seizing', body: 'seize several local files onto one line. each lands in the hounds table with its own discord card.' },

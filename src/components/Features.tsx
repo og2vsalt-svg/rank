@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'waybill', body: 'a destination, a note, and an optional local file. the file lands in the share table. the slip has its own table. discord unfurls /waybill and /s. slowness warning only.' },
+  { title: 'telltale', body: 'a quiet check that the share database and waybill table are answering. paste /telltale for the card.' },
   { title: 'carling', body: 'several locals, then a markdown index of their discord cards. each file lands in the share table. slowness warning only.' },
   { title: 'deadwood', body: 'hash a local file in the tab, compare a pasted digest, and file only the receipt.' },
   { title: 'fashion', body: 'paint a 1200x630 cover and file the png so discord unfurls a real image. optional companion file.' },
@@ -73,7 +75,7 @@ export default function Features() {
     <section className="py-16 px-5" id="features">
       <div className="max-w-5xl mx-auto">
         <h2 className="text-2xl font-semibold text-white mb-2 tracking-tight">built for dropping files</h2>
-        <p className="text-neutral-500 text-sm mb-8">a vault that feels like it belongs on a phone.</p>
+        <p className="text-neutral-500 text-sm mb-8">a vault that feels like it belongs on a phone. not a ranking tool.</p>
         <div className="grid md:grid-cols-2 gap-4">
           {items.map((item, i) => (
             <motion.div key={item.title} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: Math.min(i, 12) * 0.04, duration: 0.4, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-3xl p-6 hover:-translate-y-0.5">

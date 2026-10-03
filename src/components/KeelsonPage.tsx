@@ -1,95 +1,128 @@
-import { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useEffect, useMemo, useState } from 'react';
 import Navbar from './Navbar';
-import { publishLocalFile, shareUrls } from '../lib/cloudShare';
+import { useRouter } from './Router';
+
+const ease = [0.22, 1, 0.36, 1] as const;
+
+type Receipt = {
+  id: string;
+  share_id: string;
+  from_name: string | null;
+  to_name: string | null;
+  note: string | null;
+  file_name: string | null;
+  size: number;
+  created_at: string;
+};
+
+function pretty(n: number) {
+  if (n < 1024) return `${n} B`;
+  if (n < 1024 * 1024) return `${Math.max(1, Math.round(n / 1024))} KB`;
+  if (n < 1024 * 1024 * 1024) return `${(n / (1024 * 1024)).toFixed(1)} MB`;
+  return `${(n / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+}
 
 export default function KeelsonPage() {
-  const rec = useRef<MediaRecorder | null>(null);
-  const chunks = useRef<Blob[]>([]);
-  const [live, setLive] = useState(false);
-  const [blob, setBlob] = useState<Blob | null>(null);
-  const [url, setUrl] = useState('');
+  const { shareId } = useRouter();
+  const [file, setFile] = useState<File | null>(null);
+  const [fromName, setFromName] = useState('');
+  const [toName, setToName] = useState('');
+  const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
-  const [err, setErr] = useState('');
-  const [warn, setWarn] = useState<string | null>(null);
-  const [id, setId] = useState('');
+  const [status, setStatus] = useState('a handoff desk. the file goes to the share table. the receipt names who it is for.');
+  const [card, setCard] = useState('');
+  const [receipts, setReceipts] = useState<Receipt[]>([]);
 
-  const start = async () => {
-    setErr('');
-    setId('');
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mime = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : '';
-      const recorder = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined);
-      chunks.current = [];
-      recorder.ondataavailable = (e) => {
-        if (e.data.size) chunks.current.push(e.data);
-      };
-      recorder.onstop = () => {
-        stream.getTracks().forEach((t) => t.stop());
-        const next = new Blob(chunks.current, { type: recorder.mimeType || 'audio/webm' });
-        setBlob(next);
-        setUrl(URL.createObjectURL(next));
-        setWarn(next.size > 12 * 1024 * 1024 ? 'long take. sending it may feel slow.' : null);
-      };
-      recorder.start();
-      rec.current = recorder;
-      setLive(true);
-    } catch {
-      setErr('microphone permission was declined');
-    }
-  };
+  const slow = useMemo(() => (file && file.size > 12 * 1024 * 1024 ? `${pretty(file.size)}. preview clients may feel slow. the desk still files it.` : ''), [file]);
 
-  const stop = () => {
-    rec.current?.stop();
-    setLive(false);
-  };
+  async function load() {
+    const r = await fetch('/api/keelson');
+    const data = await r.json();
+    if (r.ok) setReceipts(Array.isArray(data.receipts) ? data.receipts : []);
+  }
 
-  const publish = async () => {
-    if (!blob) return;
+  useEffect(() => {
+    load().catch(() => setStatus('could not read receipts'));
+    if (shareId) setCard(`${window.location.origin}/keelson/${shareId}`);
+  }, [shareId]);
+
+  async function handOff() {
+    if (!file || !toName.trim()) return;
     setBusy(true);
-    setErr('');
-    const file = new File([blob], `keelson-${Date.now().toString(36)}.webm`, { type: blob.type || 'audio/webm' });
-    const res = await publishLocalFile(file, { caption: 'voice note' });
-    setBusy(false);
-    if (!res.ok || !res.id) {
-      setErr(res.error || 'could not land the take');
-      return;
+    setStatus('filing the drop');
+    try {
+      const body = new FormData();
+      body.append('file', file, file.name);
+      body.append('author', fromName.trim() || 'keelson');
+      body.append('caption', note.trim() || `for ${toName.trim()}`);
+      body.append('cardTitle', file.name);
+      const r = await fetch('/api/share', { method: 'POST', body });
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.error || 'the share table did not take the file');
+      const receiptId = `k${Date.now().toString(36)}`;
+      const rec = await fetch('/api/keelson', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: receiptId,
+          shareId: data.id,
+          fromName: fromName.trim() || 'keelson',
+          toName: toName.trim(),
+          note: note.trim(),
+          fileName: file.name,
+          size: file.size,
+        }),
+      });
+      const recData = await rec.json();
+      if (!rec.ok) throw new Error(recData.error || 'receipt was not written');
+      const link = `${window.location.origin}/keelson/${receiptId}`;
+      setCard(link);
+      history.replaceState(null, '', `/keelson/${receiptId}`);
+      setStatus(data.warn ? data.warn : 'filed. paste the keelson link in Discord.');
+      setFile(null);
+      setNote('');
+      await load();
+    } catch (err) {
+      setStatus(err instanceof Error ? err.message : 'handoff failed');
+    } finally {
+      setBusy(false);
     }
-    setId(res.id);
-    setWarn(res.warn || warn);
-  };
-
-  const card = id ? shareUrls(id).embed : '';
+  }
 
   return (
-    <div className="mesh min-h-screen">
+    <div className="mesh min-h-screen text-white">
       <Navbar />
-      <main className="mx-auto max-w-xl px-5 pb-24 pt-10">
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}>
-          <p className="text-[12px] uppercase tracking-[0.16em] text-white/45">keelson</p>
-          <h1 className="mt-2 text-[34px] font-semibold tracking-[-0.04em]">hold a voice note, then share it</h1>
-          <p className="mt-3 text-[15px] leading-relaxed text-white/60">
-            Recording stays on this device until you publish. The take is a normal file row, so the Discord card can play it.
-          </p>
-        </motion.div>
-        <div className="mt-8 flex gap-2">
-          {!live ? (
-            <button onClick={start} className="rounded-full bg-[#0A84FF] px-5 py-2.5 text-[14px] font-medium transition-transform active:scale-[0.98]">record</button>
-          ) : (
-            <button onClick={stop} className="rounded-full bg-white px-5 py-2.5 text-[14px] font-medium text-black transition-transform active:scale-[0.98]">stop</button>
-          )}
-          {live && <span className="self-center text-[13px] text-white/50">listening…</span>}
+      <main className="max-w-3xl mx-auto px-5 pt-28 pb-24">
+        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease }} className="text-[#0a84ff] text-[13px] tracking-wide">handoff desk</motion.p>
+        <motion.h1 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease }} className="mt-3 text-4xl sm:text-5xl font-semibold tracking-tight">keelson</motion.h1>
+        <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.05, ease }} className="mt-4 text-neutral-400 text-lg max-w-xl leading-relaxed">
+          Name who the file is for. The bytes land in the share table. The receipt is a different row, so this is not another drawer.
+        </motion.p>
+        <label className="mt-8 block rounded-3xl border border-white/10 bg-white/[0.04] p-5 cursor-pointer hover:bg-white/[0.06] transition-colors">
+          <span className="text-xs text-neutral-500">local file</span>
+          <span className="mt-2 block text-sm text-white truncate">{file ? file.name : 'choose a file on this machine'}</span>
+          <span className="mt-1 block text-xs text-neutral-500">{file ? pretty(file.size) : 'no size cutoff'}</span>
+          <input type="file" className="sr-only" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+        </label>
+        {slow && <p className="mt-3 text-sm text-amber-200/80">{slow}</p>}
+        <div className="mt-3 grid sm:grid-cols-2 gap-3">
+          <input value={fromName} onChange={(e) => setFromName(e.target.value)} placeholder="from" className="rounded-2xl bg-black/30 border border-white/10 px-4 py-3 outline-none focus:border-white/25 transition-colors" />
+          <input value={toName} onChange={(e) => setToName(e.target.value)} placeholder="for" className="rounded-2xl bg-black/30 border border-white/10 px-4 py-3 outline-none focus:border-white/25 transition-colors" />
         </div>
-        {url && (
-          <motion.audio initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-6 w-full" controls src={url} />
-        )}
-        {warn && <p className="mt-3 text-[13px] text-amber-200">{warn}</p>}
-        <button onClick={publish} disabled={busy || !blob} className="mt-5 rounded-full bg-white px-5 py-2.5 text-[14px] font-medium text-black transition-transform active:scale-[0.98] disabled:opacity-50">
-          {busy ? 'sending…' : 'publish take'}
-        </button>
-        {err && <p className="mt-3 text-[13px] text-red-300">{err}</p>}
-        {card && <p className="mt-4 break-all text-[13px] text-white/70">{card}</p>}
+        <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={3} placeholder="a line on the receipt" className="mt-3 w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 outline-none focus:border-white/25 resize-none" />
+        <button disabled={!file || !toName.trim() || busy} onClick={handOff} className="mt-4 px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40 active:scale-[0.98] transition-transform">hand it over</button>
+        {card && <a href={card} className="mt-4 block break-all text-[#0a84ff] text-sm">{card}</a>}
+        <div className="mt-8 space-y-2">
+          {receipts.map((row) => (
+            <motion.a key={row.id} href={`/keelson/${row.id}`} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="block rounded-2xl bg-white/[0.04] border border-white/10 px-4 py-3 hover:bg-white/[0.07] transition-colors">
+              <p className="text-sm text-white">{row.file_name || 'file'} → {row.to_name || 'someone'}</p>
+              <p className="text-xs text-neutral-500 mt-1">{row.from_name || 'keelson'} · {pretty(Number(row.size) || 0)} · {row.note || 'no note'}</p>
+            </motion.a>
+          ))}
+          {!receipts.length && <p className="text-sm text-neutral-500">no handoffs yet.</p>}
+        </div>
+        <p className="mt-4 text-sm text-neutral-400">{status}</p>
       </main>
     </div>
   );

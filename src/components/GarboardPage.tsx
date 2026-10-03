@@ -1,106 +1,100 @@
-import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 import Navbar from './Navbar';
-import { publishLocalFile, shareUrls } from '../lib/cloudShare';
+
+const ease = [0.22, 1, 0.36, 1] as const;
+
+type Share = { id: string; name: string; size: number; mime?: string };
+type Seam = { id: string; left_id: string; right_id: string; note: string | null; author: string | null; created_at: string };
+
+function pretty(n: number) {
+  if (n < 1024) return `${n} B`;
+  if (n < 1024 * 1024) return `${Math.max(1, Math.round(n / 1024))} KB`;
+  if (n < 1024 * 1024 * 1024) return `${(n / (1024 * 1024)).toFixed(1)} MB`;
+  return `${(n / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+}
 
 export default function GarboardPage() {
+  const [shares, setShares] = useState<Share[]>([]);
+  const [seams, setSeams] = useState<Seam[]>([]);
+  const [leftId, setLeftId] = useState('');
+  const [rightId, setRightId] = useState('');
   const [note, setNote] = useState('');
-  const [rec, setRec] = useState(false);
-  const [blob, setBlob] = useState<Blob | null>(null);
-  const [secs, setSecs] = useState(0);
+  const [author, setAuthor] = useState('');
   const [busy, setBusy] = useState(false);
-  const [err, setErr] = useState('');
-  const [warn, setWarn] = useState('');
-  const [card, setCard] = useState('');
-  const recRef = useRef<MediaRecorder | null>(null);
-  const chunks = useRef<Blob[]>([]);
-  const tick = useRef<number | null>(null);
+  const [status, setStatus] = useState('a seam between two drops already in the share table. nothing new is uploaded here.');
 
-  useEffect(() => () => {
-    recRef.current?.stop();
-    if (tick.current) window.clearInterval(tick.current);
+  async function load() {
+    const [shareRes, seamRes] = await Promise.all([
+      fetch('/api/share?list=1&limit=16'),
+      fetch('/api/garboard'),
+    ]);
+    const shareData = await shareRes.json();
+    const seamData = await seamRes.json();
+    if (shareRes.ok) setShares(Array.isArray(shareData.shares) ? shareData.shares : []);
+    if (seamRes.ok) setSeams(Array.isArray(seamData.seams) ? seamData.seams : []);
+  }
+
+  useEffect(() => {
+    load().catch(() => setStatus('could not read the seam table'));
   }, []);
 
-  async function start() {
-    setErr('');
-    setBlob(null);
-    setCard('');
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mime = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : '';
-      const mr = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined);
-      chunks.current = [];
-      mr.ondataavailable = (e) => { if (e.data.size) chunks.current.push(e.data); };
-      mr.onstop = () => {
-        stream.getTracks().forEach((t) => t.stop());
-        const out = new Blob(chunks.current, { type: mr.mimeType || 'audio/webm' });
-        setBlob(out);
-        if (out.size > 12 * 1024 * 1024) setWarn('long memo. the send may feel slow. nothing is refused.');
-      };
-      mr.start();
-      recRef.current = mr;
-      setSecs(0);
-      setRec(true);
-      tick.current = window.setInterval(() => setSecs((n) => n + 1), 1000);
-    } catch {
-      setErr('the mic stayed closed. you can still file a written note.');
-    }
-  }
-
-  function stop() {
-    recRef.current?.stop();
-    setRec(false);
-    if (tick.current) window.clearInterval(tick.current);
-  }
-
-  async function fileIt() {
-    setErr('');
-    if (!blob && !note.trim()) {
-      setErr('record a memo, or write the line.');
-      return;
-    }
+  async function writeSeam() {
+    if (!leftId || !rightId || !note.trim() || leftId === rightId) return;
     setBusy(true);
-    const file = blob
-      ? new File([blob], `garboard-${Date.now()}.webm`, { type: blob.type || 'audio/webm' })
-      : new File([note], 'garboard.txt', { type: 'text/plain' });
-    const res = await publishLocalFile(file, {
-      cardTitle: note.trim().slice(0, 80) || 'garboard memo',
-      caption: note.trim().slice(0, 280) || `${secs || 0}s memo`,
-      author: 'garboard',
-      color: '#5E5CE6',
-    });
-    setBusy(false);
-    if (!res.ok || !res.id) {
-      setErr(res.error || 'the share table did not take it.');
-      return;
+    try {
+      const r = await fetch('/api/garboard', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ leftId, rightId, note: note.trim(), author: author.trim() || 'garboard' }),
+      });
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.error || 'seam was not written');
+      setNote('');
+      setStatus('seam written. paste /garboard in Discord for the card.');
+      await load();
+    } catch (err) {
+      setStatus(err instanceof Error ? err.message : 'seam failed');
+    } finally {
+      setBusy(false);
     }
-    setCard(res.embed || shareUrls(res.id).embed);
-    if (res.warn) setWarn(res.warn);
   }
-
-  const clock = `${String(Math.floor(secs / 60)).padStart(2, '0')}:${String(secs % 60).padStart(2, '0')}`;
 
   return (
-    <div className="mesh min-h-screen">
+    <div className="mesh min-h-screen text-white">
       <Navbar />
-      <main className="mx-auto max-w-xl px-5 pb-24 pt-28">
-        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[13px] uppercase tracking-[0.16em] text-zinc-500">garboard</motion.p>
-        <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }} className="mt-2 text-4xl font-semibold tracking-tight">A memo, not a drawer.</motion.h1>
-        <p className="mt-3 text-[15px] leading-relaxed text-zinc-400">Speak into the tab. The audio lands in the share table, and Discord gets a card. A written line works if the mic does not.</p>
-        <div className="mt-8 space-y-3 rounded-[28px] border border-white/10 bg-white/[0.04] p-4 shadow-[0_20px_60px_rgba(0,0,0,0.25)] backdrop-blur-xl">
-          <div className="flex items-center justify-between rounded-2xl bg-black/30 px-4 py-4">
-            <span className="font-medium tabular-nums tracking-tight">{clock}</span>
-            <button onClick={rec ? stop : start} className="rounded-full bg-white px-4 py-2 text-sm font-medium text-black transition active:scale-[0.98]">{rec ? 'stop' : 'record'}</button>
-          </div>
-          {blob && <p className="text-xs text-zinc-400">memo ready · {Math.max(1, Math.round(blob.size / 1024))} KB</p>}
-          <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="the line on the card" rows={3} className="w-full resize-none rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none transition focus:border-[#5E5CE6]/60" />
-          {warn && <p className="text-xs text-amber-200/80">{warn}</p>}
-          <button onClick={fileIt} disabled={busy || rec} className="w-full rounded-full bg-white py-3 text-sm font-medium text-black transition active:scale-[0.98] disabled:opacity-60">{busy ? 'filing…' : 'file the memo'}</button>
-          {err && <p className="text-sm text-red-300">{err}</p>}
-          {card && (
-            <button onClick={() => navigator.clipboard.writeText(card)} className="w-full rounded-2xl bg-[#5E5CE6]/15 px-3 py-3 text-left text-xs text-[#c7c4ff]">{card}<span className="mt-1 block text-[11px] text-zinc-400">copied when you tap. paste it in Discord.</span></button>
-          )}
+      <main className="max-w-3xl mx-auto px-5 pt-28 pb-24">
+        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease }} className="text-[#0a84ff] text-[13px] tracking-wide">seam desk</motion.p>
+        <motion.h1 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease }} className="mt-3 text-4xl sm:text-5xl font-semibold tracking-tight">garboard</motion.h1>
+        <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.05, ease }} className="mt-4 text-neutral-400 text-lg max-w-xl leading-relaxed">
+          Pick two files that already landed and leave a note on the join. The vault stays where it is.
+        </motion.p>
+        <div className="mt-8 grid sm:grid-cols-2 gap-3">
+          <select value={leftId} onChange={(e) => setLeftId(e.target.value)} className="rounded-2xl bg-black/30 border border-white/10 px-4 py-3 outline-none">
+            <option value="">left drop</option>
+            {shares.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+          </select>
+          <select value={rightId} onChange={(e) => setRightId(e.target.value)} className="rounded-2xl bg-black/30 border border-white/10 px-4 py-3 outline-none">
+            <option value="">right drop</option>
+            {shares.map((s) => <option key={`r-${s.id}`} value={s.id}>{s.name}</option>)}
+          </select>
         </div>
+        <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="your name" className="mt-3 w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 outline-none focus:border-white/25" />
+        <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={3} placeholder="what joins them" className="mt-3 w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 outline-none focus:border-white/25 resize-none" />
+        <button disabled={!leftId || !rightId || leftId === rightId || !note.trim() || busy} onClick={writeSeam} className="mt-4 px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40 active:scale-[0.98] transition-transform">write the seam</button>
+        <div className="mt-8 space-y-2">
+          {shares.slice(0, 6).map((s) => (
+            <p key={s.id} className="text-xs text-neutral-500">{s.name} · {pretty(Number(s.size) || 0)} · {s.id}</p>
+          ))}
+          {seams.map((row) => (
+            <motion.div key={row.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="rounded-2xl bg-white/[0.04] border border-white/10 px-4 py-3">
+              <p className="text-sm text-white">{row.note}</p>
+              <p className="text-xs text-neutral-500 mt-1">{row.left_id} · {row.right_id} · {row.author || 'garboard'}</p>
+            </motion.div>
+          ))}
+          {!seams.length && <p className="text-sm text-neutral-500">no seams yet.</p>}
+        </div>
+        <p className="mt-4 text-sm text-neutral-400">{status}</p>
       </main>
     </div>
   );

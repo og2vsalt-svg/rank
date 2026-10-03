@@ -5,19 +5,19 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'fairlead', label: 'fairlead' },
   { to: 'treenail', label: 'treenail' },
   { to: 'vault', label: 'vault' },
   { to: 'folio', label: 'folio' },
   { to: 'capstan', label: 'capstan' },
-  { to: 'sternpost', label: 'sternpost' },
   { to: 'keelson', label: 'keelson' },
-  { to: 'garboard', label: 'garboard' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'hosting',
     items: [
+      { to: 'fairlead', label: 'fairlead' },
       { to: 'treenail', label: 'treenail' },
       { to: 'capstan', label: 'capstan' },
       { to: 'sternpost', label: 'sternpost' },
@@ -49,6 +49,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'new',
     items: [
+      { to: 'fairlead', label: 'fairlead' },
       { to: 'treenail', label: 'treenail' },
       { to: 'capstan', label: 'capstan' },
       { to: 'sternpost', label: 'sternpost' },
@@ -101,6 +102,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'fairlead', label: 'fairlead' },
       { to: 'treenail', label: 'treenail' },
       { to: 'capstan', label: 'capstan' },
       { to: 'keelson', label: 'keelson' },
@@ -235,7 +237,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">paste /treenail, /capstan, /sternpost, /keelson, /folio, /s, or /parcel in Discord for a card. older desks stay on their routes.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">paste /fairlead, /treenail, /capstan, /keelson, /folio, /s, or /parcel in Discord for a card. older desks stay on their routes.</p>
         </div>
       </div>
     </nav>

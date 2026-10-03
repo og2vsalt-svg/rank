@@ -63,6 +63,7 @@ export const EXTRA_TITLES = {
   pelorus: 'pelorus — a bearing for a card',
   cuddy: 'cuddy — a note shelf, not a drawer',
   fid: 'fid — a local file, filed direct',
+  gudgeon: 'gudgeon — a hinge, not a drawer',
 };
 
 export const EXTRA_DESC = {
@@ -133,4 +134,5 @@ export const EXTRA_DESC = {
   pelorus: 'Turn a share id into the Discord card path. Nothing is stored again. Paste /pelorus for the desk card.',
   cuddy: 'Short lines on their own table. Not a file cabinet. Discord unfurls /cuddy.',
   fid: 'A local file goes straight into storage, then a share row is written. Discord unfurls /s. Large drops are warned, never refused.',
+  gudgeon: 'A pin file and an optional leaf file both land in the share table, plus a receipt. Discord unfurls /gudgeon and /s. Large hinges are warned, never refused.',
 };

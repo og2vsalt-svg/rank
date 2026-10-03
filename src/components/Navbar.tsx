@@ -6,9 +6,9 @@ type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
+  { to: 'gudgeon', label: 'gudgeon' },
   { to: 'hawse', label: 'hawse' },
   { to: 'fid', label: 'fid' },
-  { to: 'futtock', label: 'futtock' },
   { to: 'samson', label: 'samson' },
 ];
 
@@ -16,6 +16,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'hosting',
     items: [
+      { to: 'gudgeon', label: 'gudgeon' },
       { to: 'hawse', label: 'hawse' },
       { to: 'fid', label: 'fid' },
       { to: 'vault', label: 'vault' },
@@ -36,6 +37,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'new',
     items: [
+      { to: 'gudgeon', label: 'gudgeon' },
       { to: 'hawse', label: 'hawse' },
       { to: 'futtock', label: 'futtock' },
       { to: 'samson', label: 'samson' },
@@ -77,6 +79,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'gudgeon', label: 'gudgeon' },
       { to: 'hawse', label: 'hawse' },
       { to: 'futtock', label: 'futtock' },
       { to: 'samson', label: 'samson' },
@@ -203,7 +206,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">paste /hawse, /futtock, /samson, /parcel, or /s in Discord for a card. older desks stay on their routes.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">paste /gudgeon, /hawse, /samson, /parcel, or /s in Discord for a card. older desks stay on their routes.</p>
         </div>
       </div>
     </nav>

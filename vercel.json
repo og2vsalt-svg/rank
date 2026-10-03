@@ -64,6 +64,10 @@
       "destination": "/api/desk?desk=counter"
     },
     {
+      "source": "/api/scupper",
+      "destination": "/api/desk?desk=scupper"
+    },
+    {
       "source": "/api/cuddy",
       "destination": "/api/desk?desk=cuddy"
     },

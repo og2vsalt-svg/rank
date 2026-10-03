@@ -6,9 +6,9 @@ type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
+  { to: 'waybill', label: 'waybill' },
+  { to: 'telltale', label: 'telltale' },
   { to: 'washboard', label: 'washboard' },
-  { to: 'beakhead', label: 'beakhead' },
-  { to: 'windlass', label: 'windlass' },
   { to: 'shelf', label: 'shelf' },
 ];
 
@@ -17,6 +17,7 @@ const groups: { title: string; items: NavItem[] }[] = [
     title: 'hosting',
     items: [
       { to: 'vault', label: 'vault' },
+      { to: 'waybill', label: 'waybill' },
       { to: 'washboard', label: 'washboard' },
       { to: 'beakhead', label: 'beakhead' },
       { to: 'windlass', label: 'windlass' },
@@ -33,6 +34,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'new',
     items: [
+      { to: 'waybill', label: 'waybill' },
+      { to: 'telltale', label: 'telltale' },
       { to: 'washboard', label: 'washboard' },
       { to: 'beakhead', label: 'beakhead' },
       { to: 'limber', label: 'limber' },
@@ -66,6 +69,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'waybill', label: 'waybill' },
       { to: 'washboard', label: 'washboard' },
       { to: 'beakhead', label: 'beakhead' },
       { to: 'thole', label: 'thole' },
@@ -83,6 +87,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'telltale', label: 'telltale' },
       { to: 'hash', label: 'hash' },
       { to: 'convert', label: 'convert' },
       { to: 'diff', label: 'diff' },
@@ -186,7 +191,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">paste /washboard, /beakhead, or /s in Discord for a card. older desks stay on their hash routes.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">paste /waybill, /telltale, or /s in Discord for a card. older desks stay on their hash routes.</p>
         </div>
       </div>
     </nav>

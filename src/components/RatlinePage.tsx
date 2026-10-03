@@ -1,129 +1,98 @@
-import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useState } from 'react';
 import Navbar from './Navbar';
-import { publishShare, shareUrls } from '../lib/cloudShare';
 
-function pretty(n: number) {
-  if (n < 1024) return n + ' B';
-  if (n < 1024 * 1024) return Math.round(n / 1024) + ' KB';
-  if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(1) + ' MB';
-  return (n / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
-}
-
-function uid() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-}
-
-function readAsDataUrl(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const r = new FileReader();
-    r.onload = () => resolve(String(r.result || ''));
-    r.onerror = () => reject(new Error('could not climb the file'));
-    r.readAsDataURL(file);
-  });
+function pretty(bytes: number) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
 export default function RatlinePage() {
   const [files, setFiles] = useState<File[]>([]);
-  const [busy, setBusy] = useState(false);
+  const [line, setLine] = useState('');
+  const [status, setStatus] = useState('several local files, one line, one row each.');
   const [warn, setWarn] = useState('');
-  const [err, setErr] = useState('');
-  const [links, setLinks] = useState<string[]>([]);
+  const [cards, setCards] = useState<string[]>([]);
+  const [busy, setBusy] = useState(false);
 
-  const pick = (list: FileList | null) => {
+  function pick(list: FileList | null) {
     const next = list ? Array.from(list) : [];
     setFiles(next);
-    setLinks([]);
-    setErr('');
-    const heavy = next.some((f) => f.size > 16 * 1024 * 1024);
-    setWarn(heavy ? 'tall rig. large files may stall the tab while they climb. no hard cap.' : '');
-  };
+    setCards([]);
+    setWarn(next.some((file) => file.size > 8 * 1024 * 1024) ? 'one of these is heavy. each write can feel slow. none are refused.' : '');
+  }
 
-  const climb = async () => {
-    if (!files.length) return;
+  async function drain() {
+    if (!files.length || busy) return;
     setBusy(true);
-    setErr('');
-    const out: string[] = [];
+    const batch = Date.now().toString(36);
+    const origin = window.location.origin;
+    const made: string[] = [];
     try {
       for (const file of files) {
-        const dataUrl = await readAsDataUrl(file);
-        const id = uid();
-        const res = await publishShare({
-          id,
-          name: file.name,
-          type: file.type || 'application/octet-stream',
-          size: file.size,
-          dataUrl,
-          author: 'ratline',
-        });
-        if (!res.ok) throw new Error(res.error || `missed ${file.name}`);
-        const urls = shareUrls(res.id || id);
-        out.push(urls.embed);
-        if (res.warn) setWarn(res.warn);
+        setStatus(`climbing ${file.name}…`);
+        const body = new FormData();
+        body.append('file', file, file.name);
+        body.append('line', line.trim() || 'ratline');
+        body.append('note', `ratline batch ${batch}`);
+        body.append('author', 'ratline');
+        body.append('batch', batch);
+        const r = await fetch('/api/hounds', { method: 'POST', body });
+        const data = await r.json();
+        if (!r.ok) throw new Error(data.error || `could not file ${file.name}`);
+        made.push(`${origin}/hounds/${data.id}`);
+        setCards([...made]);
       }
-      setLinks(out);
-      try { await navigator.clipboard.writeText(out.join('\n')); } catch {}
-    } catch (e: any) {
-      setErr(e?.message || 'failed');
+      setStatus('filed. each file has its own Discord card.');
+    } catch (err) {
+      setStatus(err instanceof Error ? err.message : 'the climb stopped');
+    } finally {
+      setBusy(false);
     }
-    setBusy(false);
-  };
+  }
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
+      <main className="max-w-3xl mx-auto px-5 pt-16 pb-24">
+        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[12px] tracking-[0.18em] uppercase text-white/40">
+          ratline
+        </motion.p>
+        <motion.h1
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          className="glass rounded-[28px] p-7"
+          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          className="mt-2 text-[40px] leading-none font-semibold tracking-tight"
         >
-          <p className="text-[#0a84ff] text-sm mb-2">ratline</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">climb a handful of local files.</h1>
-          <p className="text-neutral-400 text-sm mb-6">
-            pick several files at once. each one is written into the share database with its own discord card. not a vault folder.
-          </p>
-          <label
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => {
-              e.preventDefault();
-              pick(e.dataTransfer.files);
-            }}
-            className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center mb-5 transition-all duration-300"
-          >
-            <input type="file" multiple className="hidden" onChange={(e) => pick(e.target.files)} />
-            <span className="text-sm text-neutral-300">{files.length ? `${files.length} on the shroud` : 'drop several files on the ratlines'}</span>
-          </label>
-          {files.length > 0 && (
-            <ul className="mb-5 space-y-1">
-              {files.map((f) => (
-                <li key={f.name + f.size} className="text-xs text-neutral-400 flex justify-between gap-3">
-                  <span className="truncate">{f.name}</span>
-                  <span className="shrink-0 tabular-nums">{pretty(f.size)}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-          {warn && <p className="text-xs text-amber-300/80 mb-3">{warn}</p>}
-          {err && <p className="text-xs text-red-400 mb-3">{err}</p>}
-          <button
-            onClick={climb}
-            disabled={busy || !files.length}
-            className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40 transition-transform active:scale-[0.98]"
-          >
-            {busy ? 'climbing…' : 'send each up the shroud'}
+          Climb with a pile.
+        </motion.h1>
+        <p className="mt-3 max-w-xl text-[15px] text-white/60">
+          Different from the vault and from the local scupper list. These files leave the tab and land in the hounds table, one row and one Discord card each.
+        </p>
+        <motion.label initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="glass mt-8 block rounded-3xl p-8 cursor-pointer">
+          <input className="sr-only" type="file" multiple onChange={(e) => pick(e.target.files)} />
+          <div className="text-[17px] font-medium">{files.length ? `${files.length} files ready` : 'Choose a few files'}</div>
+          <div className="mt-1 text-[13px] text-white/45">{files.length ? files.map((file) => file.name).join(', ') : 'they go one after another. no size cap.'}</div>
+          {warn && <p className="mt-3 text-[13px] text-amber-200/90">{warn}</p>}
+        </motion.label>
+        <input value={line} onChange={(e) => setLine(e.target.value)} placeholder="shared line" className="glass mt-4 w-full rounded-2xl px-4 py-3 text-[14px] bg-transparent outline-none" />
+        <div className="mt-4 flex items-center gap-3">
+          <button onClick={drain} disabled={!files.length || busy} className="rounded-full bg-white text-black px-5 py-2.5 text-[14px] font-medium disabled:opacity-40">
+            {busy ? 'Filing…' : 'File the pile'}
           </button>
-          {links.length > 0 && (
-            <div className="mt-4 space-y-1">
-              <p className="text-xs text-neutral-500">discord cards copied</p>
-              {links.map((l) => (
-                <p key={l} className="text-xs text-neutral-400 break-all">{l}</p>
-              ))}
-            </div>
-          )}
-        </motion.div>
-      </div>
+          <span className="text-[13px] text-white/50">{status}</span>
+        </div>
+        {cards.length > 0 && (
+          <ul className="mt-6 space-y-2">
+            {cards.map((href) => (
+              <li key={href}>
+                <a href={href} className="glass block rounded-2xl px-4 py-3 text-[14px] text-[#64b5ff]">{href}</a>
+              </li>
+            ))}
+          </ul>
+        )}
+      </main>
     </div>
   );
 }

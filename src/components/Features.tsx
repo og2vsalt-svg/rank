@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'hounds', body: 'name a line, file a local drop into the hounds table, and paste /hounds in discord.' },
+  { title: 'ratline', body: 'file several local drops onto one line. each lands in the hounds table with its own discord card.' },
   { title: 'sternpost', body: 'name a berth, pin a time, and file one local drop into the share table. discord unfurls /s and /sternpost. heavy files are warned, never refused.' },
   { title: 'breasthook', body: 'a three-line brief — problem, change, proof — filed as markdown. an optional local attachment rides along. not a vault drawer.' },
   { title: 'waybill', body: 'a destination, a note, and an optional local file. the file lands in the share table. the slip has its own table. discord unfurls /waybill and /s. slowness warning only.' },

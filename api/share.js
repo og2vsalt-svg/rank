@@ -284,13 +284,14 @@ export default async function handler(req, res) {
         return;
       }
 
+      const storedName = name || 'file';
       name = (cardTitle || name).toString().slice(0, 512);
       const size = hostedUrl ? (Number.isFinite(declaredSize) ? declaredSize : 0) : buf.length;
       const warn = size > 12 * 1024 * 1024 ? 'large drop. preview clients may feel slow.' : null;
       let fileUrl = hostedUrl;
       let storageError = '';
       if (!fileUrl) {
-        const stored = await storeBytes({ id, name: name || 'file', type, buf });
+        const stored = await storeBytes({ id, name: storedName, type, buf });
         fileUrl = stored.fileUrl;
         storageError = stored.storageError;
         if (!fileUrl && size <= 900 * 1024) {

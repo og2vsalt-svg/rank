@@ -89,6 +89,8 @@ const PAGE_TITLES = {
   breasthook: 'breasthook — problem, change, proof',
   treenail: 'treenail — a pin, not a drawer',
   fairlead: 'fairlead — a checklist, not a drawer',
+  hounds: 'hounds — a line, not a drawer',
+  ratline: 'ratline — a pile on one line',
 };
 const PAGE_DESC_EXTRA = {
   folio: 'Drop a local file into the share table. Discord unfurls /s. Large drops are warned, never refused.',
@@ -108,6 +110,8 @@ const PAGE_DESC_EXTRA = {
   breasthook: 'a three-line brief filed as markdown, with an optional local attachment. discord unfurls /breasthook.',
   treenail: 'name why a drop exists. an optional local file lands in the share table. discord unfurls /treenail. large drops are warned, never refused.',
   fairlead: 'a checklist with an optional proof file in the share table. discord unfurls /fairlead. large drops are warned, never refused.',
+  hounds: 'pair a line with a local file. the row lands in the hounds table. discord unfurls /hounds. large drops are warned, never refused.',
+  ratline: 'file several local drops onto one line. each row unfurls on discord. large drops are warned, never refused.',
 };
 const PAGE_DESC = { ...EXTRA_DESC };
 
@@ -141,6 +145,18 @@ export default async function handler(req, res) {
   const proto = (req.headers['x-forwarded-proto'] || 'https').toString();
   const host = (req.headers['x-forwarded-host'] || req.headers.host || '').toString();
   const ua = req.headers['user-agent'];
+
+  if (page === 'hounds' && id) {
+    const row = await sbGet(`hounds?id=eq.${encodeURIComponent(id)}&select=id,line,name,mime,size,note,author,file_url&limit=1`);
+    const dest = `${proto}://${host}/hounds/${encodeURIComponent(id)}`;
+    const title = row ? `${row.line} — ${row.name}` : 'hounds — rankvault';
+    const desc = row
+      ? `${row.note ? row.note + ' · ' : ''}${prettySize(row.size)}${row.author ? ' · ' + row.author : ''} · paired on rankvault`
+      : 'a line and a file. not a drawer.';
+    const image = row && String(row.mime || '').startsWith('image/') && /^https?:\/\//i.test(row.file_url || '') ? row.file_url : undefined;
+    sendCard(res, ua, req.query.embed, dest, { title, desc, image, url: dest, color: '#64D2FF' });
+    return;
+  }
 
   if (check || (page === 'fairlead' && id)) {
     const key = check || id;

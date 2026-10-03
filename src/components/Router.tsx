@@ -16,6 +16,8 @@ export function useRouter() {
   return ctx;
 }
 
+const SHARE_PREFIX = new Set(['s', 'f', 'open', 'go', 'link', 'card']);
+
 function parseLocation() {
   const pathName = window.location.pathname.replace(/\/+$/, '');
   const parts = pathName.split('/').filter(Boolean);
@@ -28,14 +30,17 @@ function parseLocation() {
   }
   if (params.get('f') && !slug) return { route: 'share', shareId: params.get('f') };
   if (slug) return { route: slug, shareId: params.get('f') };
-  if (parts.length >= 2 && ['s', 'f', 'open', 'go', 'link', 'card'].includes(parts[0])) {
+  if (parts.length >= 2 && SHARE_PREFIX.has(parts[0])) {
     return { route: 'share', shareId: decodeURIComponent(parts[1]) };
   }
   if (parts.length >= 2 && parts[0] === 'parcel') {
     return { route: 'hawse', shareId: decodeURIComponent(parts[1]) };
   }
+  if (parts.length >= 2) {
+    return { route: parts[0].toLowerCase(), shareId: decodeURIComponent(parts[1]) };
+  }
   if (parts.length === 1 && parts[0] !== 'index.html') {
-    return { route: parts[0].toLowerCase(), shareId: null };
+    return { route: parts[0].toLowerCase(), shareId: params.get('f') };
   }
   return { route: 'home', shareId: null };
 }
@@ -58,11 +63,9 @@ export function RouterProvider({ children }: { children: ReactNode }) {
       history.pushState(null, '', window.location.pathname);
       window.location.hash = '';
       setState({ route: 'home', shareId: null });
-    } else if ((to === 'share' || to === 'paste' || to === 'clip' || to === 'inlet' || to === 'hawse') && extra) {
-      window.location.hash = `${to}?f=${extra}`;
-    } else {
-      window.location.hash = to;
+      return;
     }
+    window.location.hash = extra ? `${to}?f=${extra}` : to;
   }, []);
 
   return (

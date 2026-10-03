@@ -1,42 +1,78 @@
-import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 import Navbar from './Navbar';
-import { listPublicShares, shareUrls, type CloudMeta } from '../lib/cloudShare';
 
-function pretty(n: number) {
-  if (n < 1024) return n + ' b';
-  if (n < 1024 * 1024) return Math.round(n / 1024) + ' kb';
-  return (n / (1024 * 1024)).toFixed(1) + ' mb';
-}
+type LinkRow = { id: string; url: string; note: string | null; author: string | null; created_at: string };
 
 export default function LedgerPage() {
-  const [rows, setRows] = useState<CloudMeta[]>([]);
-  const [err, setErr] = useState('');
+  const [rows, setRows] = useState<LinkRow[]>([]);
+  const [url, setUrl] = useState('');
+  const [note, setNote] = useState('');
+  const [author, setAuthor] = useState('');
+  const [status, setStatus] = useState('addresses live on the links shelf. files stay on folio.');
+  const [busy, setBusy] = useState(false);
+
+  async function load() {
+    const r = await fetch('/api/share?links=1');
+    const data = await r.json();
+    if (r.ok) setRows(Array.isArray(data.links) ? data.links : []);
+  }
 
   useEffect(() => {
-    listPublicShares(40).then(setRows).catch(() => setErr('could not read the share db'));
+    load().catch(() => setStatus('could not read the shelf'));
   }, []);
+
+  async function pin() {
+    if (busy) return;
+    setBusy(true);
+    try {
+      const r = await fetch('/api/share', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ kind: 'link', url, note, author: author || 'ledger' }),
+      });
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.error || 'the shelf refused that address');
+      setUrl('');
+      setNote('');
+      setStatus('pinned. paste /ledger in Discord for the card.');
+      await load();
+    } catch (err) {
+      setStatus(err instanceof Error ? err.message : 'could not pin that');
+    } finally {
+      setBusy(false);
+    }
+  }
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-8">
-          <p className="text-[#0a84ff] text-sm mb-2">ledger</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">what already made it to the db.</h1>
-          <p className="text-neutral-400 text-sm mb-6">a quiet log of public drops. tap a row for the discord card path.</p>
-          {err && <p className="text-xs text-red-400 mb-3">{err}</p>}
-          <div className="space-y-2">
-            {rows.map((r) => (
-              <a key={r.id} href={shareUrls(r.id).embed} className="block rounded-2xl bg-white/[0.04] border border-white/8 px-4 py-3 hover:bg-white/[0.07]">
-                <p className="text-sm text-white truncate">{r.name}</p>
-                <p className="text-[11px] text-neutral-500 mt-1">{pretty(r.size)} · {r.type} · /s/{r.id}</p>
-              </a>
-            ))}
-            {!rows.length && !err && <p className="text-sm text-neutral-500">empty so far.</p>}
+      <main className="max-w-3xl mx-auto px-5 pt-16 pb-24">
+        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[12px] tracking-[0.18em] uppercase text-white/40">ledger</motion.p>
+        <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-2 text-[40px] leading-none font-semibold tracking-tight">A shelf for addresses.</motion.h1>
+        <p className="mt-3 max-w-xl text-[15px] text-white/60">Not another drawer. Pin a link with a note. The row lands in the links table, and Discord unfurls this page.</p>
+
+        <div className="glass mt-8 rounded-3xl p-5 space-y-3">
+          <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://" className="w-full bg-white/5 rounded-2xl px-4 py-3 text-[14px] outline-none" />
+          <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="why it is here" className="w-full bg-white/5 rounded-2xl px-4 py-3 text-[14px] outline-none" />
+          <div className="flex gap-3">
+            <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="your name" className="flex-1 bg-white/5 rounded-2xl px-4 py-3 text-[14px] outline-none" />
+            <button onClick={pin} disabled={busy || !url.trim()} className="rounded-full bg-white text-black px-5 text-[14px] font-medium disabled:opacity-40">{busy ? 'Pinning…' : 'Pin'}</button>
           </div>
-        </motion.div>
-      </div>
+          <p className="text-[13px] text-white/45">{status}</p>
+        </div>
+
+        <ul className="mt-6 space-y-2">
+          {rows.map((row) => (
+            <li key={row.id} className="glass rounded-2xl px-4 py-3">
+              <a href={row.url} className="text-[14px] text-[#64b5ff] break-all">{row.url}</a>
+              {row.note && <p className="mt-1 text-[13px] text-white/70">{row.note}</p>}
+              <p className="mt-1 text-[11px] text-white/35">{row.author || 'someone'} · {new Date(row.created_at).toLocaleString()}</p>
+            </li>
+          ))}
+          {!rows.length && <li className="text-[13px] text-white/40">nothing pinned yet.</li>}
+        </ul>
+      </main>
     </div>
   );
 }

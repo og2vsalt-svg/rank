@@ -3,7 +3,7 @@ export const config = {
 };
 
 const BOT = /discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|skype|redditbot|applebot|iframely|unfurl|pinterest|notion|embedly|slack-imgproxy|discordbot/i;
-const ID_PREFIX = new Set(['s', 'f', 'x', 'd', 'go', 'open', 'link', 'card', 'embed', 'y', 'q', 'l', 'n', 'k', 'w', 'u', 'r', 'b', 'g', 'c', 'm', 'o', 't', 'i', 'a', 'e', 'z', 'h', 'v', 'j', 'p', 'room', 'parcel', 'spirket', 'washboard', 'beakhead', 'garland', 'partners', 'waybill', 'fid', 'pelorus', 'cuddy', 'hawse', 'futtock', 'samson', 'gudgeon', 'pintle', 'sternpost', 'breasthook']);
+const ID_PREFIX = new Set(['s', 'f', 'x', 'd', 'go', 'open', 'link', 'card', 'embed', 'y', 'q', 'l', 'n', 'k', 'w', 'u', 'r', 'b', 'g', 'c', 'm', 'o', 't', 'i', 'a', 'e', 'z', 'h', 'v', 'j', 'p', 'room', 'parcel', 'spirket', 'washboard', 'beakhead', 'garland', 'partners', 'waybill', 'fid', 'pelorus', 'cuddy', 'hawse', 'futtock', 'samson', 'gudgeon', 'pintle', 'sternpost', 'breasthook', 'capstan']);
 
 export default function middleware(request) {
   const ua = request.headers.get('user-agent') || '';
@@ -31,6 +31,12 @@ export default function middleware(request) {
     const dest = new URL('/api/embed', request.url);
     dest.searchParams.set('page', 'keelson');
     if (parts[1]) dest.searchParams.set('receipt', decodeURIComponent(parts[1]));
+    return Response.redirect(dest.toString(), 307);
+  }
+  if (parts[0] === 'capstan' && BOT.test(ua)) {
+    const dest = new URL('/api/embed', request.url);
+    dest.searchParams.set('page', 'capstan');
+    if (parts[1]) dest.searchParams.set('id', decodeURIComponent(parts[1]));
     return Response.redirect(dest.toString(), 307);
   }
   if (!BOT.test(ua)) return;

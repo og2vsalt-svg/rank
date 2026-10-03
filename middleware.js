@@ -3,7 +3,7 @@ export const config = {
 };
 
 const BOT = /discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|skype|redditbot|applebot|iframely|unfurl|pinterest|notion|embedly|slack-imgproxy|discordbot/i;
-const ID_PREFIX = new Set(['s', 'f', 'x', 'd', 'go', 'open', 'link', 'card', 'embed', 'y', 'q', 'l', 'n', 'k', 'w', 'u', 'r', 'b', 'g', 'c', 'm', 'o', 't', 'i', 'a', 'e', 'z', 'h', 'v', 'j', 'p', 'room', 'parcel', 'spirket', 'washboard', 'beakhead', 'partners', 'waybill', 'fid', 'pelorus', 'cuddy', 'hawse', 'futtock', 'samson', 'gudgeon', 'pintle', 'sternpost', 'breasthook', 'capstan', 'treenail', 'fairlead', 'hounds', 'seizing', 'deadeye']);
+const ID_PREFIX = new Set(['s', 'f', 'x', 'd', 'go', 'open', 'link', 'card', 'embed', 'y', 'q', 'l', 'n', 'k', 'w', 'u', 'r', 'b', 'g', 'c', 'm', 'o', 't', 'i', 'a', 'e', 'z', 'h', 'v', 'j', 'p', 'room', 'parcel', 'spirket', 'washboard', 'beakhead', 'partners', 'waybill', 'fid', 'pelorus', 'cuddy', 'hawse', 'futtock', 'samson', 'gudgeon', 'pintle', 'sternpost', 'breasthook', 'capstan', 'treenail', 'fairlead', 'hounds', 'seizing', 'deadeye', 'sounding', 'marline']);
 
 export default function middleware(request) {
   const ua = request.headers.get('user-agent') || '';
@@ -51,6 +51,18 @@ export default function middleware(request) {
     if (parts[1]) dest.searchParams.set('id', decodeURIComponent(parts[1]));
     return Response.redirect(dest.toString(), 307);
   }
+  if (parts[0] === 'sounding' && BOT.test(ua)) {
+    const dest = new URL('/api/embed', request.url);
+    dest.searchParams.set('page', 'sounding');
+    if (parts[1]) dest.searchParams.set('id', decodeURIComponent(parts[1]));
+    return Response.redirect(dest.toString(), 307);
+  }
+  if (parts[0] === 'marline' && BOT.test(ua)) {
+    const dest = new URL('/api/embed', request.url);
+    dest.searchParams.set('page', 'marline');
+    if (parts[1]) dest.searchParams.set('id', decodeURIComponent(parts[1]));
+    return Response.redirect(dest.toString(), 307);
+  }
   if (parts[0] === 'seizing' && BOT.test(ua)) {
     const dest = new URL('/api/embed', request.url);
     dest.searchParams.set('page', 'seizing');
@@ -71,6 +83,8 @@ export default function middleware(request) {
   else if (parts[0] === 'waybill') dest.searchParams.set('page', 'waybill');
   else if (parts[0] === 'telltale') dest.searchParams.set('page', 'telltale');
   else if (parts[0] === 'garboard') dest.searchParams.set('page', 'garboard');
+  else if (parts[0] === 'sounding' && !parts[1]) dest.searchParams.set('page', 'sounding');
+  else if (parts[0] === 'marline' && !parts[1]) dest.searchParams.set('page', 'marline');
   else if (parts[0] === 'hawse' && !parts[1]) dest.searchParams.set('page', 'hawse');
   else if (parts[0] === 'futtock' && !parts[1]) dest.searchParams.set('page', 'futtock');
   else if (parts[0] === 'samson' && !parts[1]) dest.searchParams.set('page', 'samson');

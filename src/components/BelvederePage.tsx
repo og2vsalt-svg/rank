@@ -24,11 +24,11 @@ export default function BelvederePage() {
   const [warn, setWarn] = useState('');
   const [err, setErr] = useState('');
   const [preview, setPreview] = useState('');
-  const [meta, setMeta] = useState(null);
+  const [meta, setMeta] = useState<{ name: string; size: number; type: string } | null>(null);
   const [embed, setEmbed] = useState('');
   const [link, setLink] = useState('');
 
-  const send = async (file) => {
+  const send = async (file: File | null | undefined) => {
     if (!file) return;
     setErr('');
     setEmbed('');

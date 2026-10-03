@@ -22,7 +22,7 @@ export default function LoggiaPage() {
   const [busy, setBusy] = useState(false);
   const [warn, setWarn] = useState('');
   const [err, setErr] = useState('');
-  const [rows, setRows] = useState([]);
+  const [rows, setRows] = useState<{ name: string; embed: string }[]>([]);
 
   const send = async (list) => {
     if (!list || !list.length) return;
@@ -31,7 +31,7 @@ export default function LoggiaPage() {
     setWarn(total > 40 * 1024 * 1024 ? 'walkway is heavy. no cap, just may feel slow.' : '');
     setBusy(true);
     setErr('');
-    const next = [];
+    const next: { name: string; embed: string }[] = [];
     try {
       for (const file of files) {
         const dataUrl = await readAsDataUrl(file);

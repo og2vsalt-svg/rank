@@ -90,6 +90,29 @@ export default async function handler(req, res) {
     });
     return;
   }
+  if (page === 'orlop' && id) {
+    const row = await sbGet(`handoffs?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
+    const dest = `${proto}://${host}/orlop/${encodeURIComponent(id)}`;
+    const image = row && String(row.mime || '').startsWith('image/') && /^https?:\/\//i.test(row.file_url || '') ? row.file_url : undefined;
+    sendCard(res, ua, req.query.embed, dest, {
+      title: row ? `${row.recipient || 'handoff'} — ${row.name}` : 'orlop — rankvault',
+      desc: row ? `${row.note || 'a locker receipt'} · ${prettySize(row.size)}` : 'a locker under the vault. large files are warned, never refused.',
+      image,
+      url: dest,
+      color: '#0A84FF',
+    });
+    return;
+  }
+  if (page === 'cleat') {
+    const dest = `${proto}://${host}/cleat`;
+    sendCard(res, ua, req.query.embed, dest, {
+      title: 'cleat — rankvault',
+      desc: 'pin an address on the rail. not a file cabinet.',
+      url: dest,
+      color: '#64D2FF',
+    });
+    return;
+  }
   if (page === 'marline' && id) {
     const row = await sbGet(`marlines?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
     const dest = `${proto}://${host}/marline/${encodeURIComponent(id)}`;

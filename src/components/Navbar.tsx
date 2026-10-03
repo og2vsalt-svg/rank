@@ -6,9 +6,9 @@ type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
-  { to: 'waybill', label: 'waybill' },
-  { to: 'telltale', label: 'telltale' },
-  { to: 'washboard', label: 'washboard' },
+  { to: 'fid', label: 'fid' },
+  { to: 'cuddy', label: 'cuddy' },
+  { to: 'pelorus', label: 'pelorus' },
   { to: 'shelf', label: 'shelf' },
 ];
 
@@ -16,6 +16,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'hosting',
     items: [
+      { to: 'fid', label: 'fid' },
       { to: 'vault', label: 'vault' },
       { to: 'waybill', label: 'waybill' },
       { to: 'washboard', label: 'washboard' },
@@ -34,6 +35,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'new',
     items: [
+      { to: 'fid', label: 'fid' },
+      { to: 'cuddy', label: 'cuddy' },
+      { to: 'pelorus', label: 'pelorus' },
       { to: 'waybill', label: 'waybill' },
       { to: 'telltale', label: 'telltale' },
       { to: 'washboard', label: 'washboard' },

@@ -103,6 +103,7 @@ function rowToMeta(row) {
     createdAt: row.created_at,
     downloads: Number(row.download_count) || 0,
     author: row.author || null,
+    caption: row.caption || (row.meta && row.meta.caption) || null,
     meta: row.meta || {},
   };
 }
@@ -172,6 +173,17 @@ async function storeBytes({ id, name, type, buf }) {
   return { fileUrl, storageError };
 }
 
+function shareResponse(res, { id, fileUrl, warn }) {
+  res.status(200).json({
+    ok: true,
+    id,
+    url: fileUrl,
+    sharePath: `/#share?f=${id}`,
+    embedPath: `/s/${id}`,
+    warn,
+  });
+}
+
 export default async function handler(req, res) {
   cors(res);
   if (req.method === 'OPTIONS') {
@@ -219,6 +231,8 @@ export default async function handler(req, res) {
       let caption = null;
       let color = null;
       let cardTitle = null;
+      let hostedUrl = null;
+      let declaredSize = null;
 
       if (contentType.includes('multipart/form-data')) {
         const parts = parseMultipart(raw, contentType) || [];
@@ -239,44 +253,54 @@ export default async function handler(req, res) {
         color = field('color') || null;
         cardTitle = field('cardTitle') || null;
       } else if (contentType.includes('application/json') || (req.body && typeof req.body === 'object')) {
-        const body = contentType.includes('application/json') ? JSON.parse(raw.toString('utf8')) : req.body;
+        const body = contentType.includes('application/json') ? JSON.parse(raw.toString('utf8') || '{}') : req.body;
         id = (body.id || id).toString().slice(0, 64);
         name = (body.name || 'file').toString().slice(0, 512);
         type = (body.type || 'application/octet-stream').toString();
-        const dataUrl = body.dataUrl;
-        if (!dataUrl || typeof dataUrl !== 'string' || !dataUrl.startsWith('data:')) {
-          res.status(400).json({ error: 'dataUrl required' });
-          return;
-        }
-        const comma = dataUrl.indexOf(',');
-        if (comma < 0) {
-          res.status(400).json({ error: 'bad dataUrl' });
-          return;
-        }
-        buf = Buffer.from(dataUrl.slice(comma + 1), 'base64');
-        lockPass = body.lockPass || null;
-        expiresAt = body.expiresAt || null;
         author = body.author || null;
         caption = body.caption || null;
+        lockPass = body.lockPass || null;
+        expiresAt = body.expiresAt || null;
         color = body.color || null;
         cardTitle = body.cardTitle || null;
+        declaredSize = Number(body.size);
+        if (typeof body.fileUrl === 'string' && /^https?:\/\//i.test(body.fileUrl)) {
+          hostedUrl = body.fileUrl.slice(0, 2000);
+        } else {
+          const dataUrl = body.dataUrl;
+          if (!dataUrl || typeof dataUrl !== 'string' || !dataUrl.startsWith('data:')) {
+            res.status(400).json({ error: 'dataUrl or fileUrl required' });
+            return;
+          }
+          const comma = dataUrl.indexOf(',');
+          if (comma < 0) {
+            res.status(400).json({ error: 'bad dataUrl' });
+            return;
+          }
+          buf = Buffer.from(dataUrl.slice(comma + 1), 'base64');
+        }
       } else {
         res.status(400).json({ error: 'send a file or json dataUrl' });
         return;
       }
 
       name = (cardTitle || name).toString().slice(0, 512);
-      const size = buf.length;
+      const size = hostedUrl ? (Number.isFinite(declaredSize) ? declaredSize : 0) : buf.length;
       const warn = size > 12 * 1024 * 1024 ? 'large drop. preview clients may feel slow.' : null;
-      const stored = await storeBytes({ id, name: name || 'file', type, buf });
-      let fileUrl = stored.fileUrl;
-      if (!fileUrl && size <= 900 * 1024) {
-        fileUrl = `data:${type};base64,${buf.toString('base64')}`;
+      let fileUrl = hostedUrl;
+      let storageError = '';
+      if (!fileUrl) {
+        const stored = await storeBytes({ id, name: name || 'file', type, buf });
+        fileUrl = stored.fileUrl;
+        storageError = stored.storageError;
+        if (!fileUrl && size <= 900 * 1024) {
+          fileUrl = `data:${type};base64,${buf.toString('base64')}`;
+        }
       }
       if (!fileUrl) {
         res.status(502).json({
           error: 'storage did not take the file. the row was not written with a data url.',
-          detail: (stored.storageError || '').slice(0, 240),
+          detail: (storageError || '').slice(0, 240),
           warn,
         });
         return;
@@ -296,7 +320,7 @@ export default async function handler(req, res) {
         caption,
         meta: {
           warn,
-          source: 'rankvault',
+          source: hostedUrl ? 'fid' : 'rankvault',
           caption,
           color: /^#[0-9a-fA-F]{6}$/.test(color || '') ? color : null,
           cardTitle: cardTitle ? String(cardTitle).slice(0, 120) : null,
@@ -305,14 +329,7 @@ export default async function handler(req, res) {
         updated_at: new Date().toISOString(),
       };
       await sbUpsertShare(row);
-      res.status(200).json({
-        ok: true,
-        id,
-        url: fileUrl,
-        sharePath: `/#share?f=${id}`,
-        embedPath: `/s/${id}`,
-        warn,
-      });
+      shareResponse(res, { id, fileUrl, warn });
       return;
     }
 

@@ -29,9 +29,6 @@ export default function middleware(request) {
   else if (parts[0] === 'partners' && parts[1]) dest.searchParams.set('page', 'partners');
   else if (parts[0] === 'waybill') dest.searchParams.set('page', 'waybill');
   else if (parts[0] === 'telltale') dest.searchParams.set('page', 'telltale');
-  else if (parts[0] === 'fid' && !parts[1]) dest.searchParams.set('page', 'fid');
-  else if (parts[0] === 'pelorus' && !parts[1]) dest.searchParams.set('page', 'pelorus');
-  else if (parts[0] === 'cuddy' && !parts[1]) dest.searchParams.set('page', 'cuddy');
   else if (parts.length >= 2 && ID_PREFIX.has(parts[0])) dest.searchParams.set('id', decodeURIComponent(parts[1]));
   else dest.searchParams.set('page', decodeURIComponent(parts[0]).toLowerCase());
   return Response.redirect(dest.toString(), 307);

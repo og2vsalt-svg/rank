@@ -60,6 +60,9 @@ export const EXTRA_TITLES = {
   limber: 'limber — a pin, not a drawer',
   orlop: 'orlop — a board under the deck',
   chainplate: 'chainplate — a list that holds',
+  pelorus: 'pelorus — a bearing for a card',
+  cuddy: 'cuddy — a note shelf, not a drawer',
+  fid: 'fid — a local file, filed direct',
 };
 
 export const EXTRA_DESC = {
@@ -127,4 +130,7 @@ export const EXTRA_DESC = {
   limber: 'Pin an address on the links shelf. An optional local file still lands in the share table. Discord unfurls /limber and /s. Large companions are warned, never refused.',
   orlop: 'A shared line board in its own table. Not a file cabinet. Discord unfurls /orlop.',
   chainplate: 'A shared tick list. Attach a local file only if the item needs one. Bytes land in the share table. Discord unfurls the card. No size cap.',
+  pelorus: 'Turn a share id into the Discord card path. Nothing is stored again. Paste /pelorus for the desk card.',
+  cuddy: 'Short lines on their own table. Not a file cabinet. Discord unfurls /cuddy.',
+  fid: 'A local file goes straight into storage, then a share row is written. Discord unfurls /s. Large drops are warned, never refused.',
 };

@@ -2461,6 +2461,18 @@
       "destination": "/api/embed?page=chainplate"
     },
     {
+      "source": "/pelorus",
+      "destination": "/api/embed?page=pelorus"
+    },
+    {
+      "source": "/cuddy",
+      "destination": "/api/embed?page=cuddy"
+    },
+    {
+      "source": "/fid",
+      "destination": "/api/embed?page=fid"
+    },
+    {
       "source": "/((?!api/|assets/|src/|favicon.ico|og.png).*)",
       "destination": "/index.html"
     }

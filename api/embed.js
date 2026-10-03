@@ -66,6 +66,10 @@ async function loadPin(id) {
   return sbGet(`treenails?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
 }
 
+async function loadCheck(id) {
+  return sbGet(`fairlead_checks?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
+}
+
 const PAGE_TITLES = {
   ...EXTRA_TITLES,
   folio: 'folio — a local file, filed',
@@ -84,6 +88,7 @@ const PAGE_TITLES = {
   sternpost: 'sternpost — a berth for one file',
   breasthook: 'breasthook — problem, change, proof',
   treenail: 'treenail — a pin, not a drawer',
+  fairlead: 'fairlead — a checklist, not a drawer',
 };
 const PAGE_DESC_EXTRA = {
   folio: 'Drop a local file into the share table. Discord unfurls /s. Large drops are warned, never refused.',
@@ -102,6 +107,7 @@ const PAGE_DESC_EXTRA = {
   sternpost: 'name a berth and file a local drop into the share table. discord unfurls /sternpost. large drops are warned, never refused.',
   breasthook: 'a three-line brief filed as markdown, with an optional local attachment. discord unfurls /breasthook.',
   treenail: 'name why a drop exists. an optional local file lands in the share table. discord unfurls /treenail. large drops are warned, never refused.',
+  fairlead: 'a checklist with an optional proof file in the share table. discord unfurls /fairlead. large drops are warned, never refused.',
 };
 const PAGE_DESC = { ...EXTRA_DESC };
 
@@ -131,9 +137,29 @@ export default async function handler(req, res) {
   const ask = (req.query.ask || '').toString().trim();
   const receipt = (req.query.receipt || '').toString().trim();
   const pin = (req.query.pin || '').toString().trim();
+  const check = (req.query.check || '').toString().trim();
   const proto = (req.headers['x-forwarded-proto'] || 'https').toString();
   const host = (req.headers['x-forwarded-host'] || req.headers.host || '').toString();
   const ua = req.headers['user-agent'];
+
+  if (check || (page === 'fairlead' && id)) {
+    const key = check || id;
+    const row = await loadCheck(key);
+    const dest = `${proto}://${host}/fairlead/${encodeURIComponent(key)}`;
+    const count = row && Array.isArray(row.steps) ? row.steps.length : 0;
+    const done = row && Array.isArray(row.steps) ? row.steps.filter((step) => step.done).length : 0;
+    const title = row ? `${row.title} — fairlead` : 'fairlead — rankvault';
+    const desc = row
+      ? `${row.note ? row.note + ' · ' : ''}${done}/${count} steps${row.file_name ? ' · ' + row.file_name : ''}`
+      : 'a checklist beside the share table. not a drawer.';
+    let image;
+    if (row && row.share_id) {
+      const share = await loadShare(row.share_id);
+      if (share && String(share.mime || '').startsWith('image/') && /^https?:\/\//i.test(share.file_url || '')) image = share.file_url;
+    }
+    sendCard(res, ua, req.query.embed, dest, { title, desc, image, url: dest, color: '#64D2FF' });
+    return;
+  }
 
   if (pin && (page === 'treenail' || page === 'capstan')) {
     const row = page === 'treenail' ? await loadPin(pin) : await loadWatch(pin);

@@ -58,6 +58,14 @@ async function loadReceipt(id) {
   return sbGet(`keelson_receipts?id=eq.${encodeURIComponent(id)}&select=id,share_id,from_name,to_name,note,file_name,size&limit=1`);
 }
 
+async function loadWatch(id) {
+  return sbGet(`capstan_watches?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
+}
+
+async function loadPin(id) {
+  return sbGet(`treenails?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
+}
+
 const PAGE_TITLES = {
   ...EXTRA_TITLES,
   folio: 'folio — a local file, filed',
@@ -75,6 +83,7 @@ const PAGE_TITLES = {
   garboard: 'garboard — a seam between two drops',
   sternpost: 'sternpost — a berth for one file',
   breasthook: 'breasthook — problem, change, proof',
+  treenail: 'treenail — a pin, not a drawer',
 };
 const PAGE_DESC_EXTRA = {
   folio: 'Drop a local file into the share table. Discord unfurls /s. Large drops are warned, never refused.',
@@ -92,6 +101,7 @@ const PAGE_DESC_EXTRA = {
   garboard: 'note the seam between two files already filed. discord unfurls /garboard.',
   sternpost: 'name a berth and file a local drop into the share table. discord unfurls /sternpost. large drops are warned, never refused.',
   breasthook: 'a three-line brief filed as markdown, with an optional local attachment. discord unfurls /breasthook.',
+  treenail: 'name why a drop exists. an optional local file lands in the share table. discord unfurls /treenail. large drops are warned, never refused.',
 };
 const PAGE_DESC = { ...EXTRA_DESC };
 
@@ -120,9 +130,26 @@ export default async function handler(req, res) {
   const parcel = (req.query.parcel || '').toString().trim();
   const ask = (req.query.ask || '').toString().trim();
   const receipt = (req.query.receipt || '').toString().trim();
+  const pin = (req.query.pin || '').toString().trim();
   const proto = (req.headers['x-forwarded-proto'] || 'https').toString();
   const host = (req.headers['x-forwarded-host'] || req.headers.host || '').toString();
   const ua = req.headers['user-agent'];
+
+  if (pin && (page === 'treenail' || page === 'capstan')) {
+    const row = page === 'treenail' ? await loadPin(pin) : await loadWatch(pin);
+    const dest = `${proto}://${host}/${page}/${encodeURIComponent(pin)}`;
+    const title = row ? `${row.label || row.title || 'pin'} — ${page}` : `${page} — rankvault`;
+    const desc = row
+      ? `${row.note ? row.note + ' · ' : ''}${row.file_name || 'note only'}${row.share_id ? ' · filed' : ''}`
+      : 'a pin beside the share table. not a drawer.';
+    let image;
+    if (row && row.share_id) {
+      const share = await loadShare(row.share_id);
+      if (share && String(share.mime || '').startsWith('image/') && /^https?:\/\//i.test(share.file_url || '')) image = share.file_url;
+    }
+    sendCard(res, ua, req.query.embed, dest, { title, desc, image, url: dest, color: (row && row.accent) || '#30D158' });
+    return;
+  }
 
   if (receipt) {
     const row = await loadReceipt(receipt);

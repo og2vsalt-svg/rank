@@ -148,6 +148,14 @@
       "destination": "/api/desk?desk=waterway"
     },
     {
+      "source": "/api/bulwark",
+      "destination": "/api/desk?desk=bulwark"
+    },
+    {
+      "source": "/api/coaming",
+      "destination": "/api/desk?desk=coaming"
+    },
+    {
       "source": "/((?!api/).*)",
       "destination": "/index.html"
     }

@@ -10,6 +10,8 @@ const primary: NavItem[] = [
   { to: 'wharf', label: 'wharf' },
   { to: 'wale', label: 'wale' },
   { to: 'davits', label: 'davits' },
+  { to: 'bollard', label: 'bollard' },
+  { to: 'unfurl', label: 'unfurl' },
   { to: 'vault', label: 'vault' },
 ];
 
@@ -62,6 +64,8 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'treenail', label: 'treenail' },
       { to: 'capstan', label: 'capstan' },
       { to: 'folio', label: 'folio' },
+      { to: 'bollard', label: 'bollard' },
+      { to: 'unfurl', label: 'unfurl' },
       { to: 'vault', label: 'vault' },
       { to: 'waybill', label: 'waybill' },
       { to: 'counter', label: 'counter' },

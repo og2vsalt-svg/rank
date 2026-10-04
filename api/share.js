@@ -178,7 +178,7 @@ function shareResponse(res, { id, fileUrl, warn }) {
     ok: true,
     id,
     url: fileUrl,
-    sharePath: `/#share?f=${id}`,
+    sharePath: `/s/${id}`,
     embedPath: `/s/${id}`,
     warn,
   });

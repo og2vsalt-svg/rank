@@ -79,7 +79,40 @@ export default async function handler(req, res) {
   const host = (req.headers['x-forwarded-host'] || req.headers.host || '').toString();
   const ua = req.headers['user-agent'];
 
-  if (page === 'passage' && id) {
+  if (page === 'bollard') {
+    const dest = `${proto}://${host}/bollard`;
+    sendCard(res, ua, req.query.embed, dest, {
+      title: 'bollard — rankvault',
+      desc: 'tie a local file to a public link. large drops are warned, never refused. discord cards on every share.',
+      url: dest,
+      color: '#0A84FF',
+    });
+    return;
+  }
+  if (page === 'unfurl' && id) {
+    const row = await loadShare(id);
+    const dest = `${proto}://${host}/unfurl/${encodeURIComponent(id)}`;
+    const live = row && row.is_public && !(row.expires_at && +new Date(row.expires_at) < Date.now());
+    sendCard(res, ua, req.query.embed, dest, {
+      title: live ? ((row.meta && row.meta.cardTitle) || row.name) : 'unfurl — rankvault',
+      desc: live ? (row.caption || `${prettySize(row.size)} · public drop on rankvault`) : 'preview the discord card for a share.',
+      image: live && /^image\//.test(row.mime || '') ? row.file_url : undefined,
+      url: dest,
+      color: (live && row.meta && row.meta.color) || '#0A84FF',
+    });
+    return;
+  }
+  if (page === 'unfurl') {
+    const dest = `${proto}://${host}/unfurl`;
+    sendCard(res, ua, req.query.embed, dest, {
+      title: 'unfurl — rankvault',
+      desc: 'preview the discord card on a share link before you send it.',
+      url: dest,
+      color: '#64D2FF',
+    });
+    return;
+  }
+    if (page === 'passage' && id) {
     const row = await sbGet(`passages?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
     const dest = `${proto}://${host}/passage/${encodeURIComponent(id)}`;
     sendCard(res, ua, req.query.embed, dest, {

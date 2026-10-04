@@ -20,6 +20,9 @@ export type CloudMeta = {
   createdAt?: string;
   downloads?: number;
   author?: string | null;
+  caption?: string | null;
+  color?: string | null;
+  cardTitle?: string | null;
 };
 
 export type ShareOpts = {
@@ -53,6 +56,9 @@ function rowToMeta(row: any): CloudMeta {
     createdAt: row.created_at || row.createdAt,
     downloads: Number(row.download_count ?? row.downloads ?? 0),
     author: row.author || null,
+    caption: row.caption || row.meta?.caption || null,
+    color: row.meta?.color || row.color || null,
+    cardTitle: row.meta?.cardTitle || null,
   };
 }
 

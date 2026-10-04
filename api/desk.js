@@ -25,6 +25,8 @@ import tumblehome from '../lib/routes/tumblehome.js';
 import sheerstrake from '../lib/routes/sheerstrake.js';
 import washstrake from '../lib/routes/washstrake.js';
 import waterway from '../lib/routes/waterway.js';
+import bulwark from '../lib/routes/bulwark.js';
+import coaming from '../lib/routes/coaming.js';
 
 const SUPABASE_URL = (process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || 'https://tqfocdktvjuwoiyfgesb.supabase.co').replace(/\/$/, '');
 const SUPABASE_KEY =
@@ -304,7 +306,7 @@ export default async function handler(req, res) {
     if (desk === 'paircard') return paircard(req, res);
     if (desk === 'spirket') return spirket(req, res);
 
-    const routed = { belaying, cleat, deadeye, fairlead, garboard, hounds, keelson, marline, orlop, parcel, requests, sounding, taffrail, treenail, counter, scupper, rider, futtock, stringer, knee, transom, bumkin, apostle, tumblehome, sheerstrake, washstrake, waterway };
+    const routed = { belaying, cleat, deadeye, fairlead, garboard, hounds, keelson, marline, orlop, parcel, requests, sounding, taffrail, treenail, counter, scupper, rider, futtock, stringer, knee, transom, bumkin, apostle, tumblehome, sheerstrake, washstrake, waterway, bulwark, coaming };
     if (routed[desk]) return routed[desk](req, res);
     res.status(404).json({ error: 'unknown desk' });
   } catch (err) {

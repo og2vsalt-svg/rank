@@ -365,7 +365,35 @@ export default async function handler(req, res) {
     });
     return;
   }
-  if (page === 'sheerstrake' && id) {
+  if (page === 'washstrake' && id) {
+    const row = await sbGet(`washstrakes?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
+    const dest = `${proto}://${host}/washstrake/${encodeURIComponent(id)}`;
+    const share = row && row.left_share_id ? await loadShare(row.left_share_id) : null;
+    const image = share && String(share.mime || '').startsWith('image/') && /^https?:\/\//i.test(share.file_url || '') ? share.file_url : undefined;
+    sendCard(res, ua, req.query.embed, dest, {
+      title: row ? `${row.left_name} beside ${row.right_name}` : 'washstrake — rankvault',
+      desc: row ? (row.difference || 'two local files, compared') : 'a pair, not a drawer. large files are warned, never refused.',
+      image,
+      url: dest,
+      color: '#0A84FF',
+    });
+    return;
+  }
+  if (page === 'waterway' && id) {
+    const row = await sbGet(`waterways?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
+    const dest = `${proto}://${host}/waterway/${encodeURIComponent(id)}`;
+    const share = row && row.share_id ? await loadShare(row.share_id) : null;
+    const image = share && String(share.mime || '').startsWith('image/') && /^https?:\/\//i.test(share.file_url || '') ? share.file_url : undefined;
+    sendCard(res, ua, req.query.embed, dest, {
+      title: row ? `${row.title} — waterway` : 'waterway — rankvault',
+      desc: row ? String(row.border || '').slice(0, 180) : 'a gutter, not a drawer.',
+      image,
+      url: dest,
+      color: '#64D2FF',
+    });
+    return;
+  }
+    if (page === 'sheerstrake' && id) {
     const row = await sbGet(`sheerstrakes?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
     const dest = `${proto}://${host}/sheerstrake/${encodeURIComponent(id)}`;
     sendCard(res, ua, req.query.embed, dest, {

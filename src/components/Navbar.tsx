@@ -5,6 +5,8 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'washstrake', label: 'washstrake' },
+  { to: 'waterway', label: 'waterway' },
   { to: 'tumblehome', label: 'tumblehome' },
   { to: 'sheerstrake', label: 'sheerstrake' },
   { to: 'bumkin', label: 'bumkin' },
@@ -54,7 +56,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'new',
     items: [
-      { to: 'tumblehome', label: 'tumblehome' },
+      { to: 'washstrake', label: 'washstrake' },
+  { to: 'waterway', label: 'waterway' },
+  { to: 'tumblehome', label: 'tumblehome' },
       { to: 'sheerstrake', label: 'sheerstrake' },
       { to: 'gunwale', label: 'gunwale' },
       { to: 'rider', label: 'rider' },

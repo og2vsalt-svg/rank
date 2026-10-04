@@ -140,6 +140,14 @@
       "destination": "/api/desk?desk=sheerstrake"
     },
     {
+      "source": "/api/washstrake",
+      "destination": "/api/desk?desk=washstrake"
+    },
+    {
+      "source": "/api/waterway",
+      "destination": "/api/desk?desk=waterway"
+    },
+    {
       "source": "/((?!api/).*)",
       "destination": "/index.html"
     }

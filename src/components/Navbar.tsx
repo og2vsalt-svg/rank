@@ -5,6 +5,8 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'kedge', label: 'kedge' },
+  { to: 'binnacle', label: 'binnacle' },
   { to: 'rabbet', label: 'rabbet' },
   { to: 'floors', label: 'floors' },
   { to: 'chestree', label: 'chestree' },
@@ -18,6 +20,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'hosting',
     items: [
+      { to: 'kedge', label: 'kedge' },
+      { to: 'binnacle', label: 'binnacle' },
       { to: 'rabbet', label: 'rabbet' },
       { to: 'floors', label: 'floors' },
       { to: 'chestree', label: 'chestree' },
@@ -197,7 +201,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">paste /rabbet, /floors, /chestree, or /s in Discord for a card. older desks stay on their routes.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">paste /kedge, /binnacle, /rabbet, or /s in Discord for a card. older desks stay on their routes.</p>
         </div>
       </div>
     </nav>

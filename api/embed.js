@@ -404,7 +404,31 @@ export default async function handler(req, res) {
     });
     return;
   }
-    if (page && !id) {
+    if (page === 'kedge' && id) {
+    const row = await sbGet(`kedges?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
+    const dest = `${proto}://${host}/kedge/${encodeURIComponent(id)}`;
+    const share = row && row.share_id ? await loadShare(row.share_id) : null;
+    const image = share && String(share.mime || '').startsWith('image/') && /^https?:\/\//i.test(share.file_url || '') ? share.file_url : undefined;
+    sendCard(res, ua, req.query.embed, dest, {
+      title: row ? `${row.hold} — kedge` : 'kedge — rankvault',
+      desc: row ? `${row.destination}${row.note ? ' · ' + String(row.note).slice(0, 140) : ''}` : 'an anchor, not a drawer. large files are warned, never refused.',
+      image,
+      url: dest,
+      color: '#64D2FF',
+    });
+    return;
+  }
+  if (page === 'binnacle') {
+    const dest = `${proto}://${host}/#binnacle`;
+    sendCard(res, ua, req.query.embed, dest, {
+      title: 'binnacle — rankvault',
+      desc: 'a compass of public drops already in the share table. not another drawer.',
+      url: dest,
+      color: '#0A84FF',
+    });
+    return;
+  }
+  if (page && !id) {
     const dest = `${proto}://${host}/#${encodeURIComponent(page)}`;
     sendCard(res, ua, req.query.embed, dest, {
       title: PAGE_TITLES[page] || `${page} — rankvault`,

@@ -13,10 +13,13 @@ export default function Hero() {
           drop a file.<br />share only if you want.
         </motion.h1>
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.12 }} className="text-neutral-400 text-lg leading-relaxed max-w-xl mb-8">
-          a quiet vault for clips, docs, and dumps. gunwale files several local drops onto one rail. no size lock. just a heads up if the tab might lag.
+          a quiet vault for clips, docs, and dumps. kedge sets an anchor. binnacle reads the public compass. no size lock. just a heads up if the tab might lag.
         </motion.p>
         <div className="flex flex-wrap gap-3 mb-12">
-          <button onClick={() => navigate('oakum')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition">stuff a seam</button>
+          <button onClick={() => navigate('kedge')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition">set an anchor</button>
+          <button onClick={() => navigate('binnacle')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">read the compass</button>
+          <button onClick={() => navigate('oakum')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">stuff a seam</button>
+          <button onClick={() => navigate('oakum-hidden') className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition">stuff a seam</button>
           <button onClick={() => navigate('painter')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">tie a painter</button>
           <button onClick={() => navigate('futtock')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">file a rib</button>
           <button onClick={() => navigate('stringer')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">stringer</button>

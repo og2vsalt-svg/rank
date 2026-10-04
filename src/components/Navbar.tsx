@@ -5,6 +5,8 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'carvel', label: 'carvel' },
+  { to: 'bearding', label: 'bearding' },
   { to: 'bulwark', label: 'bulwark' },
   { to: 'coaming', label: 'coaming' },
   { to: 'washstrake', label: 'washstrake' },
@@ -30,6 +32,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'hosting',
     items: [
+      { to: 'carvel', label: 'carvel' },
+      { to: 'bearding', label: 'bearding' },
       { to: 'bulwark', label: 'bulwark' },
       { to: 'coaming', label: 'coaming' },
       { to: 'knee', label: 'knee' },
@@ -60,6 +64,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'new',
     items: [
+      { to: 'carvel', label: 'carvel' },
+      { to: 'bearding', label: 'bearding' },
       { to: 'bulwark', label: 'bulwark' },
       { to: 'coaming', label: 'coaming' },
       { to: 'washstrake', label: 'washstrake' },
@@ -94,6 +100,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'carvel', label: 'carvel' },
+      { to: 'bearding', label: 'bearding' },
       { to: 'bulwark', label: 'bulwark' },
       { to: 'coaming', label: 'coaming' },
       { to: 'gunwale', label: 'gunwale' },
@@ -161,7 +169,7 @@ export default function Navbar() {
       <div className="max-w-6xl mx-auto px-4 sm:px-5 h-14 flex items-center justify-between gap-3">
         <button onClick={() => navigate('home')} className="text-lg font-semibold tracking-tight text-white shrink-0">rank<span className="text-[#0a84ff]">vault</span></button>
         <div className="hidden lg:flex items-center gap-1 min-w-0">
-          {primary.map((l) => (
+          {primary.slice(0, 8).map((l) => (
             <button key={l.to} onClick={() => navigate(l.to)} className="text-[13px] text-neutral-400 hover:text-white px-2.5 py-1.5 rounded-full hover:bg-white/5 transition-colors">{l.label}</button>
           ))}
         </div>
@@ -217,7 +225,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">paste /bulwark, /coaming, /washstrake, /s in Discord for a card. older desks stay on their routes.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">paste /carvel, /bearding, /bulwark, or /s in Discord for a card. older desks stay on their routes.</p>
         </div>
       </div>
     </nav>

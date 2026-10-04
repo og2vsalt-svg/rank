@@ -5,13 +5,11 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'gammon', label: 'gammon' },
+  { to: 'cathead', label: 'cathead' },
   { to: 'davits', label: 'davits' },
   { to: 'hawser', label: 'hawser' },
   { to: 'kedge', label: 'kedge' },
-  { to: 'binnacle', label: 'binnacle' },
-  { to: 'rabbet', label: 'rabbet' },
-  { to: 'floors', label: 'floors' },
-  { to: 'chestree', label: 'chestree' },
   { to: 'vault', label: 'vault' },
 ];
 
@@ -19,6 +17,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'hosting',
     items: [
+      { to: 'gammon', label: 'gammon' },
       { to: 'davits', label: 'davits' },
       { to: 'hawser', label: 'hawser' },
       { to: 'kedge', label: 'kedge' },
@@ -76,6 +75,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'cathead', label: 'cathead' },
+      { to: 'gammon', label: 'gammon' },
       { to: 'davits', label: 'davits' },
       { to: 'hawser', label: 'hawser' },
       { to: 'rabbet', label: 'rabbet' },
@@ -204,7 +205,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">paste /davits, /hawser, /kedge, or /s in Discord for a card. older desks stay on their routes.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">paste /gammon, /cathead, /davits, or /s in Discord for a card. older desks stay on their routes.</p>
         </div>
       </div>
     </nav>

@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishLocalFile } from '../lib/cloudShare';
+import { useRouter } from './Router';
+import { publishLocalFile, shareUrls } from '../lib/cloudShare';
 
 const SB_URL = (
   (import.meta as any).env?.VITE_SUPABASE_URL ||
@@ -12,130 +13,217 @@ const SB_KEY =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
 
 function pretty(n: number) {
-  if (n < 1024) return n + ' B';
-  if (n < 1024 * 1024) return Math.max(1, Math.round(n / 1024)) + ' KB';
-  if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(1) + ' MB';
-  return (n / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
+  if (n < 1024) return `${n} B`;
+  if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
+  if (n < 1024 * 1024 * 1024) return `${(n / (1024 * 1024)).toFixed(2)} MB`;
+  return `${(n / (1024 * 1024 * 1024)).toFixed(2)} GB`;
 }
 
-function left(due: string) {
-  const ms = +new Date(due) - Date.now();
-  if (ms <= 0) return 'due';
-  const h = Math.floor(ms / 3600000);
-  const m = Math.floor((ms % 3600000) / 60000);
-  if (h > 48) return Math.floor(h / 24) + 'd';
-  return h + 'h ' + m + 'm';
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+
+type Kevel = {
+  id: string;
+  instruction: string;
+  open_after: string | null;
+  author: string | null;
+  share_id: string;
+  file_name: string | null;
+  file_size: number;
+  hue: string | null;
+  created_at: string;
+};
+
+function windowLabel(value: string | null) {
+  if (!value) return 'open whenever';
+  const t = new Date(value);
+  if (Number.isNaN(t.getTime())) return 'open whenever';
+  return t.getTime() > Date.now() ? `opens ${t.toLocaleString()}` : `window open since ${t.toLocaleString()}`;
 }
 
 export default function KevelPage() {
+  const { shareId } = useRouter();
+  const inputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
-  const [title, setTitle] = useState('');
-  const [note, setNote] = useState('');
+  const [instruction, setInstruction] = useState('');
+  const [openAfter, setOpenAfter] = useState('');
   const [author, setAuthor] = useState('');
-  const [due, setDue] = useState('');
+  const [hue, setHue] = useState('#64D2FF');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
-  const [warn, setWarn] = useState<string | null>(null);
-  const [card, setCard] = useState('');
-  const [copied, setCopied] = useState(false);
-  const [rows, setRows] = useState<{ id: string; title: string; due_at: string; file_share_id: string | null }[]>([]);
+  const [warn, setWarn] = useState('');
+  const [row, setRow] = useState<Kevel | null>(null);
+  const [recent, setRecent] = useState<Kevel[]>([]);
+  const [drag, setDrag] = useState(false);
 
-  const slow = useMemo(() => (file && file.size > 25 * 1024 * 1024 ? 'large drop. the tab may feel slow while it sends. nothing is refused.' : null), [file]);
+  const heavyNote = useMemo(() => {
+    if (!file) return '';
+    if (file.size > 80 * 1024 * 1024) return 'this file is large. it will still go up. the send may feel slow in this tab.';
+    if (file.size > 12 * 1024 * 1024) return 'bigger than a quick preview. nothing is refused. the card will still publish.';
+    return '';
+  }, [file]);
 
-  const load = async () => {
-    const res = await fetch(`${SB_URL}/rest/v1/handoffs?select=id,title,due_at,file_share_id&order=due_at.asc&limit=12`, {
-      headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` },
-    });
+  const loadRecent = async () => {
+    const res = await fetch(
+      `${SB_URL}/rest/v1/kevels?select=id,instruction,open_after,author,share_id,file_name,file_size,hue,created_at&order=created_at.desc&limit=8`,
+      { headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` } },
+    );
     if (!res.ok) return;
-    const data = await res.json();
-    if (Array.isArray(data)) setRows(data);
+    const rows = await res.json();
+    if (Array.isArray(rows)) setRecent(rows);
+  };
+
+  const loadOne = async (id: string) => {
+    const res = await fetch(
+      `${SB_URL}/rest/v1/kevels?id=eq.${encodeURIComponent(id)}&select=*&limit=1`,
+      { headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` } },
+    );
+    if (!res.ok) return;
+    const rows = await res.json();
+    if (Array.isArray(rows) && rows[0]) setRow(rows[0]);
   };
 
   useEffect(() => {
-    load();
-    const t = setInterval(load, 20000);
-    return () => clearInterval(t);
-  }, []);
+    loadRecent();
+    if (shareId) loadOne(shareId);
+  }, [shareId]);
+
+  const take = (next: File | null) => {
+    setFile(next);
+    setWarn(next && next.size > 12 * 1024 * 1024 ? 'large file. preview clients can feel slow. the desk does not turn it away.' : '');
+  };
 
   const send = async () => {
-    if (!file || !title.trim() || !due) return;
+    if (!file || !instruction.trim()) return;
     setBusy(true);
     setError('');
-    setCopied(false);
-    const dueIso = new Date(due).toISOString();
-    const res = await publishLocalFile(file, {
-      caption: `${title.trim()} · ready ${dueIso.slice(0, 16).replace('T', ' ')}`,
+    const published = await publishLocalFile(file, {
+      caption: instruction.trim(),
       author: author.trim() || undefined,
-      expiresAt: dueIso,
-      color: '#0A84FF',
+      color: hue,
+      cardTitle: instruction.trim().slice(0, 120),
     });
-    if (!res.ok || !res.id) {
+    if (!published.ok || !published.id) {
       setBusy(false);
-      setError(res.error || 'the file did not land');
+      setError(published.error || 'the share table did not take the file');
       return;
     }
-    const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-    const row = await fetch(`${SB_URL}/rest/v1/handoffs`, {
+    if (published.warn) setWarn(published.warn);
+    const id = uid();
+    const next = {
+      id,
+      instruction: instruction.trim().slice(0, 280),
+      open_after: openAfter ? new Date(openAfter).toISOString() : null,
+      author: author.trim() || null,
+      share_id: published.id,
+      file_name: file.name,
+      file_size: file.size,
+      hue,
+    };
+    const ins = await fetch(`${SB_URL}/rest/v1/kevels`, {
       method: 'POST',
       headers: {
         apikey: SB_KEY,
         Authorization: `Bearer ${SB_KEY}`,
         'Content-Type': 'application/json',
-        Prefer: 'return=minimal',
+        Prefer: 'return=representation',
       },
-      body: JSON.stringify({
-        id,
-        title: title.trim().slice(0, 160),
-        due_at: dueIso,
-        file_share_id: res.id,
-        note: note.trim().slice(0, 280) || null,
-        author: author.trim() || null,
-      }),
+      body: JSON.stringify(next),
     });
     setBusy(false);
-    if (!row.ok) {
-      setError('file landed, the deadline row did not');
-      setCard(res.embed || '');
+    if (!ins.ok) {
+      setError(`note ${ins.status}: ${(await ins.text()).slice(0, 180)}. the file itself is still at /s/${published.id}`);
       return;
     }
-    setWarn(res.warn || slow);
-    setCard(res.embed || '');
+    const saved = await ins.json();
+    setRow(Array.isArray(saved) ? saved[0] : { ...next, created_at: new Date().toISOString() });
     setFile(null);
-    load();
+    setInstruction('');
+    loadRecent();
+    history.pushState(null, '', `/kevel/${id}`);
   };
+
+  const copy = async (value: string) => {
+    try { await navigator.clipboard.writeText(value); } catch { setError(value); }
+  };
+
+  const card = row ? `${location.origin}/kevel/${row.id}` : '';
+  const waiting = row?.open_after ? new Date(row.open_after).getTime() > Date.now() : false;
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <main className="mx-auto max-w-3xl px-5 pb-24 pt-28">
-        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[13px] uppercase tracking-[0.16em] text-zinc-500">kevel</motion.p>
-        <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="mt-2 text-4xl font-semibold tracking-tight text-zinc-50">A file with a time on it.</motion.h1>
-        <p className="mt-3 max-w-xl text-zinc-400">Not a cabinet. Pick a local file, name the handoff, set when it should be ready. The bytes go to the share table. Discord unfurls /s. Large files are warned, never cut off.</p>
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mt-8 rounded-3xl border border-white/10 bg-white/[0.04] p-5 shadow-[0_20px_60px_rgba(0,0,0,0.35)] backdrop-blur-xl">
-          <label className="block text-sm text-zinc-300">local file<input type="file" className="mt-2 block w-full text-sm text-zinc-400" onChange={(e) => setFile(e.target.files?.[0] || null)} /></label>
-          {file && <p className="mt-2 text-sm text-zinc-500">{file.name} · {pretty(file.size)}{slow ? ` · ${slow}` : ''}</p>}
-          <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="what is this handoff" className="mt-4 w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-zinc-100 outline-none focus:border-[#0A84FF]" />
-          <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="from (optional)" className="mt-3 w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-zinc-100 outline-none focus:border-[#0A84FF]" />
-          <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="a line for the person receiving it" className="mt-3 h-24 w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-zinc-100 outline-none focus:border-[#0A84FF]" />
-          <label className="mt-3 block text-sm text-zinc-400">ready by<input type="datetime-local" value={due} onChange={(e) => setDue(e.target.value)} className="mt-2 w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-zinc-100 outline-none" /></label>
-          <button disabled={busy || !file || !title.trim() || !due} onClick={send} className="mt-4 rounded-full bg-[#0A84FF] px-5 py-2.5 text-sm font-medium text-white transition hover:brightness-110 disabled:opacity-40">{busy ? 'sending…' : 'file the handoff'}</button>
-          {error && <p className="mt-3 text-sm text-red-300">{error}</p>}
-          {warn && <p className="mt-3 text-sm text-amber-200">{warn}</p>}
-          {card && (
-            <div className="mt-4 flex items-center gap-3 text-sm">
-              <a className="text-[#7ab8ff] underline" href={card}>{card}</a>
-              <button className="text-zinc-400" onClick={() => { navigator.clipboard.writeText(card); setCopied(true); }}>{copied ? 'copied' : 'copy'}</button>
-            </div>
-          )}
+      <main className="pt-24 pb-20 px-5 max-w-3xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}>
+          <p className="text-[#64d2ff] text-sm font-medium mb-2 tracking-wide">kevel</p>
+          <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-white mb-3">belay a file, and say when it should be opened.</h1>
+          <p className="text-neutral-400 max-w-xl mb-8">not a vault. the local file lands in the share table. this desk only keeps the instruction and an open window. the window is a note, not a lock. paste /kevel in Discord for the card. large files get a warning, never a refusal.</p>
         </motion.div>
-        <ul className="mt-8 space-y-2">
-          {rows.map((row) => (
-            <li key={row.id} className="flex items-center justify-between rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-3 text-sm">
-              <span className="text-zinc-200">{row.title}</span>
-              <span className="text-zinc-500">{left(row.due_at)}{row.file_share_id ? ` · /s/${row.file_share_id}` : ''}</span>
-            </li>
-          ))}
-        </ul>
+
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.08, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          onDragOver={(e) => { e.preventDefault(); setDrag(true); }}
+          onDragLeave={() => setDrag(false)}
+          onDrop={(e) => { e.preventDefault(); setDrag(false); take(e.dataTransfer.files?.[0] || null); }}
+          className={`glass rounded-3xl p-6 sm:p-8 transition ${drag ? 'ring-2 ring-[#64d2ff]/50' : ''}`}
+        >
+          <button type="button" onClick={() => inputRef.current?.click()} className="w-full rounded-2xl border border-dashed border-white/15 bg-white/[0.03] px-5 py-10 text-left hover:bg-white/[0.05] transition">
+            <p className="text-white font-medium">{file ? file.name : 'choose a local file, or drop it here'}</p>
+            <p className="text-sm text-neutral-500 mt-1">{file ? pretty(file.size) : 'one file. the bytes go to the share table'}</p>
+          </button>
+          <input ref={inputRef} type="file" className="hidden" onChange={(e) => take(e.target.files?.[0] || null)} />
+          <input value={instruction} onChange={(e) => setInstruction(e.target.value)} placeholder="what to do when it opens" maxLength={280} className="mt-5 w-full px-4 py-2.5 rounded-2xl bg-white/5 border border-white/10 text-sm outline-none focus:border-[#64d2ff]/50" />
+          <div className="grid sm:grid-cols-2 gap-3 mt-3">
+            <label className="text-xs text-neutral-500">
+              open after, optional
+              <input type="datetime-local" value={openAfter} onChange={(e) => setOpenAfter(e.target.value)} className="mt-1 w-full px-4 py-2.5 rounded-2xl bg-white/5 border border-white/10 text-sm text-white outline-none focus:border-[#64d2ff]/50" />
+            </label>
+            <label className="text-xs text-neutral-500">
+              your name, optional
+              <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="who belayed it" className="mt-1 w-full px-4 py-2.5 rounded-2xl bg-white/5 border border-white/10 text-sm text-white outline-none focus:border-[#64d2ff]/50" />
+            </label>
+          </div>
+          <label className="mt-3 flex items-center gap-3 text-sm text-neutral-400">
+            accent
+            <input type="color" value={hue} onChange={(e) => setHue(e.target.value)} className="h-8 w-10 rounded-lg bg-transparent border-0" />
+            <span className="text-xs text-neutral-500">{hue}</span>
+          </label>
+          {(warn || heavyNote) && <p className="mt-3 text-xs text-amber-300/90">{warn || heavyNote}</p>}
+          {error && <p className="mt-3 text-xs text-red-300">{error}</p>}
+          <button disabled={!file || !instruction.trim() || busy} onClick={send} className="mt-5 px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40">
+            {busy ? 'belaying…' : 'belay the file'}
+          </button>
+        </motion.div>
+
+        {row && (
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-3xl p-6 mt-5">
+            <p className="text-white font-medium">{row.instruction}</p>
+            <p className="text-sm text-neutral-400 mt-1">{row.file_name} · {pretty(Number(row.file_size) || 0)} · {windowLabel(row.open_after)}</p>
+            {waiting && <p className="text-xs text-amber-200/80 mt-2">the window has not opened yet. the file is still reachable — the time is a note, not a gate.</p>}
+            <p className="text-xs text-neutral-500 mt-2 break-all">{card}</p>
+            <div className="flex flex-wrap gap-2 mt-4">
+              <button onClick={() => copy(card)} className="text-xs px-3 py-1.5 rounded-full bg-white text-black">copy Discord link</button>
+              <a href={shareUrls(row.share_id).embed} className="text-xs px-3 py-1.5 rounded-full bg-white/5 text-white">open the file card</a>
+            </div>
+          </motion.div>
+        )}
+
+        {recent.length > 0 && (
+          <div className="mt-8">
+            <p className="text-xs uppercase tracking-wide text-neutral-500 mb-3">recent windows</p>
+            <div className="grid gap-2">
+              {recent.map((item) => (
+                <a key={item.id} href={`/kevel/${item.id}`} className="glass rounded-2xl px-4 py-3 hover:bg-white/[0.04] transition">
+                  <p className="text-white text-sm">{item.instruction}</p>
+                  <p className="text-xs text-neutral-500 mt-0.5">{item.file_name || 'file'} · {windowLabel(item.open_after)}</p>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

@@ -3,7 +3,7 @@ export const config = {
 };
 
 const BOT = /discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|skype|redditbot|applebot|iframely|unfurl|pinterest|notion|embedly|slack-imgproxy|discordbot/i;
-const ID_PREFIX = new Set(['knee', 'transom', 'belaying', 'loft', 'quay', 's', 'f', 'x', 'd', 'go', 'open', 'link', 'card', 'embed', 'y', 'q', 'l', 'n', 'k', 'w', 'u', 'r', 'b', 'g', 'c', 'm', 'o', 't', 'i', 'a', 'e', 'z', 'h', 'v', 'j', 'p', 'room', 'parcel', 'spirket', 'washboard', 'beakhead', 'partners', 'waybill', 'fid', 'pelorus', 'cuddy', 'hawse', 'futtock', 'stringer', 'samson', 'gudgeon', 'pintle', 'sternpost', 'breasthook', 'capstan', 'treenail', 'fairlead', 'hounds', 'seizing', 'deadeye', 'sounding', 'marline', 'orlop', 'cleat', 'passage', 'lantern', 'forepeak', 'lazarette', 'skylight', 'limber', 'bitt', 'taffrail', 'counter', 'scupper', 'rider', 'gunwale', 'bumkin', 'apostle', 'tumblehome', 'sheerstrake', 'washstrake', 'waterway', 'bulwark', 'coaming', 'carvel', 'bearding', 'rowlock', 'margin', 'thwart']);
+const ID_PREFIX = new Set(['knee', 'transom', 'belaying', 'loft', 'quay', 's', 'f', 'x', 'd', 'go', 'open', 'link', 'card', 'embed', 'y', 'q', 'l', 'n', 'k', 'w', 'u', 'r', 'b', 'g', 'c', 'm', 'o', 't', 'i', 'a', 'e', 'z', 'h', 'v', 'j', 'p', 'room', 'parcel', 'spirket', 'washboard', 'beakhead', 'partners', 'waybill', 'fid', 'pelorus', 'cuddy', 'hawse', 'futtock', 'stringer', 'samson', 'gudgeon', 'pintle', 'sternpost', 'breasthook', 'capstan', 'treenail', 'fairlead', 'hounds', 'seizing', 'deadeye', 'sounding', 'marline', 'orlop', 'cleat', 'passage', 'lantern', 'forepeak', 'lazarette', 'skylight', 'limber', 'bitt', 'taffrail', 'counter', 'scupper', 'rider', 'gunwale', 'bumkin', 'apostle', 'tumblehome', 'sheerstrake', 'washstrake', 'waterway', 'bulwark', 'coaming', 'carvel', 'bearding', 'rowlock', 'margin', 'thwart', 'kevel']);
 
 const DEDICATED = {
   pintle: '/api/pintle',
@@ -12,6 +12,7 @@ const DEDICATED = {
   carvel: '/api/carvel',
   bearding: '/api/bearding',
   thwart: '/api/thwart',
+  kevel: '/api/kevel',
 };
 
 export default function middleware(request) {

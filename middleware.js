@@ -6,20 +6,20 @@ const BOT = /discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsap
 const ID_PREFIX = new Set(['knee', 'transom', 'belaying', 'loft', 'quay', 's', 'f', 'x', 'd', 'go', 'open', 'link', 'card', 'embed', 'y', 'q', 'l', 'n', 'k', 'w', 'u', 'r', 'b', 'g', 'c', 'm', 'o', 't', 'i', 'a', 'e', 'z', 'h', 'v', 'j', 'p', 'room', 'parcel', 'spirket', 'washboard', 'beakhead', 'partners', 'waybill', 'fid', 'pelorus', 'cuddy', 'hawse', 'futtock', 'stringer', 'samson', 'gudgeon', 'pintle', 'sternpost', 'breasthook', 'capstan', 'treenail', 'fairlead', 'hounds', 'seizing', 'deadeye', 'sounding', 'marline', 'orlop', 'cleat', 'passage', 'lantern', 'forepeak', 'lazarette', 'skylight', 'limber', 'bitt', 'taffrail', 'counter', 'scupper', 'rider', 'gunwale', 'bumkin', 'apostle', 'tumblehome', 'sheerstrake', 'washstrake', 'waterway', 'bulwark', 'coaming', 'carvel', 'bearding', 'rowlock', 'margin', 'thwart', 'kevel', 'stemson', 'lodging', 'oakum', 'painter', 'rabbet', 'floors', 'chestree', 'kedge', 'binnacle']);
 
 const DEDICATED = {
-  pintle: '/api/pintle',
-  rowlock: '/api/rowlock',
-  gunwale: '/api/gunwale',
-  carvel: '/api/carvel',
-  bearding: '/api/bearding',
-  thwart: '/api/thwart',
-  kevel: '/api/kevel',
-  stemson: '/api/stemson',
-  lodging: '/api/lodging',
-  oakum: '/api/oakum',
-  painter: '/api/painter',
-  rabbet: '/api/rabbet',
-  floors: '/api/floors',
-  chestree: '/api/chestree',
+  pintle: '/api/embed',
+  rowlock: '/api/embed',
+  gunwale: '/api/embed',
+  carvel: '/api/embed',
+  bearding: '/api/embed',
+  thwart: '/api/embed',
+  kevel: '/api/embed',
+  stemson: '/api/embed',
+  lodging: '/api/embed',
+  oakum: '/api/embed',
+  painter: '/api/embed',
+  rabbet: '/api/embed',
+  floors: '/api/embed',
+  chestree: '/api/embed',
 };
 
 export default function middleware(request) {

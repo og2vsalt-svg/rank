@@ -3,6 +3,10 @@
   "outputDirectory": "dist",
   "framework": "vite",
   "rewrites": [
+    { "source": "/api/share", "destination": "/api/share" },
+    { "source": "/api/embed", "destination": "/api/embed" },
+    { "source": "/api/desk", "destination": "/api/desk" },
+    { "source": "/api/:desk", "destination": "/api/desk?desk=:desk" },
     { "source": "/((?!api/|assets/).*)", "destination": "/index.html" }
   ]
 }

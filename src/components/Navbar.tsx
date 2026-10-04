@@ -5,6 +5,8 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'bulwark', label: 'bulwark' },
+  { to: 'coaming', label: 'coaming' },
   { to: 'washstrake', label: 'washstrake' },
   { to: 'waterway', label: 'waterway' },
   { to: 'tumblehome', label: 'tumblehome' },
@@ -28,6 +30,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'hosting',
     items: [
+      { to: 'bulwark', label: 'bulwark' },
+      { to: 'coaming', label: 'coaming' },
       { to: 'knee', label: 'knee' },
       { to: 'transom', label: 'transom' },
       { to: 'gunwale', label: 'gunwale' },
@@ -56,9 +60,11 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'new',
     items: [
+      { to: 'bulwark', label: 'bulwark' },
+      { to: 'coaming', label: 'coaming' },
       { to: 'washstrake', label: 'washstrake' },
-  { to: 'waterway', label: 'waterway' },
-  { to: 'tumblehome', label: 'tumblehome' },
+      { to: 'waterway', label: 'waterway' },
+      { to: 'tumblehome', label: 'tumblehome' },
       { to: 'sheerstrake', label: 'sheerstrake' },
       { to: 'gunwale', label: 'gunwale' },
       { to: 'rider', label: 'rider' },
@@ -88,6 +94,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'bulwark', label: 'bulwark' },
+      { to: 'coaming', label: 'coaming' },
       { to: 'gunwale', label: 'gunwale' },
       { to: 'rider', label: 'rider' },
       { to: 'scupper', label: 'scupper' },
@@ -209,7 +217,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">paste /bumkin, /apostle, /knee, /s in Discord for a card. older desks stay on their routes.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">paste /bulwark, /coaming, /washstrake, /s in Discord for a card. older desks stay on their routes.</p>
         </div>
       </div>
     </nav>

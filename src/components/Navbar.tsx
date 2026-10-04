@@ -5,11 +5,11 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'bowsprit', label: 'bowsprit' },
+  { to: 'chainplate', label: 'chainplate' },
   { to: 'wharf', label: 'wharf' },
-  { to: 'lashing', label: 'lashing' },
   { to: 'wale', label: 'wale' },
   { to: 'davits', label: 'davits' },
-  { to: 'gammon', label: 'gammon' },
   { to: 'vault', label: 'vault' },
 ];
 
@@ -17,6 +17,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'hosting',
     items: [
+      { to: 'bowsprit', label: 'bowsprit' },
+      { to: 'chainplate', label: 'chainplate' },
       { to: 'wharf', label: 'wharf' },
       { to: 'lashing', label: 'lashing' },
       { to: 'wale', label: 'wale' },
@@ -79,6 +81,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'bowsprit', label: 'bowsprit' },
+      { to: 'chainplate', label: 'chainplate' },
       { to: 'wharf', label: 'wharf' },
       { to: 'lashing', label: 'lashing' },
       { to: 'cathead', label: 'cathead' },
@@ -211,7 +215,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">paste /wharf, /lashing, /davits, or /s in Discord for a card. older desks stay on their routes.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">paste /bowsprit, /chainplate, /wharf, or /s in Discord for a card. older desks stay on their routes.</p>
         </div>
       </div>
     </nav>

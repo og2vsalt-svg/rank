@@ -50,8 +50,8 @@ export default function BeardingPage() {
   }, [file]);
 
   useEffect(() => {
-    const q = shareId ? `?id=${encodeURIComponent(shareId)}` : '';
-    fetch('/api/bearding' + q).then((r) => r.json()).then((d) => {
+    const q = shareId ? `&id=${encodeURIComponent(shareId)}` : '';
+    fetch('/api/desk?desk=bearding' + q).then((r) => r.json()).then((d) => {
       const rows = Array.isArray(d?.beardings) ? d.beardings : [];
       if (shareId) setOpened(rows[0] || null);
       else setRecent(rows);
@@ -76,7 +76,7 @@ export default function BeardingPage() {
       setError(shared.error || 'the share table did not take that file');
       return;
     }
-    const row = await fetch('/api/bearding', {
+    const row = await fetch('/api/desk?desk=bearding', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ shareId: shared.id, fileName: file.name, digest, note: note.trim(), author: author.trim(), size: file.size }),

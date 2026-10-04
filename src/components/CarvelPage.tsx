@@ -44,8 +44,8 @@ export default function CarvelPage() {
   }, [files, bytes]);
 
   useEffect(() => {
-    const q = shareId ? `?id=${encodeURIComponent(shareId)}` : '';
-    fetch('/api/carvel' + q).then((r) => r.json()).then((d) => {
+    const q = shareId ? `&id=${encodeURIComponent(shareId)}` : '';
+    fetch('/api/desk?desk=carvel' + q).then((r) => r.json()).then((d) => {
       const rows = Array.isArray(d?.carvels) ? d.carvels : [];
       if (shareId) setOpened(rows[0] || null);
       else setRecent(rows);
@@ -74,7 +74,7 @@ export default function CarvelPage() {
       shareIds.push(shared.id);
       names.push(file.name);
     }
-    const row = await fetch('/api/carvel', {
+    const row = await fetch('/api/desk?desk=carvel', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ title: title.trim(), seam: seam.trim(), author: author.trim(), shareIds, fileNames: names }),

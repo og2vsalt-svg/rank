@@ -1,45 +1,90 @@
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { listPublicShares, shareUrls, type CloudMeta } from '../lib/cloudShare';
 
-function pretty(n: number) {
-  if (n < 1024) return `${n} B`;
-  if (n < 1024 * 1024) return `${Math.max(1, Math.round(n / 1024))} KB`;
-  return `${(n / (1024 * 1024)).toFixed(1)} MB`;
-}
+type LinkRow = {
+  id: string;
+  url: string;
+  note: string | null;
+  author: string | null;
+  created_at?: string;
+};
 
 export default function CatheadPage() {
-  const [rows, setRows] = useState<CloudMeta[]>([]);
-  const [copied, setCopied] = useState('');
-  const [quiet, setQuiet] = useState(false);
+  const [url, setUrl] = useState('https://');
+  const [note, setNote] = useState('');
+  const [author, setAuthor] = useState('');
+  const [links, setLinks] = useState<LinkRow[]>([]);
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [made, setMade] = useState('');
+
+  async function load() {
+    const res = await fetch('/api/cathead');
+    const data = await res.json();
+    setLinks(Array.isArray(data.links) ? data.links : []);
+  }
 
   useEffect(() => {
-    listPublicShares(24).then((list) => {
-      setRows(list);
-      setQuiet(list.length === 0);
-    });
+    load().catch(() => setLinks([]));
   }, []);
 
+  async function pin() {
+    setBusy(true);
+    setError('');
+    try {
+      const res = await fetch('/api/cathead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url, note, author }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'could not pin');
+      setMade(data.embedPath || '');
+      setNote('');
+      await load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'could not pin');
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
-    <div className="mesh min-h-screen">
+    <div className="min-h-screen bg-[#050506] text-[#f5f5f7]">
       <Navbar />
-      <main className="mx-auto max-w-3xl px-5 pb-24 pt-28">
-        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[13px] uppercase tracking-[0.16em] text-zinc-500">cathead</motion.p>
-        <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} className="mt-2 text-4xl font-semibold tracking-tight">What already landed.</motion.h1>
-        <p className="mt-3 text-zinc-400">A public log of the share database. Copy a Discord card without opening the vault grid.</p>
-        {quiet && <p className="mt-8 text-sm text-zinc-500">the board is quiet.</p>}
-        <div className="mt-8 space-y-3">
-          {rows.map((row, i) => (
-            <motion.article key={row.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i, 8) * 0.04 }} className="flex items-center justify-between rounded-[22px] border border-white/10 bg-white/[0.04] px-4 py-3 backdrop-blur-xl">
-              <div className="min-w-0 pr-3">
-                <p className="truncate text-sm text-zinc-100">{row.name}</p>
-                <p className="text-xs text-zinc-500">{pretty(row.size)} · {row.downloads || 0} opens</p>
-              </div>
-              <button onClick={async () => { await navigator.clipboard.writeText(shareUrls(row.id).embed); setCopied(row.id); }} className="shrink-0 rounded-full bg-white px-3 py-1.5 text-xs font-medium text-black">{copied === row.id ? 'copied' : 'copy card'}</button>
-            </motion.article>
+      <main className="max-w-3xl mx-auto px-5 pt-24 pb-20">
+        <p className="text-[12px] tracking-[0.16em] uppercase text-white/40">cathead</p>
+        <h1 className="mt-2 text-4xl font-semibold tracking-tight">An address, not a file.</h1>
+        <p className="mt-3 text-[15px] leading-relaxed text-white/60 max-w-xl">
+          Pin a link on the spar. It goes into the links table. Paste /cathead in Discord for a card. Files still live on gammon, davits, and the older desks.
+        </p>
+
+        <section className="mt-8 rounded-3xl border border-white/10 bg-white/[0.04] p-5">
+          <label className="text-[13px] text-white/50">Address
+            <input value={url} onChange={(e) => setUrl(e.target.value)} className="mt-1 w-full rounded-xl bg-black/40 border border-white/10 px-3 py-2 text-white outline-none focus:border-[#64D2FF]" />
+          </label>
+          <label className="mt-3 block text-[13px] text-white/50">Note
+            <input value={note} onChange={(e) => setNote(e.target.value)} className="mt-1 w-full rounded-xl bg-black/40 border border-white/10 px-3 py-2 text-white outline-none focus:border-[#64D2FF]" placeholder="why this address is here" />
+          </label>
+          <label className="mt-3 block text-[13px] text-white/50">Name
+            <input value={author} onChange={(e) => setAuthor(e.target.value)} className="mt-1 w-full rounded-xl bg-black/40 border border-white/10 px-3 py-2 text-white outline-none focus:border-[#64D2FF]" placeholder="optional" />
+          </label>
+          {error && <p className="mt-3 text-[13px] text-red-300">{error}</p>}
+          <button disabled={busy} onClick={pin} className="mt-4 rounded-full bg-white text-black px-4 py-2 text-[13px] font-medium disabled:opacity-40 transition hover:bg-neutral-200">
+            {busy ? 'Pinning…' : 'Pin address'}
+          </button>
+          {made && <p className="mt-3 text-[13px] text-white/55">Discord link: {made}</p>}
+        </section>
+
+        <ul className="mt-8 divide-y divide-white/5 rounded-2xl border border-white/10">
+          {links.length === 0 && <li className="px-4 py-4 text-[14px] text-white/40">No addresses pinned yet.</li>}
+          {links.map((item) => (
+            <li key={item.id} className="px-4 py-3">
+              <a href={item.url} className="text-[14px] text-[#64D2FF] break-all">{item.note || item.url}</a>
+              <p className="text-[12px] text-white/40 mt-1 break-all">{item.url}{item.author ? ` · ${item.author}` : ''}</p>
+            </li>
           ))}
-        </div>
+        </ul>
       </main>
     </div>
   );

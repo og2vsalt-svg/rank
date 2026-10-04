@@ -3,7 +3,7 @@ export const config = {
 };
 
 const BOT = /discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|skype|redditbot|applebot|iframely|unfurl|pinterest|notion|embedly|slack-imgproxy|discordbot/i;
-const ID_PREFIX = new Set(['belaying', 'loft', 'quay', 's', 'f', 'x', 'd', 'go', 'open', 'link', 'card', 'embed', 'y', 'q', 'l', 'n', 'k', 'w', 'u', 'r', 'b', 'g', 'c', 'm', 'o', 't', 'i', 'a', 'e', 'z', 'h', 'v', 'j', 'p', 'room', 'parcel', 'spirket', 'washboard', 'beakhead', 'partners', 'waybill', 'fid', 'pelorus', 'cuddy', 'hawse', 'futtock', 'samson', 'gudgeon', 'pintle', 'sternpost', 'breasthook', 'capstan', 'treenail', 'fairlead', 'hounds', 'seizing', 'deadeye', 'sounding', 'marline', 'orlop', 'cleat', 'passage', 'lantern', 'forepeak', 'lazarette', 'skylight', 'limber', 'bitt', 'taffrail', 'counter', 'scupper', 'rider']);
+const ID_PREFIX = new Set(['belaying', 'loft', 'quay', 's', 'f', 'x', 'd', 'go', 'open', 'link', 'card', 'embed', 'y', 'q', 'l', 'n', 'k', 'w', 'u', 'r', 'b', 'g', 'c', 'm', 'o', 't', 'i', 'a', 'e', 'z', 'h', 'v', 'j', 'p', 'room', 'parcel', 'spirket', 'washboard', 'beakhead', 'partners', 'waybill', 'fid', 'pelorus', 'cuddy', 'hawse', 'futtock', 'samson', 'gudgeon', 'pintle', 'sternpost', 'breasthook', 'capstan', 'treenail', 'fairlead', 'hounds', 'seizing', 'deadeye', 'sounding', 'marline', 'orlop', 'cleat', 'passage', 'lantern', 'forepeak', 'lazarette', 'skylight', 'limber', 'bitt', 'taffrail', 'counter', 'scupper', 'rider', 'gunwale']);
 
 export default function middleware(request) {
   const ua = request.headers.get('user-agent') || '';

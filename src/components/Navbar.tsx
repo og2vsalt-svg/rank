@@ -5,12 +5,12 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'pintle', label: 'pintle' },
   { to: 'rowlock', label: 'rowlock' },
   { to: 'margin', label: 'margin' },
   { to: 'carvel', label: 'carvel' },
   { to: 'bearding', label: 'bearding' },
   { to: 'bulwark', label: 'bulwark' },
-  { to: 'coaming', label: 'coaming' },
   { to: 'vault', label: 'vault' },
 ];
 
@@ -18,6 +18,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'hosting',
     items: [
+      { to: 'pintle', label: 'pintle' },
       { to: 'rowlock', label: 'rowlock' },
       { to: 'carvel', label: 'carvel' },
       { to: 'bearding', label: 'bearding' },
@@ -61,6 +62,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'pintle', label: 'pintle' },
       { to: 'rowlock', label: 'rowlock' },
       { to: 'carvel', label: 'carvel' },
       { to: 'bearding', label: 'bearding' },
@@ -179,7 +181,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">paste /rowlock or /s in Discord for a card. older desks stay on their routes.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">paste /pintle or /s in Discord for a card. older desks stay on their routes.</p>
         </div>
       </div>
     </nav>

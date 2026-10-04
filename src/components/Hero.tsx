@@ -19,7 +19,6 @@ export default function Hero() {
           <button onClick={() => navigate('kedge')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition">set an anchor</button>
           <button onClick={() => navigate('binnacle')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">read the compass</button>
           <button onClick={() => navigate('oakum')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">stuff a seam</button>
-          <button onClick={() => navigate('oakum-hidden') className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition">stuff a seam</button>
           <button onClick={() => navigate('painter')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">tie a painter</button>
           <button onClick={() => navigate('futtock')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">file a rib</button>
           <button onClick={() => navigate('stringer')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">stringer</button>

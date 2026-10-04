@@ -132,6 +132,14 @@
       "destination": "/api/desk?desk=apostle"
     },
     {
+      "source": "/api/tumblehome",
+      "destination": "/api/desk?desk=tumblehome"
+    },
+    {
+      "source": "/api/sheerstrake",
+      "destination": "/api/desk?desk=sheerstrake"
+    },
+    {
       "source": "/((?!api/).*)",
       "destination": "/index.html"
     }

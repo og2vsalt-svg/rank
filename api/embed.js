@@ -351,7 +351,32 @@ export default async function handler(req, res) {
     });
     return;
   }
-  if (page && !id) {
+  if (page === 'tumblehome' && id) {
+    const row = await sbGet(`tumblehomes?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
+    const dest = `${proto}://${host}/tumblehome/${encodeURIComponent(id)}`;
+    const share = row && row.share_id ? await loadShare(row.share_id) : null;
+    const image = share && String(share.mime || '').startsWith('image/') && /^https?:\/\//i.test(share.file_url || '') ? share.file_url : undefined;
+    sendCard(res, ua, req.query.embed, dest, {
+      title: row ? `${row.file_name} — tumblehome` : 'tumblehome — rankvault',
+      desc: row ? (row.lean || 'a local file with a lean') : 'a lean, not a drawer. large files are warned, never refused.',
+      image,
+      url: dest,
+      color: '#0A84FF',
+    });
+    return;
+  }
+  if (page === 'sheerstrake' && id) {
+    const row = await sbGet(`sheerstrakes?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
+    const dest = `${proto}://${host}/sheerstrake/${encodeURIComponent(id)}`;
+    sendCard(res, ua, req.query.embed, dest, {
+      title: row ? `${row.title} — sheerstrake` : 'sheerstrake — rankvault',
+      desc: row ? String(row.letter || '').slice(0, 180) : 'a letter, not a drawer.',
+      url: dest,
+      color: '#64D2FF',
+    });
+    return;
+  }
+    if (page && !id) {
     const dest = `${proto}://${host}/#${encodeURIComponent(page)}`;
     sendCard(res, ua, req.query.embed, dest, {
       title: PAGE_TITLES[page] || `${page} — rankvault`,

@@ -14,6 +14,7 @@ import taffrail from '../lib/routes/taffrail.js';
 import treenail from '../lib/routes/treenail.js';
 import counter from '../lib/routes/counter.js';
 import scupper from '../lib/routes/scupper.js';
+import rider from '../lib/routes/rider.js';
 
 const SUPABASE_URL = (process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || 'https://tqfocdktvjuwoiyfgesb.supabase.co').replace(/\/$/, '');
 const SUPABASE_KEY =
@@ -38,7 +39,7 @@ function bodyOf(req) {
   return {};
 }
 function esc(s) {
-  return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  return String(s || '').replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/"/g, '"');
 }
 function deskName(req) {
   const q = String(req.query.desk || '').toLowerCase();
@@ -288,7 +289,7 @@ export default async function handler(req, res) {
     if (desk === 'paircard') return paircard(req, res);
     if (desk === 'spirket') return spirket(req, res);
 
-    const routed = { belaying, cleat, deadeye, fairlead, garboard, hounds, keelson, marline, orlop, parcel, requests, sounding, taffrail, treenail, counter, scupper };
+    const routed = { belaying, cleat, deadeye, fairlead, garboard, hounds, keelson, marline, orlop, parcel, requests, sounding, taffrail, treenail, counter, scupper, rider };
     if (routed[desk]) return routed[desk](req, res);
     res.status(404).json({ error: 'unknown desk' });
   } catch (err) {

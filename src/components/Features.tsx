@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'bowsprit', body: 'name a port and an arrival note, then hand a local file to the share table. discord unfurls /bowsprit and /s. slowness warning only.' },
+  { title: 'chainplate', body: 'write the load a file is holding and who is on the other end. bytes land in the share table. discord unfurls /chainplate and /s. not a vault drawer.' },
   { title: 'oakum', body: 'one or two local files into the share table, plus the sentence that fills the seam. discord unfurls /oakum and /s. slowness warning only.' },
   { title: 'painter', body: 'a berth, a holder, and an optional local file. the rope has its own table. discord unfurls /painter and /s. not a vault drawer.' },
   { title: 'washstrake', body: 'two local files into the share table, plus one sentence on the difference. discord unfurls /washstrake and /s. slowness warning only.' },
@@ -44,10 +46,10 @@ const items = [
   { title: 'sedilia', body: 'three seats of notes on this device. publish them as one public drop.' },
   { title: 'voussoir', body: 'set one local file in the public shares table, with a caption discord can unfurl. slowness warning only.' },
   { title: 'scotia', body: 'a stair of checkboxes. publish the list as markdown, not another vault drawer.' },
-  { title: 'necking', body: 'reshape a line \u2014 title, slug, case \u2014 then ship the pane if you want a card.' },
+  { title: 'necking', body: 'reshape a line — title, slug, case — then ship the pane if you want a card.' },
   { title: 'abacus', body: 'time a passage at a calm reading pace. stays in the tab until you publish it.' },
   { title: 'volute', body: 'seat an address and a note on the links shelf. no files involved.' },
-  { title: 'quoin', body: 'paint a 1200\u00d7630 corner card in the tab and file the png so discord unfurls cleanly.' },
+  { title: 'quoin', body: 'paint a 1200x630 corner card in the tab and file the png so discord unfurls cleanly.' },
   { title: 'soffit', body: 'count words on the underside of a draft, then hang a .txt drop. not a vault drawer.' },
   { title: 'taffrail', body: 'lean on the public rail and read supabase drops that already landed.' },
   { title: 'rondel', body: 'three lines that return as A B C A B A. the poem ships as a public card.' },
@@ -74,17 +76,17 @@ const items = [
   { title: 'gesso', body: 'prime a 1200x630 card and file it so discord unfurls cleanly.' },
   { title: 'reliquary', body: 'keep a sha-256 of the thing. only the receipt goes public.' },
   { title: 'harbor', body: 'tie a pile to the dock and send each file out as its own share-db drop.' },
-  { title: 'ledger', body: 'read what already landed in supabase. not a vault \u2014 just the public log.' },
+  { title: 'ledger', body: 'read what already landed in supabase. not a vault — just the public log.' },
   { title: 'local-first vault', body: 'files live in your browser first. nothing ships unless you flip a drop public.' },
   { title: 'cloud share db', body: 'public drops land in supabase, with vercel blob when a token is set.' },
-  { title: 'discord embeds', body: '/s/id plus /p/page and named paths serve og tags so discord previews look finished. image cards only use real images.' },
+  { title: 'discord embeds', body: '/s/id plus named paths serve og tags so discord previews look finished. image cards only use real images.' },
   { title: 'no hard file cap', body: 'drop whatever size you want. we only warn when the tab might feel sleepy.' },
   { title: 'nocturne', body: 'a dim writing pad that stays on this device.' },
   { title: 'weft', body: 'weave several notes into one public .txt. discord unfurls /s.' },
   { title: 'thole', body: 'pin a sha-256 of a local file. share only the receipt if you want.' },
   { title: 'gimbal', body: 'rotate a still in the tab, then hang the leveled png.' },
   { title: 'trunnion', body: 'slice a local into a map. only the json goes public.' },
-  { title: 'samphire', body: 'a field note \u2014 title, place, body \u2014 published as markdown.' },
+  { title: 'samphire', body: 'a field note — title, place, body — published as markdown.' },
   { title: 'strake', body: 'a running stamped log that launches as a .log drop.' },
 ];
 
@@ -93,7 +95,7 @@ export default function Features() {
     <section className="py-16 px-5" id="features">
       <div className="max-w-5xl mx-auto">
         <h2 className="text-2xl font-semibold text-white mb-2 tracking-tight">built for dropping files</h2>
-        <p className="text-neutral-500 text-sm mb-8">a vault that feels like it belongs on a phone. not a ranking tool.</p>
+        <p className="text-neutral-500 text-sm mb-8">a quiet desk for files, notes, and handoffs. not a cabinet with a size gate.</p>
         <div className="grid md:grid-cols-2 gap-4">
           {items.map((item, i) => (
             <motion.div key={item.title} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: Math.min(i, 12) * 0.04, duration: 0.4, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-3xl p-6 hover:-translate-y-0.5">

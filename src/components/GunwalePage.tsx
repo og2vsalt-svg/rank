@@ -78,9 +78,10 @@ export default function GunwalePage() {
   const addFiles = (list: FileList | File[] | null) => {
     if (!list) return;
     const next = Array.from(list);
-    setFiles((prev) => [...prev, ...next].slice(0, 12));
-    const total = next.reduce((n, f) => n + f.size, 0);
-    if (total > 40 * 1024 * 1024) setWarn('this rail is heavy. it will still go up, but the tab may feel slow while it sends.');
+    setFiles((prev) => [...prev, ...next]);
+    const total = [...files, ...next].reduce((n, f) => n + f.size, 0);
+    if (next.length > 12 || files.length + next.length > 12) setWarn('a long rail. it will still file every one. the tab may feel slow while they send.');
+    else if (total > 40 * 1024 * 1024) setWarn('this rail is heavy. it will still go up, but the tab may feel slow while it sends.');
     else if (next.some((f) => f.size > 12 * 1024 * 1024)) setWarn('one of these is large. nothing is refused. preview clients can feel slow.');
     else setWarn('');
   };
@@ -163,7 +164,7 @@ export default function GunwalePage() {
         >
           <button type="button" onClick={() => inputRef.current?.click()} className="w-full rounded-2xl border border-dashed border-white/15 bg-white/[0.03] px-5 py-10 text-left hover:bg-white/[0.05] transition">
             <p className="text-white font-medium">{files.length ? `${files.length} file${files.length === 1 ? '' : 's'} on the rail` : 'choose local files, or drop a few here'}</p>
-            <p className="text-sm text-neutral-500 mt-1">{files.length ? pretty(heavy) : 'up to twelve. each one is filed on its own'}</p>
+            <p className="text-sm text-neutral-500 mt-1">{files.length ? pretty(heavy) : 'as many as you need. each one is filed on its own'}</p>
           </button>
           <input ref={inputRef} type="file" multiple className="hidden" onChange={(e) => addFiles(e.target.files)} />
           {files.length > 0 && (

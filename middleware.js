@@ -15,6 +15,12 @@ export default function middleware(request) {
     if (parts[1]) dest.searchParams.set('id', decodeURIComponent(parts[1]));
     return Response.redirect(dest.toString(), 307);
   }
+  if (parts[0] === 'gunwale' && BOT.test(ua)) {
+    const dest = new URL('/api/gunwale', request.url);
+    dest.searchParams.set('page', 'gunwale');
+    if (parts[1]) dest.searchParams.set('id', decodeURIComponent(parts[1]));
+    return Response.redirect(dest.toString(), 307);
+  }
   if ((parts[0] === 'spirket' || parts[0] === 'spirketing') && BOT.test(ua)) {
     const dest = new URL('/api/spirket', request.url);
     if (parts[0] === 'spirket' && parts[1]) dest.searchParams.set('id', decodeURIComponent(parts[1]));

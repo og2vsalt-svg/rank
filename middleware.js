@@ -3,7 +3,7 @@ export const config = {
 };
 
 const BOT = /discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|skype|redditbot|applebot|iframely|unfurl|pinterest|notion|embedly|slack-imgproxy|discordbot/i;
-const ID_PREFIX = new Set(['knee', 'transom', 'belaying', 'loft', 'quay', 's', 'f', 'x', 'd', 'go', 'open', 'link', 'card', 'embed', 'y', 'q', 'l', 'n', 'k', 'w', 'u', 'r', 'b', 'g', 'c', 'm', 'o', 't', 'i', 'a', 'e', 'z', 'h', 'v', 'j', 'p', 'room', 'parcel', 'spirket', 'washboard', 'beakhead', 'partners', 'waybill', 'fid', 'pelorus', 'cuddy', 'hawse', 'futtock', 'stringer', 'samson', 'gudgeon', 'pintle', 'sternpost', 'breasthook', 'capstan', 'treenail', 'fairlead', 'hounds', 'seizing', 'deadeye', 'sounding', 'marline', 'orlop', 'cleat', 'passage', 'lantern', 'forepeak', 'lazarette', 'skylight', 'limber', 'bitt', 'taffrail', 'counter', 'scupper', 'rider', 'gunwale', 'bumkin', 'apostle', 'tumblehome', 'sheerstrake', 'washstrake', 'waterway', 'bulwark', 'coaming']);
+const ID_PREFIX = new Set(['knee', 'transom', 'belaying', 'loft', 'quay', 's', 'f', 'x', 'd', 'go', 'open', 'link', 'card', 'embed', 'y', 'q', 'l', 'n', 'k', 'w', 'u', 'r', 'b', 'g', 'c', 'm', 'o', 't', 'i', 'a', 'e', 'z', 'h', 'v', 'j', 'p', 'room', 'parcel', 'spirket', 'washboard', 'beakhead', 'partners', 'waybill', 'fid', 'pelorus', 'cuddy', 'hawse', 'futtock', 'stringer', 'samson', 'gudgeon', 'pintle', 'sternpost', 'breasthook', 'capstan', 'treenail', 'fairlead', 'hounds', 'seizing', 'deadeye', 'sounding', 'marline', 'orlop', 'cleat', 'passage', 'lantern', 'forepeak', 'lazarette', 'skylight', 'limber', 'bitt', 'taffrail', 'counter', 'scupper', 'rider', 'gunwale', 'bumkin', 'apostle', 'tumblehome', 'sheerstrake', 'washstrake', 'waterway', 'bulwark', 'coaming', 'carvel', 'bearding']);
 
 export default function middleware(request) {
   const ua = request.headers.get('user-agent') || '';
@@ -18,6 +18,18 @@ export default function middleware(request) {
   if (parts[0] === 'gunwale' && BOT.test(ua)) {
     const dest = new URL('/api/gunwale', request.url);
     dest.searchParams.set('page', 'gunwale');
+    if (parts[1]) dest.searchParams.set('id', decodeURIComponent(parts[1]));
+    return Response.redirect(dest.toString(), 307);
+  }
+  if (parts[0] === 'carvel' && BOT.test(ua)) {
+    const dest = new URL('/api/carvel', request.url);
+    dest.searchParams.set('page', 'carvel');
+    if (parts[1]) dest.searchParams.set('id', decodeURIComponent(parts[1]));
+    return Response.redirect(dest.toString(), 307);
+  }
+  if (parts[0] === 'bearding' && BOT.test(ua)) {
+    const dest = new URL('/api/bearding', request.url);
+    dest.searchParams.set('page', 'bearding');
     if (parts[1]) dest.searchParams.set('id', decodeURIComponent(parts[1]));
     return Response.redirect(dest.toString(), 307);
   }

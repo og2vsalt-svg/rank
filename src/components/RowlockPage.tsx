@@ -156,7 +156,7 @@ export default function RowlockPage() {
         {!shareId && recent.length > 0 && (
           <section className="mt-8 space-y-3">
             {recent.map((row) => (
-              <a key={row.id} href={`/rowlock/${row.id}`} className="block rounded-[22px] bg-white/70 px-5 py-4 ring-1 ring-black/5 transition duration-300 hover:-translate-y-0.5"}
+              <a key={row.id} href={`/rowlock/${row.id}`} className="block rounded-[22px] bg-white/70 px-5 py-4 ring-1 ring-black/5 transition duration-300 hover:-translate-y-0.5">
                 <p className="text-[15px] font-medium">{row.title}</p>
                 <p className="mt-1 text-[13px] text-[#6e6e73]">for {row.keeper}{row.file_name ? ` · ${row.file_name}` : ''}</p>
               </a>

@@ -5,6 +5,8 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'bumkin', label: 'bumkin' },
+  { to: 'apostle', label: 'apostle' },
   { to: 'knee', label: 'knee' },
   { to: 'transom', label: 'transom' },
   { to: 'futtock', label: 'futtock' },
@@ -199,7 +201,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">paste /knee, /transom, /futtock, /s in Discord for a card. older desks stay on their routes.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">paste /bumkin, /apostle, /knee, /s in Discord for a card. older desks stay on their routes.</p>
         </div>
       </div>
     </nav>

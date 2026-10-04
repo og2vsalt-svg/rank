@@ -297,6 +297,35 @@ export default async function handler(req, res) {
     });
     return;
   }
+  if (page === 'bumkin' && id) {
+    const row = await sbGet(`bumkins?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
+    const dest = `${proto}://${host}/bumkin/${encodeURIComponent(id)}`;
+    const share = row && row.share_id ? await loadShare(row.share_id) : null;
+    const image = share && String(share.mime || '').startsWith('image/') && /^https?:\/\//i.test(share.file_url || '') ? share.file_url : undefined;
+    const when = row && row.return_by ? new Date(row.return_by).toLocaleString() : '';
+    sendCard(res, ua, req.query.embed, dest, {
+      title: row ? `${row.file_name} — bumkin` : 'bumkin — rankvault',
+      desc: row ? `${row.note || 'a timed handoff'}${when ? ' · back by ' + when : ''}` : 'a return date, not a drawer. large files are warned, never refused.',
+      image,
+      url: dest,
+      color: '#64D2FF',
+    });
+    return;
+  }
+  if (page === 'apostle' && id) {
+    const row = await sbGet(`apostles?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
+    const dest = `${proto}://${host}/apostle/${encodeURIComponent(id)}`;
+    const share = row && row.share_id ? await loadShare(row.share_id) : null;
+    const image = share && String(share.mime || '').startsWith('image/') && /^https?:\/\//i.test(share.file_url || '') ? share.file_url : undefined;
+    sendCard(res, ua, req.query.embed, dest, {
+      title: row ? `${row.file_name} — apostle` : 'apostle — rankvault',
+      desc: row ? `${row.spoken || 'a spoken line beside a filed file'}${row.witness ? ' · heard by ' + row.witness : ''}` : 'a timber beside the keel, not a drawer.',
+      image,
+      url: dest,
+      color: '#FFD60A',
+    });
+    return;
+  }
   if (page === 'knee' && id) {
     const row = await sbGet(`knees?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
     const dest = `${proto}://${host}/knee/${encodeURIComponent(id)}`;

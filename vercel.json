@@ -124,6 +124,14 @@
       "destination": "/api/desk?desk=transom"
     },
     {
+      "source": "/api/bumkin",
+      "destination": "/api/desk?desk=bumkin"
+    },
+    {
+      "source": "/api/apostle",
+      "destination": "/api/desk?desk=apostle"
+    },
+    {
       "source": "/((?!api/).*)",
       "destination": "/index.html"
     }

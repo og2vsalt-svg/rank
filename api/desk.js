@@ -29,6 +29,7 @@ import bulwark from '../lib/routes/bulwark.js';
 import coaming from '../lib/routes/coaming.js';
 import carvel from '../lib/routes/carvel.js';
 import bearding from '../lib/routes/bearding.js';
+import rowlock from '../lib/routes/rowlock.js';
 
 const SUPABASE_URL = (process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || 'https://tqfocdktvjuwoiyfgesb.supabase.co').replace(/\/$/, '');
 const SUPABASE_KEY =
@@ -138,7 +139,7 @@ async function margins(req, res) {
     const shareId = String(body.shareId || '').trim().slice(0, 64);
     const line = String(body.body || '').trim().slice(0, 500);
     if (!shareId || !line) { res.status(400).json({ error: 'shareId and body required' }); return; }
-    const r = await sb('share_margins', { method: 'POST', body: JSON.stringify({ share_id: shareId, body: line, author: String(body.author || 'pintle').slice(0, 80) }) });
+    const r = await sb('share_margins', { method: 'POST', body: JSON.stringify({ share_id: shareId, body: line, author: String(body.author || 'margin').slice(0, 80) }) });
     if (!r.ok) { res.status(502).json({ error: 'margin was not written', detail: (await r.text()).slice(0, 180) }); return; }
     const rows = await r.json();
     res.status(200).json({ ok: true, margin: Array.isArray(rows) ? rows[0] : rows });
@@ -308,7 +309,7 @@ export default async function handler(req, res) {
     if (desk === 'paircard') return paircard(req, res);
     if (desk === 'spirket') return spirket(req, res);
 
-    const routed = { belaying, cleat, deadeye, fairlead, garboard, hounds, keelson, marline, orlop, parcel, requests, sounding, taffrail, treenail, counter, scupper, rider, futtock, stringer, knee, transom, bumkin, apostle, tumblehome, sheerstrake, washstrake, waterway, bulwark, coaming, carvel, bearding };
+    const routed = { belaying, cleat, deadeye, fairlead, garboard, hounds, keelson, marline, orlop, parcel, requests, sounding, taffrail, treenail, counter, scupper, rider, futtock, stringer, knee, transom, bumkin, apostle, tumblehome, sheerstrake, washstrake, waterway, bulwark, coaming, carvel, bearding, rowlock };
     if (routed[desk]) return routed[desk](req, res);
     res.status(404).json({ error: 'unknown desk' });
   } catch (err) {

@@ -9,6 +9,12 @@ export default function middleware(request) {
   const ua = request.headers.get('user-agent') || '';
   const url = new URL(request.url);
   const parts = url.pathname.split('/').filter(Boolean);
+  if (parts[0] === 'pintle' && BOT.test(ua)) {
+    const dest = new URL('/api/pintle', request.url);
+    dest.searchParams.set('page', 'pintle');
+    if (parts[1]) dest.searchParams.set('id', decodeURIComponent(parts[1]));
+    return Response.redirect(dest.toString(), 307);
+  }
   if (parts[0] === 'rowlock' && BOT.test(ua)) {
     const dest = new URL('/api/rowlock', request.url);
     dest.searchParams.set('page', 'rowlock');

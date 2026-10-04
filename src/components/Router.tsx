@@ -64,8 +64,8 @@ export function RouterProvider({ children }: { children: ReactNode }) {
       setState({ route: 'home', shareId: null });
       return;
     }
-    const hash = extra ? `${to}?f=${extra}` : to;
-    history.pushState(null, '', `/#${hash}`);
+    const path = extra ? `/${to}/${encodeURIComponent(extra)}` : `/${to}`;
+    history.pushState(null, '', path);
     setState({ route: to, shareId: extra || null });
   }, []);
 

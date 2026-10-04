@@ -428,6 +428,31 @@ export default async function handler(req, res) {
     });
     return;
   }
+  if (page === 'wale' && id) {
+    const row = await sbGet(`wales?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
+    const dest = `${proto}://${host}/wale/${encodeURIComponent(id)}`;
+    const share = row && row.share_id ? await loadShare(row.share_id) : null;
+    const image = share && String(share.mime || '').startsWith('image/') && /^https?:\/\//i.test(share.file_url || '') ? share.file_url : undefined;
+    sendCard(res, ua, req.query.embed, dest, {
+      title: row ? `${row.plank} — wale` : 'wale — rankvault',
+      desc: row ? `${row.file_name || 'file'}${row.note ? ' · ' + String(row.note).slice(0, 140) : ''}` : 'a plank receipt, not a drawer. large files are warned, never refused.',
+      image,
+      url: dest,
+      color: '#64D2FF',
+    });
+    return;
+  }
+  if (page === 'flemish' && id) {
+    const row = await sbGet(`flemish?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
+    const dest = `${proto}://${host}/flemish/${encodeURIComponent(id)}`;
+    sendCard(res, ua, req.query.embed, dest, {
+      title: row ? `${row.title} — flemish` : 'flemish — rankvault',
+      desc: row ? (row.blurb || row.target) : 'a link card, not a file cabinet.',
+      url: dest,
+      color: (row && row.accent) || '#30D158',
+    });
+    return;
+  }
   if (page && !id) {
     const dest = `${proto}://${host}/#${encodeURIComponent(page)}`;
     sendCard(res, ua, req.query.embed, dest, {

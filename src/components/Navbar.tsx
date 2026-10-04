@@ -5,11 +5,11 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'wale', label: 'wale' },
+  { to: 'flemish', label: 'flemish' },
   { to: 'gammon', label: 'gammon' },
-  { to: 'cathead', label: 'cathead' },
   { to: 'davits', label: 'davits' },
   { to: 'hawser', label: 'hawser' },
-  { to: 'kedge', label: 'kedge' },
   { to: 'vault', label: 'vault' },
 ];
 
@@ -17,6 +17,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'hosting',
     items: [
+      { to: 'wale', label: 'wale' },
+      { to: 'flemish', label: 'flemish' },
       { to: 'gammon', label: 'gammon' },
       { to: 'davits', label: 'davits' },
       { to: 'hawser', label: 'hawser' },

@@ -297,6 +297,31 @@ export default async function handler(req, res) {
     });
     return;
   }
+  if (page === 'knee' && id) {
+    const row = await sbGet(`knees?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
+    const dest = `${proto}://${host}/knee/${encodeURIComponent(id)}`;
+    const share = row && row.share_id ? await loadShare(row.share_id) : null;
+    const image = share && String(share.mime || '').startsWith('image/') && /^https?:\/\//i.test(share.file_url || '') ? share.file_url : undefined;
+    sendCard(res, ua, req.query.embed, dest, {
+      title: row ? `${row.file_name} — knee` : 'knee — rankvault',
+      desc: row ? `${row.angle_note || 'a join beside a filed file'}${row.mate ? ' · braces ' + row.mate : ''}` : 'a join, not a drawer. large files are warned, never refused.',
+      image,
+      url: dest,
+      color: '#FFD60A',
+    });
+    return;
+  }
+  if (page === 'transom' && id) {
+    const row = await sbGet(`transoms?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
+    const dest = `${proto}://${host}/transom/${encodeURIComponent(id)}`;
+    sendCard(res, ua, req.query.embed, dest, {
+      title: row ? `${row.verdict || 'weighed'} — transom` : 'transom — rankvault',
+      desc: row ? `${row.note || 'two shares, weighed'}` : 'a weighing, not a drawer.',
+      url: dest,
+      color: '#64D2FF',
+    });
+    return;
+  }
   if (page && !id) {
     const dest = `${proto}://${host}/#${encodeURIComponent(page)}`;
     sendCard(res, ua, req.query.embed, dest, {

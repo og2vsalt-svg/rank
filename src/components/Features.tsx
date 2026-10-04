@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'knee', body: 'a local file into the share table, plus who it braces. discord unfurls /knee and /s. slowness warning only.' },
+  { title: 'transom', body: 'weigh two shares already in the table. not a vault drawer. discord unfurls /transom.' },
   { title: 'futtock', body: 'a local file into the share table, plus a rib note and sha-256 in its own table. discord unfurls /futtock and /s. slowness warning only.' },
   { title: 'stringer', body: 'a short line beside a share that already landed. not a vault drawer. discord unfurls /stringer.' },
   { title: 'scupper', body: 'one local file into the share table, plus a drain note in its own table. discord unfurls /scupper and /s. slowness warning only.' },

@@ -116,6 +116,14 @@
       "destination": "/api/desk?desk=stringer"
     },
     {
+      "source": "/api/knee",
+      "destination": "/api/desk?desk=knee"
+    },
+    {
+      "source": "/api/transom",
+      "destination": "/api/desk?desk=transom"
+    },
+    {
       "source": "/((?!api/).*)",
       "destination": "/index.html"
     }

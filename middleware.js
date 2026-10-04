@@ -3,7 +3,7 @@ export const config = {
 };
 
 const BOT = /discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|skype|redditbot|applebot|iframely|unfurl|pinterest|notion|embedly|slack-imgproxy|discordbot/i;
-const ID_PREFIX = new Set(['belaying', 'loft', 'quay', 's', 'f', 'x', 'd', 'go', 'open', 'link', 'card', 'embed', 'y', 'q', 'l', 'n', 'k', 'w', 'u', 'r', 'b', 'g', 'c', 'm', 'o', 't', 'i', 'a', 'e', 'z', 'h', 'v', 'j', 'p', 'room', 'parcel', 'spirket', 'washboard', 'beakhead', 'partners', 'waybill', 'fid', 'pelorus', 'cuddy', 'hawse', 'futtock', 'stringer', 'samson', 'gudgeon', 'pintle', 'sternpost', 'breasthook', 'capstan', 'treenail', 'fairlead', 'hounds', 'seizing', 'deadeye', 'sounding', 'marline', 'orlop', 'cleat', 'passage', 'lantern', 'forepeak', 'lazarette', 'skylight', 'limber', 'bitt', 'taffrail', 'counter', 'scupper', 'rider', 'gunwale']);
+const ID_PREFIX = new Set(['knee', 'transom', 'belaying', 'loft', 'quay', 's', 'f', 'x', 'd', 'go', 'open', 'link', 'card', 'embed', 'y', 'q', 'l', 'n', 'k', 'w', 'u', 'r', 'b', 'g', 'c', 'm', 'o', 't', 'i', 'a', 'e', 'z', 'h', 'v', 'j', 'p', 'room', 'parcel', 'spirket', 'washboard', 'beakhead', 'partners', 'waybill', 'fid', 'pelorus', 'cuddy', 'hawse', 'futtock', 'stringer', 'samson', 'gudgeon', 'pintle', 'sternpost', 'breasthook', 'capstan', 'treenail', 'fairlead', 'hounds', 'seizing', 'deadeye', 'sounding', 'marline', 'orlop', 'cleat', 'passage', 'lantern', 'forepeak', 'lazarette', 'skylight', 'limber', 'bitt', 'taffrail', 'counter', 'scupper', 'rider', 'gunwale']);
 
 export default function middleware(request) {
   const ua = request.headers.get('user-agent') || '';
@@ -32,7 +32,7 @@ export default function middleware(request) {
   if (!parts.length) dest.searchParams.set('page', 'home');
   else if (parts[0] === 'parcel' && parts[1]) dest.searchParams.set('parcel', decodeURIComponent(parts[1]));
   else if (parts[0] === 'room' && parts[1]) dest.searchParams.set('room', decodeURIComponent(parts[1]));
-  else if (parts.length >= 2 && ID_PREFIX.has(parts[0])) {
+  else if (parts.length >= 2 && (ID_PREFIX.has(parts[0]) || /^[a-z][a-z0-9-]{1,40}$/.test(parts[0]))) {
     dest.searchParams.set('page', parts[0]);
     dest.searchParams.set('id', decodeURIComponent(parts[1]));
   } else dest.searchParams.set('page', decodeURIComponent(parts[0] || 'home').toLowerCase());

@@ -5,12 +5,11 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'stemson', label: 'stemson' },
+  { to: 'lodging', label: 'lodging' },
   { to: 'kevel', label: 'kevel' },
   { to: 'thwart', label: 'thwart' },
   { to: 'pintle', label: 'pintle' },
-  { to: 'rowlock', label: 'rowlock' },
-  { to: 'margin', label: 'margin' },
-  { to: 'carvel', label: 'carvel' },
   { to: 'vault', label: 'vault' },
 ];
 
@@ -18,6 +17,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'hosting',
     items: [
+      { to: 'stemson', label: 'stemson' },
       { to: 'kevel', label: 'kevel' },
       { to: 'thwart', label: 'thwart' },
       { to: 'pintle', label: 'pintle' },
@@ -54,6 +54,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'notes',
     items: [
+      { to: 'lodging', label: 'lodging' },
       { to: 'margin', label: 'margin' },
       { to: 'lantern', label: 'lantern' },
       { to: 'stringer', label: 'stringer' },
@@ -64,6 +65,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'stemson', label: 'stemson' },
       { to: 'kevel', label: 'kevel' },
       { to: 'thwart', label: 'thwart' },
       { to: 'pintle', label: 'pintle' },
@@ -84,6 +86,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'lodging', label: 'lodging' },
       { to: 'limber', label: 'limber' },
       { to: 'skylight', label: 'skylight' },
       { to: 'sounding', label: 'sounding' },
@@ -130,7 +133,7 @@ export default function Navbar() {
         <button onClick={() => navigate('home')} className="text-lg font-semibold tracking-tight text-white shrink-0">rank<span className="text-[#0a84ff]">vault</span></button>
         <div className="hidden lg:flex items-center gap-1 min-w-0">
           {primary.map((l) => (
-            <button key={l.to} onClick={() => navigate(l.to)} className="text-[13px] text-neutral-400 hover:text-white px-2.5 py-1.5 rounded-full hover:bg-white/5 transition-colors">{l.label}</button>
+            <button key={l.to} onClick={() => navigate(l.to)} className="text-[13px] text-neutral-400 hover:text-white px-2.5 py-1.5 rounded-full hover:bg-white/5 transition-colors duration-200">{l.label}</button>
           ))}
         </div>
         <div className="flex items-center gap-1.5 shrink-0">
@@ -150,7 +153,7 @@ export default function Navbar() {
           ) : (
             <div className="flex items-center gap-1">
               <button onClick={() => navigate('login')} className="text-[13px] text-neutral-400 hover:text-white px-2.5 py-1.5 rounded-full">log in</button>
-              <button onClick={() => navigate('signup')} className="hidden sm:inline-flex text-[13px] font-medium px-3.5 py-1.5 rounded-full bg-white text-black hover:bg-neutral-200">sign up</button>
+              <button onClick={() => navigate('signup')} className="hidden sm:inline-flex text-[13px] font-medium px-3.5 py-1.5 rounded-full bg-white text-black hover:bg-neutral-200 transition">sign up</button>
             </div>
           )}
           <button onClick={() => setMenuOpen(!menuOpen)} className="text-neutral-400 hover:text-white p-1.5 rounded-full hover:bg-white/5" aria-label="menu">
@@ -185,7 +188,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">paste /kevel or /s in Discord for a card. older desks stay on their routes.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">paste /stemson, /lodging, or /s in Discord for a card. older desks stay on their routes.</p>
         </div>
       </div>
     </nav>

@@ -68,6 +68,10 @@
       "destination": "/api/desk?desk=scupper"
     },
     {
+      "source": "/api/rider",
+      "destination": "/api/desk?desk=rider"
+    },
+    {
       "source": "/api/cuddy",
       "destination": "/api/desk?desk=cuddy"
     },

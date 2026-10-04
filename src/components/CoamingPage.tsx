@@ -1,152 +1,159 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
+import { useRouter } from './Router';
+import { publishLocalFile } from '../lib/cloudShare';
 
-const SB_URL = (
-  (import.meta as any).env?.VITE_SUPABASE_URL || 'https://tqfocdktvjuwoiyfgesb.supabase.co'
-).replace(/\/$/, '');
-const SB_KEY =
-  (import.meta as any).env?.VITE_SUPABASE_ANON_KEY ||
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
-
-type Sitting = { id: string; title: string; body: string; created_at: string };
-
-function minutesLabel(total: number) {
-  const m = Math.floor(total / 60);
-  const s = total % 60;
-  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+function pretty(n: number) {
+  if (n < 1024) return `${n} B`;
+  if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
+  if (n < 1024 * 1024 * 1024) return `${(n / (1024 * 1024)).toFixed(2)} MB`;
+  return `${(n / (1024 * 1024 * 1024)).toFixed(2)} GB`;
 }
 
+type Row = {
+  id: string;
+  title: string;
+  rim?: string | null;
+  author?: string | null;
+  file_name?: string | null;
+  size?: number;
+  share_id?: string | null;
+  created_at?: string;
+};
+
 export default function CoamingPage() {
-  const [seconds, setSeconds] = useState(25 * 60);
-  const [running, setRunning] = useState(false);
-  const [note, setNote] = useState('');
-  const [sittings, setSittings] = useState<Sitting[]>([]);
-  const [err, setErr] = useState('');
+  const { shareId } = useRouter();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const [title, setTitle] = useState('');
+  const [rim, setRim] = useState('');
+  const [author, setAuthor] = useState('');
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const [drag, setDrag] = useState(false);
+  const [filed, setFiled] = useState<{ card: string; share?: string } | null>(null);
+  const [recent, setRecent] = useState<Row[]>([]);
+  const [opened, setOpened] = useState<Row | null>(null);
+
+  const warn = useMemo(() => {
+    if (!file) return '';
+    if (file.size > 40 * 1024 * 1024) return 'heavy file. the tab may pause while it sends. nothing is refused.';
+    if (file.size > 12 * 1024 * 1024) return 'large drop. preview clients may feel slow. still goes up.';
+    return '';
+  }, [file]);
 
   useEffect(() => {
-    if (!running) return;
-    const id = window.setInterval(() => {
-      setSeconds((n) => (n <= 1 ? 0 : n - 1));
-    }, 1000);
-    return () => window.clearInterval(id);
-  }, [running]);
+    const q = shareId ? `?id=${encodeURIComponent(shareId)}` : '';
+    fetch('/api/coaming' + q).then((r) => r.json()).then((d) => {
+      const rows = Array.isArray(d?.coamings) ? d.coamings : [];
+      if (shareId) setOpened(rows[0] || null);
+      else setRecent(rows);
+    }).catch(() => {});
+  }, [filed, shareId]);
 
-  useEffect(() => {
-    if (seconds === 0) setRunning(false);
-  }, [seconds]);
-
-  const load = async () => {
-    const res = await fetch(
-      `${SB_URL}/rest/v1/keel_marks?page_ref=eq.coaming&select=id,title,body,created_at&order=created_at.desc&limit=12`,
-      { headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` } },
-    );
-    if (!res.ok) return;
-    const rows = await res.json();
-    if (Array.isArray(rows)) setSittings(rows);
-  };
-
-  useEffect(() => {
-    load();
-  }, []);
-
-  const ring = useMemo(() => {
-    const total = 25 * 60;
-    const left = Math.min(1, seconds / total);
-    return `conic-gradient(#0A84FF ${left * 360}deg, rgba(255,255,255,0.08) 0deg)`;
-  }, [seconds]);
-
-  const fileNote = async () => {
-    if (!note.trim()) return;
+  const send = async () => {
+    if (!title.trim() || !rim.trim()) return;
     setBusy(true);
-    setErr('');
-    const res = await fetch(`${SB_URL}/rest/v1/keel_marks`, {
+    setError('');
+    setFiled(null);
+    let shareIdLocal = '';
+    if (file) {
+      const shared = await publishLocalFile(file, { caption: rim.trim(), author: author.trim() || undefined, cardTitle: title.trim() });
+      if (!shared.ok || !shared.id) {
+        setBusy(false);
+        setError(shared.error || 'the share table did not take that file');
+        return;
+      }
+      shareIdLocal = shared.id;
+    }
+    const row = await fetch('/api/coaming', {
       method: 'POST',
-      headers: {
-        apikey: SB_KEY,
-        Authorization: `Bearer ${SB_KEY}`,
-        'Content-Type': 'application/json',
-        Prefer: 'return=minimal',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        title: `sitting ${minutesLabel(25 * 60 - seconds)}`,
-        body: note.trim().slice(0, 4000),
-        page_ref: 'coaming',
-        author: 'coaming',
+        shareId: shareIdLocal || null,
+        title: title.trim(),
+        rim: rim.trim(),
+        author: author.trim(),
+        fileName: file?.name || null,
+        size: file?.size || 0,
       }),
-    });
+    }).then((r) => r.json()).catch(() => ({}));
     setBusy(false);
-    if (!res.ok) {
-      setErr('the sitting note did not land');
+    if (!row?.ok) {
+      setError(row?.error || 'the raised note did not file');
       return;
     }
-    setNote('');
-    load();
+    setFiled({
+      card: `${location.origin}/coaming/${row.coaming?.id || ''}`,
+      share: shareIdLocal ? `${location.origin}/s/${shareIdLocal}` : undefined,
+    });
+    setFile(null);
+    setTitle('');
+    setRim('');
   };
 
   return (
-    <div className="mesh min-h-screen">
+    <div className="mesh min-h-screen text-[#1d1d1f]">
       <Navbar />
-      <main className="max-w-3xl mx-auto px-5 pt-24 pb-20">
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}>
-          <p className="text-[12px] tracking-[0.16em] uppercase text-white/45">sitting</p>
-          <h1 className="mt-2 text-4xl sm:text-5xl font-semibold tracking-tight">coaming</h1>
-          <p className="mt-3 text-neutral-400 max-w-xl leading-relaxed">
-            A quiet twenty-five. The clock stays in the tab. The note, if you keep it, goes to the reading table — not the file vault. <span className="text-white/80">/coaming</span> unfurls on Discord.
+      <main className="mx-auto max-w-3xl px-5 pb-24 pt-28">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}>
+          <p className="text-[13px] font-medium tracking-wide text-[#6e6e73]">hosting</p>
+          <h1 className="mt-2 text-[40px] font-semibold tracking-tight">coaming</h1>
+          <p className="mt-3 max-w-xl text-[17px] leading-relaxed text-[#6e6e73]">
+            a raised rim around a handoff, with an optional local file in the share table. not a vault drawer. discord unfurls the card. large files are warned, never refused.
           </p>
         </motion.div>
 
+        {opened && (
+          <motion.article initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-8 rounded-[28px] bg-white/80 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.06)] ring-1 ring-black/5">
+            <p className="text-[13px] text-[#6e6e73]">{opened.author || 'unsigned'} · {opened.created_at ? new Date(opened.created_at).toLocaleString() : ''}</p>
+            <h2 className="mt-2 text-[22px] font-semibold tracking-tight">{opened.title}</h2>
+            <p className="mt-3 whitespace-pre-wrap text-[16px] leading-relaxed">{opened.rim}</p>
+            {opened.share_id && <a className="mt-4 inline-block text-[14px] text-[#0A84FF]" href={`/s/${opened.share_id}`}>{opened.file_name || 'attachment'} · {pretty(opened.size || 0)}</a>}
+          </motion.article>
+        )}
+
         <motion.section
-          initial={{ opacity: 0, scale: 0.98 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.08, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="glass mt-8 rounded-3xl p-6 sm:p-8 flex flex-col items-center"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.08, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          className="mt-8 rounded-[28px] bg-white/80 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.06)] ring-1 ring-black/5 backdrop-blur-xl"
+          onDragOver={(e) => { e.preventDefault(); setDrag(true); }}
+          onDragLeave={() => setDrag(false)}
+          onDrop={(e) => { e.preventDefault(); setDrag(false); const f = e.dataTransfer.files?.[0]; if (f) setFile(f); }}
         >
-          <div className="h-44 w-44 rounded-full p-2" style={{ background: ring }}>
-            <div className="h-full w-full rounded-full bg-[#0b0b0d] flex items-center justify-center">
-              <span className="text-4xl font-semibold tracking-tight tabular-nums">{minutesLabel(seconds)}</span>
-            </div>
-          </div>
-          <div className="mt-6 flex gap-2">
-            <button onClick={() => setRunning((v) => !v)} className="rounded-full bg-white text-black px-5 py-2.5 text-sm font-medium">
-              {running ? 'pause' : 'start'}
-            </button>
-            <button
-              onClick={() => {
-                setRunning(false);
-                setSeconds(25 * 60);
-              }}
-              className="rounded-full bg-white/10 text-white px-5 py-2.5 text-sm"
-            >
-              reset
-            </button>
-          </div>
-          <textarea
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            placeholder="what this sitting was for"
-            rows={3}
-            className="mt-6 w-full rounded-2xl bg-white/5 border border-white/10 px-3.5 py-2.5 text-sm outline-none focus:border-white/25"
-          />
-          <button
-            onClick={fileNote}
-            disabled={!note.trim() || busy}
-            className="mt-3 rounded-full bg-white/10 text-white px-5 py-2.5 text-sm disabled:opacity-40"
-          >
-            {busy ? 'keeping' : 'keep the note'}
+          <input value={title} onChange={(e) => setTitle(e.target.value)} className="w-full rounded-2xl bg-[#f5f5f7] px-4 py-3 text-[15px] outline-none ring-1 ring-transparent transition duration-300 focus:ring-[#0A84FF]" placeholder="title of the rim" />
+          <textarea value={rim} onChange={(e) => setRim(e.target.value)} rows={4} className="mt-3 w-full resize-none rounded-2xl bg-[#f5f5f7] px-4 py-3 text-[15px] outline-none ring-1 ring-transparent transition duration-300 focus:ring-[#0A84FF]" placeholder="what this edge keeps from washing in" />
+          <input value={author} onChange={(e) => setAuthor(e.target.value)} className="mt-3 w-full rounded-2xl bg-[#f5f5f7] px-4 py-3 text-[15px] outline-none ring-1 ring-transparent transition duration-300 focus:ring-[#0A84FF]" placeholder="your name, optional" />
+          <button type="button" onClick={() => inputRef.current?.click()} className={`mt-4 flex w-full flex-col items-center justify-center rounded-[22px] border border-dashed px-6 py-8 transition-all duration-300 ${drag ? 'scale-[1.01] border-[#0A84FF] bg-[#0A84FF]/5' : 'border-black/10 bg-[#f5f5f7]'}`}>
+            <span className="text-[15px] font-medium">{file ? file.name : 'optional local file'}</span>
+            <span className="mt-1 text-[13px] text-[#6e6e73]">{file ? pretty(file.size) : 'drop it here, or leave the rim empty of bytes'}</span>
           </button>
-          {err && <p className="mt-3 text-sm text-red-300">{err}</p>}
+          <input ref={inputRef} type="file" className="hidden" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+          {warn && <p className="mt-3 text-[13px] text-[#c45c26]">{warn}</p>}
+          {error && <p className="mt-3 text-[13px] text-[#ff3b30]">{error}</p>}
+          <button type="button" disabled={!title.trim() || !rim.trim() || busy} onClick={send} className="mt-5 rounded-full bg-[#1d1d1f] px-5 py-2.5 text-[15px] font-medium text-white transition duration-300 enabled:hover:scale-[1.02] disabled:opacity-40">
+            {busy ? 'raising the rim…' : 'raise the coaming'}
+          </button>
+          {filed && (
+            <div className="mt-4 space-y-1 text-[14px]">
+              <a className="block text-[#0A84FF]" href={filed.card}>{filed.card}</a>
+              {filed.share && <a className="block text-[#0A84FF]" href={filed.share}>{filed.share}</a>}
+            </div>
+          )}
         </motion.section>
 
-        <div className="mt-4 space-y-2">
-          {sittings.map((row) => (
-            <article key={row.id} className="glass rounded-2xl px-4 py-3">
-              <p className="text-sm text-white">{row.title}</p>
-              <p className="mt-1 text-sm text-neutral-400 whitespace-pre-wrap">{row.body}</p>
-            </article>
-          ))}
-        </div>
+        {!shareId && recent.length > 0 && (
+          <section className="mt-8 space-y-3">
+            {recent.map((row) => (
+              <a key={row.id} href={`/coaming/${row.id}`} className="block rounded-[22px] bg-white/70 px-5 py-4 ring-1 ring-black/5 transition duration-300 hover:-translate-y-0.5">
+                <p className="text-[15px] font-medium">{row.title}</p>
+                <p className="mt-1 line-clamp-2 text-[13px] text-[#6e6e73]">{row.rim}</p>
+              </a>
+            ))}
+          </section>
+        )}
       </main>
     </div>
   );

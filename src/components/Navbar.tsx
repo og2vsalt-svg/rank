@@ -5,26 +5,12 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'rowlock', label: 'rowlock' },
+  { to: 'margin', label: 'margin' },
   { to: 'carvel', label: 'carvel' },
   { to: 'bearding', label: 'bearding' },
   { to: 'bulwark', label: 'bulwark' },
   { to: 'coaming', label: 'coaming' },
-  { to: 'washstrake', label: 'washstrake' },
-  { to: 'waterway', label: 'waterway' },
-  { to: 'tumblehome', label: 'tumblehome' },
-  { to: 'sheerstrake', label: 'sheerstrake' },
-  { to: 'bumkin', label: 'bumkin' },
-  { to: 'apostle', label: 'apostle' },
-  { to: 'knee', label: 'knee' },
-  { to: 'transom', label: 'transom' },
-  { to: 'futtock', label: 'futtock' },
-  { to: 'stringer', label: 'stringer' },
-  { to: 'gunwale', label: 'gunwale' },
-  { to: 'rider', label: 'rider' },
-  { to: 'scupper', label: 'scupper' },
-  { to: 'taffrail', label: 'taffrail' },
-  { to: 'forepeak', label: 'forepeak' },
-  { to: 'bitt', label: 'bitt' },
   { to: 'vault', label: 'vault' },
 ];
 
@@ -32,6 +18,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'hosting',
     items: [
+      { to: 'rowlock', label: 'rowlock' },
       { to: 'carvel', label: 'carvel' },
       { to: 'bearding', label: 'bearding' },
       { to: 'bulwark', label: 'bulwark' },
@@ -62,58 +49,26 @@ const groups: { title: string; items: NavItem[] }[] = [
     ],
   },
   {
-    title: 'new',
+    title: 'notes',
     items: [
-      { to: 'carvel', label: 'carvel' },
-      { to: 'bearding', label: 'bearding' },
-      { to: 'bulwark', label: 'bulwark' },
-      { to: 'coaming', label: 'coaming' },
-      { to: 'washstrake', label: 'washstrake' },
-      { to: 'waterway', label: 'waterway' },
-      { to: 'tumblehome', label: 'tumblehome' },
-      { to: 'sheerstrake', label: 'sheerstrake' },
-      { to: 'gunwale', label: 'gunwale' },
-      { to: 'rider', label: 'rider' },
-      { to: 'scupper', label: 'scupper' },
-      { to: 'taffrail', label: 'taffrail' },
-      { to: 'limber', label: 'limber' },
-      { to: 'bitt', label: 'bitt' },
-      { to: 'forepeak', label: 'forepeak' },
-      { to: 'lazarette', label: 'lazarette' },
-      { to: 'passage', label: 'passage' },
+      { to: 'margin', label: 'margin' },
       { to: 'lantern', label: 'lantern' },
-      { to: 'shuttle', label: 'shuttle' },
-      { to: 'sounding', label: 'sounding' },
-      { to: 'marline', label: 'marline' },
-      { to: 'deadeye', label: 'deadeye' },
-      { to: 'hounds', label: 'hounds' },
-      { to: 'seizing', label: 'seizing' },
-      { to: 'fairlead', label: 'fairlead' },
-      { to: 'keelson', label: 'keelson' },
-      { to: 'garboard', label: 'garboard' },
-      { to: 'bobstay', label: 'bobstay' },
-      { to: 'ledger', label: 'ledger' },
-      { to: 'orlop', label: 'orlop' },
+      { to: 'stringer', label: 'stringer' },
       { to: 'cleat', label: 'cleat' },
+      { to: 'ledger', label: 'ledger' },
     ],
   },
   {
     title: 'share',
     items: [
+      { to: 'rowlock', label: 'rowlock' },
       { to: 'carvel', label: 'carvel' },
       { to: 'bearding', label: 'bearding' },
       { to: 'bulwark', label: 'bulwark' },
       { to: 'coaming', label: 'coaming' },
       { to: 'gunwale', label: 'gunwale' },
-      { to: 'rider', label: 'rider' },
-      { to: 'scupper', label: 'scupper' },
-      { to: 'taffrail', label: 'taffrail' },
-      { to: 'forepeak', label: 'forepeak' },
-      { to: 'bitt', label: 'bitt' },
       { to: 'passage', label: 'passage' },
       { to: 'shuttle', label: 'shuttle' },
-      { to: 'marline', label: 'marline' },
-      { to: 'deadeye', label: 'deadeye' },
       { to: 'folio', label: 'folio' },
       { to: 'hawse', label: 'hawse' },
       { to: 'courier', label: 'courier' },
@@ -124,7 +79,6 @@ const groups: { title: string; items: NavItem[] }[] = [
     title: 'tools',
     items: [
       { to: 'limber', label: 'limber' },
-      { to: 'lantern', label: 'lantern' },
       { to: 'skylight', label: 'skylight' },
       { to: 'sounding', label: 'sounding' },
       { to: 'samson', label: 'samson' },
@@ -169,7 +123,7 @@ export default function Navbar() {
       <div className="max-w-6xl mx-auto px-4 sm:px-5 h-14 flex items-center justify-between gap-3">
         <button onClick={() => navigate('home')} className="text-lg font-semibold tracking-tight text-white shrink-0">rank<span className="text-[#0a84ff]">vault</span></button>
         <div className="hidden lg:flex items-center gap-1 min-w-0">
-          {primary.slice(0, 8).map((l) => (
+          {primary.map((l) => (
             <button key={l.to} onClick={() => navigate(l.to)} className="text-[13px] text-neutral-400 hover:text-white px-2.5 py-1.5 rounded-full hover:bg-white/5 transition-colors">{l.label}</button>
           ))}
         </div>
@@ -225,7 +179,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">paste /carvel, /bearding, /bulwark, or /s in Discord for a card. older desks stay on their routes.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">paste /rowlock or /s in Discord for a card. older desks stay on their routes.</p>
         </div>
       </div>
     </nav>

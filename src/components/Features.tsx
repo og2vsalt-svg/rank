@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'futtock', body: 'a local file into the share table, plus a rib note and sha-256 in its own table. discord unfurls /futtock and /s. slowness warning only.' },
+  { title: 'stringer', body: 'a short line beside a share that already landed. not a vault drawer. discord unfurls /stringer.' },
   { title: 'scupper', body: 'one local file into the share table, plus a drain note in its own table. discord unfurls /scupper and /s. slowness warning only.' },
   { title: 'counter', body: 'one local file into the share table, plus a countermark in its own table. discord unfurls /counter and /s. slowness warning only.' },
   { title: 'hounds', body: 'name a line, file a local drop into the hounds table, and paste /hounds in discord.' },

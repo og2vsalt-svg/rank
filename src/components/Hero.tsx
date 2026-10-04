@@ -16,7 +16,9 @@ export default function Hero() {
           a quiet vault for clips, docs, and dumps. gunwale files several local drops onto one rail. no size lock. just a heads up if the tab might lag.
         </motion.p>
         <div className="flex flex-wrap gap-3 mb-12">
-          <button onClick={() => navigate('gunwale')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition">file a rail</button>
+          <button onClick={() => navigate('futtock')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition">file a rib</button>
+          <button onClick={() => navigate('stringer')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">stringer</button>
+          <button onClick={() => navigate('gunwale')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">file a rail</button>
           <button onClick={() => navigate('forepeak')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">drop a file</button>
           <button onClick={() => navigate('lazarette')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">lazarette</button>
           <button onClick={() => navigate('treenail')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">treenail</button>

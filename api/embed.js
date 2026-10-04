@@ -272,6 +272,31 @@ export default async function handler(req, res) {
     });
     return;
   }
+  if (page === 'futtock' && id) {
+    const row = await sbGet(`futtocks?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
+    const dest = `${proto}://${host}/futtock/${encodeURIComponent(id)}`;
+    const share = row && row.share_id ? await loadShare(row.share_id) : null;
+    const image = share && String(share.mime || '').startsWith('image/') && /^https?:\/\//i.test(share.file_url || '') ? share.file_url : undefined;
+    sendCard(res, ua, req.query.embed, dest, {
+      title: row ? `${row.file_name} — futtock` : 'futtock — rankvault',
+      desc: row ? `${row.note || 'a rib beside a filed file'}${row.for_whom ? ' · for ' + row.for_whom : ''}` : 'a rib, not a drawer. large files are warned, never refused.',
+      image,
+      url: dest,
+      color: '#64D2FF',
+    });
+    return;
+  }
+  if (page === 'stringer' && id) {
+    const row = await sbGet(`carling_lines?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
+    const dest = `${proto}://${host}/stringer/${encodeURIComponent(id)}`;
+    sendCard(res, ua, req.query.embed, dest, {
+      title: row ? `${row.line} — stringer` : 'stringer — rankvault',
+      desc: row ? `${row.author || 'stringer'}${row.share_id ? ' · ' + row.share_id : ''}` : 'a line along a file that already landed.',
+      url: dest,
+      color: '#FFD60A',
+    });
+    return;
+  }
   if (page && !id) {
     const dest = `${proto}://${host}/#${encodeURIComponent(page)}`;
     sendCard(res, ua, req.query.embed, dest, {

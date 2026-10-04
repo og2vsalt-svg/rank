@@ -108,6 +108,14 @@
       "destination": "/api/desk?desk=capstan"
     },
     {
+      "source": "/api/futtock",
+      "destination": "/api/desk?desk=futtock"
+    },
+    {
+      "source": "/api/stringer",
+      "destination": "/api/desk?desk=stringer"
+    },
+    {
       "source": "/((?!api/).*)",
       "destination": "/index.html"
     }

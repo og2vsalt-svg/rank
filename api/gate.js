@@ -17,6 +17,7 @@ import quire from '../lib/endpoints/quire.js';
 import nightglass from '../lib/endpoints/nightglass.js';
 import quarter from '../lib/endpoints/quarter.js';
 import quay from '../lib/endpoints/quay.js';
+import ribbon from '../lib/endpoints/ribbon.js';
 import scuttle from '../lib/endpoints/scuttle.js';
 import selvage from '../lib/endpoints/selvage.js';
 import share from '../lib/endpoints/share.js';
@@ -31,7 +32,7 @@ import shelf from './shelf.js';
 const routes = {
   atelier, beacon, card, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
   docket, jackstay, ketch, luff, nightglass, quarter, quay, scuttle, selvage, quire, share, signal, stay, tide,
-  tiller, vesper, wall,
+  tiller, vesper, wall, ribbon, loom: ribbon,
   shelf, board: shelf, receipt: shelf, satchel: shelf,
   ashlar: shelf, tympanum: shelf, nosing: shelf,
   sill: shelf, keepsake: shelf, lintel: shelf, oriel: shelf,

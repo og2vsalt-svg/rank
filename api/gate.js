@@ -38,7 +38,7 @@ const routes = {
   shelf, board: shelf, receipt: shelf, satchel: shelf,
   ashlar: shelf, tympanum: shelf, nosing: shelf,
   sill: shelf, keepsake: shelf, lintel: shelf, oriel: shelf,
-  trundle: shelf, coping: shelf,
+  trundle: shelf, coping: shelf, springline: shelf,
 };
 
 export default function handler(req, res) {

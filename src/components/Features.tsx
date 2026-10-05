@@ -1,12 +1,13 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'springline', body: 'a hold note with an optional local file. the file lands in the share table. discord unfurls /springline. large drops are warned, never refused. not a vault drawer.' },
   { title: 'spunyarn', body: 'tie a short note to a local file. bytes land in the share table. discord unfurls /spunyarn. large drops are warned, never refused. not a vault drawer.' },
   { title: 'eyelet', body: 'a ring of spunyarn ids you can pass around. the files stay on their yarns. discord unfurls /eyelet.' },
   { title: 'plinth', body: 'name a place, write a dedication, and the local file lands in the share table. discord unfurls /plinth and /s. slowness warning only. not a vault drawer.' },
   { title: 'corbel', body: 'write what a file is holding up, and who it carries. bytes land in the share table. discord unfurls /corbel and /s. large drops are warned, never refused.' },
   { title: 'vitrine', body: 'dress a Discord card before the file lands in the share table. no size gate, only a slowness note. /s unfurls the file.' },
-  { title: 'pressmark', body: 'paint a 1200×630 cover in the tab and file the png so Discord has a real image. not a vault drawer.' },
+  { title: 'pressmark', body: 'paint a 1200\u00d7630 cover in the tab and file the png so Discord has a real image. not a vault drawer.' },
   { title: 'trundle', body: 'a handoff slip for someone else. the local file lands in the share table. discord unfurls /trundle.' },
   { title: 'coping', body: 'a checklist beside an optional local file. discord unfurls /coping. older desks stay.' },
   { title: 'discord embeds', body: '/s/id plus named paths serve og tags so discord previews look finished. image cards only use real images.' },

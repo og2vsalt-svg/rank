@@ -1,78 +1,158 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { useVault } from './VaultContext';
-import { publishShare, shareUrls } from '../lib/cloudShare';
+import { db, prettySize } from '../lib/db';
+import { publishLocalFile } from '../lib/cloudShare';
+import { useRouter } from './Router';
+
+type Stone = {
+  id: string;
+  place: string;
+  dedication: string;
+  share_id: string | null;
+  file_name: string | null;
+  accent: string | null;
+  author: string | null;
+  created_at: string;
+};
+
+function stoneId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+}
+
+const accents = ['#0a84ff', '#64d2ff', '#ff9f0a', '#30d158', '#bf5af2'];
 
 export default function PlinthPage() {
-  const { files } = useVault();
-  const [picked, setPicked] = useState('');
+  const { shareId } = useRouter();
+  const [place, setPlace] = useState('');
+  const [dedication, setDedication] = useState('');
+  const [author, setAuthor] = useState('');
+  const [accent, setAccent] = useState(accents[0]);
+  const [file, setFile] = useState<File | null>(null);
+  const [rows, setRows] = useState<Stone[]>([]);
   const [busy, setBusy] = useState(false);
-  const [warn, setWarn] = useState('');
-  const [link, setLink] = useState('');
   const [err, setErr] = useState('');
+  const [warn, setWarn] = useState('');
+  const [copied, setCopied] = useState('');
 
-  const local = useMemo(() => files.slice(0, 40), [files]);
+  async function load() {
+    const res = await fetch(
+      `${db.url}/rest/v1/plinth_stones?select=id,place,dedication,share_id,file_name,accent,author,created_at&order=created_at.desc&limit=18`,
+      { headers: { apikey: db.key, Authorization: `Bearer ${db.key}` } },
+    );
+    if (!res.ok) return;
+    const data = await res.json();
+    if (Array.isArray(data)) setRows(data);
+  }
 
-  const publish = async () => {
-    const f = local.find((x: any) => x.id === picked);
-    if (!f) {
-      setErr('pick a file from your vault first');
-      return;
-    }
+  useEffect(() => {
+    load().catch(() => setErr('the plinth table did not answer'));
+  }, []);
+
+  async function save(e: React.FormEvent) {
+    e.preventDefault();
+    if (!place.trim() || !dedication.trim() || !file) return;
     setBusy(true);
     setErr('');
-    setWarn('');
-    try {
-      const dataUrl = f.dataUrl || f.url;
-      if (!dataUrl) {
-        setErr('that file has no payload in this tab');
-        return;
-      }
-      if ((f.size || 0) > 40 * 1024 * 1024) setWarn('chunky file. encoding might feel slow. no hard cap.');
-      const res = await publishShare({
-        id: f.id,
-        name: f.name,
-        type: f.type || 'application/octet-stream',
-        size: f.size || 0,
-        dataUrl,
-        author: 'plinth',
-      });
-      if (!res.ok) {
-        setErr(res.error || 'publish failed');
-        return;
-      }
-      if (res.warn) setWarn(res.warn);
-      const urls = shareUrls(res.id || f.id);
-      setLink(urls.embed);
-      try { await navigator.clipboard.writeText(urls.embed); } catch {}
-    } catch (e: any) {
-      setErr(e?.message || 'could not lift it onto the plinth');
-    } finally {
+    setWarn(file.size > 12 * 1024 * 1024 ? 'this stone is heavy. the tab may feel slow. nothing is refused.' : '');
+    const sent = await publishLocalFile(file, {
+      caption: dedication.trim(),
+      author,
+      cardTitle: file.name,
+      color: accent,
+    });
+    if (!sent.ok || !sent.id) {
       setBusy(false);
+      setErr(sent.error || 'the share table did not take the file');
+      return;
     }
-  };
+    if (sent.warn) setWarn(sent.warn);
+    const id = stoneId();
+    const res = await fetch(`${db.url}/rest/v1/plinth_stones`, {
+      method: 'POST',
+      headers: {
+        apikey: db.key,
+        Authorization: `Bearer ${db.key}`,
+        'Content-Type': 'application/json',
+        Prefer: 'return=representation',
+      },
+      body: JSON.stringify({
+        id,
+        place: place.trim(),
+        dedication: dedication.trim(),
+        share_id: sent.id,
+        file_name: file.name,
+        accent,
+        author: author.trim() || null,
+      }),
+    });
+    setBusy(false);
+    if (!res.ok) {
+      setErr('the file landed, but the dedication row did not');
+      return;
+    }
+    setPlace('');
+    setDedication('');
+    setFile(null);
+    await load();
+  }
+
+  async function copy(id: string) {
+    await navigator.clipboard.writeText(`${location.origin}/plinth/${id}`);
+    setCopied(id);
+    setTimeout(() => setCopied(''), 1400);
+  }
+
+  const focus = shareId ? rows.find((r) => r.id === shareId) : null;
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-8">
-          <p className="text-[#0a84ff] text-sm mb-2">plinth</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">put one file on a stand.</h1>
-          <p className="text-neutral-400 text-sm mb-6">pick something already in your vault and publish it to the cloud db. you get a /s/ card url made for discord embeds.</p>
-          <select value={picked} onChange={(e) => setPicked(e.target.value)} className="w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 text-sm text-white outline-none focus:border-[#0a84ff]/50 mb-4">
-            <option value="">choose a vault file</option>
-            {local.map((f: any) => (
-              <option key={f.id} value={f.id}>{f.name}</option>
+      <main className="mx-auto max-w-3xl px-5 pt-28 pb-24">
+        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} className="text-xs tracking-[0.22em] uppercase text-[#64d2ff]">plinth</motion.p>
+        <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06, duration: 0.55, ease: [0.22, 1, 0.36, 1] }} className="mt-3 text-4xl font-semibold tracking-tight">set a file on a pedestal</motion.h1>
+        <p className="mt-3 text-neutral-400 max-w-xl">Not a drawer. Name the place, write the dedication, and the local file goes into the share table. Paste /plinth in Discord for the card. Large files are warned, never refused.</p>
+        {focus && (
+          <motion.article initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mt-6 glass rounded-3xl p-5" style={{ boxShadow: `inset 3px 0 0 ${focus.accent || '#0a84ff'}` }}>
+            <p className="text-xs text-neutral-500">{focus.place}</p>
+            <h2 className="mt-1 text-xl">{focus.file_name || 'stone'}</h2>
+            <p className="mt-2 text-sm text-neutral-300 whitespace-pre-wrap">{focus.dedication}</p>
+            {focus.share_id && <a className="mt-3 inline-block text-sm text-[#64b5ff]" href={`/s/${focus.share_id}`}>open the file</a>}
+          </motion.article>
+        )}
+        <form onSubmit={save} className="mt-8 glass rounded-[28px] p-5 space-y-3">
+          <input value={place} onChange={(e) => setPlace(e.target.value)} placeholder="place" className="w-full rounded-2xl bg-black/40 border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#64d2ff]/60" />
+          <textarea value={dedication} onChange={(e) => setDedication(e.target.value)} placeholder="dedication" rows={4} className="w-full rounded-2xl bg-black/40 border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#64d2ff]/60" />
+          <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="from, optional" className="w-full rounded-2xl bg-black/40 border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#64d2ff]/60" />
+          <div className="flex gap-2">
+            {accents.map((c) => (
+              <button type="button" key={c} onClick={() => setAccent(c)} className="h-7 w-7 rounded-full border" style={{ background: c, borderColor: accent === c ? '#fff' : 'transparent' }} aria-label={c} />
             ))}
-          </select>
-          <button onClick={publish} disabled={busy} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-50">{busy ? 'lifting…' : 'raise it'}</button>
-          {warn && <p className="text-xs text-amber-300/80 mt-4">{warn}</p>}
-          {err && <p className="text-xs text-red-400 mt-4">{err}</p>}
-          {link && <p className="text-xs text-neutral-400 mt-4 break-all">embed url copied: {link}</p>}
-        </motion.div>
-      </div>
+          </div>
+          <label className="block rounded-2xl border border-dashed border-white/15 bg-black/30 px-4 py-6 text-center cursor-pointer">
+            <input type="file" className="hidden" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+            <span className="text-sm">{file ? file.name : 'file from this computer'}</span>
+            <span className="block text-xs text-neutral-500 mt-1">{file ? prettySize(file.size) : 'any size, warned if slow'}</span>
+          </label>
+          {warn && <p className="text-sm text-amber-200/90">{warn}</p>}
+          {err && <p className="text-sm text-rose-300">{err}</p>}
+          <button disabled={busy || !place.trim() || !dedication.trim() || !file} className="rounded-full bg-white text-black px-5 py-2.5 text-sm font-medium disabled:opacity-40">{busy ? 'setting…' : 'set the stone'}</button>
+        </form>
+        <ul className="mt-8 space-y-3">
+          {rows.map((row, i) => (
+            <motion.li key={row.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i, 8) * 0.04, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-3xl p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-sm text-neutral-100">{row.place}</p>
+                  <p className="text-xs text-neutral-500 mt-1 line-clamp-2">{row.dedication}</p>
+                  {row.share_id && <a className="text-xs text-[#64b5ff]" href={`/s/${row.share_id}`}>{row.file_name || 'file'}</a>}
+                </div>
+                <button onClick={() => copy(row.id)} className="shrink-0 text-xs rounded-full border border-white/10 px-3 py-1.5">{copied === row.id ? 'copied' : 'card link'}</button>
+              </div>
+            </motion.li>
+          ))}
+        </ul>
+      </main>
     </div>
   );
 }

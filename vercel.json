@@ -23,6 +23,7 @@
     { "source": "/api/signal", "destination": "/api/signal" },
     { "source": "/api/quarter", "destination": "/api/quarter" },
     { "source": "/api/scuttle", "destination": "/api/scuttle" },
+    { "source": "/api/atelier", "destination": "/api/atelier" },
     { "source": "/api/:desk", "destination": "/api/desk?desk=:desk" },
     { "source": "/((?!api/|assets/).*)", "destination": "/index.html" }
   ]

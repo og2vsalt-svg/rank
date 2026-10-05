@@ -15,6 +15,8 @@ const SUPABASE_KEY =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
 
 const COPY = {
+  plinth: ['Plinth — rankvault', 'A dedication under a local file. The file lands in the share table. Large drops are warned, never refused.'],
+  corbel: ['Corbel — rankvault', 'A load note for a local file. Paste the link in Discord for a card.'],
   ashlar: ['Ashlar — rankvault', 'A letter with an optional local file. Large drops are warned, never refused.'],
   tympanum: ['Tympanum — rankvault', 'The public face of files already in the share table. Paste the link in Discord for a card.'],
   nosing: ['Nosing — rankvault', 'A due slip on the edge of a local file. The file lands in the share table. No size gate.'],
@@ -61,6 +63,63 @@ export default async function handler(req, res) {
         title = row.name;
         desc = (row.caption || 'shared file') + ' · ' + prettySize(row.size);
         if (String(row.mime || '').indexOf('image/') === 0 && /^https?:/i.test(row.file_url || '')) image = row.file_url;
+      }
+    }
+  }
+
+  if (id && page === 'plinth') {
+    const r = await fetch(SUPABASE_URL + '/rest/v1/plinth_stones?id=eq.' + encodeURIComponent(id) + '&select=place,dedication,file_name,author&limit=1', {
+      headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },
+    });
+    if (r.ok) {
+      const rows = await r.json();
+      const row = rows && rows[0];
+      if (row) {
+        title = row.place + ' — plinth';
+        desc = (row.dedication || row.file_name || 'dedication') + (row.author ? ' · ' + row.author : '');
+      }
+    }
+  }
+
+  if (id && page === 'corbel') {
+    const r = await fetch(SUPABASE_URL + '/rest/v1/corbel_notes?id=eq.' + encodeURIComponent(id) + '&select=load_note,bearer,file_name,author&limit=1', {
+      headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },
+    });
+    if (r.ok) {
+      const rows = await r.json();
+      const row = rows && rows[0];
+      if (row) {
+        title = (row.bearer || row.file_name || 'load') + ' — corbel';
+        desc = (row.load_note || 'load note') + (row.author ? ' · ' + row.author : '');
+      }
+    }
+  }
+
+  if (id && page === 'trundle') {
+    const r = await fetch(SUPABASE_URL + '/rest/v1/trundle_slips?id=eq.' + encodeURIComponent(id) + '&select=to_name,note,file_name,author&limit=1', {
+      headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },
+    });
+    if (r.ok) {
+      const rows = await r.json();
+      const row = rows && rows[0];
+      if (row) {
+        title = 'for ' + row.to_name + ' — trundle';
+        desc = (row.note || row.file_name || 'handoff') + (row.author ? ' · ' + row.author : '');
+      }
+    }
+  }
+
+  if (id && page === 'coping') {
+    const r = await fetch(SUPABASE_URL + '/rest/v1/coping_lists?id=eq.' + encodeURIComponent(id) + '&select=title,items,author&limit=1', {
+      headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },
+    });
+    if (r.ok) {
+      const rows = await r.json();
+      const row = rows && rows[0];
+      if (row) {
+        const items = Array.isArray(row.items) ? row.items.slice(0, 4).join(', ') : '';
+        title = row.title + ' — coping';
+        desc = (items || 'a checklist') + (row.author ? ' · ' + row.author : '');
       }
     }
   }
@@ -132,35 +191,6 @@ export default async function handler(req, res) {
       if (row) {
         title = row.title + ' — nosing';
         desc = (row.due_note || row.file_name || 'due slip') + (row.author ? ' · ' + row.author : '');
-      }
-    }
-  }
-
-  if (id && page === 'trundle') {
-    const r = await fetch(SUPABASE_URL + '/rest/v1/trundle_slips?id=eq.' + encodeURIComponent(id) + '&select=to_name,note,file_name,author&limit=1', {
-      headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },
-    });
-    if (r.ok) {
-      const rows = await r.json();
-      const row = rows && rows[0];
-      if (row) {
-        title = 'for ' + row.to_name + ' — trundle';
-        desc = (row.note || row.file_name || 'handoff') + (row.author ? ' · ' + row.author : '');
-      }
-    }
-  }
-
-  if (id && page === 'coping') {
-    const r = await fetch(SUPABASE_URL + '/rest/v1/coping_lists?id=eq.' + encodeURIComponent(id) + '&select=title,items,author&limit=1', {
-      headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },
-    });
-    if (r.ok) {
-      const rows = await r.json();
-      const row = rows && rows[0];
-      if (row) {
-        const items = Array.isArray(row.items) ? row.items.slice(0, 4).join(', ') : '';
-        title = row.title + ' — coping';
-        desc = (items || 'a checklist') + (row.author ? ' · ' + row.author : '');
       }
     }
   }

@@ -15,6 +15,9 @@ const SUPABASE_KEY =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
 
 const COPY = {
+  ashlar: ['Ashlar — rankvault', 'A letter with an optional local file. Large drops are warned, never refused.'],
+  tympanum: ['Tympanum — rankvault', 'The public face of files already in the share table. Paste the link in Discord for a card.'],
+  nosing: ['Nosing — rankvault', 'A due slip on the edge of a local file. The file lands in the share table. No size gate.'],
   keepsake: ['Keepsake — rankvault', 'A local file filed in the share table. Large drops are warned, never refused.'],
   lintel: ['Lintel — rankvault', 'A note or a local file under the door. Paste the link in Discord for a card.'],
   oriel: ['Oriel — rankvault', 'A short window note. The card uses the line itself.'],
@@ -99,6 +102,49 @@ export default async function handler(req, res) {
       if (row) {
         title = (row.note || 'link') + ' — rankvault';
         desc = row.url + (row.author ? ' · ' + row.author : '');
+      }
+    }
+  }
+
+  if (id && page === 'ashlar') {
+    const r = await fetch(SUPABASE_URL + '/rest/v1/ashlar_letters?id=eq.' + encodeURIComponent(id) + '&select=title,body,author,share_id&limit=1', {
+      headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },
+    });
+    if (r.ok) {
+      const rows = await r.json();
+      const row = rows && rows[0];
+      if (row) {
+        title = row.title + ' — ashlar';
+        desc = String(row.body || '').slice(0, 180) + (row.author ? ' · ' + row.author : '');
+      }
+    }
+  }
+
+  if (id && page === 'nosing') {
+    const r = await fetch(SUPABASE_URL + '/rest/v1/nosing_slips?id=eq.' + encodeURIComponent(id) + '&select=title,due_note,file_name,author&limit=1', {
+      headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },
+    });
+    if (r.ok) {
+      const rows = await r.json();
+      const row = rows && rows[0];
+      if (row) {
+        title = row.title + ' — nosing';
+        desc = (row.due_note || row.file_name || 'due slip') + (row.author ? ' · ' + row.author : '');
+      }
+    }
+  }
+
+  if (id && page === 'tympanum') {
+    const r = await fetch(SUPABASE_URL + '/rest/v1/public_shares?id=eq.' + encodeURIComponent(id) + '&select=name,caption,size,mime,file_url&limit=1', {
+      headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },
+    });
+    if (r.ok) {
+      const rows = await r.json();
+      const row = rows && rows[0];
+      if (row) {
+        title = (row.caption || row.name) + ' — tympanum';
+        desc = prettySize(row.size);
+        if (String(row.mime || '').indexOf('image/') === 0 && /^https?:/i.test(row.file_url || '')) image = row.file_url;
       }
     }
   }

@@ -4,10 +4,12 @@ import card from '../lib/endpoints/card.js';
 import catfall from '../lib/endpoints/catfall.js';
 import cathead from '../lib/endpoints/cathead.js';
 import chock from '../lib/endpoints/chock.js';
+import crosstree from '../lib/endpoints/crosstree.js';
 import desk from '../lib/endpoints/desk.js';
 import embed from '../lib/endpoints/embed.js';
 import ferry from '../lib/endpoints/ferry.js';
 import forefoot from '../lib/endpoints/forefoot.js';
+import jackstay from '../lib/endpoints/jackstay.js';
 import ketch from '../lib/endpoints/ketch.js';
 import luff from '../lib/endpoints/luff.js';
 import quarter from '../lib/endpoints/quarter.js';
@@ -23,8 +25,8 @@ import vesper from '../lib/endpoints/vesper.js';
 import wall from '../lib/endpoints/wall.js';
 
 const routes = {
-  atelier, beacon, card, catfall, cathead, chock, desk, embed, ferry, forefoot,
-  ketch, luff, quarter, quay, scuttle, selvage, share, signal, stay, tide,
+  atelier, beacon, card, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
+  jackstay, ketch, luff, quarter, quay, scuttle, selvage, share, signal, stay, tide,
   tiller, vesper, wall,
 };
 

@@ -15,6 +15,10 @@ const SUPABASE_KEY =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
 
 const COPY = {
+  keepsake: ['Keepsake — rankvault', 'A local file filed in the share table. Large drops are warned, never refused.'],
+  lintel: ['Lintel — rankvault', 'A note or a local file under the door. Paste the link in Discord for a card.'],
+  oriel: ['Oriel — rankvault', 'A short window note. The card uses the line itself.'],
+  sill: ['Sill — rankvault', 'A short link, not a drawer. Paste /sill in Discord for a card.'],
   vitrine: ['Vitrine — rankvault', 'Dress a Discord card, then drop the local file into the shared shelf. Large files are warned, never refused.'],
   pressmark: ['Pressmark — rankvault', 'A painted 1200×630 cover, filed so Discord can unfurl a real image.'],
   shelf: ['Shelf — rankvault', 'Drop a local file into the shared shelf. Large files are warned, never refused.'],
@@ -41,7 +45,7 @@ export default async function handler(req, res) {
   let desc = (COPY[page] || COPY.home)[1];
   let image = 'https://og2vsalt-svg.github.io/rank/og.png';
 
-  if (id && (page === 'board' || page === 's' || page === 'shelf')) {
+  if (id && (page === 'board' || page === 's' || page === 'shelf' || page === 'keepsake')) {
     const r = await fetch(SUPABASE_URL + '/rest/v1/public_shares?id=eq.' + encodeURIComponent(id) + '&select=name,caption,size,mime,file_url&limit=1', {
       headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },
     });
@@ -81,6 +85,34 @@ export default async function handler(req, res) {
       if (row) {
         title = row.name + ' — receipt';
         desc = row.note || 'a handoff note';
+      }
+    }
+  }
+
+  if (id && (page === 'sill' || page === 'lintel')) {
+    const r = await fetch(SUPABASE_URL + '/rest/v1/links?id=eq.' + encodeURIComponent(id) + '&select=url,note,author&limit=1', {
+      headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },
+    });
+    if (r.ok) {
+      const rows = await r.json();
+      const row = rows && rows[0];
+      if (row) {
+        title = (row.note || 'link') + ' — rankvault';
+        desc = row.url + (row.author ? ' · ' + row.author : '');
+      }
+    }
+  }
+
+  if (id && page === 'oriel') {
+    const r = await fetch(SUPABASE_URL + '/rest/v1/whispers?id=eq.' + encodeURIComponent(id) + '&select=body,author,kind&limit=1', {
+      headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },
+    });
+    if (r.ok) {
+      const rows = await r.json();
+      const row = rows && rows[0];
+      if (row) {
+        title = (row.kind || 'note') + ' — oriel';
+        desc = row.body + (row.author ? ' · ' + row.author : '');
       }
     }
   }

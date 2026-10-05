@@ -33,6 +33,8 @@ const routes = {
   docket, jackstay, ketch, luff, nightglass, quarter, quay, scuttle, selvage, quire, share, signal, stay, tide,
   tiller, vesper, wall,
   shelf, board: shelf, receipt: shelf, satchel: shelf,
+  ashlar: shelf, tympanum: shelf, nosing: shelf,
+  sill: shelf, keepsake: shelf, lintel: shelf, oriel: shelf,
 };
 
 export default function handler(req, res) {

@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { useMemo, useState } from 'react';
 import Navbar from './Navbar';
+import { publishLocalFile } from '../lib/cloudShare';
 
 function pretty(bytes: number) {
   if (bytes < 1024) return `${bytes} B`;
@@ -42,11 +43,21 @@ export default function FolioPage() {
       body.append('caption', caption.trim() || file.name);
       body.append('cardTitle', file.name);
       const r = await fetch('/api/share', { method: 'POST', body });
-      const data = await r.json();
-      if (!r.ok) throw new Error(data.error || 'the share table did not take the file');
-      const origin = window.location.origin;
-      setCard(`${origin}/s/${data.id}`);
-      setStatus(data.warn || 'filed. paste the card in Discord.');
+      const data = await r.json().catch(() => ({}));
+      if (r.ok && data.id) {
+        setCard(`${window.location.origin}/s/${data.id}`);
+        setStatus(data.warn || 'filed. paste the card in Discord.');
+        return;
+      }
+      const sent = await publishLocalFile(file, {
+        author: author.trim() || 'folio',
+        caption: caption.trim() || file.name,
+        cardTitle: file.name,
+      });
+      if (!sent.ok || !sent.id) throw new Error(sent.error || data.error || 'the share table did not take the file');
+      setCard(sent.embed || `${window.location.origin}/s/${sent.id}`);
+      setStatus(sent.warn || 'filed. paste the card in Discord.');
+      if (sent.warn) setWarn(sent.warn);
     } catch (err) {
       setStatus(err instanceof Error ? err.message : 'could not file that drop');
     } finally {

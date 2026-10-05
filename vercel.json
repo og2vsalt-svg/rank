@@ -3,7 +3,19 @@
   "outputDirectory": "dist",
   "framework": "vite",
   "rewrites": [
-    { "source": "/api/:desk", "destination": "/api/gate?desk=:desk" },
+    { "source": "/api/share", "destination": "/api/share" },
+    { "source": "/api/embed", "destination": "/api/embed" },
+    { "source": "/api/desk", "destination": "/api/desk" },
+    { "source": "/api/tide", "destination": "/api/tide" },
+    { "source": "/api/card", "destination": "/api/card" },
+    { "source": "/api/ferry", "destination": "/api/ferry" },
+    { "source": "/api/cathead", "destination": "/api/cathead" },
+    { "source": "/api/catfall", "destination": "/api/catfall" },
+    { "source": "/api/wall", "destination": "/api/wall" },
+    { "source": "/api/stay", "destination": "/api/stay" },
+    { "source": "/api/forefoot", "destination": "/api/forefoot" },
+    { "source": "/api/chock", "destination": "/api/chock" },
+    { "source": "/api/:desk", "destination": "/api/desk?desk=:desk" },
     { "source": "/((?!api/|assets/).*)", "destination": "/index.html" }
   ]
 }

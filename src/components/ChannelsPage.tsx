@@ -24,7 +24,7 @@ export default function ChannelsPage() {
   const [recent, setRecent] = useState<Shelf[]>([]);
 
   useEffect(() => {
-    fetch('/api/channels?list=1')
+    fetch('/api/desk?desk=channels&list=1')
       .then((r) => r.json())
       .then((data) => setRecent(Array.isArray(data.shelves) ? data.shelves : []))
       .catch(() => setRecent([]));
@@ -32,7 +32,7 @@ export default function ChannelsPage() {
 
   useEffect(() => {
     if (!shareId) return;
-    fetch(`/api/channels?id=${encodeURIComponent(shareId)}&json=1`)
+    fetch(`/api/desk?desk=channels&json=1&id=${encodeURIComponent(shareId)}`)
       .then((r) => r.json())
       .then((row) => {
         if (!row || row.error) return;
@@ -55,7 +55,7 @@ export default function ChannelsPage() {
     setBusy(true);
     try {
       const id = shelf?.id || uid();
-      const r = await fetch('/api/channels', {
+      const r = await fetch('/api/desk?desk=channels', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id, title: title.trim(), note: note.trim(), share_ids: shareIds, author: author.trim() || null }),
@@ -83,7 +83,7 @@ export default function ChannelsPage() {
         <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="what this shelf is for" className="mt-3 w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 outline-none focus:border-white/30 transition-colors" />
         <textarea value={raw} onChange={(e) => setRaw(e.target.value)} placeholder="one share id or /s link per line" rows={5} className="mt-3 w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 outline-none focus:border-white/30 transition-colors" />
         <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="from" className="mt-3 w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 outline-none focus:border-white/30 transition-colors" />
-        <button disabled={busy} onClick={save} className="mt-4 px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40 active:scale-[0.98] transition-transform">{busy ? 'writing…' : 'file the shelf'}</button>
+        <button disabled={busy} onClick={save} className="mt-4 px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40 active:scale-[0.98] transition-transform">{busy ? 'writing\u2026' : 'file the shelf'}</button>
         {link && <a href={link} className="mt-6 block break-all text-[#0A84FF] text-sm">{link}</a>}
         <p className="mt-4 text-sm text-white/45">{status}</p>
         {shelf?.share_ids && shelf.share_ids.length > 0 && (

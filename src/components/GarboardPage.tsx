@@ -16,95 +16,73 @@ function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
 
+async function fileOne(file: File, author: string, caption: string) {
+  const buf = await file.arrayBuffer();
+  const bytes = new Uint8Array(buf);
+  let binary = '';
+  const step = 0x8000;
+  for (let o = 0; o < bytes.length; o += step) binary += String.fromCharCode(...bytes.subarray(o, o + step));
+  const dataUrl = `data:${file.type || 'application/octet-stream'};base64,${btoa(binary)}`;
+  const id = uid();
+  const shared = await fetch('/api/share', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id, name: file.name, type: file.type || 'application/octet-stream', size: file.size, author, caption, dataUrl }),
+  });
+  const share = await shared.json();
+  if (!shared.ok) throw new Error(share.error || 'the share table did not take the file');
+  return { id: share.id as string, warn: share.warn as string | null, name: file.name, size: file.size };
+}
+
 export default function GarboardPage() {
-  const { shareId, navigate } = useRouter();
-  const [file, setFile] = useState<File | null>(null);
-  const [seam, setSeam] = useState('');
-  const [port, setPort] = useState('');
-  const [starboard, setStarboard] = useState('');
+  const { navigate } = useRouter();
+  const [left, setLeft] = useState<File | null>(null);
+  const [right, setRight] = useState<File | null>(null);
+  const [note, setNote] = useState('');
   const [author, setAuthor] = useState('');
   const [busy, setBusy] = useState(false);
-  const [status, setStatus] = useState('the lowest plank. the file still lands in the share table.');
-  const [link, setLink] = useState('');
-  const [shareLink, setShareLink] = useState('');
+  const [status, setStatus] = useState('two local files, one seam note. both land in the share table.');
+  const [links, setLinks] = useState<string[]>([]);
+  const [seams, setSeams] = useState<{ id: string; note: string; left_id: string; right_id: string }[]>([]);
 
   const slow = useMemo(() => {
-    if (!file) return null;
-    if (file.size > 40 * 1024 * 1024) return 'heavy file. the tab may pause while it reads. nothing is refused.';
-    if (file.size > 12 * 1024 * 1024) return 'large drop. the write may feel slow. it still goes up.';
+    const size = (left?.size || 0) + (right?.size || 0);
+    if (!size) return null;
+    if (size > 40 * 1024 * 1024) return 'heavy pair. the tab may pause while it reads. nothing is refused.';
+    if (size > 12 * 1024 * 1024) return 'large drop. the write may feel slow. it still goes up.';
     return null;
-  }, [file]);
+  }, [left, right]);
 
   useEffect(() => {
-    if (!shareId) return;
-    let gone = false;
-    fetch(`/api/garboard?id=${encodeURIComponent(shareId)}&json=1`)
+    fetch('/api/desk?desk=garboard')
       .then((r) => r.json())
-      .then((row) => {
-        if (gone || !row || row.error) return;
-        setSeam(row.seam || '');
-        setPort(row.port_side || '');
-        setStarboard(row.starboard_side || '');
-        setAuthor(row.author || '');
-        setLink(`${window.location.origin}/garboard/${row.id}`);
-        if (row.share_id) setShareLink(`${window.location.origin}/s/${row.share_id}`);
-        setStatus(`${row.file_name} · ${pretty(Number(row.size) || 0)}`);
-      })
-      .catch(() => setStatus('could not read that plank'));
-    return () => {
-      gone = true;
-    };
-  }, [shareId]);
+      .then((data) => setSeams(Array.isArray(data.seams) ? data.seams : []))
+      .catch(() => setSeams([]));
+  }, [links]);
 
   async function store() {
-    if (!file) return;
+    if (!left || !right || !note.trim()) {
+      setStatus('both files and a seam note');
+      return;
+    }
     setBusy(true);
-    setStatus('reading the file on this machine…');
+    setStatus('writing the port file\u2026');
     try {
-      const buf = await file.arrayBuffer();
-      const bytes = new Uint8Array(buf);
-      let binary = '';
-      const step = 0x8000;
-      for (let o = 0; o < bytes.length; o += step) binary += String.fromCharCode(...bytes.subarray(o, o + step));
-      const dataUrl = `data:${file.type || 'application/octet-stream'};base64,${btoa(binary)}`;
-      const id = uid();
-      const shared = await fetch('/api/share', {
+      const a = await fileOne(left, author.trim() || 'garboard', note.trim());
+      setStatus('writing the starboard file\u2026');
+      const b = await fileOne(right, author.trim() || 'garboard', note.trim());
+      const noted = await fetch('/api/desk?desk=garboard', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id,
-          name: file.name,
-          type: file.type || 'application/octet-stream',
-          size: file.size,
-          author: author.trim() || 'garboard',
-          caption: seam.trim() || 'garboard seam',
-          dataUrl,
-        }),
+        body: JSON.stringify({ leftId: a.id, rightId: b.id, note: note.trim(), author: author.trim() || 'garboard' }),
       });
-      const share = await shared.json();
-      if (!shared.ok) throw new Error(share.error || 'the share table did not take the file');
-      const noted = await fetch('/api/garboard', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id,
-          share_id: share.id,
-          file_name: file.name,
-          seam: seam.trim(),
-          port_side: port.trim(),
-          starboard_side: starboard.trim(),
-          size: file.size,
-          author: author.trim() || null,
-        }),
-      });
-      const note = await noted.json();
-      if (!noted.ok) throw new Error(note.error || 'the seam note was not written');
-      setLink(`${window.location.origin}/garboard/${id}`);
-      setShareLink(`${window.location.origin}/s/${share.id}`);
-      setStatus(share.warn || 'filed. paste either link in Discord.');
-      navigate('garboard', id);
+      const seam = await noted.json();
+      if (!noted.ok) throw new Error(seam.error || 'the seam note was not written');
+      setLinks([`${window.location.origin}/s/${a.id}`, `${window.location.origin}/s/${b.id}`]);
+      setStatus(a.warn || b.warn || 'filed. paste either link in Discord.');
+      navigate('garboard');
     } catch (err) {
-      setStatus(err instanceof Error ? err.message : 'could not file the plank');
+      setStatus(err instanceof Error ? err.message : 'could not file the seam');
     } finally {
       setBusy(false);
     }
@@ -115,29 +93,43 @@ export default function GarboardPage() {
       <Navbar />
       <main className="mx-auto max-w-xl px-5 pt-28 pb-24">
         <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease }} className="text-[13px] text-white/45">garboard</motion.p>
-        <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease, delay: 0.04 }} className="mt-2 text-[40px] leading-none tracking-tight font-semibold">The lowest plank.</motion.h1>
-        <p className="mt-4 text-[15px] leading-relaxed text-white/60">A local file goes into the share database. The seam note lives beside it, so the card is a measurement, not another drawer.</p>
-        <label className="mt-8 block rounded-3xl border border-white/10 bg-white/[0.04] px-5 py-6 cursor-pointer hover:bg-white/[0.07] transition-colors duration-300">
-          <span className="text-xs text-white/45">local file</span>
-          <span className="mt-2 block text-[15px] truncate">{file ? file.name : 'choose a file on this machine'}</span>
-          <span className="mt-1 block text-xs text-white/40">{file ? pretty(file.size) : 'no size cutoff — only a warning if it will feel slow'}</span>
-          <input type="file" className="sr-only" onChange={(e) => setFile(e.target.files?.[0] || null)} />
-        </label>
-        {slow && <p className="mt-3 text-sm text-amber-200/80">{slow}</p>}
-        <input value={seam} onChange={(e) => setSeam(e.target.value)} placeholder="what the seam is holding" className="mt-3 w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 outline-none focus:border-white/30 transition-colors" />
-        <div className="mt-3 grid sm:grid-cols-2 gap-3">
-          <input value={port} onChange={(e) => setPort(e.target.value)} placeholder="port side" className="rounded-2xl bg-black/30 border border-white/10 px-4 py-3 outline-none focus:border-white/30 transition-colors" />
-          <input value={starboard} onChange={(e) => setStarboard(e.target.value)} placeholder="starboard side" className="rounded-2xl bg-black/30 border border-white/10 px-4 py-3 outline-none focus:border-white/30 transition-colors" />
+        <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease, delay: 0.04 }} className="mt-2 text-[40px] leading-none tracking-tight font-semibold">Two planks, one seam.</motion.h1>
+        <p className="mt-4 text-[15px] leading-relaxed text-white/60">Each local file goes into the share database. The note between them stays on the seam table. Older desks stay. Nothing is refused for size.</p>
+        <div className="mt-8 grid sm:grid-cols-2 gap-3">
+          <label className="block rounded-3xl border border-white/10 bg-white/[0.04] px-5 py-6 cursor-pointer hover:bg-white/[0.07] transition-colors duration-300">
+            <span className="text-xs text-white/45">port</span>
+            <span className="mt-2 block text-[15px] truncate">{left ? left.name : 'choose a file'}</span>
+            <span className="mt-1 block text-xs text-white/40">{left ? pretty(left.size) : 'no size cutoff'}</span>
+            <input type="file" className="sr-only" onChange={(e) => setLeft(e.target.files?.[0] || null)} />
+          </label>
+          <label className="block rounded-3xl border border-white/10 bg-white/[0.04] px-5 py-6 cursor-pointer hover:bg-white/[0.07] transition-colors duration-300">
+            <span className="text-xs text-white/45">starboard</span>
+            <span className="mt-2 block text-[15px] truncate">{right ? right.name : 'choose a file'}</span>
+            <span className="mt-1 block text-xs text-white/40">{right ? pretty(right.size) : 'only a slowness warning'}</span>
+            <input type="file" className="sr-only" onChange={(e) => setRight(e.target.files?.[0] || null)} />
+          </label>
         </div>
+        {slow && <p className="mt-3 text-sm text-amber-200/80">{slow}</p>}
+        <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="what the seam is holding" className="mt-3 w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 outline-none focus:border-white/30 transition-colors" />
         <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="from" className="mt-3 w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 outline-none focus:border-white/30 transition-colors" />
-        <button disabled={!file || busy} onClick={store} className="mt-4 px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40 active:scale-[0.98] transition-transform">{busy ? 'writing…' : 'file the plank'}</button>
-        {(link || shareLink) && (
-          <div className="mt-6 rounded-3xl border border-white/10 bg-white/[0.04] p-5">
-            {link && <a href={link} className="block break-all text-[#0A84FF] text-sm">{link}</a>}
-            {shareLink && <a href={shareLink} className="mt-2 block break-all text-white/70 text-sm">{shareLink}</a>}
+        <button disabled={!left || !right || busy} onClick={store} className="mt-4 px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40 active:scale-[0.98] transition-transform">{busy ? 'writing\u2026' : 'file the seam'}</button>
+        {links.length > 0 && (
+          <div className="mt-6 rounded-3xl border border-white/10 bg-white/[0.04] p-5 space-y-2">
+            {links.map((href) => <a key={href} href={href} className="block break-all text-[#0A84FF] text-sm">{href}</a>)}
           </div>
         )}
         <p className="mt-4 text-sm text-white/45">{status}</p>
+        {seams.length > 0 && (
+          <div className="mt-10 space-y-2">
+            <p className="text-xs uppercase tracking-[0.14em] text-white/40">recent seams</p>
+            {seams.slice(0, 8).map((row) => (
+              <div key={row.id} className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3">
+                <p className="text-sm">{row.note}</p>
+                <p className="mt-1 text-xs text-white/40">{row.left_id} · {row.right_id}</p>
+              </div>
+            ))}
+          </div>
+        )}
       </main>
     </div>
   );

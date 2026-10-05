@@ -354,6 +354,7 @@ export default async function handler(req, res) {
         return;
       }
       const meta = { ...(row.meta || {}) };
+      if (body.meta && typeof body.meta === 'object' && !Array.isArray(body.meta)) Object.assign(meta, body.meta);
       if (typeof body.caption === 'string') meta.caption = body.caption.slice(0, 280);
       if (typeof body.cardTitle === 'string' && body.cardTitle.trim()) meta.cardTitle = body.cardTitle.slice(0, 120);
       if (typeof body.color === 'string' && /^#[0-9a-fA-F]{6}$/.test(body.color)) meta.color = body.color;

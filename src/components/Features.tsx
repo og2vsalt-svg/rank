@@ -1,8 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
-  { title: 'folio', body: 'a margin desk. one local file lands on the share table, and a short note sits beside it. discord unfurls /folio. slowness warning only.' },
-  { title: 'slate', body: 'a three-line list with an optional local file. not a drawer. /slate cards in discord. older desks stay.' },
+  { title: 'quire margin', body: 'a margin desk. one local file lands on the share table, and a short note sits beside it. discord unfurls /quire. slowness warning only.' },
+  { title: 'docket list', body: 'a three-line list with an optional local file. not a drawer. /docket cards in discord. older desks stay.' },
   { title: 'nightglass', body: 'a listening shelf. a local file lands in the share table, and a short note sits beside it in its own table. discord unfurls /nightglass. slowness warning only. not a vault drawer.' },
   { title: 'bowsprit', body: 'name a port and an arrival note, then hand a local file to the share table. discord unfurls /bowsprit and /s. slowness warning only.' },
   { title: 'chainplate', body: 'write the load a file is holding and who is on the other end. bytes land in the share table. discord unfurls /chainplate and /s. not a vault drawer.' },

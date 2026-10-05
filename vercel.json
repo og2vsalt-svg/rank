@@ -14,6 +14,7 @@
     { "source": "/api/wall", "destination": "/api/wall" },
     { "source": "/api/stay", "destination": "/api/stay" },
     { "source": "/api/forefoot", "destination": "/api/forefoot" },
+    { "source": "/api/chock", "destination": "/api/chock" },
     { "source": "/api/:desk", "destination": "/api/desk?desk=:desk" },
     { "source": "/((?!api/|assets/).*)", "destination": "/index.html" }
   ]

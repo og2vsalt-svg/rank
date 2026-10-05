@@ -1,99 +1,49 @@
-import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { useRouter } from './Router';
-
-type Bell = { id: string; title: string; when_note?: string; body?: string; author?: string; created_at?: string };
 
 export default function BelfryPage() {
-  const { shareId } = useRouter();
-  const [bells, setBells] = useState<Bell[]>([]);
-  const [title, setTitle] = useState('');
-  const [when, setWhen] = useState('');
-  const [body, setBody] = useState('');
-  const [author, setAuthor] = useState('');
-  const [status, setStatus] = useState('a watch board. not a file cabinet.');
-  const [link, setLink] = useState('');
-
-  async function load() {
-    const r = await fetch('/api/belfry');
-    const data = await r.json();
-    setBells(data.bells || []);
-  }
+  const [secs, setSecs] = useState(0);
+  const [running, setRunning] = useState(false);
+  const [note, setNote] = useState('');
 
   useEffect(() => {
-    load().catch(() => setStatus('the board did not answer'));
-    if (!shareId) return;
-    fetch(`/api/belfry?id=${encodeURIComponent(shareId)}`)
-      .then((r) => r.json())
-      .then((data) => {
-        if (!data.bell) return;
-        setLink(`${window.location.origin}/belfry/${data.bell.id}`);
-        setStatus(data.bell.when_note || 'opened from the card');
-      })
-      .catch(() => {});
-  }, [shareId]);
+    if (!running) return;
+    const t = window.setInterval(() => setSecs((s) => s + 1), 1000);
+    return () => window.clearInterval(t);
+  }, [running]);
 
-  async function ring() {
-    if (!title.trim()) return;
-    setStatus('ringing…');
-    const r = await fetch('/api/belfry', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, when, body, author }),
-    });
-    const data = await r.json();
-    if (!r.ok) {
-      setStatus(data.error || 'the board did not take that line');
-      return;
-    }
-    setLink(`${window.location.origin}${data.path}`);
-    setTitle('');
-    setWhen('');
-    setBody('');
-    setStatus('on the board. paste the link in Discord.');
-    load().catch(() => {});
-  }
+  const mm = String(Math.floor(secs / 60)).padStart(2, '0');
+  const ss = String(secs % 60).padStart(2, '0');
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <main className="max-w-3xl mx-auto px-5 pt-16 pb-24">
-        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[12px] tracking-[0.18em] uppercase text-white/40">belfry</motion.p>
-        <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-2 text-[40px] leading-none font-semibold tracking-tight">Ring a watch.</motion.h1>
-        <p className="mt-3 max-w-xl text-[15px] text-white/60">A time and a line, kept beside the files rather than inside them. The vault, folio, and loom stay where they are.</p>
-        <div className="mt-8 grid gap-3">
-          <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="what the bell is for" className="glass rounded-2xl px-4 py-3 text-[15px] bg-transparent outline-none" />
-          <div className="grid sm:grid-cols-2 gap-3">
-            <input value={when} onChange={(e) => setWhen(e.target.value)} placeholder="when — 6am watch, Friday, after the drop" className="glass rounded-2xl px-4 py-3 text-[14px] bg-transparent outline-none" />
-            <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="who rang it" className="glass rounded-2xl px-4 py-3 text-[14px] bg-transparent outline-none" />
+      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          className="glass rounded-[32px] p-8"
+        >
+          <p className="text-[#0a84ff] text-sm mb-2">belfry</p>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">a quiet chime for this tab.</h1>
+          <p className="text-neutral-400 text-sm mb-8">not a vault. keep time while a file encodes. nothing leaves the device.</p>
+          <p className="text-6xl font-semibold tracking-tight tabular-nums mb-6">{mm}:{ss}</p>
+          <div className="flex flex-wrap gap-2 mb-6">
+            <button onClick={() => setRunning(true)} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium">start</button>
+            <button onClick={() => setRunning(false)} className="px-5 py-2.5 rounded-full bg-white/5 text-sm">pause</button>
+            <button onClick={() => { setRunning(false); setSecs(0); }} className="px-5 py-2.5 rounded-full bg-white/5 text-sm">reset</button>
           </div>
-          <textarea value={body} onChange={(e) => setBody(e.target.value)} placeholder="the line on the board" rows={3} className="glass rounded-2xl px-4 py-3 text-[14px] bg-transparent outline-none resize-none" />
-        </div>
-        <div className="mt-4 flex flex-wrap items-center gap-3">
-          <button onClick={ring} className="rounded-full bg-white text-black px-5 py-2.5 text-[14px] font-medium">Ring it</button>
-          <span className="text-[13px] text-white/50">{status}</span>
-        </div>
-        {link && <a href={link} className="glass mt-5 block rounded-2xl px-4 py-3 text-[14px] text-[#64b5ff]">{link}</a>}
-        <div className="mt-8 space-y-2">
-          {bells.map((bell, i) => (
-            <motion.button
-              key={bell.id}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: Math.min(i, 8) * 0.04 }}
-              onClick={() => { setLink(`${window.location.origin}/belfry/${bell.id}`); history.pushState(null, '', `/belfry/${bell.id}`); }}
-              className="glass w-full text-left rounded-2xl px-4 py-3"
-            >
-              <div className="flex items-baseline justify-between gap-3">
-                <span className="text-[15px] font-medium">{bell.title}</span>
-                <span className="text-[12px] text-white/40">{bell.when_note || 'no time'}</span>
-              </div>
-              {bell.body && <p className="mt-1 text-[13px] text-white/60">{bell.body}</p>}
-            </motion.button>
-          ))}
-        </div>
-      </main>
+          <textarea
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            rows={4}
+            className="w-full px-4 py-3 rounded-3xl bg-white/5 border border-white/10 text-sm outline-none"
+            placeholder="a local slip while you wait"
+          />
+        </motion.div>
+      </div>
     </div>
   );
 }

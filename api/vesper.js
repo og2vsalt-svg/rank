@@ -25,10 +25,10 @@ function uid() {
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"');
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 function isBot(ua) {
@@ -46,7 +46,7 @@ async function sb(path, init) {
 
 function cardHtml({ title, desc, url }) {
   const img = 'https://og2vsalt-svg.github.io/rank/og.png';
-  return `<!doctype html><html lang="en"><head><meta charset="utf-8"/><title>${esc(title)}</title><meta name="description" content="${esc(desc)}"/><meta name="theme-color" content="#FFD60A"/><meta property="og:type" content="website"/><meta property="og:site_name" content="rankvault"/><meta property="og:title" content="${esc(title)}"/><meta property="og:description" content="${esc(desc)}"/><meta property="og:image" content="${img}"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:url" content="${esc(url)}"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="${esc(title)}"/><meta name="twitter:description" content="${esc(desc)}"/><meta name="twitter:image" content="${img}"/></head><body style="margin:0;background:#050506;color:#f5f5f7;font-family:-apple-system,Inter,sans-serif;padding:64px 28px"><p style="opacity:.5;letter-spacing:.12em;text-transform:uppercase;font-size:12px">rankvault · belfry</p><h1 style="letter-spacing:-.04em">${esc(title)}</h1><p style="color:#a1a1aa">${esc(desc)}</p></body></html>`;
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"/><title>${esc(title)}</title><meta name="description" content="${esc(desc)}"/><meta name="theme-color" content="#FFD60A"/><meta property="og:type" content="website"/><meta property="og:site_name" content="rankvault"/><meta property="og:title" content="${esc(title)}"/><meta property="og:description" content="${esc(desc)}"/><meta property="og:image" content="${img}"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:url" content="${esc(url)}"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="${esc(title)}"/><meta name="twitter:description" content="${esc(desc)}"/><meta name="twitter:image" content="${img}"/></head><body style="margin:0;background:#050506;color:#f5f5f7;font-family:-apple-system,Inter,sans-serif;padding:64px 28px"><p style="opacity:.5;letter-spacing:.12em;text-transform:uppercase;font-size:12px">rankvault · vesper</p><h1 style="letter-spacing:-.04em">${esc(title)}</h1><p style="color:#a1a1aa">${esc(desc)}</p></body></html>`;
 }
 
 export default async function handler(req, res) {
@@ -59,14 +59,14 @@ export default async function handler(req, res) {
 
   try {
     if (req.method === 'GET' && (req.query.card === '1' || isBot(ua))) {
-      const dest = `${proto}://${host}/belfry${id ? '/' + encodeURIComponent(id) : ''}`;
-      let title = 'belfry — a watch, not a drawer';
-      let desc = 'Ring a time and a line. Not a file cabinet. Discord unfurls /belfry.';
+      const dest = `${proto}://${host}/vesper${id ? '/' + encodeURIComponent(id) : ''}`;
+      let title = 'vesper — a watch, not a drawer';
+      let desc = 'Ring a time and a line. Not a file cabinet. Discord unfurls /vesper.';
       if (id) {
-        const rows = await sb(`belfry_bells?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
+        const rows = await sb(`vesper_bells?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
         const bell = Array.isArray(rows) ? rows[0] : null;
         if (bell) {
-          title = `${bell.title} — belfry`;
+          title = `${bell.title} — vesper`;
           desc = `${bell.when_note || 'a watch'} · ${bell.body || 'a line on the board'}`;
         }
       }
@@ -81,12 +81,12 @@ export default async function handler(req, res) {
 
     if (req.method === 'GET') {
       if (id) {
-        const rows = await sb(`belfry_bells?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
+        const rows = await sb(`vesper_bells?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
         const bell = Array.isArray(rows) ? rows[0] : null;
         if (!bell) return res.status(404).json({ error: 'bell not found' });
         return res.status(200).json({ ok: true, bell });
       }
-      const rows = await sb('belfry_bells?select=*&order=created_at.desc&limit=40');
+      const rows = await sb('vesper_bells?select=*&order=created_at.desc&limit=40');
       return res.status(200).json({ ok: true, bells: rows || [] });
     }
 
@@ -100,12 +100,12 @@ export default async function handler(req, res) {
         body: body.body ? String(body.body).slice(0, 500) : null,
         author: body.author ? String(body.author).slice(0, 80) : null,
       };
-      await sb('belfry_bells', { method: 'POST', body: JSON.stringify(row) });
-      return res.status(200).json({ ok: true, id: bellId, path: `/belfry/${bellId}` });
+      await sb('vesper_bells', { method: 'POST', body: JSON.stringify(row) });
+      return res.status(200).json({ ok: true, id: bellId, path: `/vesper/${bellId}` });
     }
 
     return res.status(405).json({ error: 'method not allowed' });
   } catch (err) {
-    return res.status(500).json({ error: err.message || 'belfry failed' });
+    return res.status(500).json({ error: err.message || 'vesper failed' });
   }
 }

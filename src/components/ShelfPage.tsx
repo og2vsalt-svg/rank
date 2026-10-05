@@ -1,53 +1,68 @@
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { listPublicShares, type CloudMeta } from '../lib/cloudShare';
-
-function pretty(n: number) {
-  if (n < 1024) return `${n} B`;
-  if (n < 1024 * 1024) return `${Math.round(n / 1024)} KB`;
-  if (n < 1024 * 1024 * 1024) return `${(n / (1024 * 1024)).toFixed(1)} MB`;
-  return `${(n / (1024 * 1024 * 1024)).toFixed(2)} GB`;
-}
+import { prettySize, uploadShare } from '../lib/db';
+import { useRouter } from './Router';
 
 export default function ShelfPage() {
-  const [rows, setRows] = useState<CloudMeta[]>([]);
-  const [err, setErr] = useState('');
-  const [q, setQ] = useState('');
+  const { navigate } = useRouter();
+  const [file, setFile] = useState<File | null>(null);
+  const [caption, setCaption] = useState('');
+  const [author, setAuthor] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const [link, setLink] = useState('');
 
-  useEffect(() => {
-    listPublicShares(40).then(setRows).catch(() => setErr('shelf could not be read'));
-  }, []);
+  const warn = useMemo(() => {
+    if (!file) return '';
+    if (file.size > 80 * 1024 * 1024) return 'this one is large. the tab may feel slow while it uploads. nothing is blocked.';
+    if (file.size > 20 * 1024 * 1024) return 'over 20 MB. it will go through, just give it a moment.';
+    return '';
+  }, [file]);
 
-  const shown = rows.filter((r) => !q || r.name.toLowerCase().includes(q.toLowerCase()) || (r.author || '').toLowerCase().includes(q.toLowerCase()));
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!file) return;
+    setBusy(true);
+    setError('');
+    try {
+      const row = await uploadShare(file, caption.trim(), author.trim());
+      const url = `${window.location.origin}/s/${row.id}`;
+      setLink(url);
+      navigate('board', row.id);
+    } catch (err) {
+      setError(err instanceof Error ? err.message.slice(0, 220) : 'upload failed');
+    } finally {
+      setBusy(false);
+    }
+  }
 
   return (
-    <div className="mesh min-h-screen">
+    <div className="min-h-screen bg-[#050506] text-white">
       <Navbar />
-      <main className="pt-24 pb-20 px-5 max-w-5xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}>
-          <p className="text-[#0a84ff] text-sm font-medium mb-2">shelf</p>
-          <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-white mb-3">what already landed.</h1>
-          <p className="text-neutral-400 max-w-xl mb-6">Public rows from the share table. Open one, or copy the Discord card. Nothing here is capped.</p>
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="filter by name" className="mb-6 w-full sm:w-72 px-4 py-2.5 rounded-full bg-white/5 border border-white/10 text-sm outline-none" />
-        </motion.div>
-        {err && <p className="text-sm text-red-300">{err}</p>}
-        <div className="grid sm:grid-cols-2 gap-3">
-          {shown.map((row, i) => (
-            <motion.a
-              key={row.id}
-              href={`${location.origin}/s/${row.id}`}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: Math.min(i, 8) * 0.04, duration: 0.35 }}
-              className="glass rounded-3xl p-4 hover:-translate-y-0.5 transition"
-            >
-              <p className="text-white text-sm font-medium truncate">{row.name}</p>
-              <p className="text-xs text-neutral-500 mt-1">{pretty(row.size)} · {row.type || 'file'}{row.author ? ` · ${row.author}` : ''}</p>
-            </motion.a>
-          ))}
-        </div>
-        {!shown.length && !err && <p className="text-sm text-neutral-500">nothing public yet. file a drop from vault, strake, or manifest.</p>}
+      <main className="max-w-xl mx-auto px-5 pt-24 pb-20">
+        <motion.p initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="text-[#0a84ff] text-sm mb-3">shelf</motion.p>
+        <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }} className="text-4xl font-semibold tracking-tight mb-3">
+          Put a file on the shelf.
+        </motion.h1>
+        <p className="text-neutral-400 mb-8 leading-relaxed">
+          It lands in the shared database and gets a link you can paste in Discord. Older desks stay where they are. There is no size cap, only a note if the upload might drag.
+        </p>
+        <form onSubmit={onSubmit} className="rounded-[28px] border border-white/10 bg-white/[0.04] p-5 shadow-[0_20px_80px_rgba(0,0,0,0.35)]">
+          <label className="block rounded-2xl border border-dashed border-white/15 bg-black/30 px-4 py-8 text-center cursor-pointer hover:border-white/30 transition">
+            <input type="file" className="hidden" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+            <span className="block text-sm text-neutral-200">{file ? file.name : 'Choose a file from this computer'}</span>
+            <span className="block text-xs text-neutral-500 mt-1">{file ? prettySize(file.size) : 'anything you can open locally'}</span>
+          </label>
+          {warn && <p className="mt-3 text-sm text-amber-200/90">{warn}</p>}
+          <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="your name, optional" className="mt-4 w-full rounded-2xl bg-black/40 border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/60" />
+          <textarea value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="a short caption for the card" rows={3} className="mt-3 w-full rounded-2xl bg-black/40 border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/60" />
+          {error && <p className="mt-3 text-sm text-red-300">{error}</p>}
+          {link && <p className="mt-3 text-sm text-neutral-300 break-all">{link}</p>}
+          <button disabled={!file || busy} className="mt-4 w-full rounded-full bg-white text-black py-3 text-sm font-medium disabled:opacity-40 active:scale-[0.99] transition">
+            {busy ? 'sending…' : 'share this file'}
+          </button>
+        </form>
       </main>
     </div>
   );

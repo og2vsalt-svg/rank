@@ -13,15 +13,12 @@ export default function Hero() {
           drop a file.<br />share only if you want.
         </motion.h1>
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.12 }} className="text-neutral-400 text-lg leading-relaxed max-w-xl mb-8">
-          a quiet vault for clips, docs, and dumps. hang a file, tie a link, or keep a tiller line. no size lock. just a heads up if the tab might lag.
+          A quiet place for clips, docs, and dumps. The shelf writes the file into the shared database. Large drops get a warning, not a refusal. Older desks are still on their routes.
         </motion.p>
         <div className="flex flex-wrap gap-3 mb-12">
-          <button onClick={() => navigate('nightglass')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">listening shelf</button>
-          <button onClick={() => navigate('tiller')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">keep a line</button>
-          <button onClick={() => navigate('fiferail')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">hang a file</button>
-          <button onClick={() => navigate('gantline')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">tie a link</button>
-          <button onClick={() => navigate('forefoot')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">store a file</button>
-          <button onClick={() => navigate('catfall')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">lower a file</button>
+          <button onClick={() => navigate('shelf')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">share a file</button>
+          <button onClick={() => navigate('board')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">public board</button>
+          <button onClick={() => navigate('receipt')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">write a receipt</button>
           <button onClick={() => navigate('vault')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">open vault</button>
           <a href="#features" className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">see features</a>
         </div>

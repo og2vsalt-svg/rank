@@ -1,89 +1,57 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishShare, shareUrls } from '../lib/cloudShare';
-
-async function sha256(buf: ArrayBuffer) {
-  const hash = await crypto.subtle.digest('SHA-256', buf);
-  return [...new Uint8Array(hash)].map((b) => b.toString(16).padStart(2, '0')).join('');
-}
+import { getReceipt, saveReceipt } from '../lib/db';
+import { useRouter } from './Router';
 
 export default function ReceiptPage() {
-  const [busy, setBusy] = useState(false);
-  const [warn, setWarn] = useState('');
-  const [err, setErr] = useState('');
-  const [digest, setDigest] = useState('');
-  const [embed, setEmbed] = useState('');
-  const [meta, setMeta] = useState('');
+  const { shareId, navigate } = useRouter();
+  const [name, setName] = useState('');
+  const [note, setNote] = useState('');
+  const [author, setAuthor] = useState('');
+  const [saved, setSaved] = useState<any>(null);
+  const [error, setError] = useState('');
 
-  const onFile = async (list: FileList | null) => {
-    const file = list?.[0];
-    if (!file) return;
-    setErr('');
-    setEmbed('');
-    setDigest('');
-    setWarn(file.size > 40 * 1024 * 1024 ? 'hashing a chunky file can stall the tab. no hard limit.' : '');
-    setBusy(true);
+  useEffect(() => {
+    if (shareId) getReceipt(shareId).then(setSaved);
+  }, [shareId]);
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError('');
     try {
-      const buf = await file.arrayBuffer();
-      const hash = await sha256(buf);
-      setDigest(hash);
-      const text = [
-        'rankvault receipt',
-        `name: ${file.name}`,
-        `type: ${file.type || 'application/octet-stream'}`,
-        `size: ${file.size}`,
-        `sha-256: ${hash}`,
-        `when: ${new Date().toISOString()}`,
-      ].join('\n');
-      setMeta(text);
-      const id = 'rcpt-' + hash.slice(0, 12);
-      const dataUrl = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
-      const res = await publishShare({
-        id,
-        name: file.name.replace(/\.[^.]+$/, '') + '.receipt.txt',
-        type: 'text/plain',
-        size: text.length,
-        dataUrl,
-      });
-      if (!res.ok) {
-        setErr(res.error || 'receipt published locally only');
-        return;
-      }
-      const urls = shareUrls(res.id || id);
-      setEmbed(urls.embed);
-      try { await navigator.clipboard.writeText(urls.embed); } catch {}
-    } catch (e: any) {
-      setErr(e?.message || 'could not hash file');
-    } finally {
-      setBusy(false);
+      const row = await saveReceipt({ name: name.trim(), note: note.trim(), author: author.trim(), size: 0 });
+      setSaved(row);
+      navigate('receipt', row.id);
+    } catch (err) {
+      setError(err instanceof Error ? err.message.slice(0, 180) : 'could not save the receipt');
     }
-  };
+  }
 
   return (
-    <div className="mesh min-h-screen">
+    <div className="min-h-screen bg-[#050506] text-white">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-8">
-          <p className="text-[#0a84ff] text-sm mb-2">receipt</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">keep the hash. ship only the slip.</h1>
-          <p className="text-neutral-400 text-sm mb-6">the original stays on this machine. a sha-256 receipt goes to the share db so discord can show a clean card.</p>
-          <label
-            className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition"
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => { e.preventDefault(); onFile(e.dataTransfer.files); }}
-          >
-            <input type="file" className="hidden" onChange={(e) => onFile(e.target.files)} />
-            <p className="text-white font-medium">{busy ? 'weighing…' : 'drop a local file'}</p>
-            <p className="text-xs text-neutral-500 mt-2">no hard limit. we only warn when hashing might feel slow.</p>
-          </label>
-          {warn && <p className="text-xs text-amber-300/80 mt-4">{warn}</p>}
-          {err && <p className="text-xs text-red-400 mt-4">{err}</p>}
-          {digest && <p className="text-xs text-neutral-400 mt-4 break-all font-mono">{digest}</p>}
-          {meta && <pre className="text-[11px] text-neutral-500 mt-3 whitespace-pre-wrap">{meta}</pre>}
-          {embed && <p className="text-xs text-neutral-500 mt-4 break-all">discord card copied: {embed}</p>}
-        </motion.div>
-      </div>
+      <main className="max-w-xl mx-auto px-5 pt-24 pb-20">
+        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-[#ffd60a] text-sm mb-3">receipt</motion.p>
+        <h1 className="text-4xl font-semibold tracking-tight mb-3">A note that travels with a handoff.</h1>
+        <p className="text-neutral-400 mb-8">Not another drawer. Write who it is for, and the link carries a Discord card.</p>
+        {saved ? (
+          <article className="rounded-[28px] border border-white/10 bg-white/[0.04] p-5">
+            <p className="text-xs text-neutral-500 mb-2">receipt {saved.id}</p>
+            <h2 className="text-2xl font-medium">{saved.name}</h2>
+            <p className="text-neutral-300 mt-2 leading-relaxed">{saved.note || 'no note'}</p>
+            <p className="text-sm text-neutral-500 mt-4">{saved.author || 'unsigned'} · {window.location.origin}/receipt/{saved.id}</p>
+          </article>
+        ) : (
+          <form onSubmit={onSubmit} className="rounded-[28px] border border-white/10 bg-white/[0.04] p-5 space-y-3">
+            <input required value={name} onChange={(e) => setName(e.target.value)} placeholder="what changed hands" className="w-full rounded-2xl bg-black/40 border border-white/10 px-4 py-3 text-sm outline-none" />
+            <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="from" className="w-full rounded-2xl bg-black/40 border border-white/10 px-4 py-3 text-sm outline-none" />
+            <textarea required value={note} onChange={(e) => setNote(e.target.value)} placeholder="why it matters" rows={4} className="w-full rounded-2xl bg-black/40 border border-white/10 px-4 py-3 text-sm outline-none" />
+            {error && <p className="text-sm text-red-300">{error}</p>}
+            <button className="w-full rounded-full bg-white text-black py-3 text-sm font-medium">save receipt</button>
+          </form>
+        )}
+      </main>
     </div>
   );
 }

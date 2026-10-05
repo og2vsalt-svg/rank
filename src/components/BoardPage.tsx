@@ -1,77 +1,65 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
+import { getShare, listShares, prettySize } from '../lib/db';
+import { useRouter } from './Router';
 
-type Card = { id: string; text: string; col: 'inbox' | 'doing' | 'done' };
-
-const KEY = 'rankvault-board';
+type Share = {
+  id: string;
+  name: string;
+  mime?: string;
+  size: number;
+  file_url: string;
+  author?: string;
+  caption?: string;
+  created_at: string;
+};
 
 export default function BoardPage() {
-  const [cards, setCards] = useState<Card[]>(() => {
-    try {
-      return JSON.parse(localStorage.getItem(KEY) || '[]');
-    } catch {
-      return [];
-    }
-  });
-  const [draft, setDraft] = useState('');
+  const { shareId } = useRouter();
+  const [rows, setRows] = useState<Share[]>([]);
+  const [focus, setFocus] = useState<Share | null>(null);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    localStorage.setItem(KEY, JSON.stringify(cards));
-  }, [cards]);
+    listShares().then(setRows).catch(() => setError('the board did not load'));
+  }, []);
 
-  const add = () => {
-    const text = draft.trim();
-    if (!text) return;
-    setCards((c) => [...c, { id: Date.now().toString(36), text, col: 'inbox' }]);
-    setDraft('');
-  };
-
-  const move = (id: string, col: Card['col']) => setCards((c) => c.map((x) => (x.id === id ? { ...x, col } : x)));
-  const kill = (id: string) => setCards((c) => c.filter((x) => x.id !== id));
-
-  const cols: Card['col'][] = ['inbox', 'doing', 'done'];
+  useEffect(() => {
+    if (!shareId) return;
+    getShare(shareId).then(setFocus).catch(() => setFocus(null));
+  }, [shareId]);
 
   return (
-    <div className="mesh min-h-screen">
+    <div className="min-h-screen bg-[#050506] text-white">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-6xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}>
-          <p className="text-[#0a84ff] text-sm mb-2">board</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">a quiet scratch board.</h1>
-          <p className="text-neutral-400 text-sm mb-6">not the vault. just notes you can slide around.</p>
-          <div className="flex gap-2 mb-6">
-            <input
-              value={draft}
-              onChange={(e) => setDraft(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && add()}
-              placeholder="drop a thought"
-              className="flex-1 rounded-full bg-white/5 border border-white/10 px-4 py-2.5 text-sm outline-none"
-            />
-            <button onClick={add} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium">add</button>
-          </div>
-          <div className="grid md:grid-cols-3 gap-4">
-            {cols.map((col) => (
-              <div key={col} className="glass rounded-[28px] p-4 min-h-[280px]">
-                <p className="text-xs uppercase tracking-wider text-neutral-500 mb-3">{col}</p>
-                <div className="space-y-2">
-                  {cards.filter((c) => c.col === col).map((c) => (
-                    <div key={c.id} className="rounded-2xl bg-white/5 border border-white/8 p-3">
-                      <p className="text-sm text-white mb-2">{c.text}</p>
-                      <div className="flex gap-1 flex-wrap">
-                        {cols.filter((x) => x !== col).map((x) => (
-                          <button key={x} onClick={() => move(c.id, x)} className="text-[11px] text-neutral-400 hover:text-white px-2 py-1 rounded-full glass">{x}</button>
-                        ))}
-                        <button onClick={() => kill(c.id)} className="text-[11px] text-neutral-500 hover:text-red-400 px-2 py-1">toss</button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+      <main className="max-w-3xl mx-auto px-5 pt-24 pb-20">
+        <p className="text-[#64d2ff] text-sm mb-3">board</p>
+        <h1 className="text-4xl font-semibold tracking-tight mb-3">What people left out.</h1>
+        <p className="text-neutral-400 mb-8">Recent public shares. Paste /board or /s/id in Discord and the card follows the link.</p>
+        {focus && (
+          <motion.article initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mb-6 rounded-[28px] border border-white/10 bg-white/[0.05] p-5">
+            <p className="text-xs uppercase tracking-wide text-neutral-500 mb-2">open share</p>
+            <h2 className="text-2xl font-medium tracking-tight">{focus.name}</h2>
+            <p className="text-neutral-400 text-sm mt-1">{focus.caption || 'no caption'} · {prettySize(focus.size)}{focus.author ? ` · ${focus.author}` : ''}</p>
+            {focus.mime?.startsWith('image/') && <img src={focus.file_url} alt="" className="mt-4 rounded-2xl max-h-80 object-cover" />}
+            <a href={focus.file_url} className="inline-flex mt-4 text-sm text-[#0a84ff]" target="_blank" rel="noreferrer">download</a>
+          </motion.article>
+        )}
+        {error && <p className="text-red-300 text-sm mb-4">{error}</p>}
+        <div className="grid gap-3">
+          {rows.map((row, i) => (
+            <motion.a key={row.id} href={`/s/${row.id}`} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }} className="rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-3 hover:bg-white/[0.06] transition">
+              <div className="flex items-baseline justify-between gap-3">
+                <span className="font-medium truncate">{row.name}</span>
+                <span className="text-xs text-neutral-500 shrink-0">{prettySize(row.size)}</span>
               </div>
-            ))}
-          </div>
-        </motion.div>
-      </div>
+              <p className="text-sm text-neutral-500 truncate mt-1">{row.caption || row.author || row.id}</p>
+            </motion.a>
+          ))}
+          {!rows.length && !error && <p className="text-neutral-500 text-sm">Nothing public yet. The shelf is the place to leave one.</p>}
+        </div>
+      </main>
     </div>
   );
 }

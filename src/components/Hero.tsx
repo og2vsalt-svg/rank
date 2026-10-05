@@ -16,9 +16,9 @@ export default function Hero() {
           A quiet place for clips, docs, and dumps. The shelf writes the file into the shared database. Large drops get a warning, not a refusal. Older desks are still on their routes.
         </motion.p>
         <div className="flex flex-wrap gap-3 mb-12">
-          <button onClick={() => navigate('ashlar')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">write a letter</button>
-          <button onClick={() => navigate('tympanum')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">see the face</button>
-          <button onClick={() => navigate('nosing')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">file a due slip</button>
+          <button onClick={() => navigate('plinth')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">set a plinth</button>
+          <button onClick={() => navigate('corbel')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">note a load</button>
+          <button onClick={() => navigate('trundle')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">file a slip</button>
           <button onClick={() => navigate('vault')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">open vault</button>
           <a href="#features" className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">see features</a>
         </div>

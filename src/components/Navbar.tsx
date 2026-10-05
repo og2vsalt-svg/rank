@@ -5,13 +5,12 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'scuttle', label: 'scuttle' },
   { to: 'quarter', label: 'quarter' },
   { to: 'bilge', label: 'bilge' },
   { to: 'luff', label: 'luff' },
   { to: 'ketch', label: 'ketch' },
   { to: 'beacon', label: 'beacon' },
-  { to: 'garboard', label: 'garboard' },
-  { to: 'channels', label: 'channels' },
   { to: 'vault', label: 'vault' },
 ];
 
@@ -19,6 +18,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'hosting',
     items: [
+      { to: 'scuttle', label: 'scuttle' },
       { to: 'quarter', label: 'quarter' },
       { to: 'luff', label: 'luff' },
       { to: 'ketch', label: 'ketch' },
@@ -88,6 +88,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'notes',
     items: [
+      { to: 'scuttle', label: 'scuttle' },
       { to: 'quarter', label: 'quarter' },
       { to: 'bilge', label: 'bilge' },
       { to: 'beacon', label: 'beacon' },
@@ -104,6 +105,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'scuttle', label: 'scuttle' },
       { to: 'quarter', label: 'quarter' },
       { to: 'luff', label: 'luff' },
       { to: 'ketch', label: 'ketch' },
@@ -246,7 +248,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">paste /quarter, /bilge, /luff, or /s in Discord for a card. older desks stay on their routes.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">paste /scuttle, /quarter, /luff, or /s in Discord for a card. older desks stay on their routes.</p>
         </div>
       </div>
     </nav>

@@ -5,6 +5,7 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'vitrine', label: 'vitrine' },
   { to: 'shelf', label: 'shelf' },
   { to: 'satchel', label: 'satchel' },
   { to: 'board', label: 'board' },
@@ -13,7 +14,7 @@ const primary: NavItem[] = [
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
-  { title: 'new', items: [{ to: 'shelf', label: 'shelf' }, { to: 'satchel', label: 'satchel' }, { to: 'board', label: 'board' }, { to: 'receipt', label: 'receipt' }] },
+  { title: 'new', items: [{ to: 'vitrine', label: 'vitrine' }, { to: 'pressmark', label: 'pressmark' }, { to: 'shelf', label: 'shelf' }, { to: 'board', label: 'board' }] },
   { title: 'hosting', items: [{ to: 'vault', label: 'vault' }, { to: 'scuttle', label: 'scuttle' }, { to: 'forefoot', label: 'forefoot' }, { to: 'catfall', label: 'catfall' }, { to: 'fiferail', label: 'fiferail' }, { to: 'gantline', label: 'gantline' }, { to: 'atelier', label: 'atelier' }, { to: 'quarter', label: 'quarter' }, { to: 'hawsepipe', label: 'hawsepipe' }, { to: 'bollard', label: 'bollard' }, { to: 'unfurl', label: 'unfurl' }] },
   { title: 'notes', items: [{ to: 'nightglass', label: 'nightglass' }, { to: 'quire', label: 'quire' }, { to: 'docket', label: 'docket' }, { to: 'bilge', label: 'bilge' }, { to: 'luff', label: 'luff' }, { to: 'ketch', label: 'ketch' }, { to: 'beacon', label: 'beacon' }, { to: 'vesper', label: 'vesper' }, { to: 'ledger', label: 'ledger' }] },
   { title: 'share', items: [{ to: 'shelf', label: 'shelf' }, { to: 'satchel', label: 'satchel' }, { to: 'garboard', label: 'garboard' }, { to: 'channels', label: 'channels' }, { to: 'wharf', label: 'wharf' }, { to: 'passage', label: 'passage' }, { to: 'folio', label: 'folio' }, { to: 'hawse', label: 'hawse' }, { to: 'courier', label: 'courier' }] },

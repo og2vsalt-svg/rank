@@ -15,6 +15,8 @@ const SUPABASE_KEY =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
 
 const COPY = {
+  vitrine: ['Vitrine — rankvault', 'Dress a Discord card, then drop the local file into the shared shelf. Large files are warned, never refused.'],
+  pressmark: ['Pressmark — rankvault', 'A painted 1200×630 cover, filed so Discord can unfurl a real image.'],
   shelf: ['Shelf — rankvault', 'Drop a local file into the shared shelf. Large files are warned, never refused.'],
   board: ['Board — rankvault', 'Public files people left out. Paste the link in Discord for a card.'],
   receipt: ['Receipt — rankvault', 'A short handoff note that travels with the link.'],

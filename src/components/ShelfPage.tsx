@@ -2,10 +2,7 @@ import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
 import { prettySize, uploadShare } from '../lib/db';
-import { useRouter } from './Router';
-
 export default function ShelfPage() {
-  const { navigate } = useRouter();
   const [file, setFile] = useState<File | null>(null);
   const [caption, setCaption] = useState('');
   const [author, setAuthor] = useState('');
@@ -29,7 +26,6 @@ export default function ShelfPage() {
       const row = await uploadShare(file, caption.trim(), author.trim());
       const url = `${window.location.origin}/s/${row.id}`;
       setLink(url);
-      navigate('board', row.id);
     } catch (err) {
       setError(err instanceof Error ? err.message.slice(0, 220) : 'upload failed');
     } finally {

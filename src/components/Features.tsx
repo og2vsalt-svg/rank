@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'vitrine', body: 'dress a Discord card before the file lands in the share table. no size gate, only a slowness note. /s unfurls the file.' },
+  { title: 'pressmark', body: 'paint a 1200×630 cover in the tab and file the png so Discord has a real image. not a vault drawer.' },
   { title: 'quire margin', body: 'a margin desk. one local file lands on the share table, and a short note sits beside it. discord unfurls /quire. slowness warning only.' },
   { title: 'docket list', body: 'a three-line list with an optional local file. not a drawer. /docket cards in discord. older desks stay.' },
   { title: 'nightglass', body: 'a listening shelf. a local file lands in the share table, and a short note sits beside it in its own table. discord unfurls /nightglass. slowness warning only. not a vault drawer.' },

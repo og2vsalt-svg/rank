@@ -1,0 +1,38 @@
+import atelier from '../lib/endpoints/atelier.js';
+import beacon from '../lib/endpoints/beacon.js';
+import card from '../lib/endpoints/card.js';
+import catfall from '../lib/endpoints/catfall.js';
+import cathead from '../lib/endpoints/cathead.js';
+import chock from '../lib/endpoints/chock.js';
+import desk from '../lib/endpoints/desk.js';
+import embed from '../lib/endpoints/embed.js';
+import ferry from '../lib/endpoints/ferry.js';
+import forefoot from '../lib/endpoints/forefoot.js';
+import ketch from '../lib/endpoints/ketch.js';
+import luff from '../lib/endpoints/luff.js';
+import quarter from '../lib/endpoints/quarter.js';
+import quay from '../lib/endpoints/quay.js';
+import scuttle from '../lib/endpoints/scuttle.js';
+import selvage from '../lib/endpoints/selvage.js';
+import share from '../lib/endpoints/share.js';
+import signal from '../lib/endpoints/signal.js';
+import stay from '../lib/endpoints/stay.js';
+import tide from '../lib/endpoints/tide.js';
+import tiller from '../lib/endpoints/tiller.js';
+import vesper from '../lib/endpoints/vesper.js';
+import wall from '../lib/endpoints/wall.js';
+
+const routes = {
+  atelier, beacon, card, catfall, cathead, chock, desk, embed, ferry, forefoot,
+  ketch, luff, quarter, quay, scuttle, selvage, share, signal, stay, tide,
+  tiller, vesper, wall,
+};
+
+export default function handler(req, res) {
+  const fromQuery = (req.query && req.query.name) || '';
+  const path = (req.url || '').split('?')[0];
+  const fromPath = path.split('/').filter(Boolean).pop() || '';
+  const name = String(fromQuery || fromPath || 'desk').toLowerCase();
+  const fn = routes[name] || desk;
+  return fn(req, res);
+}

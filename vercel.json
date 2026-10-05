@@ -3,30 +3,17 @@
   "outputDirectory": "dist",
   "framework": "vite",
   "rewrites": [
-    { "source": "/api/share", "destination": "/api/share" },
-    { "source": "/api/embed", "destination": "/api/embed" },
-    { "source": "/api/desk", "destination": "/api/desk" },
-    { "source": "/api/tide", "destination": "/api/tide" },
-    { "source": "/api/card", "destination": "/api/card" },
-    { "source": "/api/ferry", "destination": "/api/ferry" },
-    { "source": "/api/cathead", "destination": "/api/cathead" },
-    { "source": "/api/catfall", "destination": "/api/catfall" },
-    { "source": "/api/wall", "destination": "/api/wall" },
-    { "source": "/api/stay", "destination": "/api/stay" },
-    { "source": "/api/forefoot", "destination": "/api/forefoot" },
-    { "source": "/api/chock", "destination": "/api/chock" },
-    { "source": "/api/selvage", "destination": "/api/selvage" },
-    { "source": "/api/vesper", "destination": "/api/vesper" },
-    { "source": "/api/luff", "destination": "/api/luff" },
-    { "source": "/api/ketch", "destination": "/api/ketch" },
-    { "source": "/api/beacon", "destination": "/api/beacon" },
-    { "source": "/api/signal", "destination": "/api/signal" },
-    { "source": "/api/quarter", "destination": "/api/quarter" },
-    { "source": "/api/scuttle", "destination": "/api/scuttle" },
-    { "source": "/api/atelier", "destination": "/api/atelier" },
-    { "source": "/api/quay", "destination": "/api/quay" },
-    { "source": "/api/tiller", "destination": "/api/tiller" },
-    { "source": "/api/:desk", "destination": "/api/desk?desk=:desk" },
-    { "source": "/((?!api/|assets/).*)", "destination": "/index.html" }
+    {
+      "source": "/api/gate",
+      "destination": "/api/gate"
+    },
+    {
+      "source": "/api/:name",
+      "destination": "/api/gate?name=:name"
+    },
+    {
+      "source": "/((?!api/|assets/).*)",
+      "destination": "/index.html"
+    }
   ]
 }

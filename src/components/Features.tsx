@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'spunyarn', body: 'tie a short note to a local file. bytes land in the share table. discord unfurls /spunyarn. large drops are warned, never refused. not a vault drawer.' },
+  { title: 'thimble', body: 'a ring of spunyarn ids you can pass around. the files stay on their yarns. discord unfurls /thimble.' },
   { title: 'plinth', body: 'name a place, write a dedication, and the local file lands in the share table. discord unfurls /plinth and /s. slowness warning only. not a vault drawer.' },
   { title: 'corbel', body: 'write what a file is holding up, and who it carries. bytes land in the share table. discord unfurls /corbel and /s. large drops are warned, never refused.' },
   { title: 'vitrine', body: 'dress a Discord card before the file lands in the share table. no size gate, only a slowness note. /s unfurls the file.' },

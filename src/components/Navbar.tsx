@@ -13,90 +13,11 @@ const primary: NavItem[] = [
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
-  {
-    title: 'new',
-    items: [
-      { to: 'shelf', label: 'shelf' },
-      { to: 'board', label: 'board' },
-      { to: 'receipt', label: 'receipt' },
-    ],
-  },
-  {
-    title: 'hosting',
-    items: [
-      { to: 'hawsepipe', label: 'hawsepipe' },
-      { to: 'stemhead', label: 'stemhead' },
-      { to: 'counterrail', label: 'counterrail' },
-      { to: 'atelier', label: 'atelier' },
-      { to: 'fiferail', label: 'fiferail' },
-      { to: 'gantline', label: 'gantline' },
-      { to: 'scuttle', label: 'scuttle' },
-      { to: 'quarter', label: 'quarter' },
-      { to: 'luff', label: 'luff' },
-      { to: 'ketch', label: 'ketch' },
-      { to: 'beacon', label: 'beacon' },
-      { to: 'garboard', label: 'garboard' },
-      { to: 'channels', label: 'channels' },
-      { to: 'chock', label: 'chock' },
-      { to: 'mizzen', label: 'mizzen' },
-      { to: 'kelson', label: 'kelson' },
-      { to: 'forefoot', label: 'forefoot' },
-      { to: 'swifter', label: 'swifter' },
-      { to: 'catfall', label: 'catfall' },
-      { to: 'spirket', label: 'spirket' },
-      { to: 'bowsprit', label: 'bowsprit' },
-      { to: 'chainplate', label: 'chainplate' },
-      { to: 'wharf', label: 'wharf' },
-      { to: 'lashing', label: 'lashing' },
-      { to: 'wale', label: 'wale' },
-      { to: 'flemish', label: 'flemish' },
-      { to: 'gammon', label: 'gammon' },
-      { to: 'davits', label: 'davits' },
-      { to: 'hawser', label: 'hawser' },
-      { to: 'kedge', label: 'kedge' },
-      { to: 'binnacle', label: 'binnacle' },
-      { to: 'rabbet', label: 'rabbet' },
-      { to: 'floors', label: 'floors' },
-      { to: 'chestree', label: 'chestree' },
-      { to: 'oakum', label: 'oakum' },
-      { to: 'painter', label: 'painter' },
-      { to: 'stemson', label: 'stemson' },
-      { to: 'kevel', label: 'kevel' },
-      { to: 'thwart', label: 'thwart' },
-      { to: 'pintle', label: 'pintle' },
-      { to: 'rowlock', label: 'rowlock' },
-      { to: 'carvel', label: 'carvel' },
-      { to: 'bearding', label: 'bearding' },
-      { to: 'bulwark', label: 'bulwark' },
-      { to: 'coaming', label: 'coaming' },
-      { to: 'knee', label: 'knee' },
-      { to: 'transom', label: 'transom' },
-      { to: 'gunwale', label: 'gunwale' },
-      { to: 'rider', label: 'rider' },
-      { to: 'scupper', label: 'scupper' },
-      { to: 'taffrail', label: 'taffrail' },
-      { to: 'forepeak', label: 'forepeak' },
-      { to: 'bitt', label: 'bitt' },
-      { to: 'lazarette', label: 'lazarette' },
-      { to: 'skylight', label: 'skylight' },
-      { to: 'passage', label: 'passage' },
-      { to: 'shuttle', label: 'shuttle' },
-      { to: 'marline', label: 'marline' },
-      { to: 'deadeye', label: 'deadeye' },
-      { to: 'hounds', label: 'hounds' },
-      { to: 'seizing', label: 'seizing' },
-      { to: 'fairlead', label: 'fairlead' },
-      { to: 'treenail', label: 'treenail' },
-      { to: 'capstan', label: 'capstan' },
-      { to: 'folio', label: 'folio' },
-      { to: 'selvage', label: 'selvage' },
-      { to: 'bollard', label: 'bollard' },
-      { to: 'unfurl', label: 'unfurl' },
-      { to: 'vault', label: 'vault' },
-      { to: 'waybill', label: 'waybill' },
-      { to: 'counter', label: 'counter' },
-    ],
-  },
+  { title: 'new', items: [{ to: 'shelf', label: 'shelf' }, { to: 'board', label: 'board' }, { to: 'receipt', label: 'receipt' }] },
+  { title: 'hosting', items: [{ to: 'vault', label: 'vault' }, { to: 'scuttle', label: 'scuttle' }, { to: 'forefoot', label: 'forefoot' }, { to: 'catfall', label: 'catfall' }, { to: 'fiferail', label: 'fiferail' }, { to: 'gantline', label: 'gantline' }, { to: 'atelier', label: 'atelier' }, { to: 'quarter', label: 'quarter' }, { to: 'hawsepipe', label: 'hawsepipe' }, { to: 'bollard', label: 'bollard' }, { to: 'unfurl', label: 'unfurl' }] },
+  { title: 'notes', items: [{ to: 'nightglass', label: 'nightglass' }, { to: 'quire', label: 'quire' }, { to: 'docket', label: 'docket' }, { to: 'bilge', label: 'bilge' }, { to: 'luff', label: 'luff' }, { to: 'ketch', label: 'ketch' }, { to: 'beacon', label: 'beacon' }, { to: 'vesper', label: 'vesper' }, { to: 'ledger', label: 'ledger' }] },
+  { title: 'share', items: [{ to: 'shelf', label: 'shelf' }, { to: 'garboard', label: 'garboard' }, { to: 'channels', label: 'channels' }, { to: 'wharf', label: 'wharf' }, { to: 'passage', label: 'passage' }, { to: 'folio', label: 'folio' }, { to: 'hawse', label: 'hawse' }, { to: 'courier', label: 'courier' }] },
+  { title: 'tools', items: [{ to: 'hash', label: 'hash' }, { to: 'convert', label: 'convert' }, { to: 'diff', label: 'diff' }, { to: 'sounding', label: 'sounding' }, { to: 'counter', label: 'counter' }] },
 ];
 
 export default function Navbar() {
@@ -163,11 +84,6 @@ export default function Navbar() {
       </div>
       <div className={`border-t border-white/5 overflow-hidden transition-all duration-300 ease-out ${menuOpen ? 'max-h-[min(75vh,620px)] opacity-100' : 'max-h-0 opacity-0'}`}>
         <div className="max-h-[min(75vh,620px)] overflow-y-auto px-4 sm:px-5 py-3">
-          <div className="flex gap-2 overflow-x-auto pb-3 mb-1">
-            {primary.map((l) => (
-              <button key={`chip-${l.to}`} onClick={() => go(l.to)} className="shrink-0 px-3.5 py-1.5 rounded-full bg-white/8 border border-white/10 text-[13px] text-neutral-200">{l.label}</button>
-            ))}
-          </div>
           <div className="space-y-1.5">
             {groups.map((g) => {
               const open = openGroup === g.title;

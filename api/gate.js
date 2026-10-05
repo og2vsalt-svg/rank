@@ -34,7 +34,7 @@ const routes = {
   atelier, beacon, card, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
   docket, jackstay, ketch, luff, nightglass, quarter, quay, scuttle, selvage, quire, share, signal, stay, tide,
   tiller, vesper, wall, ribbon, loom: ribbon,
-  spunyarn, thimble: spunyarn,
+  spunyarn, eyelet: spunyarn,
   shelf, board: shelf, receipt: shelf, satchel: shelf,
   ashlar: shelf, tympanum: shelf, nosing: shelf,
   sill: shelf, keepsake: shelf, lintel: shelf, oriel: shelf,

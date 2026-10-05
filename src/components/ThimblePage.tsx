@@ -1,131 +1,58 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { useRouter } from './Router';
 
-const SB_URL = (
-  (import.meta as any).env?.VITE_SUPABASE_URL ||
-  'https://tqfocdktvjuwoiyfgesb.supabase.co'
-).replace(/\/$/, '');
-const SB_KEY =
-  (import.meta as any).env?.VITE_SUPABASE_ANON_KEY ||
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
-
-type Yarn = { id: string; file_name: string | null; note: string | null; author: string | null; share_id: string | null };
-type Ring = { id: string; title: string | null; note: string | null; accent: string | null; yarn_ids: string[] | null };
-
-function rid() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-}
-
-async function sb(path: string, init?: RequestInit) {
-  const res = await fetch(`${SB_URL}/rest/v1/${path}`, {
-    ...init,
-    headers: {
-      apikey: SB_KEY,
-      Authorization: `Bearer ${SB_KEY}`,
-      'Content-Type': 'application/json',
-      Prefer: 'return=representation',
-      ...(init?.headers || {}),
-    },
-  });
-  if (!res.ok) throw new Error((await res.text()).slice(0, 180) || 'request failed');
-  return res.json();
+function mint() {
+  const a = crypto.randomUUID().replace(/-/g, '').slice(0, 10);
+  const b = Date.now().toString(36);
+  return `${a}-${b}`;
 }
 
 export default function ThimblePage() {
-  const { shareId, navigate } = useRouter();
-  const [title, setTitle] = useState('');
-  const [note, setNote] = useState('');
-  const [raw, setRaw] = useState('');
-  const [busy, setBusy] = useState(false);
-  const [err, setErr] = useState('');
-  const [ring, setRing] = useState<Ring | null>(null);
-  const [yarns, setYarns] = useState<Yarn[]>([]);
-  const [made, setMade] = useState('');
+  const [ids, setIds] = useState<string[]>(() => Array.from({ length: 6 }, mint));
+  const [copied, setCopied] = useState('');
 
-  useEffect(() => {
-    if (!shareId) return;
-    let stop = false;
-    (async () => {
-      const rows = await sb(`thimbles?id=eq.${encodeURIComponent(shareId)}&select=*&limit=1`).catch(() => []);
-      const row = Array.isArray(rows) ? rows[0] : null;
-      if (stop || !row) return;
-      setRing(row);
-      const ids = (row.yarn_ids || []).filter(Boolean);
-      if (!ids.length) return;
-      const list = ids.map((id: string) => `id.eq.${encodeURIComponent(id)}`).join(',');
-      const found = await sb(`spunyarns?or=(${list})&select=id,file_name,note,author,share_id`).catch(() => []);
-      if (!stop) setYarns(Array.isArray(found) ? found : []);
-    })();
-    return () => { stop = true; };
-  }, [shareId]);
+  const more = () => setIds(Array.from({ length: 6 }, mint));
 
-  async function send() {
-    setErr('');
-    const yarn_ids = raw.split(/[\s,]+/).map((s) => s.trim()).filter(Boolean).slice(0, 24);
-    if (!title.trim()) {
-      setErr('name the ring');
-      return;
-    }
-    setBusy(true);
-    try {
-      const id = rid();
-      await sb('thimbles', {
-        method: 'POST',
-        body: JSON.stringify({ id, title: title.trim(), note: note.trim(), accent: '#FF9F0A', yarn_ids }),
-      });
-      const app = `${location.origin}/thimble/${id}`;
-      setMade(app);
-      try { await navigator.clipboard.writeText(app); } catch { /* optional */ }
-    } catch (e: any) {
-      setErr(e?.message || 'could not close the ring');
-    } finally {
-      setBusy(false);
-    }
-  }
+  const copy = async (id: string) => {
+    await navigator.clipboard.writeText(id);
+    setCopied(id);
+    setTimeout(() => setCopied(''), 1200);
+  };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <main className="max-w-xl mx-auto px-5 pt-24 pb-20">
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}>
-          <p className="text-xs uppercase tracking-[0.18em] text-[#ff9f0a] mb-2">thimble</p>
-          <h1 className="text-3xl font-semibold tracking-tight text-white mb-2">a ring of yarns</h1>
-          <p className="text-sm text-neutral-400 mb-6 leading-relaxed">
-            Collect spunyarn ids into one pass-around link. The files stay on their yarns. This is a reading ring, not a vault. Discord unfurls /thimble.
+      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          className="glass rounded-[32px] p-8"
+        >
+          <p className="text-[#0a84ff] text-sm mb-2">thimble</p>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">short ids for quiet links.</h1>
+          <p className="text-neutral-400 text-sm mb-6">
+            mint share-shaped tokens on this device. use them as drop ids if you like.
           </p>
-        </motion.div>
-
-        {ring && (
-          <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="glass rounded-3xl p-5 mb-6">
-            <h2 className="text-white font-medium mb-1">{ring.title}</h2>
-            <p className="text-sm text-neutral-400 mb-4">{ring.note}</p>
-            <ul className="space-y-2">
-              {yarns.map((y) => (
-                <li key={y.id}>
-                  <button type="button" onClick={() => navigate('spunyarn', y.id)} className="text-left text-sm text-[#64d2ff]">
-                    {y.file_name || y.id}
-                    <span className="block text-neutral-500">{y.note || y.author || y.id}</span>
-                  </button>
-                </li>
-              ))}
-              {!yarns.length && <li className="text-sm text-neutral-500">no yarns on this ring yet</li>}
-            </ul>
-          </motion.section>
-        )}
-
-        <div className="glass rounded-3xl p-5">
-          <input value={title} onChange={(e) => setTitle(e.target.value.slice(0, 80))} placeholder="ring name" className="w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 text-sm outline-none mb-3" />
-          <textarea value={note} onChange={(e) => setNote(e.target.value.slice(0, 500))} placeholder="why these belong together" className="w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 text-sm outline-none min-h-20 mb-3" />
-          <textarea value={raw} onChange={(e) => setRaw(e.target.value.slice(0, 800))} placeholder="spunyarn ids, separated by spaces" className="w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 text-sm outline-none min-h-20 mb-4" />
-          {err && <p className="text-xs text-red-300 mb-3">{err}</p>}
-          <button type="button" disabled={busy} onClick={send} className="rounded-full bg-white text-black px-5 py-2.5 text-sm font-medium disabled:opacity-50">
-            {busy ? 'closing…' : 'close the ring'}
+          <ul className="space-y-2">
+            {ids.map((id) => (
+              <li key={id}>
+                <button
+                  onClick={() => copy(id)}
+                  className="w-full text-left px-4 py-3 rounded-2xl bg-white/5 hover:bg-white/8 transition text-sm font-mono text-white"
+                >
+                  {id}
+                  <span className="float-right text-neutral-500">{copied === id ? 'copied' : 'copy'}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+          <button onClick={more} className="mt-6 px-4 py-2 rounded-full bg-[#0a84ff] text-white text-sm">
+            mint another set
           </button>
-          {made && <p className="mt-4 text-sm text-[#ffd60a] break-all">{made}</p>}
-        </div>
-      </main>
+        </motion.div>
+      </div>
     </div>
   );
 }

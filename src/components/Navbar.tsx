@@ -24,6 +24,8 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'stemhead', label: 'stemhead' },
       { to: 'counterrail', label: 'counterrail' },
       { to: 'atelier', label: 'atelier' },
+      { to: 'fiferail', label: 'fiferail' },
+      { to: 'gantline', label: 'gantline' },
       { to: 'scuttle', label: 'scuttle' },
       { to: 'quarter', label: 'quarter' },
       { to: 'luff', label: 'luff' },
@@ -94,6 +96,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'notes',
     items: [
+      { to: 'fiferail', label: 'fiferail' },
+      { to: 'gantline', label: 'gantline' },
       { to: 'scuttle', label: 'scuttle' },
       { to: 'quarter', label: 'quarter' },
       { to: 'bilge', label: 'bilge' },

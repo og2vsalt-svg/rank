@@ -1,66 +1,84 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishLocalFile } from '../lib/cloudShare';
+import { publishLocalFile, shareUrls } from '../lib/cloudShare';
+import { useRouter } from './Router';
+
+function pretty(n: number) {
+  if (n < 1024) return n + ' b';
+  if (n < 1024 * 1024) return Math.round(n / 1024) + ' kb';
+  return (n / (1024 * 1024)).toFixed(1) + ' mb';
+}
 
 export default function LuffPage() {
-  const [files, setFiles] = useState<File[]>([]);
-  const [pick, setPick] = useState(0);
+  const { navigate } = useRouter();
+  const [file, setFile] = useState<File | null>(null);
+  const [heading, setHeading] = useState('north by the window');
+  const [wind, setWind] = useState('');
+  const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
-  const [embed, setEmbed] = useState('');
-  const [error, setError] = useState('');
-  const [warn, setWarn] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
+  const [warn, setWarn] = useState('');
+  const [err, setErr] = useState('');
+  const [link, setLink] = useState('');
 
-  const chosen = files[pick];
+  const pick = (f: File | null) => {
+    setFile(f);
+    setErr('');
+    setLink('');
+    setWarn(f && f.size > 24 * 1024 * 1024 ? 'a wide sail. the send may feel slow. nothing is refused for size.' : '');
+  };
 
-  const send = async () => {
-    if (!chosen) return;
+  const fileIt = async () => {
+    if (!file || !heading.trim()) return;
     setBusy(true);
-    setError('');
-    const res = await publishLocalFile(chosen, { caption: `luff kept ${chosen.name}`, color: '#FF9F0A' });
-    setBusy(false);
-    if (!res.ok || !res.id) {
-      setError(res.error || 'that one did not leave');
-      return;
+    setErr('');
+    try {
+      const shared = await publishLocalFile(file, { author: 'luff', caption: note || heading, cardTitle: heading.trim() });
+      if (!shared.ok || !shared.id) throw new Error(shared.error || 'the file did not land');
+      const res = await fetch('/api/luff', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ heading, wind, note, shareId: shared.id, author: 'luff' }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'luff table did not take the angle');
+      const card = `${location.origin}/luff/${data.luff.id}`;
+      setLink(card);
+      if (shared.warn) setWarn(shared.warn);
+      try { await navigator.clipboard.writeText(card); } catch {}
+      navigate('luff', data.luff.id);
+    } catch (e: any) {
+      setErr(e?.message || 'failed');
     }
-    setEmbed(res.embed || '');
-    setWarn(res.warn || (chosen.size > 12_000_000 ? 'heavy file. sending may feel slow. there is no cutoff.' : null));
+    setBusy(false);
   };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <main className="mx-auto max-w-2xl px-5 pb-24 pt-10">
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}>
-          <p className="text-[12px] uppercase tracking-[0.16em] text-white/45">luff</p>
-          <h1 className="mt-2 text-[34px] font-semibold tracking-[-0.04em]">keep one, file that one</h1>
-          <p className="mt-3 text-[15px] leading-relaxed text-white/60">
-            Drop a few local files. They stay in the tab until you choose one. Only the chosen file is written to the share table. The others never leave this machine.
-          </p>
+      <div className="pt-28 pb-20 px-5 max-w-xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[28px] p-7">
+          <p className="text-[#0a84ff] text-sm mb-2">luff</p>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">set the sail angle, then hand the file across.</h1>
+          <p className="text-neutral-400 text-sm mb-6">the heading lives in its own table. the local file lands in the share database. discord reads /luff and /s. no size gate — only a slowness note.</p>
+          <label className="block text-xs text-neutral-500 mb-1">heading</label>
+          <input value={heading} onChange={(e) => setHeading(e.target.value)} className="w-full mb-3 rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/60 transition-colors" />
+          <label className="block text-xs text-neutral-500 mb-1">wind</label>
+          <input value={wind} onChange={(e) => setWind(e.target.value)} placeholder="light, off the port bow" className="w-full mb-3 rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/60 transition-colors" />
+          <label className="block text-xs text-neutral-500 mb-1">note</label>
+          <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={3} className="w-full mb-4 rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/60 transition-colors" />
+          <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-8 text-center mb-4 transition-colors duration-300">
+            <input type="file" className="hidden" onChange={(e) => pick(e.target.files?.[0] || null)} />
+            <span className="text-sm text-neutral-300">{file ? `${file.name} · ${pretty(file.size)}` : 'choose a local file'}</span>
+          </label>
+          {warn && <p className="text-xs text-amber-300/80 mb-3">{warn}</p>}
+          {err && <p className="text-xs text-red-400 mb-3">{err}</p>}
+          <button onClick={fileIt} disabled={busy || !file || !heading.trim()} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40 active:scale-[0.98] transition-transform">
+            {busy ? 'hauling the sheet…' : 'file the angle'}
+          </button>
+          {link && <p className="text-xs text-neutral-500 mt-4 break-all">discord card copied: {link} · file card {shareUrls('').embed}</p>}
         </motion.div>
-        <motion.label initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-8 block cursor-pointer rounded-3xl border border-dashed border-white/15 px-5 py-8 text-center text-[14px] text-white/70 hover:border-white/30">
-          <input type="file" multiple className="sr-only" onChange={(e) => { const list = Array.from(e.target.files || []); setFiles(list); setPick(0); }} />
-          {files.length ? `${files.length} on the table` : 'choose local files'}
-        </motion.label>
-        <div className="mt-4 space-y-2">
-          {files.map((f, i) => (
-            <button key={`${f.name}-${i}`} onClick={() => setPick(i)} className={`flex w-full items-center justify-between rounded-2xl px-4 py-3 text-left transition ${i === pick ? 'bg-white text-black' : 'bg-white/5 text-white/80 hover:bg-white/10'}`}>
-              <span className="truncate text-[14px]">{f.name}</span>
-              <span className="shrink-0 text-[12px] opacity-60">{Math.max(1, Math.round(f.size / 1024))} KB</span>
-            </button>
-          ))}
-        </div>
-        <button onClick={send} disabled={!chosen || busy} className="mt-5 rounded-full bg-white px-5 py-2.5 text-[14px] font-medium text-black disabled:opacity-50">{busy ? 'filing…' : 'file the chosen one'}</button>
-        {warn && <p className="mt-3 text-[13px] text-amber-200/80">{warn}</p>}
-        {error && <p className="mt-3 text-[13px] text-red-300/90">{error}</p>}
-        {embed && (
-          <div className="mt-4 flex items-center gap-2">
-            <p className="min-w-0 flex-1 truncate text-[13px] text-white/70">{embed}</p>
-            <button onClick={async () => { await navigator.clipboard.writeText(embed); setCopied(true); }} className="shrink-0 rounded-full bg-white/10 px-3 py-1.5 text-[12px]">{copied ? 'copied' : 'copy'}</button>
-          </div>
-        )}
-      </main>
+      </div>
     </div>
   );
 }

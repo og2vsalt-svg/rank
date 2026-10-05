@@ -300,7 +300,7 @@ export default async function handler(req, res) {
       }
       if (!fileUrl) {
         res.status(502).json({
-          error: 'storage did not take the file. the row was not written with a data url.',
+          error: 'storage did not take the file yet. it was not refused for size. retry, or set BLOB_READ_WRITE_TOKEN.',
           detail: (storageError || '').slice(0, 240),
           warn,
         });

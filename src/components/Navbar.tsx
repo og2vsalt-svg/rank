@@ -12,6 +12,8 @@ const primary: NavItem[] = [
   { to: 'kelson', label: 'kelson' },
   { to: 'forefoot', label: 'forefoot' },
   { to: 'swifter', label: 'swifter' },
+  { to: 'loom', label: 'loom' },
+  { to: 'belfry', label: 'belfry' },
   { to: 'vault', label: 'vault' },
 ];
 
@@ -73,6 +75,7 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'treenail', label: 'treenail' },
       { to: 'capstan', label: 'capstan' },
       { to: 'folio', label: 'folio' },
+      { to: 'loom', label: 'loom' },
       { to: 'bollard', label: 'bollard' },
       { to: 'unfurl', label: 'unfurl' },
       { to: 'vault', label: 'vault' },
@@ -90,6 +93,7 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'stringer', label: 'stringer' },
       { to: 'cleat', label: 'cleat' },
       { to: 'ledger', label: 'ledger' },
+      { to: 'belfry', label: 'belfry' },
     ],
   },
   {
@@ -233,7 +237,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">paste /garboard, /channels, or /s in Discord for a card. older desks stay on their routes.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">paste /loom, /belfry, or /s in Discord for a card. older desks stay on their routes.</p>
         </div>
       </div>
     </nav>

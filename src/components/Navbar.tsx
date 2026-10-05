@@ -5,13 +5,12 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'catfall', label: 'catfall' },
+  { to: 'spirket', label: 'spirket' },
   { to: 'bowsprit', label: 'bowsprit' },
   { to: 'chainplate', label: 'chainplate' },
   { to: 'wharf', label: 'wharf' },
-  { to: 'wale', label: 'wale' },
   { to: 'davits', label: 'davits' },
-  { to: 'bollard', label: 'bollard' },
-  { to: 'unfurl', label: 'unfurl' },
   { to: 'vault', label: 'vault' },
 ];
 
@@ -19,6 +18,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'hosting',
     items: [
+      { to: 'catfall', label: 'catfall' },
+      { to: 'spirket', label: 'spirket' },
       { to: 'bowsprit', label: 'bowsprit' },
       { to: 'chainplate', label: 'chainplate' },
       { to: 'wharf', label: 'wharf' },
@@ -74,6 +75,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'notes',
     items: [
+      { to: 'spirket', label: 'spirket' },
       { to: 'lodging', label: 'lodging' },
       { to: 'margin', label: 'margin' },
       { to: 'lantern', label: 'lantern' },
@@ -85,6 +87,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'catfall', label: 'catfall' },
+      { to: 'spirket', label: 'spirket' },
       { to: 'bowsprit', label: 'bowsprit' },
       { to: 'chainplate', label: 'chainplate' },
       { to: 'wharf', label: 'wharf' },
@@ -219,7 +223,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">paste /bowsprit, /chainplate, /wharf, or /s in Discord for a card. older desks stay on their routes.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">paste /catfall, /spirket, or /s in Discord for a card. older desks stay on their routes.</p>
         </div>
       </div>
     </nav>

@@ -18,6 +18,7 @@ const COPY = {
   shelf: ['Shelf — rankvault', 'Drop a local file into the shared shelf. Large files are warned, never refused.'],
   board: ['Board — rankvault', 'Public files people left out. Paste the link in Discord for a card.'],
   receipt: ['Receipt — rankvault', 'A short handoff note that travels with the link.'],
+  satchel: ['Satchel — rankvault', 'A local file packed with a checklist. Paste the link in Discord for a card.'],
   home: ['rankvault', 'Private file hosting. Share a file, keep the older desks, Discord cards on every link.'],
 };
 
@@ -29,7 +30,7 @@ function prettySize(n) {
 }
 
 export default async function handler(req, res) {
-  const page = String(req.query.page || 'shelf');
+  const page = String(req.query.page || req.query.name || 'shelf');
   const id = String(req.query.id || '');
   const proto = String(req.headers['x-forwarded-proto'] || 'https');
   const host = String(req.headers['x-forwarded-host'] || req.headers.host || 'rank-six-iota.vercel.app');
@@ -53,6 +54,21 @@ export default async function handler(req, res) {
     }
   }
 
+  if (id && page === 'satchel') {
+    const r = await fetch(SUPABASE_URL + '/rest/v1/satchels?id=eq.' + encodeURIComponent(id) + '&select=title,note,file_name,size,mime,file_url&limit=1', {
+      headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },
+    });
+    if (r.ok) {
+      const rows = await r.json();
+      const row = rows[0];
+      if (row) {
+        title = row.title || row.file_name || 'Satchel';
+        desc = (row.note || 'packed file') + ' · ' + prettySize(row.size);
+        if (String(row.mime || '').indexOf('image/') === 0 && /^https?:/i.test(row.file_url || '')) image = row.file_url;
+      }
+    }
+  }
+
   if (id && page === 'receipt') {
     const r = await fetch(SUPABASE_URL + '/rest/v1/receipts?id=eq.' + encodeURIComponent(id) + '&select=name,note,author&limit=1', {
       headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },
@@ -67,7 +83,7 @@ export default async function handler(req, res) {
     }
   }
 
-  const html = '<!doctype html><html><head><meta charset="utf-8"><title>' + esc(title) + '</title><meta property="og:site_name" content="rankvault"><meta property="og:title" content="' + esc(title) + '"><meta property="og:description" content="' + esc(desc) + '"><meta property="og:image" content="' + esc(image) + '"><meta property="og:url" content="' + esc(url) + '"><meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#0A84FF"></head><body style="background:#050506;color:#f5f5f7;font-family:-apple-system,Inter,sans-serif;padding:48px"><h1>' + esc(title) + '</h1><p>' + esc(desc) + '</p></body></html>';
+  const html = '<!doctype html><html><head><meta charset="utf-8"><title>' + esc(title) + '</title><meta property="og:type" content="website"><meta property="og:site_name" content="rankvault"><meta property="og:title" content="' + esc(title) + '"><meta property="og:description" content="' + esc(desc) + '"><meta property="og:image" content="' + esc(image) + '"><meta property="og:url" content="' + esc(url) + '"><meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#0A84FF"></head><body style="background:#050506;color:#f5f5f7;font-family:-apple-system,Inter,sans-serif;padding:48px"><h1>' + esc(title) + '</h1><p>' + esc(desc) + '</p></body></html>';
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.setHeader('Cache-Control', 'public, s-maxage=60');
   res.status(200).send(html);

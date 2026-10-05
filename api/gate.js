@@ -26,11 +26,13 @@ import tide from '../lib/endpoints/tide.js';
 import tiller from '../lib/endpoints/tiller.js';
 import vesper from '../lib/endpoints/vesper.js';
 import wall from '../lib/endpoints/wall.js';
+import shelf from './shelf.js';
 
 const routes = {
   atelier, beacon, card, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
   docket, jackstay, ketch, luff, nightglass, quarter, quay, scuttle, selvage, quire, share, signal, stay, tide,
   tiller, vesper, wall,
+  shelf, board: shelf, receipt: shelf, satchel: shelf,
 };
 
 export default function handler(req, res) {

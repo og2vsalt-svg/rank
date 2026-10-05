@@ -106,6 +106,60 @@ export async function getReceipt(id: string) {
   return rows[0] || null;
 }
 
+export async function saveSatchel(input: {
+  shareId: string;
+  title: string;
+  note: string;
+  author: string;
+  steps: { id: string; label: string; done: boolean }[];
+  fileName: string;
+  fileUrl: string;
+  mime: string;
+  size: number;
+}) {
+  const id = Math.random().toString(36).slice(2, 10);
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/satchels`, {
+    method: 'POST',
+    headers: headers({ 'Content-Type': 'application/json', Prefer: 'return=representation' }),
+    body: JSON.stringify({
+      id,
+      share_id: input.shareId,
+      title: input.title,
+      note: input.note || null,
+      author: input.author || null,
+      steps: input.steps,
+      file_name: input.fileName,
+      file_url: input.fileUrl,
+      mime: input.mime || null,
+      size: input.size || 0,
+    }),
+  });
+  if (!res.ok) throw new Error(await res.text());
+  const rows = await res.json();
+  return rows[0];
+}
+
+export async function getSatchel(id: string) {
+  const res = await fetch(
+    `${SUPABASE_URL}/rest/v1/satchels?id=eq.${encodeURIComponent(id)}&select=*&limit=1`,
+    { headers: headers() },
+  );
+  if (!res.ok) return null;
+  const rows = await res.json();
+  return rows[0] || null;
+}
+
+export async function toggleSatchelStep(id: string, steps: { id: string; label: string; done: boolean }[]) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/satchels?id=eq.${encodeURIComponent(id)}`, {
+    method: 'PATCH',
+    headers: headers({ 'Content-Type': 'application/json', Prefer: 'return=representation' }),
+    body: JSON.stringify({ steps }),
+  });
+  if (!res.ok) throw new Error(await res.text());
+  const rows = await res.json();
+  return rows[0] || null;
+}
+
 export function prettySize(n: number) {
   if (!n) return '0 B';
   if (n < 1024) return `${n} B`;

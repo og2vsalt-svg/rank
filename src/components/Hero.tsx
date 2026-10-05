@@ -16,7 +16,8 @@ export default function Hero() {
           a quiet vault for clips, docs, and dumps. catfall lowers a file to a name. spirket splices a brief. no size lock. just a heads up if the tab might lag.
         </motion.p>
         <div className="flex flex-wrap gap-3 mb-12">
-          <button onClick={() => navigate('catfall')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition">lower a file</button>
+          <button onClick={() => navigate('forefoot')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition">store a file</button>
+          <button onClick={() => navigate('catfall')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">lower a file</button>
           <button onClick={() => navigate('spirket')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">splice a brief</button>
           <button onClick={() => navigate('kedge')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">set an anchor</button>
           <button onClick={() => navigate('binnacle')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">read the compass</button>

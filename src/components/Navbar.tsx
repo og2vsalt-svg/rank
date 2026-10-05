@@ -5,12 +5,12 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'forefoot', label: 'forefoot' },
+  { to: 'swifter', label: 'swifter' },
   { to: 'catfall', label: 'catfall' },
   { to: 'spirket', label: 'spirket' },
   { to: 'bowsprit', label: 'bowsprit' },
-  { to: 'chainplate', label: 'chainplate' },
   { to: 'wharf', label: 'wharf' },
-  { to: 'davits', label: 'davits' },
   { to: 'vault', label: 'vault' },
 ];
 
@@ -18,6 +18,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'hosting',
     items: [
+      { to: 'forefoot', label: 'forefoot' },
+      { to: 'swifter', label: 'swifter' },
       { to: 'catfall', label: 'catfall' },
       { to: 'spirket', label: 'spirket' },
       { to: 'bowsprit', label: 'bowsprit' },

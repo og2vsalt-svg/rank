@@ -13,6 +13,7 @@
     { "source": "/api/catfall", "destination": "/api/catfall" },
     { "source": "/api/wall", "destination": "/api/wall" },
     { "source": "/api/stay", "destination": "/api/stay" },
+    { "source": "/api/forefoot", "destination": "/api/forefoot" },
     { "source": "/api/:desk", "destination": "/api/desk?desk=:desk" },
     { "source": "/((?!api/|assets/).*)", "destination": "/index.html" }
   ]

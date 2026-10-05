@@ -1,4 +1,5 @@
 import belaying from '../lib/routes/belaying.js';
+import channels from '../lib/routes/channels.js';
 import cleat from '../lib/routes/cleat.js';
 import deadeye from '../lib/routes/deadeye.js';
 import fairlead from '../lib/routes/fairlead.js';
@@ -310,7 +311,7 @@ export default async function handler(req, res) {
     if (desk === 'paircard') return paircard(req, res);
     if (desk === 'spirket') return spirket(req, res);
 
-    const routed = { belaying, cleat, deadeye, fairlead, garboard, hounds, keelson, marline, orlop, parcel, requests, sounding, taffrail, treenail, counter, scupper, rider, futtock, stringer, knee, transom, bumkin, apostle, tumblehome, sheerstrake, washstrake, waterway, bulwark, coaming, carvel, bearding, rowlock, pintle };
+    const routed = { belaying, channels, cleat, deadeye, fairlead, garboard, hounds, keelson, marline, orlop, parcel, requests, sounding, taffrail, treenail, counter, scupper, rider, futtock, stringer, knee, transom, bumkin, apostle, tumblehome, sheerstrake, washstrake, waterway, bulwark, coaming, carvel, bearding, rowlock, pintle };
     if (routed[desk]) return routed[desk](req, res);
     res.status(404).json({ error: 'unknown desk' });
   } catch (err) {

@@ -5,21 +5,22 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
-  { to: 'quire', label: 'quire' },
-  { to: 'docket', label: 'docket' },
-  { to: 'nightglass', label: 'nightglass' },
-  { to: 'scuttle', label: 'scuttle' },
-  { to: 'atelier', label: 'atelier' },
-  { to: 'quarter', label: 'quarter' },
-  { to: 'bilge', label: 'bilge' },
-  { to: 'luff', label: 'luff' },
-  { to: 'ketch', label: 'ketch' },
-  { to: 'beacon', label: 'beacon' },
+  { to: 'shelf', label: 'shelf' },
+  { to: 'board', label: 'board' },
+  { to: 'receipt', label: 'receipt' },
   { to: 'vault', label: 'vault' },
-  { to: 'hawsepipe', label: 'hawsepipe' },
+  { to: 'scuttle', label: 'scuttle' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
+  {
+    title: 'new',
+    items: [
+      { to: 'shelf', label: 'shelf' },
+      { to: 'board', label: 'board' },
+      { to: 'receipt', label: 'receipt' },
+    ],
+  },
   {
     title: 'hosting',
     items: [
@@ -96,86 +97,12 @@ const groups: { title: string; items: NavItem[] }[] = [
       { to: 'counter', label: 'counter' },
     ],
   },
-  {
-    title: 'notes',
-    items: [
-      { to: 'fiferail', label: 'fiferail' },
-      { to: 'gantline', label: 'gantline' },
-      { to: 'scuttle', label: 'scuttle' },
-      { to: 'quarter', label: 'quarter' },
-      { to: 'bilge', label: 'bilge' },
-      { to: 'beacon', label: 'beacon' },
-      { to: 'spirket', label: 'spirket' },
-      { to: 'lodging', label: 'lodging' },
-      { to: 'margin', label: 'margin' },
-      { to: 'lantern', label: 'lantern' },
-      { to: 'stringer', label: 'stringer' },
-      { to: 'cleat', label: 'cleat' },
-      { to: 'ledger', label: 'ledger' },
-      { to: 'vesper', label: 'vesper' },
-    ],
-  },
-  {
-    title: 'share',
-    items: [
-      { to: 'scuttle', label: 'scuttle' },
-      { to: 'quarter', label: 'quarter' },
-      { to: 'luff', label: 'luff' },
-      { to: 'ketch', label: 'ketch' },
-      { to: 'garboard', label: 'garboard' },
-      { to: 'channels', label: 'channels' },
-      { to: 'catfall', label: 'catfall' },
-      { to: 'spirket', label: 'spirket' },
-      { to: 'bowsprit', label: 'bowsprit' },
-      { to: 'chainplate', label: 'chainplate' },
-      { to: 'wharf', label: 'wharf' },
-      { to: 'lashing', label: 'lashing' },
-      { to: 'cathead', label: 'cathead' },
-      { to: 'gammon', label: 'gammon' },
-      { to: 'davits', label: 'davits' },
-      { to: 'hawser', label: 'hawser' },
-      { to: 'rabbet', label: 'rabbet' },
-      { to: 'floors', label: 'floors' },
-      { to: 'chestree', label: 'chestree' },
-      { to: 'stemson', label: 'stemson' },
-      { to: 'kevel', label: 'kevel' },
-      { to: 'thwart', label: 'thwart' },
-      { to: 'pintle', label: 'pintle' },
-      { to: 'rowlock', label: 'rowlock' },
-      { to: 'carvel', label: 'carvel' },
-      { to: 'bearding', label: 'bearding' },
-      { to: 'bulwark', label: 'bulwark' },
-      { to: 'coaming', label: 'coaming' },
-      { to: 'gunwale', label: 'gunwale' },
-      { to: 'passage', label: 'passage' },
-      { to: 'shuttle', label: 'shuttle' },
-      { to: 'folio', label: 'folio' },
-      { to: 'hawse', label: 'hawse' },
-      { to: 'courier', label: 'courier' },
-      { to: 'shelf', label: 'shelf' },
-    ],
-  },
-  {
-    title: 'tools',
-    items: [
-      { to: 'bilge', label: 'bilge' },
-      { to: 'lodging', label: 'lodging' },
-      { to: 'limber', label: 'limber' },
-      { to: 'skylight', label: 'skylight' },
-      { to: 'sounding', label: 'sounding' },
-      { to: 'samson', label: 'samson' },
-      { to: 'telltale', label: 'telltale' },
-      { to: 'hash', label: 'hash' },
-      { to: 'convert', label: 'convert' },
-      { to: 'diff', label: 'diff' },
-    ],
-  },
 ];
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [openGroup, setOpenGroup] = useState<string | null>('hosting');
+  const [openGroup, setOpenGroup] = useState<string | null>('new');
   const { user, isLoggedIn, logout } = useAuth();
   const { navigate } = useRouter();
   const userMenuRef = useRef<HTMLDivElement>(null);
@@ -261,7 +188,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">paste /atelier, /scuttle, or /s in Discord for a card. older desks stay on their routes.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">paste /shelf, /board, or /s/id in Discord for a card. older desks stay on their routes.</p>
         </div>
       </div>
     </nav>

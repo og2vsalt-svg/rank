@@ -120,7 +120,7 @@ export default function SpringlinePage() {
           <motion.article initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mt-6 glass rounded-3xl p-5">
             <p className="text-xs text-neutral-500">opened from a card</p>
             <h2 className="mt-1 text-xl">{focus.note}</h2>
-            <p className="mt-2 text-sm text-neutral-400">{holdLabel(focus.hold_until)}{focus.author ? ` \u00b7 ${focus.author}` : ''}</p>
+            <p className="mt-2 text-sm text-neutral-400">{holdLabel(focus.hold_until)}{focus.author ? ' / ' + focus.author : ''}</p>
             {focus.share_id && <a className="mt-3 inline-block text-sm text-[#64b5ff]" href={`/s/${focus.share_id}`}>open the attached file</a>}
           </motion.article>
         )}
@@ -138,13 +138,13 @@ export default function SpringlinePage() {
           </label>
           {warn && <p className="text-sm text-amber-200/90">{warn}</p>}
           {err && <p className="text-sm text-rose-300">{err}</p>}
-          <button type="submit" disabled={busy || !note.trim()} className="rounded-full bg-white text-black px-5 py-2.5 text-sm font-medium disabled:opacity-50">{busy ? 'sending\u2026' : 'leave the slip'}</button>
+          <button type="submit" disabled={busy || !note.trim()} className="rounded-full bg-white text-black px-5 py-2.5 text-sm font-medium disabled:opacity-50">{busy ? 'sending...' : 'leave the slip'}</button>
         </form>
         <section className="mt-10 space-y-3">
           {rows.map((row, i) => (
             <motion.article key={row.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i, 8) * 0.04, duration: 0.4, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-3xl p-5">
               <p className="text-sm text-white">{row.note}</p>
-              <p className="mt-2 text-xs text-neutral-500">{holdLabel(row.hold_until)}{row.author ? ` \u00b7 ${row.author}` : ''}</p>
+              <p className="mt-2 text-xs text-neutral-500">{holdLabel(row.hold_until)}{row.author ? ' / ' + row.author : ''}</p>
               <div className="mt-3 flex flex-wrap gap-3 text-sm">
                 <button type="button" onClick={() => copy(row.id)} className="text-[#64d2ff]">{copied === row.id ? 'copied' : 'copy /springline link'}</button>
                 {row.share_id && <a className="text-[#64b5ff]" href={`/s/${row.share_id}`}>file</a>}

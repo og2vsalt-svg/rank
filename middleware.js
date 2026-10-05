@@ -3,7 +3,7 @@ export const config = {
 };
 
 const BOT = /discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|skype|redditbot|applebot|iframely|unfurl|pinterest|notion|embedly|slack-imgproxy|discordbot/i;
-const ID_PREFIX = new Set(['wale', 'flemish', 'knee', 'transom', 'belaying', 'loft', 'quay', 's', 'f', 'x', 'd', 'go', 'open', 'link', 'card', 'embed', 'y', 'q', 'l', 'n', 'k', 'w', 'u', 'r', 'b', 'g', 'c', 'm', 'o', 't', 'i', 'a', 'e', 'z', 'h', 'v', 'j', 'p', 'room', 'parcel', 'spirket', 'catfall', 'washboard', 'beakhead', 'partners', 'waybill', 'fid', 'pelorus', 'cuddy', 'hawse', 'futtock', 'stringer', 'samson', 'gudgeon', 'pintle', 'sternpost', 'breasthook', 'capstan', 'treenail', 'fairlead', 'hounds', 'seizing', 'deadeye', 'sounding', 'marline', 'orlop', 'cleat', 'passage', 'lantern', 'forepeak', 'lazarette', 'skylight', 'limber', 'bitt', 'taffrail', 'counter', 'scupper', 'rider', 'gunwale', 'bumkin', 'apostle', 'tumblehome', 'sheerstrake', 'washstrake', 'waterway', 'bulwark', 'coaming', 'carvel', 'bearding', 'rowlock', 'margin', 'thwart', 'kevel', 'stemson', 'lodging', 'oakum', 'painter', 'rabbet', 'floors', 'chestree', 'kedge', 'binnacle', 'davits', 'hawser', 'gammon', 'cathead', 'wharf', 'lashing', 'blotter', 'billboard', 'companion', 'bowsprit', 'chainplate', 'bollard', 'unfurl', 'forefoot', 'swifter', 'chock', 'mizzen', 'kelson', 'garboard', 'channels', 'selvage', 'vesper', 'luff', 'ketch', 'beacon']);
+const ID_PREFIX = new Set(['wale', 'flemish', 'knee', 'transom', 'belaying', 'loft', 'quay', 's', 'f', 'x', 'd', 'go', 'open', 'link', 'card', 'embed', 'y', 'q', 'l', 'n', 'k', 'w', 'u', 'r', 'b', 'g', 'c', 'm', 'o', 't', 'i', 'a', 'e', 'z', 'h', 'v', 'j', 'p', 'room', 'parcel', 'spirket', 'catfall', 'washboard', 'beakhead', 'partners', 'waybill', 'fid', 'pelorus', 'cuddy', 'hawse', 'futtock', 'stringer', 'samson', 'gudgeon', 'pintle', 'sternpost', 'breasthook', 'capstan', 'treenail', 'fairlead', 'hounds', 'seizing', 'deadeye', 'sounding', 'marline', 'orlop', 'cleat', 'passage', 'lantern', 'forepeak', 'lazarette', 'skylight', 'limber', 'bitt', 'taffrail', 'counter', 'scupper', 'rider', 'gunwale', 'bumkin', 'apostle', 'tumblehome', 'sheerstrake', 'washstrake', 'waterway', 'bulwark', 'coaming', 'carvel', 'bearding', 'rowlock', 'margin', 'thwart', 'kevel', 'stemson', 'lodging', 'oakum', 'painter', 'rabbet', 'floors', 'chestree', 'kedge', 'binnacle', 'davits', 'hawser', 'gammon', 'cathead', 'wharf', 'lashing', 'blotter', 'billboard', 'companion', 'bowsprit', 'chainplate', 'bollard', 'unfurl', 'forefoot', 'swifter', 'chock', 'mizzen', 'kelson', 'garboard', 'channels', 'selvage', 'vesper', 'luff', 'ketch', 'beacon', 'quarter', 'bilge']);
 
 const DEDICATED = {
   pintle: '/api/embed',
@@ -55,6 +55,8 @@ const DEDICATED = {
   luff: '/api/signal',
   ketch: '/api/signal',
   beacon: '/api/signal',
+  quarter: '/api/quarter',
+  bilge: '/api/quarter',
 };
 
 export default function middleware(request) {

@@ -1,82 +1,136 @@
-import { useMemo, useState } from 'react';
-import { motion } from 'framer-motion';
+import { useEffect, useMemo, useState } from 'react';
 import Navbar from './Navbar';
-import { publishLocalFile } from '../lib/cloudShare';
+import { useRouter } from './Router';
 
-function pretty(n: number) {
-  if (n < 1024) return `${n} B`;
-  if (n < 1024 * 1024) return `${Math.max(1, Math.round(n / 1024))} KB`;
-  if (n < 1024 * 1024 * 1024) return `${(n / (1024 * 1024)).toFixed(1)} MB`;
-  return `${(n / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+const SLOW = 12 * 1024 * 1024;
+
+type Slip = { id: string; body: string; author: string | null; share_id: string | null; created_at: string };
+
+function pretty(bytes: number) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-const ease = [0.22, 1, 0.36, 1] as const;
-
 export default function TillerPage() {
+  const { shareId } = useRouter();
+  const [body, setBody] = useState('');
+  const [author, setAuthor] = useState('');
   const [file, setFile] = useState<File | null>(null);
-  const [title, setTitle] = useState('');
-  const [caption, setCaption] = useState('');
-  const [color, setColor] = useState('#0A84FF');
+  const [slips, setSlips] = useState<Slip[]>([]);
   const [busy, setBusy] = useState(false);
-  const [result, setResult] = useState<{ embed?: string; warn?: string | null; error?: string } | null>(null);
+  const [note, setNote] = useState('');
+  const [link, setLink] = useState('');
 
-  const cardTitle = title.trim() || file?.name || 'untitled drop';
-  const heavy = useMemo(() => !!file && file.size > 40 * 1024 * 1024, [file]);
+  const warn = useMemo(() => (file && file.size > SLOW ? 'this file is large. the tab may feel slow. it is not refused.' : ''), [file]);
 
-  const send = async () => {
-    if (!file) return;
+  async function load() {
+    const r = await fetch('/api/tiller');
+    const data = await r.json();
+    if (data?.slips) setSlips(data.slips);
+  }
+
+  useEffect(() => {
+    load().catch(() => setNote('log is quiet for a moment'));
+  }, []);
+
+  async function keep(e: React.FormEvent) {
+    e.preventDefault();
+    if (!body.trim()) return;
     setBusy(true);
-    setResult(null);
-    const res = await publishLocalFile(file, {
-      caption: caption.trim() || cardTitle,
-      color,
-      cardTitle,
-    });
-    setResult(res.ok ? { embed: res.embed, warn: res.warn } : { error: res.error || 'did not land' });
-    setBusy(false);
-  };
+    setNote('');
+    setLink('');
+    try {
+      let shareRef: string | null = null;
+      if (file) {
+        const form = new FormData();
+        form.set('file', file);
+        form.set('caption', body.trim().slice(0, 280));
+        form.set('author', author.trim());
+        form.set('cardTitle', file.name);
+        const up = await fetch('/api/share', { method: 'POST', body: form });
+        const saved = await up.json();
+        if (!up.ok) throw new Error(saved.error || 'file did not land');
+        shareRef = saved.id;
+        if (saved.warn) setNote(saved.warn);
+      }
+      const r = await fetch('/api/tiller', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ body: body.trim(), author: author.trim(), shareId: shareRef }),
+      });
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.error || 'line was not kept');
+      const path = data.path || `/tiller/${data.slip?.id}`;
+      setLink(`${window.location.origin}${path}`);
+      setBody('');
+      setFile(null);
+      await load();
+    } catch (err: any) {
+      setNote(err.message || 'could not keep that');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const focus = shareId ? slips.find((s) => s.id === shareId) : null;
 
   return (
-    <div className="mesh min-h-screen">
+    <div className="min-h-screen bg-[#0b0b0d] text-white">
       <Navbar />
-      <main className="mx-auto max-w-5xl px-5 pb-24 pt-28">
-        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[13px] uppercase tracking-[0.18em] text-zinc-500">tiller</motion.p>
-        <motion.h1 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease }} className="mt-2 text-4xl font-semibold tracking-tight text-zinc-50 sm:text-5xl">Steer the card before it leaves.</motion.h1>
-        <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-zinc-400">A local file lands in the share database. Discord reads the title, caption, and accent you set here. Nothing is refused for size.</p>
-        <div className="mt-10 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-          <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06, duration: 0.55, ease }} className="rounded-[28px] border border-white/10 bg-white/[0.04] p-6 shadow-[0_24px_70px_rgba(0,0,0,0.32)] backdrop-blur-xl">
-            <label className="block cursor-pointer rounded-2xl border border-dashed border-white/15 bg-black/25 px-5 py-12 text-center transition duration-300 hover:border-[#0A84FF]/70 hover:bg-black/35">
-              <input type="file" className="sr-only" onChange={(e) => { setFile(e.target.files?.[0] || null); setResult(null); }} />
-              <span className="text-sm text-zinc-200">{file ? file.name : 'choose one local file'}</span>
-              {file && <span className="mt-2 block text-xs text-zinc-500">{pretty(file.size)} · {file.type || 'unknown type'}</span>}
-            </label>
-            <div className="mt-4 grid gap-3">
-              <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="card title" className="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none transition focus:border-[#0A84FF]/70" />
-              <textarea value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="one line discord will show" rows={3} className="w-full resize-none rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none transition focus:border-[#0A84FF]/70" />
-              <label className="flex items-center justify-between rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-zinc-400">
-                accent
-                <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="h-8 w-12 cursor-pointer rounded-lg border-0 bg-transparent" />
-              </label>
-            </div>
-            {heavy && <p className="mt-3 text-xs text-amber-200/90">large drop. the tab may feel slow while it sends. there is no size cap.</p>}
-            <button disabled={!file || busy} onClick={send} className="mt-4 rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition duration-200 hover:bg-zinc-200 active:scale-[0.98] disabled:opacity-40">{busy ? 'filing…' : 'file and make the card'}</button>
-            {result?.error && <p className="mt-3 text-sm text-rose-300">{result.error}</p>}
-            {result?.warn && <p className="mt-3 text-xs text-amber-200/80">{result.warn}</p>}
-            {result?.embed && <a className="mt-3 inline-block text-sm text-[#0A84FF]" href={result.embed}>{result.embed}</a>}
-          </motion.div>
-          <motion.aside initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12, duration: 0.55, ease }} className="rounded-[28px] border border-white/10 bg-[#0b0b0d] p-5">
-            <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-500">discord preview</p>
-            <div className="mt-4 overflow-hidden rounded-2xl border border-white/10 bg-[#1e1f22]">
-              <div className="h-1.5" style={{ background: color }} />
-              <div className="px-4 py-4">
-                <p className="text-[12px] text-[#00a8fc]">rankvault</p>
-                <p className="mt-1 text-[16px] font-semibold text-white">{cardTitle}</p>
-                <p className="mt-1 text-[13px] leading-relaxed text-[#b5bac1]">{caption.trim() || 'the caption sits here once you write it.'}</p>
-                <p className="mt-3 text-[12px] text-[#949ba4]">{file ? `${file.type || 'file'} · ${pretty(file.size)}` : 'waiting on a local file'}</p>
-              </div>
-            </div>
-          </motion.aside>
-        </div>
+      <main className="max-w-xl mx-auto px-5 pt-28 pb-24">
+        <p className="text-[#0a84ff] text-sm font-medium tracking-wide mb-3">tiller</p>
+        <h1 className="text-4xl font-semibold tracking-tight leading-tight">a log, not another vault.</h1>
+        <p className="text-neutral-400 mt-3 leading-relaxed">
+          write a line. attach a local file if the line needs proof. the file still lands in the share table. discord cards follow the link.
+        </p>
+        {focus && (
+          <article className="mt-6 rounded-3xl border border-white/10 bg-white/[0.04] p-5">
+            <p className="text-neutral-200 leading-relaxed">{focus.body}</p>
+            <p className="text-xs text-neutral-500 mt-3">{focus.author || 'unsigned'} · {new Date(focus.created_at).toLocaleString()}</p>
+            {focus.share_id && (
+              <a className="inline-block mt-3 text-sm text-[#0a84ff]" href={`/s/${focus.share_id}`}>open attached file</a>
+            )}
+          </article>
+        )}
+        <form onSubmit={keep} className="mt-8 space-y-3">
+          <textarea
+            value={body}
+            onChange={(e) => setBody(e.target.value)}
+            placeholder="what changed, what you handed off, what to remember"
+            className="w-full min-h-28 rounded-2xl bg-white/[0.04] border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/60 transition"
+          />
+          <input
+            value={author}
+            onChange={(e) => setAuthor(e.target.value)}
+            placeholder="name, optional"
+            className="w-full rounded-full bg-white/[0.04] border border-white/10 px-4 py-2.5 text-sm outline-none focus:border-[#0a84ff]/60 transition"
+          />
+          <label className="flex items-center justify-between gap-3 rounded-2xl border border-dashed border-white/15 px-4 py-3 text-sm text-neutral-400 cursor-pointer hover:border-white/30 transition">
+            <span>{file ? `${file.name} · ${pretty(file.size)}` : 'attach a local file, optional'}</span>
+            <input type="file" className="hidden" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+          </label>
+          {warn && <p className="text-xs text-amber-300/90">{warn}</p>}
+          <button disabled={busy || !body.trim()} className="rounded-full bg-white text-black px-5 py-2.5 text-sm font-medium disabled:opacity-40 transition active:scale-[0.98]">
+            {busy ? 'keeping…' : 'keep the line'}
+          </button>
+        </form>
+        {note && <p className="mt-4 text-sm text-neutral-400">{note}</p>}
+        {link && (
+          <p className="mt-3 text-sm">
+            <a className="text-[#0a84ff] break-all" href={link}>{link}</a>
+          </p>
+        )}
+        <ul className="mt-10 space-y-2">
+          {slips.map((slip) => (
+            <li key={slip.id}>
+              <a href={`/tiller/${slip.id}`} className="block rounded-2xl bg-white/[0.03] hover:bg-white/[0.06] px-4 py-3 transition">
+                <p className="text-sm text-neutral-200 line-clamp-2">{slip.body}</p>
+                <p className="text-xs text-neutral-500 mt-1">{slip.author || 'unsigned'}{slip.share_id ? ' · file attached' : ''}</p>
+              </a>
+            </li>
+          ))}
+        </ul>
       </main>
     </div>
   );

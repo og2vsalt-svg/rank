@@ -25,6 +25,7 @@
     { "source": "/api/scuttle", "destination": "/api/scuttle" },
     { "source": "/api/atelier", "destination": "/api/atelier" },
     { "source": "/api/quay", "destination": "/api/quay" },
+    { "source": "/api/tiller", "destination": "/api/tiller" },
     { "source": "/api/:desk", "destination": "/api/desk?desk=:desk" },
     { "source": "/((?!api/|assets/).*)", "destination": "/index.html" }
   ]

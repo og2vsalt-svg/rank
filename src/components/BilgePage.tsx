@@ -1,75 +1,86 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishLocalFile, shareUrls } from '../lib/cloudShare';
+import { useRouter } from './Router';
+
+type Row = { id: string; title: string; body: string; when_label?: string | null; created_at?: string };
 
 export default function BilgePage() {
-  const [title, setTitle] = useState('note');
-  const [body, setBody] = useState('');
-  const [hours, setHours] = useState('0');
+  const { navigate } = useRouter();
+  const [line, setLine] = useState('');
+  const [rows, setRows] = useState<Row[]>([]);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
-  const [warn, setWarn] = useState<string | null>(null);
-  const [id, setId] = useState('');
+  const [now, setNow] = useState(() => new Date());
 
-  const words = useMemo(() => body.trim().split(/\s+/).filter(Boolean).length, [body]);
-  const urls = id ? shareUrls(id) : null;
+  useEffect(() => {
+    const t = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(t);
+  }, []);
 
-  const pour = async () => {
-    setErr('');
-    setWarn(null);
-    if (!body.trim()) {
-      setErr('write something first');
-      return;
-    }
+  const load = () => {
+    fetch('/api/quarter?list=1&page=bilge')
+      .then((r) => r.json())
+      .then((d) => setRows(Array.isArray(d.quarters) ? d.quarters : []))
+      .catch(() => setRows([]));
+  };
+
+  useEffect(() => { load(); }, []);
+
+  const clock = useMemo(() => now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }), [now]);
+
+  const leave = async () => {
+    if (!line.trim()) return;
     setBusy(true);
-    const name = (title.trim() || 'note').replace(/[^\w.\- ]+/g, '').slice(0, 80) || 'note';
-    const text = `# ${name}\n\n${body.trim()}\n`;
-    const file = new File([text], `${name}.txt`, { type: 'text/plain' });
-    const h = Number(hours) || 0;
-    const expiresAt = h > 0 ? new Date(Date.now() + h * 3600_000).toISOString() : null;
-    const res = await publishLocalFile(file, { caption: body.trim().slice(0, 180), expiresAt });
-    setBusy(false);
-    if (!res.ok || !res.id) {
-      setErr(res.error || 'could not land the note');
-      return;
+    setErr('');
+    try {
+      const res = await fetch('/api/quarter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: line.trim().slice(0, 80),
+          body: line.trim(),
+          whenLabel: clock,
+          author: 'bilge',
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'the watch did not take the line');
+      const card = `${location.origin}/bilge/${data.quarter.id}`;
+      try { await navigator.clipboard.writeText(card); } catch {}
+      setLine('');
+      navigate('bilge', data.quarter.id);
+      load();
+    } catch (e: any) {
+      setErr(e?.message || 'failed');
     }
-    setId(res.id);
-    setWarn(res.warn || null);
+    setBusy(false);
   };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <main className="mx-auto max-w-xl px-5 pb-24 pt-10">
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}>
-          <p className="text-[12px] uppercase tracking-[0.16em] text-white/45">bilge</p>
-          <h1 className="mt-2 text-[34px] font-semibold tracking-[-0.04em]">pour a note into the share db</h1>
-          <p className="mt-3 text-[15px] leading-relaxed text-white/60">
-            This is not a vault drawer. The text becomes a public .txt row, and Discord unfurls the /s card.
-          </p>
-        </motion.div>
-        <div className="mt-8 space-y-3">
-          <input value={title} onChange={(e) => setTitle(e.target.value)} className="glass w-full rounded-2xl px-4 py-3 text-[14px] outline-none" placeholder="title" />
-          <textarea value={body} onChange={(e) => setBody(e.target.value)} rows={8} className="glass w-full rounded-3xl px-4 py-3 text-[14px] leading-relaxed outline-none" placeholder="the note" />
-          <label className="flex items-center justify-between text-[13px] text-white/55">
-            fade after hours
-            <input value={hours} onChange={(e) => setHours(e.target.value.replace(/[^\d]/g, ''))} className="glass w-20 rounded-xl px-3 py-2 text-right text-white outline-none" />
-          </label>
-          <p className="text-[12px] text-white/40">{words} words · 0 keeps it until you stop linking it</p>
-          <button onClick={pour} disabled={busy} className="rounded-full bg-white px-5 py-2.5 text-[14px] font-medium text-black transition-transform active:scale-[0.98] disabled:opacity-60">
-            {busy ? 'pouring…' : 'pour'}
+      <div className="pt-28 pb-20 px-5 max-w-xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[28px] p-7">
+          <p className="text-[#0a84ff] text-sm mb-2">bilge</p>
+          <h1 className="text-3xl font-semibold tracking-tight mb-2">a watch, not a vault.</h1>
+          <p className="text-5xl font-semibold tracking-tight tabular-nums mb-4">{clock}</p>
+          <p className="text-neutral-400 text-sm mb-6">leave one line about what you are keeping an eye on. it is stored beside the desk notes, not as a file drawer. paste /bilge in discord for the card.</p>
+          <textarea value={line} onChange={(e) => setLine(e.target.value)} rows={3} placeholder="the thing you do not want to forget" className="w-full mb-4 rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/60 transition-colors" />
+          {err && <p className="text-xs text-red-400 mb-3">{err}</p>}
+          <button onClick={leave} disabled={busy || !line.trim()} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40 active:scale-[0.98] transition-transform duration-150">
+            {busy ? 'marking the watch…' : 'mark the watch'}
           </button>
-          {err && <p className="text-[13px] text-red-300">{err}</p>}
-          {warn && <p className="text-[13px] text-amber-200">{warn}</p>}
-          {urls && (
-            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-3xl p-5">
-              <p className="text-[13px] text-white/50">discord card</p>
-              <p className="mt-1 break-all text-[14px]">{urls.embed}</p>
-            </motion.div>
-          )}
+        </motion.div>
+        <div className="mt-6 space-y-2">
+          {rows.filter((row) => row.title).slice(0, 8).map((row, i) => (
+            <motion.button key={row.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 * i, duration: 0.4 }} onClick={() => navigate('bilge', row.id)} className="w-full text-left glass rounded-2xl px-4 py-3 hover:bg-white/[0.04] transition-colors">
+              <p className="text-sm text-white">{row.title}</p>
+              <p className="text-xs text-neutral-500 mt-1">{row.when_label || 'watch'}</p>
+            </motion.button>
+          ))}
         </div>
-      </main>
+      </div>
     </div>
   );
 }

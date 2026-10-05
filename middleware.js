@@ -8,6 +8,10 @@ const ID_PREFIX = new Set(['scuttle', 'wale', 'flemish', 'knee', 'transom', 'bel
 const DEDICATED = {
   scuttle: '/api/scuttle',
   atelier: '/api/atelier',
+  hawsepipe: '/api/embed',
+  stemhead: '/api/embed',
+  counterrail: '/api/embed',
+  quayfile: '/api/quay',
   ledger: '/api/atelier',
   pintle: '/api/embed',
   rowlock: '/api/embed',

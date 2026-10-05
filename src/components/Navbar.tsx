@@ -13,12 +13,16 @@ const primary: NavItem[] = [
   { to: 'ketch', label: 'ketch' },
   { to: 'beacon', label: 'beacon' },
   { to: 'vault', label: 'vault' },
+  { to: 'hawsepipe', label: 'hawsepipe' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'hosting',
     items: [
+      { to: 'hawsepipe', label: 'hawsepipe' },
+      { to: 'stemhead', label: 'stemhead' },
+      { to: 'counterrail', label: 'counterrail' },
       { to: 'atelier', label: 'atelier' },
       { to: 'scuttle', label: 'scuttle' },
       { to: 'quarter', label: 'quarter' },

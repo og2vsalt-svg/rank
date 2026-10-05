@@ -89,6 +89,9 @@ const items = [
   { title: 'trunnion', body: 'slice a local into a map. only the json goes public.' },
   { title: 'samphire', body: 'a field note — title, place, body — published as markdown.' },
   { title: 'strake', body: 'a running stamped log that launches as a .log drop.' },
+  { title: 'hawsepipe', body: 'a local file goes into the quay table, then a public card. discord unfurls /s. slowness warning only.' },
+  { title: 'stemhead', body: 'a bow note you publish as markdown. not a vault drawer.' },
+  { title: 'counterrail', body: 'three seats of notes on this device. publish the rail if you want a card.' },
 ];
 
 export default function Features() {

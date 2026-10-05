@@ -5,15 +5,13 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'garboard', label: 'garboard' },
+  { to: 'channels', label: 'channels' },
   { to: 'chock', label: 'chock' },
   { to: 'mizzen', label: 'mizzen' },
   { to: 'kelson', label: 'kelson' },
   { to: 'forefoot', label: 'forefoot' },
   { to: 'swifter', label: 'swifter' },
-  { to: 'catfall', label: 'catfall' },
-  { to: 'spirket', label: 'spirket' },
-  { to: 'bowsprit', label: 'bowsprit' },
-  { to: 'wharf', label: 'wharf' },
   { to: 'vault', label: 'vault' },
 ];
 
@@ -21,6 +19,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'hosting',
     items: [
+      { to: 'garboard', label: 'garboard' },
+      { to: 'channels', label: 'channels' },
       { to: 'chock', label: 'chock' },
       { to: 'mizzen', label: 'mizzen' },
       { to: 'kelson', label: 'kelson' },
@@ -95,6 +95,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'garboard', label: 'garboard' },
+      { to: 'channels', label: 'channels' },
       { to: 'catfall', label: 'catfall' },
       { to: 'spirket', label: 'spirket' },
       { to: 'bowsprit', label: 'bowsprit' },
@@ -231,7 +233,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">paste /chock, /mizzen, or /s in Discord for a card. older desks stay on their routes.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">paste /garboard, /channels, or /s in Discord for a card. older desks stay on their routes.</p>
         </div>
       </div>
     </nav>

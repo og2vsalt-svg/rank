@@ -5,13 +5,12 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'luff', label: 'luff' },
+  { to: 'ketch', label: 'ketch' },
+  { to: 'beacon', label: 'beacon' },
   { to: 'garboard', label: 'garboard' },
   { to: 'channels', label: 'channels' },
   { to: 'chock', label: 'chock' },
-  { to: 'mizzen', label: 'mizzen' },
-  { to: 'kelson', label: 'kelson' },
-  { to: 'forefoot', label: 'forefoot' },
-  { to: 'swifter', label: 'swifter' },
   { to: 'selvage', label: 'selvage' },
   { to: 'vesper', label: 'vesper' },
   { to: 'vault', label: 'vault' },
@@ -21,6 +20,9 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'hosting',
     items: [
+      { to: 'luff', label: 'luff' },
+      { to: 'ketch', label: 'ketch' },
+      { to: 'beacon', label: 'beacon' },
       { to: 'garboard', label: 'garboard' },
       { to: 'channels', label: 'channels' },
       { to: 'chock', label: 'chock' },
@@ -86,6 +88,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'notes',
     items: [
+      { to: 'beacon', label: 'beacon' },
       { to: 'spirket', label: 'spirket' },
       { to: 'lodging', label: 'lodging' },
       { to: 'margin', label: 'margin' },
@@ -99,6 +102,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'luff', label: 'luff' },
+      { to: 'ketch', label: 'ketch' },
       { to: 'garboard', label: 'garboard' },
       { to: 'channels', label: 'channels' },
       { to: 'catfall', label: 'catfall' },
@@ -237,7 +242,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">paste /selvage, /vesper, or /s in Discord for a card. older desks stay on their routes.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">paste /luff, /ketch, /beacon, or /s in Discord for a card. older desks stay on their routes.</p>
         </div>
       </div>
     </nav>

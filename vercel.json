@@ -10,6 +10,7 @@
     { "source": "/api/card", "destination": "/api/card" },
     { "source": "/api/ferry", "destination": "/api/ferry" },
     { "source": "/api/cathead", "destination": "/api/cathead" },
+    { "source": "/api/catfall", "destination": "/api/catfall" },
     { "source": "/api/wall", "destination": "/api/wall" },
     { "source": "/api/stay", "destination": "/api/stay" },
     { "source": "/api/:desk", "destination": "/api/desk?desk=:desk" },

@@ -16,7 +16,8 @@ export default function Hero() {
           a quiet vault for clips, docs, and dumps. hang a file, tie a link, or keep a tiller line. no size lock. just a heads up if the tab might lag.
         </motion.p>
         <div className="flex flex-wrap gap-3 mb-12">
-          <button onClick={() => navigate('tiller')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">keep a line</button>
+          <button onClick={() => navigate('nightglass')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">listening shelf</button>
+          <button onClick={() => navigate('tiller')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">keep a line</button>
           <button onClick={() => navigate('fiferail')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">hang a file</button>
           <button onClick={() => navigate('gantline')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">tie a link</button>
           <button onClick={() => navigate('forefoot')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">store a file</button>

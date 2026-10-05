@@ -18,6 +18,7 @@ const DEDICATED = {
   counterrail: '/api/embed',
   quayfile: '/api/quay',
   ledger: '/api/atelier',
+  nightglass: '/api/nightglass',
   pintle: '/api/embed',
   rowlock: '/api/embed',
   gunwale: '/api/embed',

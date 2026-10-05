@@ -241,7 +241,7 @@ export async function fetchShare(id: string): Promise<CloudMeta | null> {
 export async function listPublicShares(limit = 24): Promise<CloudMeta[]> {
   try {
     const res = await fetch(
-      `${SB_URL}/rest/v1/public_shares?is_public=eq.true&select=id,name,mime,size,file_url,expires_at,created_at,download_count,author,lock_pass&order=created_at.desc&limit=${limit}`,
+      `${SB_URL}/rest/v1/public_shares?is_public=eq.true&select=id,name,mime,size,file_url,expires_at,created_at,download_count,author,caption,lock_pass&order=created_at.desc&limit=${limit}`,
       { headers: sbHeaders() },
     );
     if (!res.ok) return [];

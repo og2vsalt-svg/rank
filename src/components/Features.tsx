@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 
 const items = [
-  { title: 'forefoot', body: 'a local file written in pieces into the database, then opened on swifter. discord unfurls /forefoot and /swifter. slowness warning only.' },
+  { title: 'nightglass', body: 'a listening shelf. a local file lands in the share table, and a short note sits beside it in its own table. discord unfurls /nightglass. slowness warning only. not a vault drawer.' },
   { title: 'bowsprit', body: 'name a port and an arrival note, then hand a local file to the share table. discord unfurls /bowsprit and /s. slowness warning only.' },
   { title: 'chainplate', body: 'write the load a file is holding and who is on the other end. bytes land in the share table. discord unfurls /chainplate and /s. not a vault drawer.' },
   { title: 'oakum', body: 'one or two local files into the share table, plus the sentence that fills the seam. discord unfurls /oakum and /s. slowness warning only.' },

@@ -12,6 +12,7 @@ import forefoot from '../lib/endpoints/forefoot.js';
 import jackstay from '../lib/endpoints/jackstay.js';
 import ketch from '../lib/endpoints/ketch.js';
 import luff from '../lib/endpoints/luff.js';
+import nightglass from '../lib/endpoints/nightglass.js';
 import quarter from '../lib/endpoints/quarter.js';
 import quay from '../lib/endpoints/quay.js';
 import scuttle from '../lib/endpoints/scuttle.js';
@@ -26,7 +27,7 @@ import wall from '../lib/endpoints/wall.js';
 
 const routes = {
   atelier, beacon, card, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
-  jackstay, ketch, luff, quarter, quay, scuttle, selvage, share, signal, stay, tide,
+  jackstay, ketch, luff, nightglass, quarter, quay, scuttle, selvage, share, signal, stay, tide,
   tiller, vesper, wall,
 };
 

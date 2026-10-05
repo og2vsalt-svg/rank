@@ -1,77 +1,90 @@
-import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 import Navbar from './Navbar';
 
-type Mark = { id: string; label: string; detail?: string; href?: string; created_at?: string };
-type Share = { id: string; name: string; size?: number; caption?: string };
+const SUPABASE_URL = 'https://tqfocdktvjuwoiyfgesb.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
+
+type LinkRow = { id: string; url: string; note: string | null; author: string | null; created_at: string };
+
+function headers() {
+  return {
+    apikey: SUPABASE_KEY,
+    Authorization: `Bearer ${SUPABASE_KEY}`,
+    'Content-Type': 'application/json',
+    Prefer: 'return=representation',
+  };
+}
 
 export default function LedgerPage() {
-  const [marks, setMarks] = useState<Mark[]>([]);
-  const [shares, setShares] = useState<Share[]>([]);
-  const [label, setLabel] = useState('');
-  const [detail, setDetail] = useState('');
-  const [href, setHref] = useState('');
-  const [err, setErr] = useState('');
+  const [rows, setRows] = useState<LinkRow[]>([]);
+  const [url, setUrl] = useState('');
+  const [note, setNote] = useState('');
+  const [author, setAuthor] = useState('');
+  const [status, setStatus] = useState('addresses live on the links shelf. files stay on folio.');
+  const [busy, setBusy] = useState(false);
 
-  const load = async () => {
-    const [a, b] = await Promise.all([
-      fetch('/api/atelier?table=ledger').then((r) => r.json()),
-      fetch('/api/share?list=1').then((r) => r.json()).catch(() => ({ rows: [] })),
-    ]);
-    setMarks(Array.isArray(a.rows) ? a.rows : []);
-    const rows = Array.isArray(b) ? b : b.rows || b.shares || [];
-    setShares(Array.isArray(rows) ? rows.slice(0, 8) : []);
-  };
+  async function load() {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/links?select=id,url,note,author,created_at&order=created_at.desc&limit=40`, { headers: headers() });
+    const data = await r.json();
+    if (r.ok && Array.isArray(data)) setRows(data);
+    else setStatus('could not read the shelf');
+  }
 
-  useEffect(() => { load().catch(() => setErr('ledger could not load.')); }, []);
+  useEffect(() => {
+    load().catch(() => setStatus('could not read the shelf'));
+  }, []);
 
-  const add = async () => {
-    if (!label.trim()) return;
-    setErr('');
-    const r = await fetch('/api/atelier?table=ledger', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ label, detail, href }),
-    });
-    if (!r.ok) {
-      setErr('could not write the mark.');
+  async function pin() {
+    if (busy) return;
+    if (!/^https?:\/\//i.test(url.trim())) {
+      setStatus('an http address is required');
       return;
     }
-    setLabel('');
-    setDetail('');
-    setHref('');
-    await load();
-  };
+    setBusy(true);
+    try {
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/links`, {
+        method: 'POST',
+        headers: headers(),
+        body: JSON.stringify({ url: url.trim().slice(0, 2000), note: note.trim().slice(0, 280) || null, author: (author || 'ledger').slice(0, 80) }),
+      });
+      if (!r.ok) throw new Error('the shelf refused that address');
+      setUrl('');
+      setNote('');
+      setStatus('pinned. paste /ledger in Discord for the card.');
+      await load();
+    } catch (err) {
+      setStatus(err instanceof Error ? err.message : 'could not pin that');
+    } finally {
+      setBusy(false);
+    }
+  }
 
   return (
-    <div className="min-h-screen bg-[#07080b] text-white">
+    <div className="mesh min-h-screen">
       <Navbar />
-      <main className="mx-auto max-w-3xl px-5 pb-24 pt-10">
-        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs uppercase tracking-[0.22em] text-white/45">ledger</motion.p>
-        <motion.h1 initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mt-2 text-4xl font-semibold tracking-tight">A running margin, not a vault.</motion.h1>
-        <p className="mt-3 text-white/60">Pin a mark beside the files already shared. Discord still unfurls /ledger and every share link.</p>
-        <div className="mt-8 space-y-3 rounded-[28px] border border-white/10 bg-white/[0.04] p-5 backdrop-blur-xl">
-          <input value={label} onChange={(e) => setLabel(e.target.value)} placeholder="what landed" className="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none focus:border-[#0A84FF]" />
-          <input value={detail} onChange={(e) => setDetail(e.target.value)} placeholder="one sentence" className="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none focus:border-[#0A84FF]" />
-          <input value={href} onChange={(e) => setHref(e.target.value)} placeholder="optional link" className="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none focus:border-[#0A84FF]" />
-          <button onClick={add} className="rounded-full bg-[#0A84FF] px-5 py-2 text-sm font-medium transition active:scale-95">add mark</button>
-          {err && <p className="text-sm text-red-300">{err}</p>}
+      <main className="max-w-3xl mx-auto px-5 pt-16 pb-24">
+        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[12px] tracking-[0.18em] uppercase text-white/40">ledger</motion.p>
+        <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-2 text-[40px] leading-none font-semibold tracking-tight">A shelf for addresses.</motion.h1>
+        <p className="mt-3 max-w-xl text-[15px] text-white/60">Not another drawer. Pin a link with a note. The row lands in the links table, and Discord unfurls this page.</p>
+        <div className="glass mt-8 rounded-3xl p-5 space-y-3">
+          <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://" className="w-full bg-white/5 rounded-2xl px-4 py-3 text-[14px] outline-none" />
+          <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="why it is here" className="w-full bg-white/5 rounded-2xl px-4 py-3 text-[14px] outline-none" />
+          <div className="flex gap-3">
+            <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="your name" className="flex-1 bg-white/5 rounded-2xl px-4 py-3 text-[14px] outline-none" />
+            <button onClick={pin} disabled={busy || !url.trim()} className="rounded-full bg-white text-black px-5 text-[14px] font-medium disabled:opacity-40">{busy ? 'Pinning…' : 'Pin'}</button>
+          </div>
+          <p className="text-[13px] text-white/45">{status}</p>
         </div>
-        <ul className="mt-8 space-y-3">
-          {marks.map((m) => (
-            <li key={m.id} className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3">
-              <p className="font-medium">{m.label}</p>
-              {m.detail && <p className="text-sm text-white/55">{m.detail}</p>}
-              {m.href && <a className="text-sm text-[#64D2FF]" href={m.href}>{m.href}</a>}
+        <ul className="mt-6 space-y-2">
+          {rows.map((row) => (
+            <li key={row.id} className="glass rounded-2xl px-4 py-3">
+              <a href={row.url} className="text-[14px] text-[#64b5ff] break-all">{row.url}</a>
+              {row.note && <p className="mt-1 text-[13px] text-white/70">{row.note}</p>}
+              <p className="mt-1 text-[11px] text-white/35">{row.author || 'someone'} · {new Date(row.created_at).toLocaleString()}</p>
             </li>
           ))}
-        </ul>
-        <h2 className="mt-10 text-sm uppercase tracking-[0.18em] text-white/40">recent public shares</h2>
-        <ul className="mt-3 space-y-2">
-          {shares.map((s) => (
-            <li key={s.id} className="text-sm text-white/70"><a className="text-[#64D2FF]" href={'/s/' + s.id}>{s.name}</a> {s.caption ? ` · ${s.caption}` : ''}</li>
-          ))}
-          {shares.length === 0 && <li className="text-sm text-white/40">no public shares yet.</li>}
+          {!rows.length && <li className="text-[13px] text-white/40">nothing pinned yet.</li>}
         </ul>
       </main>
     </div>

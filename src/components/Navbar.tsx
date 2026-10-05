@@ -6,17 +6,17 @@ type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
   { to: 'shelf', label: 'shelf' },
+  { to: 'satchel', label: 'satchel' },
   { to: 'board', label: 'board' },
   { to: 'receipt', label: 'receipt' },
   { to: 'vault', label: 'vault' },
-  { to: 'scuttle', label: 'scuttle' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
-  { title: 'new', items: [{ to: 'shelf', label: 'shelf' }, { to: 'board', label: 'board' }, { to: 'receipt', label: 'receipt' }] },
+  { title: 'new', items: [{ to: 'shelf', label: 'shelf' }, { to: 'satchel', label: 'satchel' }, { to: 'board', label: 'board' }, { to: 'receipt', label: 'receipt' }] },
   { title: 'hosting', items: [{ to: 'vault', label: 'vault' }, { to: 'scuttle', label: 'scuttle' }, { to: 'forefoot', label: 'forefoot' }, { to: 'catfall', label: 'catfall' }, { to: 'fiferail', label: 'fiferail' }, { to: 'gantline', label: 'gantline' }, { to: 'atelier', label: 'atelier' }, { to: 'quarter', label: 'quarter' }, { to: 'hawsepipe', label: 'hawsepipe' }, { to: 'bollard', label: 'bollard' }, { to: 'unfurl', label: 'unfurl' }] },
   { title: 'notes', items: [{ to: 'nightglass', label: 'nightglass' }, { to: 'quire', label: 'quire' }, { to: 'docket', label: 'docket' }, { to: 'bilge', label: 'bilge' }, { to: 'luff', label: 'luff' }, { to: 'ketch', label: 'ketch' }, { to: 'beacon', label: 'beacon' }, { to: 'vesper', label: 'vesper' }, { to: 'ledger', label: 'ledger' }] },
-  { title: 'share', items: [{ to: 'shelf', label: 'shelf' }, { to: 'garboard', label: 'garboard' }, { to: 'channels', label: 'channels' }, { to: 'wharf', label: 'wharf' }, { to: 'passage', label: 'passage' }, { to: 'folio', label: 'folio' }, { to: 'hawse', label: 'hawse' }, { to: 'courier', label: 'courier' }] },
+  { title: 'share', items: [{ to: 'shelf', label: 'shelf' }, { to: 'satchel', label: 'satchel' }, { to: 'garboard', label: 'garboard' }, { to: 'channels', label: 'channels' }, { to: 'wharf', label: 'wharf' }, { to: 'passage', label: 'passage' }, { to: 'folio', label: 'folio' }, { to: 'hawse', label: 'hawse' }, { to: 'courier', label: 'courier' }] },
   { title: 'tools', items: [{ to: 'hash', label: 'hash' }, { to: 'convert', label: 'convert' }, { to: 'diff', label: 'diff' }, { to: 'sounding', label: 'sounding' }, { to: 'counter', label: 'counter' }] },
 ];
 
@@ -96,7 +96,7 @@ export default function Navbar() {
                   {open && (
                     <div className="px-2 pb-2.5 grid grid-cols-2 sm:grid-cols-3 gap-0.5">
                       {g.items.map((l) => (
-                        <button key={l.to} onClick={() => go(l.to)} className="text-left text-[13px] text-neutral-400 hover:text-white hover:bg-white/5 rounded-xl px-2.5 py-2">{l.label}</button>
+                        <button key={l.to + l.label} onClick={() => go(l.to)} className="text-left text-[13px] text-neutral-400 hover:text-white hover:bg-white/5 rounded-xl px-2.5 py-2">{l.label}</button>
                       ))}
                     </div>
                   )}
@@ -104,7 +104,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">paste /shelf, /board, or /s/id in Discord for a card. older desks stay on their routes.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">paste /shelf, /satchel, /board, or /s/id in Discord for a card. older desks stay on their routes.</p>
         </div>
       </div>
     </nav>

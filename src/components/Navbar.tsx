@@ -5,16 +5,17 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'ribbon', label: 'ribbon' },
+  { to: 'loom', label: 'loom' },
   { to: 'plinth', label: 'plinth' },
   { to: 'corbel', label: 'corbel' },
   { to: 'trundle', label: 'trundle' },
-  { to: 'coping', label: 'coping' },
   { to: 'shelf', label: 'shelf' },
   { to: 'board', label: 'board' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
-  { title: 'new', items: [{ to: 'plinth', label: 'plinth' }, { to: 'corbel', label: 'corbel' }, { to: 'trundle', label: 'trundle' }, { to: 'coping', label: 'coping' }, { to: 'vitrine', label: 'vitrine' }, { to: 'shelf', label: 'shelf' }, { to: 'board', label: 'board' }] },
+  { title: 'new', items: [{ to: 'ribbon', label: 'ribbon' }, { to: 'loom', label: 'loom' }, { to: 'plinth', label: 'plinth' }, { to: 'corbel', label: 'corbel' }, { to: 'trundle', label: 'trundle' }, { to: 'coping', label: 'coping' }, { to: 'vitrine', label: 'vitrine' }, { to: 'shelf', label: 'shelf' }, { to: 'board', label: 'board' }] },
   { title: 'hosting', items: [{ to: 'vault', label: 'vault' }, { to: 'scuttle', label: 'scuttle' }, { to: 'forefoot', label: 'forefoot' }, { to: 'catfall', label: 'catfall' }, { to: 'fiferail', label: 'fiferail' }, { to: 'gantline', label: 'gantline' }, { to: 'atelier', label: 'atelier' }, { to: 'quarter', label: 'quarter' }, { to: 'hawsepipe', label: 'hawsepipe' }, { to: 'bollard', label: 'bollard' }, { to: 'unfurl', label: 'unfurl' }] },
   { title: 'notes', items: [{ to: 'nightglass', label: 'nightglass' }, { to: 'quire', label: 'quire' }, { to: 'docket', label: 'docket' }, { to: 'bilge', label: 'bilge' }, { to: 'luff', label: 'luff' }, { to: 'ketch', label: 'ketch' }, { to: 'beacon', label: 'beacon' }, { to: 'vesper', label: 'vesper' }, { to: 'ledger', label: 'ledger' }, { to: 'ashlar', label: 'ashlar' }, { to: 'oriel', label: 'oriel' }] },
   { title: 'share', items: [{ to: 'plinth', label: 'plinth' }, { to: 'corbel', label: 'corbel' }, { to: 'trundle', label: 'trundle' }, { to: 'coping', label: 'coping' }, { to: 'shelf', label: 'shelf' }, { to: 'satchel', label: 'satchel' }, { to: 'garboard', label: 'garboard' }, { to: 'channels', label: 'channels' }, { to: 'wharf', label: 'wharf' }, { to: 'passage', label: 'passage' }, { to: 'folio', label: 'folio' }, { to: 'hawse', label: 'hawse' }, { to: 'courier', label: 'courier' }, { to: 'nosing', label: 'nosing' }] },
@@ -105,7 +106,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">paste /plinth, /corbel, /trundle, /coping, /shelf, or /s/id in Discord for a card. older desks stay on their routes.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">paste /ribbon, /loom, /plinth, or /s/id in Discord for a card. older desks stay on their routes.</p>
         </div>
       </div>
     </nav>

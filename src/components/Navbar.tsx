@@ -5,14 +5,13 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'quarter', label: 'quarter' },
+  { to: 'bilge', label: 'bilge' },
   { to: 'luff', label: 'luff' },
   { to: 'ketch', label: 'ketch' },
   { to: 'beacon', label: 'beacon' },
   { to: 'garboard', label: 'garboard' },
   { to: 'channels', label: 'channels' },
-  { to: 'chock', label: 'chock' },
-  { to: 'selvage', label: 'selvage' },
-  { to: 'vesper', label: 'vesper' },
   { to: 'vault', label: 'vault' },
 ];
 
@@ -20,6 +19,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'hosting',
     items: [
+      { to: 'quarter', label: 'quarter' },
       { to: 'luff', label: 'luff' },
       { to: 'ketch', label: 'ketch' },
       { to: 'beacon', label: 'beacon' },
@@ -88,6 +88,8 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'notes',
     items: [
+      { to: 'quarter', label: 'quarter' },
+      { to: 'bilge', label: 'bilge' },
       { to: 'beacon', label: 'beacon' },
       { to: 'spirket', label: 'spirket' },
       { to: 'lodging', label: 'lodging' },
@@ -102,6 +104,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'share',
     items: [
+      { to: 'quarter', label: 'quarter' },
       { to: 'luff', label: 'luff' },
       { to: 'ketch', label: 'ketch' },
       { to: 'garboard', label: 'garboard' },
@@ -140,6 +143,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: 'tools',
     items: [
+      { to: 'bilge', label: 'bilge' },
       { to: 'lodging', label: 'lodging' },
       { to: 'limber', label: 'limber' },
       { to: 'skylight', label: 'skylight' },
@@ -242,7 +246,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">paste /luff, /ketch, /beacon, or /s in Discord for a card. older desks stay on their routes.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">paste /quarter, /bilge, /luff, or /s in Discord for a card. older desks stay on their routes.</p>
         </div>
       </div>
     </nav>

@@ -17,6 +17,10 @@
     { "source": "/api/chock", "destination": "/api/chock" },
     { "source": "/api/selvage", "destination": "/api/selvage" },
     { "source": "/api/vesper", "destination": "/api/vesper" },
+    { "source": "/api/luff", "destination": "/api/luff" },
+    { "source": "/api/ketch", "destination": "/api/ketch" },
+    { "source": "/api/beacon", "destination": "/api/beacon" },
+    { "source": "/api/signal", "destination": "/api/signal" },
     { "source": "/api/:desk", "destination": "/api/desk?desk=:desk" },
     { "source": "/((?!api/|assets/).*)", "destination": "/index.html" }
   ]

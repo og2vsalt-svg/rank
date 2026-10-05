@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishLocalFile, shareUrls } from '../lib/cloudShare';
+import { publishLocalFile } from '../lib/cloudShare';
 import { useRouter } from './Router';
 
 function pretty(n: number) {
@@ -20,11 +20,13 @@ export default function LuffPage() {
   const [warn, setWarn] = useState('');
   const [err, setErr] = useState('');
   const [link, setLink] = useState('');
+  const [fileCard, setFileCard] = useState('');
 
   const pick = (f: File | null) => {
     setFile(f);
     setErr('');
     setLink('');
+    setFileCard('');
     setWarn(f && f.size > 24 * 1024 * 1024 ? 'a wide sail. the send may feel slow. nothing is refused for size.' : '');
   };
 
@@ -44,6 +46,7 @@ export default function LuffPage() {
       if (!res.ok) throw new Error(data.error || 'luff table did not take the angle');
       const card = `${location.origin}/luff/${data.luff.id}`;
       setLink(card);
+      setFileCard(shared.embed || `${location.origin}/s/${shared.id}`);
       if (shared.warn) setWarn(shared.warn);
       try { await navigator.clipboard.writeText(card); } catch {}
       navigate('luff', data.luff.id);
@@ -76,7 +79,7 @@ export default function LuffPage() {
           <button onClick={fileIt} disabled={busy || !file || !heading.trim()} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40 active:scale-[0.98] transition-transform">
             {busy ? 'hauling the sheet…' : 'file the angle'}
           </button>
-          {link && <p className="text-xs text-neutral-500 mt-4 break-all">discord card copied: {link} · file card {shareUrls('').embed}</p>}
+          {link && <p className="text-xs text-neutral-500 mt-4 break-all">discord card copied: {link}{fileCard ? ` · file card ${fileCard}` : ''}</p>}
         </motion.div>
       </div>
     </div>

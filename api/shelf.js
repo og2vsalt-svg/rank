@@ -18,6 +18,8 @@ const COPY = {
   ashlar: ['Ashlar — rankvault', 'A letter with an optional local file. Large drops are warned, never refused.'],
   tympanum: ['Tympanum — rankvault', 'The public face of files already in the share table. Paste the link in Discord for a card.'],
   nosing: ['Nosing — rankvault', 'A due slip on the edge of a local file. The file lands in the share table. No size gate.'],
+  trundle: ['Trundle — rankvault', 'A handoff slip with a local file in the share table. Large drops are warned, never refused.'],
+  coping: ['Coping — rankvault', 'A checklist beside an optional local file. Paste the link in Discord for a card.'],
   keepsake: ['Keepsake — rankvault', 'A local file filed in the share table. Large drops are warned, never refused.'],
   lintel: ['Lintel — rankvault', 'A note or a local file under the door. Paste the link in Discord for a card.'],
   oriel: ['Oriel — rankvault', 'A short window note. The card uses the line itself.'],
@@ -130,6 +132,35 @@ export default async function handler(req, res) {
       if (row) {
         title = row.title + ' — nosing';
         desc = (row.due_note || row.file_name || 'due slip') + (row.author ? ' · ' + row.author : '');
+      }
+    }
+  }
+
+  if (id && page === 'trundle') {
+    const r = await fetch(SUPABASE_URL + '/rest/v1/trundle_slips?id=eq.' + encodeURIComponent(id) + '&select=to_name,note,file_name,author&limit=1', {
+      headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },
+    });
+    if (r.ok) {
+      const rows = await r.json();
+      const row = rows && rows[0];
+      if (row) {
+        title = 'for ' + row.to_name + ' — trundle';
+        desc = (row.note || row.file_name || 'handoff') + (row.author ? ' · ' + row.author : '');
+      }
+    }
+  }
+
+  if (id && page === 'coping') {
+    const r = await fetch(SUPABASE_URL + '/rest/v1/coping_lists?id=eq.' + encodeURIComponent(id) + '&select=title,items,author&limit=1', {
+      headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },
+    });
+    if (r.ok) {
+      const rows = await r.json();
+      const row = rows && rows[0];
+      if (row) {
+        const items = Array.isArray(row.items) ? row.items.slice(0, 4).join(', ') : '';
+        title = row.title + ' — coping';
+        desc = (items || 'a checklist') + (row.author ? ' · ' + row.author : '');
       }
     }
   }

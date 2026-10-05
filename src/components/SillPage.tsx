@@ -1,76 +1,111 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
+import { db } from '../lib/db';
+import { useRouter } from './Router';
 
-function pretty(n: number) {
-  if (n < 1024) return n + ' B';
-  if (n < 1024 * 1024) return Math.round(n / 1024) + ' KB';
-  return (n / (1024 * 1024)).toFixed(1) + ' MB';
+type LinkRow = { id: string; url: string; note: string | null; author: string | null; created_at: string };
+
+function tidy(raw: string) {
+  const t = raw.trim();
+  if (!t) return '';
+  if (/^https?:\/\//i.test(t)) return t;
+  return 'https://' + t;
 }
 
 export default function SillPage() {
-  const [preview, setPreview] = useState('');
-  const [info, setInfo] = useState('');
-  const [warn, setWarn] = useState('');
+  const { shareId } = useRouter();
+  const [url, setUrl] = useState('');
+  const [note, setNote] = useState('');
+  const [author, setAuthor] = useState('');
+  const [rows, setRows] = useState<LinkRow[]>([]);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState('');
+  const [copied, setCopied] = useState('');
 
-  const look = (file: File) => {
-    setWarn(file.size > 40 * 1024 * 1024 ? 'no cap. a still this heavy can make the tab feel slow.' : '');
-    if (!file.type.startsWith('image/')) {
-      setPreview('');
-      setInfo(`${file.name} · ${pretty(file.size)} · not a still — nothing left this device.`);
+  async function load() {
+    const res = await fetch(
+      `${db.url}/rest/v1/links?select=id,url,note,author,created_at&order=created_at.desc&limit=18`,
+      { headers: { apikey: db.key, Authorization: `Bearer ${db.key}` } },
+    );
+    if (!res.ok) return;
+    const data = await res.json();
+    if (Array.isArray(data)) setRows(data);
+  }
+
+  useEffect(() => {
+    load().catch(() => setErr('the link table did not answer'));
+  }, []);
+
+  async function save(e: React.FormEvent) {
+    e.preventDefault();
+    const next = tidy(url);
+    if (!next) return;
+    setBusy(true);
+    setErr('');
+    const res = await fetch(`${db.url}/rest/v1/links`, {
+      method: 'POST',
+      headers: {
+        apikey: db.key,
+        Authorization: `Bearer ${db.key}`,
+        'Content-Type': 'application/json',
+        Prefer: 'return=representation',
+      },
+      body: JSON.stringify({ url: next, note: note.trim() || null, author: author.trim() || null }),
+    });
+    setBusy(false);
+    if (!res.ok) {
+      setErr('could not file that link');
       return;
     }
-    const url = URL.createObjectURL(file);
-    setPreview(url);
-    const img = new Image();
-    img.onload = () => {
-      setInfo(`${file.name} · ${img.naturalWidth}×${img.naturalHeight} · ${pretty(file.size)} · stays on the sill`);
-    };
-    img.src = url;
-  };
+    setUrl('');
+    setNote('');
+    await load();
+  }
+
+  async function copy(id: string) {
+    const link = `${location.origin}/sill/${id}`;
+    await navigator.clipboard.writeText(link);
+    setCopied(id);
+    setTimeout(() => setCopied(''), 1400);
+  }
+
+  const focus = shareId ? rows.find((r) => r.id === shareId) : null;
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          className="glass rounded-[32px] p-8"
-        >
-          <p className="text-[#0a84ff] text-sm mb-2">sill</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">set a still on the window ledge. nothing uploads.</h1>
-          <p className="text-neutral-400 text-sm mb-6">
-            not the vault and not the share db. just a quiet look at a local image — frame size, weight, and a preview.
-          </p>
-          <label
-            className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition-all duration-300"
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => {
-              e.preventDefault();
-              const f = e.dataTransfer.files?.[0];
-              if (f) look(f);
-            }}
-          >
-            <input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files?.[0] && look(e.target.files[0])} />
-            <p className="text-white font-medium">drop a still onto the sill</p>
-            <p className="text-xs text-neutral-500 mt-2">stays in this tab.</p>
-          </label>
-          {preview && (
-            <motion.img
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-              src={preview}
-              alt=""
-              className="mt-6 w-full rounded-[24px] object-cover max-h-[420px]"
-            />
-          )}
-          {info && <p className="text-xs text-neutral-500 mt-4">{info}</p>}
-          {warn && <p className="text-xs text-amber-300/90 mt-3">{warn}</p>}
-        </motion.div>
-      </div>
+      <main className="mx-auto max-w-3xl px-5 pt-28 pb-24">
+        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} className="text-xs tracking-[0.22em] uppercase text-[#0a84ff]">sill</motion.p>
+        <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06, duration: 0.55, ease: [0.22, 1, 0.36, 1] }} className="mt-3 text-4xl font-semibold tracking-tight">a short link, not a drawer</motion.h1>
+        <p className="mt-3 text-neutral-400 max-w-xl">Paste a URL. It lands in the links table. Paste /sill in Discord for a card. Older desks stay where they were.</p>
+        {focus && (
+          <a href={focus.url} className="mt-6 block glass rounded-3xl p-5 hover:-translate-y-0.5">
+            <span className="text-xs text-neutral-500">opened from a card</span>
+            <span className="mt-1 block text-lg">{focus.note || focus.url}</span>
+            <span className="mt-1 block text-sm text-[#64b5ff] truncate">{focus.url}</span>
+          </a>
+        )}
+        <form onSubmit={save} className="mt-8 glass rounded-[28px] p-5 space-y-3">
+          <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://" className="w-full rounded-2xl bg-black/40 border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/60" />
+          <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="what this is for" className="w-full rounded-2xl bg-black/40 border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/60" />
+          <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="your name, optional" className="w-full rounded-2xl bg-black/40 border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/60" />
+          {err && <p className="text-sm text-amber-200/90">{err}</p>}
+          <button disabled={busy || !url.trim()} className="rounded-full bg-[#0a84ff] px-5 py-2.5 text-sm font-medium text-white disabled:opacity-40">{busy ? 'filing...' : 'file the link'}</button>
+        </form>
+        <ul className="mt-8 space-y-3">
+          {rows.map((row, i) => (
+            <motion.li key={row.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }} className="glass rounded-3xl p-4 flex items-start justify-between gap-4">
+              <div className="min-w-0">
+                <p className="text-sm text-neutral-100 truncate">{row.note || 'untitled link'}</p>
+                <a href={row.url} className="text-xs text-[#64b5ff] truncate block">{row.url}</a>
+                <p className="text-[11px] text-neutral-500 mt-1">{row.author || 'someone'} · {new Date(row.created_at).toLocaleString()}</p>
+              </div>
+              <button onClick={() => copy(row.id)} className="shrink-0 rounded-full border border-white/10 px-3 py-1.5 text-xs text-neutral-200">{copied === row.id ? 'copied' : 'copy card'}</button>
+            </motion.li>
+          ))}
+        </ul>
+      </main>
     </div>
   );
 }

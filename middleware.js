@@ -123,6 +123,8 @@ const DEDICATED = {
   thimbles: '/api/thimble',
   coak: '/api/sheave',
   sheaveboard: '/api/sheave',
+  leechoth: '/api/leecloth',
+  crossjack: '/api/leecloth',
 };
 
 export default function middleware(request) {

@@ -63,3 +63,17 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .apple-in { animation: apple-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both; }
 .lift { transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.45s ease, background 0.45s ease; }
 .lift:hover { transform: translateY(-2px); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .apple-card {
+    transition: transform 560ms cubic-bezier(0.22, 1, 0.36, 1), border-color 560ms cubic-bezier(0.22, 1, 0.36, 1), background-color 560ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .apple-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255,255,255,0.18);
+    background-color: rgba(255,255,255,0.045);
+  }
+  button, a {
+    transition: transform 480ms cubic-bezier(0.22, 1, 0.36, 1), background-color 480ms ease, color 480ms ease;
+  }
+}

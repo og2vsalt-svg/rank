@@ -40,6 +40,7 @@ import wayleave from '../lib/endpoints/wayleave.js';
 import quoin from '../lib/endpoints/quoin.js';
 import newel from '../lib/endpoints/newel.js';
 import latch from '../lib/endpoints/latch.js';
+import grommet from '../lib/endpoints/grommet.js';
 
 const routes = {
   atelier, beacon, card, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -67,6 +68,8 @@ const routes = {
   newel,
   latch,
   hasp: latch,
+  grommet,
+  ring: grommet,
 };
 
 export default function handler(req, res) {

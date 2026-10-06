@@ -1,90 +1,84 @@
-import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useState } from 'react';
 import Navbar from './Navbar';
-import { publishShare } from '../lib/cloudShare';
+import { useRouter } from './Router';
 
-const SB_URL = ((import.meta as any).env?.VITE_SUPABASE_URL || 'https://tqfocdktvjuwoiyfgesb.supabase.co').replace(/\/$/, '');
-const SB_KEY = (import.meta as any).env?.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
-
-type LinkRow = { id: string; url: string; note: string | null; author: string | null; created_at: string };
-
-const ease = [0.22, 1, 0.36, 1] as const;
+function pretty(bytes: number) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
 
 export default function LodestonePage() {
-  const [url, setUrl] = useState('');
-  const [note, setNote] = useState('');
+  const { navigate } = useRouter();
+  const [file, setFile] = useState<File | null>(null);
+  const [heading, setHeading] = useState('');
+  const [remark, setRemark] = useState('');
   const [author, setAuthor] = useState('');
-  const [rows, setRows] = useState<LinkRow[]>([]);
+  const [warn, setWarn] = useState('');
+  const [status, setStatus] = useState('the file stays on this machine until you set the heading.');
+  const [card, setCard] = useState('');
   const [busy, setBusy] = useState(false);
-  const [msg, setMsg] = useState('');
 
-  const load = async () => {
-    const res = await fetch(`${SB_URL}/rest/v1/links?select=id,url,note,author,created_at&order=created_at.desc&limit=12`, {
-      headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` },
-    });
-    if (!res.ok) return;
-    const data = await res.json();
-    if (Array.isArray(data)) setRows(data);
-  };
+  function pick(next: File | null) {
+    setFile(next);
+    setCard('');
+    if (next && next.size > 8 * 1024 * 1024) setWarn('this one is heavy. lodestone will still take it, but the transfer can feel slow.');
+    else setWarn('');
+  }
 
-  useEffect(() => { load(); }, []);
-
-  const save = async () => {
-    const clean = url.trim();
-    if (!/^https?:\/\//i.test(clean)) {
-      setMsg('needs a full http or https address');
-      return;
-    }
+  async function fileIt() {
+    if (!file || busy) return;
     setBusy(true);
-    setMsg('');
-    const ins = await fetch(`${SB_URL}/rest/v1/links`, {
-      method: 'POST',
-      headers: {
-        apikey: SB_KEY,
-        Authorization: `Bearer ${SB_KEY}`,
-        'Content-Type': 'application/json',
-        Prefer: 'return=representation',
-      },
-      body: JSON.stringify({ url: clean, note: note.trim() || null, author: author.trim() || null }),
-    });
-    if (!ins.ok) {
-      setMsg((await ins.text()).slice(0, 180) || 'links shelf did not take it');
+    setStatus('writing the share row…');
+    try {
+      const body = new FormData();
+      body.append('file', file, file.name);
+      body.append('heading', heading.trim());
+      body.append('remark', remark.trim());
+      body.append('author', author.trim());
+      const r = await fetch('/api/lodestone', { method: 'POST', body });
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok || !data.id) throw new Error(data.error || 'the share table did not take the file');
+      const path = `${window.location.origin}/lodestone/${data.id}`;
+      setCard(path);
+      setStatus(data.warn || 'filed. paste the link in Discord.');
+      if (data.warn) setWarn(data.warn);
+    } catch (err) {
+      setStatus(err instanceof Error ? err.message : 'could not file that drop');
+    } finally {
       setBusy(false);
-      return;
     }
-    const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-    const body = `lodestone\n${clean}\n${note.trim()}\n${author.trim()}`;
-    const dataUrl = `data:text/plain;base64,${btoa(unescape(encodeURIComponent(body)))}`;
-    const filed = await publishShare({ id, name: 'lodestone.txt', type: 'text/plain', size: body.length, dataUrl, caption: note.trim() || clean, author: author.trim() || undefined });
-    setMsg(filed.ok ? `${location.origin}/s/${filed.id}` : 'saved on the shelf. card did not file.');
-    setUrl('');
-    setNote('');
-    await load();
-    setBusy(false);
-  };
+  }
 
   return (
-    <div className="mesh min-h-screen">
+    <div className="min-h-screen bg-[#f5f5f7] text-[#1d1d1f]">
       <Navbar />
       <main className="mx-auto max-w-3xl px-5 pb-24 pt-28">
-        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[13px] uppercase tracking-[0.18em] text-zinc-500">lodestone</motion.p>
-        <motion.h1 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease }} className="mt-2 text-4xl font-semibold tracking-tight text-zinc-50">A bearing, not a drawer.</motion.h1>
-        <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-zinc-400">Addresses sit on the links shelf. Filing also writes a small text drop so Discord can unfurl the bearing.</p>
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08, duration: 0.5, ease }} className="mt-8 rounded-[28px] border border-white/10 bg-white/[0.04] p-6 backdrop-blur-xl">
-          <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://" className="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none focus:border-[#0A84FF]/70" />
-          <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="why it matters" className="mt-3 w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none focus:border-[#0A84FF]/70" />
-          <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="your name, optional" className="mt-3 w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none focus:border-[#0A84FF]/70" />
-          <button disabled={busy} onClick={save} className="mt-4 rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition hover:bg-zinc-200 active:scale-[0.98] disabled:opacity-40">{busy ? 'setting…' : 'set the bearing'}</button>
-          {msg && <p className="mt-3 break-all text-sm text-[#0A84FF]">{msg}</p>}
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}>
+          <p className="text-[13px] font-medium tracking-wide text-[#6e6e73]">heading desk</p>
+          <h1 className="mt-2 text-[40px] font-semibold tracking-tight">lodestone</h1>
+          <p className="mt-3 max-w-xl text-[17px] leading-relaxed text-[#6e6e73]">Point a local file somewhere. It is written into the public share table with a heading, not dropped into a vault drawer. There is no size gate. A heavy file only gets a note that it may feel slow.</p>
         </motion.div>
-        <ul className="mt-6 space-y-2">
-          {rows.map((row) => (
-            <li key={row.id} className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3">
-              <a href={row.url} className="text-sm text-zinc-100 hover:text-[#0A84FF]">{row.url}</a>
-              {row.note && <p className="mt-1 text-xs text-zinc-500">{row.note}</p>}
-            </li>
-          ))}
-        </ul>
+        <motion.section initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08, duration: 0.55, ease: [0.22, 1, 0.36, 1] }} className="mt-8 rounded-[28px] bg-white/80 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.06)] ring-1 ring-black/5">
+          <label className="flex cursor-pointer flex-col items-center rounded-[22px] border border-dashed border-black/10 bg-[#f5f5f7] px-6 py-10 text-center transition duration-300 hover:-translate-y-0.5">
+            <span className="text-[15px] font-medium">{file ? file.name : 'choose a file from this machine'}</span>
+            <span className="mt-1 text-[13px] text-[#6e6e73]">{file ? pretty(file.size) : 'nothing is uploaded until you set the heading'}</span>
+            <input type="file" className="sr-only" onChange={(e) => pick(e.target.files?.[0] || null)} />
+          </label>
+          <input value={heading} onChange={(e) => setHeading(e.target.value)} className="mt-3 w-full rounded-2xl bg-[#f5f5f7] px-4 py-3 text-[15px] outline-none ring-1 ring-transparent transition duration-300 focus:ring-[#0A84FF]" placeholder="heading, like studio or press" />
+          <input value={remark} onChange={(e) => setRemark(e.target.value)} className="mt-3 w-full rounded-2xl bg-[#f5f5f7] px-4 py-3 text-[15px] outline-none ring-1 ring-transparent transition duration-300 focus:ring-[#0A84FF]" placeholder="a short remark for the card" />
+          <input value={author} onChange={(e) => setAuthor(e.target.value)} className="mt-3 w-full rounded-2xl bg-[#f5f5f7] px-4 py-3 text-[15px] outline-none ring-1 ring-transparent transition duration-300 focus:ring-[#0A84FF]" placeholder="your name, optional" />
+          {warn && <p className="mt-3 text-[13px] text-[#b25000]">{warn}</p>}
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <button type="button" onClick={fileIt} disabled={!file || busy} className="rounded-full bg-[#1d1d1f] px-5 py-2.5 text-[14px] font-medium text-white transition duration-300 hover:bg-black active:scale-[0.98] disabled:opacity-40">{busy ? 'filing…' : 'set heading'}</button>
+            <button type="button" onClick={() => navigate('mariner')} className="rounded-full bg-[#f5f5f7] px-5 py-2.5 text-[14px] font-medium text-[#1d1d1f] transition duration-300 hover:-translate-y-0.5">open mariner</button>
+          </div>
+          <p className="mt-4 text-[13px] text-[#6e6e73]">{status}</p>
+          {card && (
+            <p className="mt-2 break-all text-[14px] text-[#0A84FF]"><a href={card}>{card}</a></p>
+          )}
+        </motion.section>
       </main>
     </div>
   );

@@ -1,75 +1,98 @@
-import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 import Navbar from './Navbar';
-import { fetchShare, shareUrls, type CloudMeta } from '../lib/cloudShare';
+import { useRouter } from './Router';
 
-function formatBytes(n: number) {
-  if (n < 1024) return n + ' b';
-  if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' kb';
-  return (n / (1024 * 1024)).toFixed(2) + ' mb';
+function pretty(bytes: number) {
+  if (!bytes) return '0 B';
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-function Card({ label, meta }: { label: string; meta: CloudMeta | null }) {
-  if (!meta) return <div className="glass rounded-3xl p-6 text-sm text-neutral-500">{label}: nothing loaded</div>;
-  const urls = shareUrls(meta.id);
-  return (
-    <div className="glass rounded-3xl p-6">
-      <p className="text-[#0a84ff] text-xs mb-2">{label}</p>
-      <h2 className="text-lg font-medium mb-2 break-all">{meta.name}</h2>
-      <p className="text-sm text-neutral-400">{formatBytes(meta.size)} · {meta.type}</p>
-      <p className="text-xs text-neutral-500 mt-2">{meta.downloads || 0} opens · {meta.author || 'unsigned'}</p>
-      <p className="text-xs text-neutral-600 mt-3 break-all">{urls.embed}</p>
-    </div>
-  );
-}
+type Mark = { id: string; name: string; mime?: string; size: number; heading?: string; remark?: string; author?: string; file_url?: string; created_at?: string };
+type Note = { id: string; body: string; author?: string; created_at?: string };
 
 export default function MarinerPage() {
-  const [a, setA] = useState('');
-  const [b, setB] = useState('');
-  const [left, setLeft] = useState<CloudMeta | null>(null);
-  const [right, setRight] = useState<CloudMeta | null>(null);
-  const [err, setErr] = useState('');
-  const [busy, setBusy] = useState(false);
+  const { shareId } = useRouter();
+  const [marks, setMarks] = useState<Mark[]>([]);
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [active, setActive] = useState<string | null>(shareId);
+  const [body, setBody] = useState('');
+  const [author, setAuthor] = useState('');
+  const [status, setStatus] = useState('readings sit beside a filed mark. this is not a drawer.');
 
-  const clean = (v: string) => v.replace(/^.*(?:f=|\/s\/|\/f\/)/, '').replace(/[^a-z0-9_-]/gi, '');
+  useEffect(() => {
+    fetch('/api/lodestone?list=1&page=mariner')
+      .then((r) => r.json())
+      .then((data) => setMarks(data.marks || []))
+      .catch(() => setStatus('the board did not answer.'));
+  }, []);
 
-  const run = async () => {
-    setBusy(true);
-    setErr('');
-    try {
-      const [x, y] = await Promise.all([fetchShare(clean(a)), fetchShare(clean(b))]);
-      setLeft(x);
-      setRight(y);
-      if (!x && !y) setErr('neither id resolved on the share db.');
-    } catch {
-      setErr('could not reach the share db.');
-    } finally {
-      setBusy(false);
+  useEffect(() => {
+    if (!active) return;
+    fetch(`/api/lodestone?notes=1&id=${encodeURIComponent(active)}&page=mariner`)
+      .then((r) => r.json())
+      .then((data) => setNotes(data.notes || []))
+      .catch(() => setNotes([]));
+  }, [active]);
+
+  async function addNote() {
+    if (!active || !body.trim()) return;
+    setStatus('writing the reading…');
+    const r = await fetch('/api/lodestone?page=mariner', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mark_id: active, body: body.trim(), author: author.trim() }),
+    });
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) {
+      setStatus(data.error || 'the reading did not stick');
+      return;
     }
-  };
+    setNotes(data.notes || []);
+    setBody('');
+    setStatus('reading kept. paste /mariner in Discord for the board card.');
+  }
+
+  const open = marks.find((row) => row.id === active) || null;
 
   return (
-    <div className="mesh min-h-screen">
+    <div className="min-h-screen bg-[#f5f5f7] text-[#1d1d1f]">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-4xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-          <p className="text-[#0a84ff] text-sm mb-2">mariner</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">two live shares, side by side.</h1>
-          <p className="text-neutral-400 text-sm max-w-xl">lookup only. no bytes opened unless you click an embed. useful when you forgot which drop is which.</p>
+      <main className="mx-auto max-w-3xl px-5 pb-24 pt-28">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}>
+          <p className="text-[13px] font-medium tracking-wide text-[#6e6e73]">reading board</p>
+          <h1 className="mt-2 text-[40px] font-semibold tracking-tight">mariner</h1>
+          <p className="mt-3 max-w-xl text-[17px] leading-relaxed text-[#6e6e73]">Marks already filed on lodestone, with a short reading beside each one. Nothing here is a vault. Paste /mariner or /lodestone/id in Discord for the card.</p>
         </motion.div>
-        <div className="glass rounded-[28px] p-6 mb-6">
-          <div className="grid sm:grid-cols-2 gap-3 mb-4">
-            <input value={a} onChange={(e) => setA(e.target.value)} placeholder="share id or /s/…" className="rounded-2xl bg-black/30 border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/50" />
-            <input value={b} onChange={(e) => setB(e.target.value)} placeholder="second id" className="rounded-2xl bg-black/30 border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/50" />
-          </div>
-          <button onClick={run} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium">{busy ? 'looking…' : 'compare'}</button>
-          {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
+        <div className="mt-8 space-y-3">
+          {marks.length === 0 && <p className="text-[14px] text-[#6e6e73]">no marks yet. file one on lodestone.</p>}
+          {marks.map((row, i) => (
+            <motion.button key={row.id} type="button" onClick={() => setActive(row.id)} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04, duration: 0.45, ease: [0.22, 1, 0.36, 1] }} className={`block w-full rounded-[24px] bg-white p-5 text-left shadow-[0_12px_40px_rgba(0,0,0,0.04)] ring-1 transition duration-300 hover:-translate-y-0.5 ${active === row.id ? 'ring-[#0A84FF]' : 'ring-black/5'}`}>
+              <p className="text-[13px] text-[#6e6e73]">{row.heading || 'no heading'} · {pretty(row.size)}</p>
+              <p className="mt-1 text-[17px] font-semibold tracking-tight">{row.name}</p>
+              <p className="mt-1 text-[14px] text-[#6e6e73]">{row.remark || 'no remark'}{row.author ? ` · ${row.author}` : ''}</p>
+            </motion.button>
+          ))}
         </div>
-        <div className="grid md:grid-cols-2 gap-4">
-          <Card label="port" meta={left} />
-          <Card label="starboard" meta={right} />
-        </div>
-      </div>
+        {open && (
+          <motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="mt-6 rounded-[28px] bg-white p-6 ring-1 ring-black/5">
+            <p className="text-[13px] text-[#6e6e73]">reading for {open.name}</p>
+            {open.file_url && <a className="mt-2 inline-block text-[14px] text-[#0A84FF]" href={open.file_url}>download</a>}
+            <div className="mt-4 space-y-2">
+              {notes.map((note) => (
+                <p key={note.id} className="rounded-2xl bg-[#f5f5f7] px-4 py-3 text-[14px]">{note.body}{note.author ? <span className="text-[#6e6e73]"> · {note.author}</span> : null}</p>
+              ))}
+              {notes.length === 0 && <p className="text-[13px] text-[#6e6e73]">no readings yet.</p>}
+            </div>
+            <input value={body} onChange={(e) => setBody(e.target.value)} className="mt-3 w-full rounded-2xl bg-[#f5f5f7] px-4 py-3 text-[15px] outline-none ring-1 ring-transparent transition duration-300 focus:ring-[#0A84FF]" placeholder="a short reading" />
+            <input value={author} onChange={(e) => setAuthor(e.target.value)} className="mt-3 w-full rounded-2xl bg-[#f5f5f7] px-4 py-3 text-[15px] outline-none ring-1 ring-transparent transition duration-300 focus:ring-[#0A84FF]" placeholder="your name, optional" />
+            <button type="button" onClick={addNote} className="mt-3 rounded-full bg-[#1d1d1f] px-5 py-2.5 text-[14px] font-medium text-white transition duration-300 hover:bg-black active:scale-[0.98]">keep reading</button>
+          </motion.section>
+        )}
+        <p className="mt-4 text-[13px] text-[#6e6e73]">{status}</p>
+      </main>
     </div>
   );
 }

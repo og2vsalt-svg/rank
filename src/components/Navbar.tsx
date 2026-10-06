@@ -5,17 +5,16 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'latch', label: 'latch' },
+  { to: 'quoin', label: 'quoin' },
   { to: 'wayleave', label: 'wayleave' },
   { to: 'courier', label: 'courier' },
-  { to: 'folio', label: 'folio' },
-  { to: 'deadlight', label: 'deadlight' },
-  { to: 'holdfast', label: 'holdfast' },
   { to: 'vault', label: 'vault' },
   { to: 'slip', label: 'slip' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
-  { title: 'new', items: [{ to: 'wayleave', label: 'wayleave' }, { to: 'courier', label: 'courier' }, { to: 'folio', label: 'folio' }, { to: 'deadlight', label: 'deadlight' }, { to: 'beeswax', label: 'beeswax' }, { to: 'holdfast', label: 'holdfast' }, { to: 'clew', label: 'clew' }, { to: 'tender', label: 'tender' }, { to: 'gangway', label: 'gangway' }, { to: 'cask', label: 'cask' }, { to: 'stave', label: 'stave' }, { to: 'slip', label: 'slip' }, { to: 'wick', label: 'wick' }] },
+  { title: 'new', items: [{ to: 'latch', label: 'latch' }, { to: 'hasp', label: 'hasp' }, { to: 'quoin', label: 'quoin' }, { to: 'rebate', label: 'rebate' }, { to: 'newel', label: 'newel' }, { to: 'wayleave', label: 'wayleave' }, { to: 'courier', label: 'courier' }, { to: 'folio', label: 'folio' }, { to: 'deadlight', label: 'deadlight' }, { to: 'holdfast', label: 'holdfast' }, { to: 'tender', label: 'tender' }] },
   { title: 'hosting', items: [{ to: 'vault', label: 'vault' }, { to: 'scuttle', label: 'scuttle' }, { to: 'forefoot', label: 'forefoot' }, { to: 'catfall', label: 'catfall' }, { to: 'fiferail', label: 'fiferail' }, { to: 'atelier', label: 'atelier' }, { to: 'quarter', label: 'quarter' }, { to: 'hawsepipe', label: 'hawsepipe' }, { to: 'bollard', label: 'bollard' }, { to: 'unfurl', label: 'unfurl' }] },
   { title: 'notes', items: [{ to: 'wayleave', label: 'wayleave' }, { to: 'nightglass', label: 'nightglass' }, { to: 'quire', label: 'quire' }, { to: 'docket', label: 'docket' }, { to: 'vesper', label: 'vesper' }, { to: 'ledger', label: 'ledger' }, { to: 'lantern', label: 'lantern' }] },
   { title: 'share', items: [{ to: 'courier', label: 'courier' }, { to: 'folio', label: 'folio' }, { to: 'deadlight', label: 'deadlight' }, { to: 'tender', label: 'tender' }, { to: 'cask', label: 'cask' }, { to: 'wick', label: 'wick' }, { to: 'shelf', label: 'shelf' }, { to: 'passage', label: 'passage' }, { to: 'hawse', label: 'hawse' }] },
@@ -106,7 +105,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">paste /wayleave, /courier, /folio, or /s/id in Discord for a card. older desks stay on their routes.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">paste /latch, /quoin, /wayleave, or /s/id in Discord for a card. older desks stay on their routes.</p>
         </div>
       </div>
     </nav>

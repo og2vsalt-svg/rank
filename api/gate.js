@@ -52,6 +52,7 @@ import pinboard from '../lib/endpoints/pinboard.js';
 import fathom from '../lib/endpoints/fathom.js';
 import sconce from '../lib/endpoints/sconce.js';
 import watchglass from '../lib/endpoints/watchglass.js';
+import logline from '../lib/endpoints/logline.js';
 
 const routes = {
   atelier, beacon, card, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -99,6 +100,8 @@ const routes = {
   sconce,
   watchglass,
   sandglass: watchglass,
+  logline,
+  chipboard: logline,
 };
 
 export default function handler(req, res) {

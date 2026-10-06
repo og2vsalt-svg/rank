@@ -1,100 +1,170 @@
-import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useEffect, useMemo, useState } from 'react';
 import Navbar from './Navbar';
-import { publishShare, shareUrls } from '../lib/cloudShare';
+import { publishLocalFile } from '../lib/cloudShare';
+import { useRouter } from './Router';
 
-function uid() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const SB_URL = 'https://tqfocdktvjuwoiyfgesb.supabase.co';
+const SB_KEY =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
+
+function pretty(bytes: number) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-function drawCard(title: string, body: string, accent: string) {
-  const canvas = document.createElement('canvas');
-  canvas.width = 1200;
-  canvas.height = 630;
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return '';
-  ctx.fillStyle = '#08080a';
-  ctx.fillRect(0, 0, 1200, 630);
-  ctx.fillStyle = accent;
-  ctx.beginPath();
-  ctx.moveTo(0, 0);
-  ctx.lineTo(180, 0);
-  ctx.lineTo(0, 180);
-  ctx.closePath();
-  ctx.fill();
-  ctx.fillStyle = '#f5f5f7';
-  ctx.font = '600 54px -apple-system, Inter, sans-serif';
-  ctx.fillText(title.slice(0, 28) || 'quoin', 80, 280);
-  ctx.fillStyle = '#a1a1aa';
-  ctx.font = '400 28px -apple-system, Inter, sans-serif';
-  const lines = (body || 'a corner card for discord').slice(0, 160);
-  ctx.fillText(lines.slice(0, 52), 80, 340);
-  ctx.fillText(lines.slice(52, 104), 80, 384);
-  ctx.fillStyle = '#0a84ff';
-  ctx.font = '500 20px -apple-system, Inter, sans-serif';
-  ctx.fillText('rankvault · quoin', 80, 560);
-  return canvas.toDataURL('image/png');
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 }
 
 export default function QuoinPage() {
-  const [title, setTitle] = useState('');
-  const [body, setBody] = useState('');
-  const [accent, setAccent] = useState('#0A84FF');
-  const [busy, setBusy] = useState(false);
+  const { shareId, navigate } = useRouter();
+  const [file, setFile] = useState<File | null>(null);
+  const [corner, setCorner] = useState('');
+  const [note, setNote] = useState('');
+  const [author, setAuthor] = useState('');
+  const [status, setStatus] = useState('name the corner, then drop a local file. no size cap.');
   const [warn, setWarn] = useState('');
-  const [err, setErr] = useState('');
   const [link, setLink] = useState('');
-  const preview = drawCard(title, body, accent);
+  const [busy, setBusy] = useState(false);
+  const tone = useMemo(() => (warn ? 'text-amber-200/90' : 'text-white/45'), [warn]);
 
-  const publish = async () => {
-    setBusy(true);
-    setErr('');
-    try {
-      const dataUrl = drawCard(title.trim() || 'quoin', body, accent);
-      const id = uid();
-      const blob = await (await fetch(dataUrl)).blob();
-      const res = await publishShare({
-        id,
-        name: `${title.trim() || 'quoin'}.png`,
-        type: 'image/png',
-        size: blob.size,
-        dataUrl,
-        author: 'quoin',
+  useEffect(() => {
+    if (!shareId) return;
+    let live = true;
+    setLink(`${location.origin}/quoin/${shareId}`);
+    fetch(`${SB_URL}/rest/v1/quoin_corners?id=eq.${encodeURIComponent(shareId)}&select=corner,note,author,file_name,size,share_id&limit=1`, {
+      headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` },
+    })
+      .then((r) => r.json())
+      .then((rows) => {
+        if (!live || !rows?.[0]) return;
+        const row = rows[0];
+        setCorner(row.corner || '');
+        setNote(row.note || '');
+        setAuthor(row.author || '');
+        setStatus(`${row.file_name || 'file'} · ${pretty(Number(row.size) || 0)}. paste the link in Discord for the card.`);
+      })
+      .catch(() => {
+        if (live) setStatus('this corner link is open. the row may still be settling.');
       });
-      if (!res.ok) throw new Error(res.error || 'quoin slipped');
-      const urls = shareUrls(res.id || id);
-      setLink(urls.embed);
-      if (res.warn) setWarn(res.warn);
-      try { await navigator.clipboard.writeText(urls.embed); } catch {}
-    } catch (e: any) {
-      setErr(e?.message || 'failed');
+    return () => {
+      live = false;
+    };
+  }, [shareId]);
+
+  function pick(next: File | null) {
+    setFile(next);
+    setLink('');
+    if (!next) {
+      setWarn('');
+      return;
     }
-    setBusy(false);
-  };
+    if (next.size > 12 * 1024 * 1024) {
+      setWarn('this corner is heavy. the upload can feel slow, especially on a phone. it is still accepted.');
+    } else setWarn('');
+  }
+
+  async function fileCorner() {
+    if (!file || busy) return;
+    const title = corner.trim() || file.name.replace(/\.[^.]+$/, '') || 'corner';
+    setBusy(true);
+    setStatus('writing the file into the share table…');
+    try {
+      const result = await publishLocalFile(file, {
+        caption: note.trim() || title,
+        author: author.trim() || 'quoin',
+        cardTitle: file.name,
+        color: 'quoin',
+      });
+      if (!result.ok || !result.id) {
+        setStatus(result.error || 'the share table did not take the file.');
+        return;
+      }
+      const id = uid();
+      const row = {
+        id,
+        corner: title,
+        note: note.trim() || null,
+        author: author.trim() || null,
+        share_id: result.id,
+        file_name: file.name,
+        size: file.size,
+      };
+      const ins = await fetch(`${SB_URL}/rest/v1/quoin_corners`, {
+        method: 'POST',
+        headers: {
+          apikey: SB_KEY,
+          Authorization: `Bearer ${SB_KEY}`,
+          'Content-Type': 'application/json',
+          Prefer: 'return=representation',
+        },
+        body: JSON.stringify(row),
+      });
+      if (!ins.ok) {
+        const text = await ins.text();
+        setStatus(`file landed, corner row did not: ${text.slice(0, 140)}`);
+        setLink(`${location.origin}/s/${result.id}`);
+        return;
+      }
+      const card = `${location.origin}/quoin/${id}`;
+      setLink(card);
+      setStatus(result.warn || 'cornered. paste the link in Discord for the card.');
+      try { await navigator.clipboard.writeText(card); } catch {}
+      navigate('quoin', id);
+    } catch (err) {
+      setStatus(err instanceof Error ? err.message : 'corner failed');
+    } finally {
+      setBusy(false);
+    }
+  }
 
   return (
-    <div className="mesh min-h-screen">
+    <div className="min-h-screen bg-[#070708] text-white">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[28px] p-7">
-          <p className="text-[#0a84ff] text-sm mb-2">quoin</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">raise a corner card.</h1>
-          <p className="text-neutral-400 text-sm mb-6">a 1200×630 still painted in the tab, then filed so discord can unfurl it. not a vault drawer.</p>
-          <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="title on the stone" className="w-full mb-3 px-4 py-2.5 rounded-full bg-white/5 border border-white/10 text-sm outline-none" />
-          <textarea value={body} onChange={(e) => setBody(e.target.value)} placeholder="one quiet line" rows={3} className="w-full mb-3 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm outline-none resize-none" />
-          <div className="flex items-center gap-3 mb-5">
-            <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="h-9 w-9 rounded-full overflow-hidden bg-transparent" />
-            <span className="text-xs text-neutral-500">corner accent</span>
-          </div>
-          {preview && <img src={preview} alt="" className="w-full rounded-2xl mb-5 border border-white/10" />}
-          {warn && <p className="text-xs text-amber-300/80 mb-3">{warn}</p>}
-          {err && <p className="text-xs text-red-400 mb-3">{err}</p>}
-          <button onClick={publish} disabled={busy} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40">
-            {busy ? 'setting the stone…' : 'publish card'}
-          </button>
-          {link && <p className="text-xs text-neutral-500 mt-4 break-all">discord embed copied: {link}</p>}
+      <main className="mx-auto max-w-xl px-5 pb-24 pt-28">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}>
+          <p className="text-[12px] uppercase tracking-[0.18em] text-white/40">file desk</p>
+          <h1 className="mt-2 text-4xl font-semibold tracking-tight">quoin</h1>
+          <p className="mt-3 text-[15px] leading-relaxed text-white/60">
+            Name a corner and attach one local file. The bytes go into the share table, and the corner row keeps the note. Large drops are warned, never refused.
+          </p>
         </motion.div>
-      </div>
+
+        <motion.label
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.08, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          className="mt-8 block cursor-pointer rounded-3xl border border-white/10 bg-white/[0.04] p-6 transition hover:bg-white/[0.06]"
+        >
+          <input type="file" className="sr-only" onChange={(e) => pick(e.target.files?.[0] || null)} />
+          <span className="text-sm text-white/80">{file ? file.name : 'choose a local file'}</span>
+          <span className="mt-1 block text-[13px] text-white/40">{file ? pretty(file.size) : 'anything you can pick in this tab'}</span>
+        </motion.label>
+
+        <div className="mt-4 space-y-3">
+          <input value={corner} onChange={(e) => setCorner(e.target.value)} placeholder="corner name" className="w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm outline-none placeholder:text-white/30 focus:border-white/25" />
+          <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="who set it" className="w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm outline-none placeholder:text-white/30 focus:border-white/25" />
+          <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="what this corner is holding" rows={3} className="w-full resize-none rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm outline-none placeholder:text-white/30 focus:border-white/25" />
+        </div>
+
+        <p className={`mt-4 text-[13px] leading-relaxed ${tone}`}>{warn || status}</p>
+
+        <div className="mt-5 flex items-center gap-3">
+          <button type="button" onClick={fileCorner} disabled={!file || busy} className="rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition hover:bg-neutral-200 disabled:opacity-40">
+            {busy ? 'setting…' : 'set corner'}
+          </button>
+          <button type="button" onClick={() => navigate('rebate')} className="text-sm text-white/50 transition hover:text-white">open rebate</button>
+          <button type="button" onClick={() => navigate('newel')} className="text-sm text-white/50 transition hover:text-white">open newel</button>
+        </div>
+
+        {link && (
+          <motion.a href={link} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="mt-6 block break-all rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-sky-200">
+            {link}
+          </motion.a>
+        )}
+      </main>
     </div>
   );
 }

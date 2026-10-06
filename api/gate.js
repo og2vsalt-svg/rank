@@ -41,6 +41,7 @@ import quoin from '../lib/endpoints/quoin.js';
 import newel from '../lib/endpoints/newel.js';
 import latch from '../lib/endpoints/latch.js';
 import grommet from '../lib/endpoints/grommet.js';
+import splice from '../lib/endpoints/splice.js';
 
 const routes = {
   atelier, beacon, card, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -70,6 +71,8 @@ const routes = {
   hasp: latch,
   grommet,
   ring: grommet,
+  splice,
+  serving: splice,
 };
 
 export default function handler(req, res) {

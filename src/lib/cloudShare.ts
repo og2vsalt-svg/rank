@@ -81,10 +81,8 @@ function uid() {
 
 export function shareUrls(id: string) {
   const origin = typeof window !== 'undefined' ? window.location.origin : '';
-  const path = typeof window !== 'undefined' ? window.location.pathname : '/';
-  const enc = encodeURIComponent(id);
   return {
-    app: `${origin}${path}#share?f=${enc}`,
+    app: `${origin}/s/${id}`,
     embed: `${origin}/s/${id}`,
     card: `${origin}/s/${id}`,
     file: `${origin}/f/${id}`,

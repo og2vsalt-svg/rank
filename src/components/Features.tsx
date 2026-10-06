@@ -1,6 +1,9 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'quoin', body: 'name a corner and attach one local file. the bytes land in the share table, and a corner row keeps the note. /quoin/id is the card. large drops are warned, never refused. not a vault drawer.' },
+  { title: 'rebate', body: 'a public index of quoin corners already filed. open one to read the note and the file. discord unfurls /rebate. not a vault drawer.' },
+  { title: 'newel', body: 'a stair note with no file attached. older desks stay. discord unfurls /newel. not a file vault.' },
   { title: 'deadlight', body: 'name a pane and attach one local file. the bytes land in the share table, and a pane row keeps the note. /deadlight/id is the card. large drops are warned, never refused. not a vault drawer.' },
   { title: 'beeswax', body: 'a public index of deadlight panes already filed. open one to read the note and the file. discord unfurls /beeswax. not a vault drawer.' },
   { title: 'holdfast', body: 'pin one local file with a keeper note. the bytes land in the share table, then /holdfast/id is the card. large drops are warned, never refused. not a vault drawer.' },
@@ -37,10 +40,10 @@ export default function Features() {
         <p className="text-neutral-500 text-sm mb-8">a quiet desk for files, notes, and handoffs. not a cabinet with a size gate. the older desks are still on their routes.</p>
         <div className="grid md:grid-cols-2 gap-4">
           {items.map((item, i) => (
-            <motion.div key={item.title} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: Math.min(i, 12) * 0.04, duration: 0.4, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-3xl p-6 hover:-translate-y-0.5 transition-transform duration-200">
+            <motion.a key={item.title} href={`/${item.title.replace(/\s+/g, '-')}`} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: Math.min(i, 12) * 0.04, duration: 0.4, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-3xl p-6 hover:-translate-y-0.5 transition-transform duration-200">
               <h3 className="text-white font-medium mb-2">{item.title}</h3>
               <p className="text-sm text-neutral-400 leading-relaxed">{item.body}</p>
-            </motion.div>
+            </motion.a>
           ))}
         </div>
       </div>

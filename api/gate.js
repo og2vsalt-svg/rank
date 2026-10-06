@@ -49,6 +49,8 @@ import leechoth from '../lib/endpoints/leecloth.js';
 import oakdesk from '../lib/endpoints/oakdesk.js';
 import daybook from '../lib/endpoints/daybook.js';
 import pinboard from '../lib/endpoints/pinboard.js';
+import fathom from '../lib/endpoints/fathom.js';
+import sconce from '../lib/endpoints/sconce.js';
 
 const routes = {
   atelier, beacon, card, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -92,6 +94,8 @@ const routes = {
   oakdesk,
   daybook,
   pinboard,
+  fathom,
+  sconce,
 };
 
 export default function handler(req, res) {

@@ -2,6 +2,11 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
 import { publishShare, shareUrls } from '../lib/cloudShare';
+import { useRouter } from './Router';
+
+const SB_URL = 'https://tqfocdktvjuwoiyfgesb.supabase.co';
+const SB_KEY =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
 
 function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
@@ -24,6 +29,7 @@ function readAsDataUrl(file: File) {
 }
 
 export default function LatchPage() {
+  const { navigate } = useRouter();
   const [busy, setBusy] = useState(false);
   const [pass, setPass] = useState('');
   const [warn, setWarn] = useState('');
@@ -51,16 +57,38 @@ export default function LatchPage() {
         size: file.size,
         dataUrl,
         lockPass: pass.trim() || undefined,
+        caption: pass.trim() || file.name,
+        cardTitle: pass.trim() || file.name,
       });
       if (!res.ok) {
         setErr(res.error || 'latch would not close');
         return;
       }
       if (res.warn) setWarn(res.warn);
+      await fetch(`${SB_URL}/rest/v1/latches`, {
+        method: 'POST',
+        headers: {
+          apikey: SB_KEY,
+          Authorization: `Bearer ${SB_KEY}`,
+          'Content-Type': 'application/json',
+          Prefer: 'return=minimal',
+        },
+        body: JSON.stringify({
+          id,
+          phrase: (pass.trim() || file.name).slice(0, 80),
+          note: null,
+          author: null,
+          file_name: file.name,
+          size: file.size,
+          share_id: id,
+          file_url: res.url || null,
+          hold_hours: null,
+        }),
+      }).catch(() => null);
       const urls = shareUrls(id);
-      setEmbed(urls.embed);
-      setApp(urls.app);
-      try { await navigator.clipboard.writeText(urls.embed); } catch {}
+      setEmbed(`${location.origin}/latch/${id}`);
+      setApp(urls.app || urls.embed);
+      try { await navigator.clipboard.writeText(`${location.origin}/latch/${id}`); } catch {}
     } catch (e: any) {
       setErr(e?.message || 'latch stuck');
     } finally {
@@ -79,9 +107,9 @@ export default function LatchPage() {
           className="glass rounded-[32px] p-8"
         >
           <p className="text-[#0a84ff] text-sm mb-2">latch</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">optional pass, then a public drop.</h1>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">optional phrase, then a public drop.</h1>
           <p className="text-neutral-400 text-sm mb-6">
-            the file still lands in the share db. friends with the pass can open it. discord still gets a /s card.
+            the file lands in the share db and a latch row. friends with the phrase can open it. discord gets a card on /latch/id. no size lock.
           </p>
           <input
             value={pass}
@@ -108,8 +136,9 @@ export default function LatchPage() {
           {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
           {embed && (
             <div className="mt-6 space-y-2">
-              <p className="text-xs text-neutral-400 break-all">discord embed (copied): {embed}</p>
+              <p className="text-xs text-neutral-400 break-all">discord card (copied): {embed}</p>
               <p className="text-xs text-neutral-500 break-all">app link: {app}</p>
+              <button type="button" onClick={() => navigate('hasp')} className="text-xs text-[#6eb6ff]">see the hasp</button>
             </div>
           )}
         </motion.div>

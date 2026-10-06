@@ -46,6 +46,8 @@ import vellum from '../lib/endpoints/vellum.js';
 import thimble from '../lib/endpoints/thimble.js';
 import sheave from '../lib/endpoints/sheave.js';
 import leechoth from '../lib/endpoints/leecloth.js';
+import oakdesk from '../lib/endpoints/oakdesk.js';
+import daybook from '../lib/endpoints/daybook.js';
 
 const routes = {
   atelier, beacon, card, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -86,6 +88,8 @@ const routes = {
   sheaveboard: sheave,
   leechoth,
   crossjack: leechoth,
+  oakdesk,
+  daybook,
 };
 
 export default function handler(req, res) {

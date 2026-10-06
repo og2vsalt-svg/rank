@@ -9,13 +9,17 @@ const primary: NavItem[] = [
   { to: 'crossjack', label: 'crossjack' },
   { to: 'coak', label: 'coak' },
   { to: 'grommet', label: 'grommet' },
+  { to: 'oakdesk', label: 'oakdesk' },
+  { to: 'daybook', label: 'daybook' },
   { to: 'vault', label: 'vault' },
   { to: 'slip', label: 'slip' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
-  { title: 'new', items: [{ to: 'leecloth', label: 'leecloth' }, { to: 'crossjack', label: 'crossjack' }, { to: 'coak', label: 'coak' }, { to: 'sheaveboard', label: 'sheaveboard' }, { to: 'thimble', label: 'thimble' }, { to: 'thimbles', label: 'thimbles' }, { to: 'grommet', label: 'grommet' }, { to: 'ring', label: 'ring' }, { to: 'latch', label: 'latch' }, { to: 'hasp', label: 'hasp' }, { to: 'quoin', label: 'quoin' }, { to: 'wayleave', label: 'wayleave' }] },
-  { title: 'hosting', items: [{ to: 'vault', label: 'vault' }, { to: 'scuttle', label: 'scuttle' }, { to: 'forefoot', label: 'forefoot' }, { to: 'catfall', label: 'catfall' }, { to: 'fiferail', label: 'fiferail' }, { to: 'atelier', label: 'atelier' }, { to: 'quarter', label: 'quarter' }, { to: 'hawsepipe', label: 'hawsepipe' }, { to: 'bollard', label: 'bollard' }, { to: 'unfurl', label: 'unfurl' }] },
+  { title: 'new', items: [{ to: 'oakdesk', label: 'oakdesk' }, { to: 'daybook', label: 'daybook' }, { to: 'leecloth', label: 'leecloth' }, { to: 'crossjack', label: 'crossjack' }, { to: 'coak', label: 'coak' }, { to: 'sheaveboard', label: 'sheaveboard' }, { to: 'thimble', label: 'thimble' }, { to: 'thimbles', label: 'thimbles' }, { to: 'grommet', label: 'grommet' }, { to: 'ring', label: 'ring' }, { to: 'latch', label: 'latch' }, { to: 'hasp', label: 'hasp' }, { to: 'quoin', label: 'quoin' }, { to: 'wayleave', label: 'wayleave' }] },
+  { title: 'hosting', items: [{ to: 'oakdesk', label: 'oakdesk' },
+  { to: 'daybook', label: 'daybook' },
+  { to: 'vault', label: 'vault' }, { to: 'scuttle', label: 'scuttle' }, { to: 'forefoot', label: 'forefoot' }, { to: 'catfall', label: 'catfall' }, { to: 'fiferail', label: 'fiferail' }, { to: 'atelier', label: 'atelier' }, { to: 'quarter', label: 'quarter' }, { to: 'hawsepipe', label: 'hawsepipe' }, { to: 'bollard', label: 'bollard' }, { to: 'unfurl', label: 'unfurl' }] },
   { title: 'notes', items: [{ to: 'wayleave', label: 'wayleave' }, { to: 'nightglass', label: 'nightglass' }, { to: 'quire', label: 'quire' }, { to: 'docket', label: 'docket' }, { to: 'vesper', label: 'vesper' }, { to: 'ledger', label: 'ledger' }, { to: 'lantern', label: 'lantern' }] },
   { title: 'share', items: [{ to: 'coak', label: 'coak' }, { to: 'sheaveboard', label: 'sheaveboard' }, { to: 'thimble', label: 'thimble' }, { to: 'grommet', label: 'grommet' }, { to: 'courier', label: 'courier' }, { to: 'folio', label: 'folio' }, { to: 'deadlight', label: 'deadlight' }, { to: 'tender', label: 'tender' }, { to: 'cask', label: 'cask' }, { to: 'wick', label: 'wick' }] },
   { title: 'tools', items: [{ to: 'hash', label: 'hash' }, { to: 'convert', label: 'convert' }, { to: 'diff', label: 'diff' }, { to: 'sounding', label: 'sounding' }, { to: 'counter', label: 'counter' }] },

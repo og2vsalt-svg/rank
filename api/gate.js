@@ -37,6 +37,8 @@ import tender from '../lib/endpoints/tender.js';
 import holdfast from '../lib/endpoints/holdfast.js';
 import deadlight from '../lib/endpoints/deadlight.js';
 import wayleave from '../lib/endpoints/wayleave.js';
+import quoin from '../lib/endpoints/quoin.js';
+import newel from '../lib/endpoints/newel.js';
 
 const routes = {
   atelier, beacon, card, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -59,6 +61,9 @@ const routes = {
   deadlight,
   beeswax: deadlight,
   wayleave,
+  quoin,
+  rebate: quoin,
+  newel,
 };
 
 export default function handler(req, res) {

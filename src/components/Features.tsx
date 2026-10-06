@@ -1,6 +1,9 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'handoff', body: 'name a person, attach a local file, and the bytes land in the share table. discord unfurls /handoff. not a vault drawer. large drops are warned, never refused.' },
+  { title: 'proof', body: 'sha-256 a local file in the tab and file the checksum. optional text slip. no size cap, only a slowness warning.' },
+  { title: 'quiet', body: 'a short note that burns after a set number of reads. discord gets a card, not the text.' },
   { title: 'springline', body: 'a hold note with an optional local file. the file lands in the share table. discord unfurls /springline. large drops are warned, never refused. not a vault drawer.' },
   { title: 'spunyarn', body: 'tie a short note to a local file. bytes land in the share table. discord unfurls /spunyarn. large drops are warned, never refused. not a vault drawer.' },
   { title: 'eyelet', body: 'a ring of spunyarn ids you can pass around. the files stay on their yarns. discord unfurls /eyelet.' },

@@ -29,6 +29,7 @@ import vesper from '../lib/endpoints/vesper.js';
 import wall from '../lib/endpoints/wall.js';
 import spunyarn from '../lib/endpoints/spunyarn.js';
 import shelf from './shelf.js';
+import handoff from '../lib/endpoints/handoff.js';
 
 const routes = {
   atelier, beacon, card, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -39,6 +40,7 @@ const routes = {
   ashlar: shelf, tympanum: shelf, nosing: shelf,
   sill: shelf, keepsake: shelf, lintel: shelf, oriel: shelf,
   trundle: shelf, coping: shelf, springline: shelf,
+  handoff, proof: handoff, quiet: handoff,
 };
 
 export default function handler(req, res) {

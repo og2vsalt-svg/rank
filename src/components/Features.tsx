@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'wick', body: 'attach a local file and pick how long the link stays warm. bytes land in the share table, then the row fades. discord unfurls /wick. large drops are warned, never refused. not a vault drawer.' },
   { title: 'handoff', body: 'name a person, attach a local file, and the bytes land in the share table. discord unfurls /handoff. not a vault drawer. large drops are warned, never refused.' },
   { title: 'proof', body: 'sha-256 a local file in the tab and file the checksum. optional text slip. no size cap, only a slowness warning.' },
   { title: 'quiet', body: 'a short note that burns after a set number of reads. discord gets a card, not the text.' },

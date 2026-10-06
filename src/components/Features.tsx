@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'tender', body: 'ask one question and attach one local file. the bytes land in the share table, replies stay on the tender. discord unfurls /tender. large files are warned, never refused. not a vault drawer.' },
+  { title: 'gangway', body: 'a public index of open tenders. open one to read the question and the file already stored. discord unfurls /gangway. not a vault drawer.' },
   { title: 'cask', body: 'bundle several local files. each one lands in the share table, then a cask row keeps the list. discord unfurls /cask. large bundles are warned, never refused. not a vault drawer.' },
   { title: 'stave', body: 'a public index of casks. open one to see the files already stored. discord unfurls /stave. not a vault drawer.' },
   { title: 'slip', body: 'a shared table. pick a short code, drop a local file, and the bytes land in the share database. discord unfurls /slip. large drops are warned, never refused. not a vault drawer.' },
@@ -31,7 +33,7 @@ export default function Features() {
         <p className="text-neutral-500 text-sm mb-8">a quiet desk for files, notes, and handoffs. not a cabinet with a size gate. the older desks are still on their routes.</p>
         <div className="grid md:grid-cols-2 gap-4">
           {items.map((item, i) => (
-            <motion.div key={item.title} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: Math.min(i, 12) * 0.04, duration: 0.4, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-3xl p-6 hover:-translate-y-0.5">
+            <motion.div key={item.title} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: Math.min(i, 12) * 0.04, duration: 0.4, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-3xl p-6 hover:-translate-y-0.5 transition-transform duration-200">
               <h3 className="text-white font-medium mb-2">{item.title}</h3>
               <p className="text-sm text-neutral-400 leading-relaxed">{item.body}</p>
             </motion.div>

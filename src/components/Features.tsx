@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'coak', href: '/coak', body: 'write one local file straight into the sheaves table in Postgres. the bytes stay on the row, and /coak/id is the discord card. large drops are warned, never refused. not a vault drawer.' },
+  { title: 'sheaveboard', href: '/sheaveboard', body: 'a public index of coak files already in the database. open one to read the note and download the file. discord unfurls /sheaveboard. the older sheave pack desk stays at /sheave.' },
   { title: 'vellum', href: '/vellum', body: 'write one local file into the vellum table in Postgres. smaller files keep a byte copy on the row, and a share link sits beside it. /vellum/id is the discord card. large drops are warned, never refused. not a vault drawer.' },
   { title: 'vellumboard', href: '/vellumboard', body: 'a public index of sheets already in the database. open one to read the note and download the file. discord unfurls /vellumboard. not a vault drawer.' },
   { title: 'splice', href: '/splice', body: 'pair two local files. both land in the share table, hashes stay on the splice row, and /splice/id is the discord card. large pairs are warned, never refused. not a vault drawer.' },

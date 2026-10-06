@@ -39,6 +39,7 @@ import deadlight from '../lib/endpoints/deadlight.js';
 import wayleave from '../lib/endpoints/wayleave.js';
 import quoin from '../lib/endpoints/quoin.js';
 import newel from '../lib/endpoints/newel.js';
+import latch from '../lib/endpoints/latch.js';
 
 const routes = {
   atelier, beacon, card, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -64,6 +65,8 @@ const routes = {
   quoin,
   rebate: quoin,
   newel,
+  latch,
+  hasp: latch,
 };
 
 export default function handler(req, res) {

@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'vellum', href: '/vellum', body: 'write one local file into the vellum table in Postgres. smaller files keep a byte copy on the row, and a share link sits beside it. /vellum/id is the discord card. large drops are warned, never refused. not a vault drawer.' },
+  { title: 'vellumboard', href: '/vellumboard', body: 'a public index of sheets already in the database. open one to read the note and download the file. discord unfurls /vellumboard. not a vault drawer.' },
   { title: 'splice', href: '/splice', body: 'pair two local files. both land in the share table, hashes stay on the splice row, and /splice/id is the discord card. large pairs are warned, never refused. not a vault drawer.' },
   { title: 'serving', href: '/serving', body: 'a public index of splices already filed. open one to compare names, sizes, and hashes. discord unfurls /serving. not a vault drawer.' },
   { title: 'grommet', href: '/grommet', body: 'label a local file for someone. the bytes land in the share table, and a grommet row keeps the note. /grommet/id is the card. large drops are warned, never refused. not a vault drawer.' },

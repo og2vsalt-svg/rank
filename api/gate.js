@@ -42,6 +42,7 @@ import newel from '../lib/endpoints/newel.js';
 import latch from '../lib/endpoints/latch.js';
 import grommet from '../lib/endpoints/grommet.js';
 import splice from '../lib/endpoints/splice.js';
+import vellum from '../lib/endpoints/vellum.js';
 
 const routes = {
   atelier, beacon, card, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -73,6 +74,8 @@ const routes = {
   ring: grommet,
   splice,
   serving: splice,
+  vellum,
+  vellumboard: vellum,
 };
 
 export default function handler(req, res) {

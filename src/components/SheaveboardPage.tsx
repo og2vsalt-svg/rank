@@ -59,8 +59,8 @@ export default function SheaveboardPage() {
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}>
           <p className="text-[#0a84ff] text-sm mb-2">sheaveboard</p>
           <h1 className="text-3xl font-semibold tracking-tight mb-3">files already in the table.</h1>
-          <p className="text-neutral-400 text-sm mb-6">metadata only. the bytes stay on the row until you open one. paste /sheave/id in Discord for a card.</p>
-          <button type="button" onClick={() => navigate('sheave')} className="mb-6 text-xs text-[#6eb6ff]">file a local file</button>
+          <p className="text-neutral-400 text-sm mb-6">metadata only. the bytes stay on the row until you open one. paste /trunnion/id in Discord for a card. the older sheave pack desk is still at /sheave.</p>
+          <button type="button" onClick={() => navigate('trunnion')} className="mb-6 text-xs text-[#6eb6ff]">file a local file</button>
           {loading && <p className="text-sm text-neutral-500">opening…</p>}
           {err && <p className="text-xs text-red-400">{err}</p>}
           <div className="space-y-3">
@@ -68,7 +68,7 @@ export default function SheaveboardPage() {
               <motion.button
                 key={row.id}
                 type="button"
-                onClick={() => navigate('sheave', row.id)}
+                onClick={() => navigate('trunnion', row.id)}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: Math.min(i, 8) * 0.04, duration: 0.35, ease: [0.22, 1, 0.36, 1] }}

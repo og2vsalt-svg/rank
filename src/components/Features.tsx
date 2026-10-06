@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'grommet', body: 'label a local file for someone. the bytes land in the share table, and a grommet row keeps the note. /grommet/id is the card. large drops are warned, never refused. not a vault drawer.' },
+  { title: 'ring', body: 'a public index of labeled drops already filed. open one to read the note and the file. discord unfurls /ring. not a vault drawer.' },
   { title: 'quoin', body: 'name a corner and attach one local file. the bytes land in the share table, and a corner row keeps the note. /quoin/id is the card. large drops are warned, never refused. not a vault drawer.' },
   { title: 'rebate', body: 'a public index of quoin corners already filed. open one to read the note and the file. discord unfurls /rebate. not a vault drawer.' },
   { title: 'newel', body: 'a stair note with no file attached. older desks stay. discord unfurls /newel. not a file vault.' },

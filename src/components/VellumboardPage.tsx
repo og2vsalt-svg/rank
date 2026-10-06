@@ -1,0 +1,56 @@
+import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import Navbar from './Navbar';
+import { useRouter } from './Router';
+
+const SB_URL = 'https://tqfocdktvjuwoiyfgesb.supabase.co';
+const SB_KEY =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
+
+type Row = { id: string; title: string | null; file_name: string | null; size: number; note: string | null; created_at: string };
+
+function pretty(n: number) {
+  if (n < 1024) return n + ' B';
+  if (n < 1024 * 1024) return Math.round(n / 1024) + ' KB';
+  if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(1) + ' MB';
+  return (n / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
+}
+
+export default function VellumboardPage() {
+  const { navigate } = useRouter();
+  const [rows, setRows] = useState<Row[]>([]);
+  const [err, setErr] = useState('');
+
+  useEffect(() => {
+    fetch(`${SB_URL}/rest/v1/vellum_sheets?select=id,title,file_name,size,note,created_at&order=created_at.desc&limit=40`, {
+      headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` },
+    })
+      .then((r) => r.json())
+      .then((data) => setRows(Array.isArray(data) ? data : []))
+      .catch(() => setErr('could not read the board.'));
+  }, []);
+
+  return (
+    <div className="mesh min-h-screen">
+      <Navbar />
+      <div className="pt-28 pb-20 px-5 max-w-3xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-8">
+          <p className="text-[#0a84ff] text-sm mb-2">vellumboard</p>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">sheets already filed.</h1>
+          <p className="text-neutral-400 text-sm mb-6">a public index of the vellum table. discord unfurls /vellumboard. not a vault drawer.</p>
+          {err && <p className="text-xs text-red-400">{err}</p>}
+          <div className="space-y-2">
+            {rows.map((row, i) => (
+              <motion.button key={row.id} type="button" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i, 8) * 0.04 }} onClick={() => navigate('vellum', row.id)} className="w-full text-left rounded-2xl bg-white/[0.03] border border-white/10 px-4 py-3 hover:border-[#0a84ff]/40 transition">
+                <p className="text-white text-sm">{row.title || row.file_name || row.id}</p>
+                <p className="text-xs text-neutral-500 mt-1">{row.file_name} · {pretty(Number(row.size) || 0)}</p>
+              </motion.button>
+            ))}
+            {!rows.length && !err && <p className="text-sm text-neutral-500">nothing filed yet.</p>}
+          </div>
+          <button type="button" onClick={() => navigate('vellum')} className="mt-6 text-xs text-[#6eb6ff]">write a sheet</button>
+        </motion.div>
+      </div>
+    </div>
+  );
+}

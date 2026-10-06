@@ -43,6 +43,7 @@ import latch from '../lib/endpoints/latch.js';
 import grommet from '../lib/endpoints/grommet.js';
 import splice from '../lib/endpoints/splice.js';
 import vellum from '../lib/endpoints/vellum.js';
+import thimble from '../lib/endpoints/thimble.js';
 
 const routes = {
   atelier, beacon, card, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -76,6 +77,8 @@ const routes = {
   serving: splice,
   vellum,
   vellumboard: vellum,
+  thimble,
+  thimbles: thimble,
 };
 
 export default function handler(req, res) {

@@ -30,6 +30,7 @@ import wall from '../lib/endpoints/wall.js';
 import spunyarn from '../lib/endpoints/spunyarn.js';
 import shelf from './shelf.js';
 import handoff from '../lib/endpoints/handoff.js';
+import wick from '../lib/endpoints/wick.js';
 
 const routes = {
   atelier, beacon, card, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -41,6 +42,7 @@ const routes = {
   sill: shelf, keepsake: shelf, lintel: shelf, oriel: shelf,
   trundle: shelf, coping: shelf, springline: shelf,
   handoff, proof: handoff, quiet: handoff,
+  wick,
 };
 
 export default function handler(req, res) {

@@ -1,175 +1,165 @@
 import { useEffect, useMemo, useState } from 'react';
+import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import Footer from './Footer';
-import { useRouter } from './Router';
+import { publishLocalFile, shareUrls } from '../lib/cloudShare';
+
+function hexPreview(buf: ArrayBuffer) {
+  const bytes = new Uint8Array(buf).slice(0, 16);
+  return [...bytes].map((b) => b.toString(16).padStart(2, '0')).join(' ');
+}
+
+function sniff(bytes: Uint8Array, name: string, mime: string) {
+  const sig = [...bytes.slice(0, 8)].map((b) => b.toString(16).padStart(2, '0')).join('');
+  if (sig.startsWith('89504e47')) return 'png';
+  if (sig.startsWith('ffd8ff')) return 'jpeg';
+  if (sig.startsWith('25504446')) return 'pdf';
+  if (sig.startsWith('504b0304')) return 'zip-family';
+  if (sig.startsWith('1f8b')) return 'gzip';
+  if (sig.startsWith('494433') || sig.startsWith('fffb')) return 'audio';
+  if (name.endsWith('.md') || mime.startsWith('text/')) return 'text';
+  return mime.split('/')[0] || 'file';
+}
 
 type Turn = {
   id: string;
   share_id: string | null;
   file_name: string;
-  mime: string | null;
   size: number;
-  sha256: string | null;
   hauled_by: string | null;
   for_whom: string | null;
   note: string | null;
-  created_at: string;
 };
 
-function pretty(n: number) {
-  if (n < 1024) return `${n} B`;
-  if (n < 1024 * 1024) return `${Math.max(1, Math.round(n / 1024))} KB`;
-  if (n < 1024 * 1024 * 1024) return `${(n / (1024 * 1024)).toFixed(1)} MB`;
-  return `${(n / (1024 * 1024 * 1024)).toFixed(2)} GB`;
-}
-
-async function fingerprint(file: File) {
-  const buf = await file.arrayBuffer();
-  const digest = await crypto.subtle.digest('SHA-256', buf);
-  return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, '0')).join('');
-}
-
 export default function WindlassPage() {
-  const { shareId } = useRouter();
   const [file, setFile] = useState<File | null>(null);
+  const [hex, setHex] = useState('');
+  const [kind, setKind] = useState('');
+  const [warn, setWarn] = useState('');
+  const [caption, setCaption] = useState('');
   const [hauledBy, setHauledBy] = useState('');
   const [forWhom, setForWhom] = useState('');
-  const [note, setNote] = useState('');
-  const [turns, setTurns] = useState<Turn[]>([]);
-  const [open, setOpen] = useState<Turn | null>(null);
-  const [err, setErr] = useState('');
   const [busy, setBusy] = useState(false);
-  const [copied, setCopied] = useState('');
+  const [err, setErr] = useState('');
+  const [card, setCard] = useState('');
+  const [turns, setTurns] = useState<Turn[]>([]);
 
-  const warn = useMemo(() => (file && file.size > 12 * 1024 * 1024 ? 'This drop is large. The page will not refuse it, but the upload may feel slow.' : ''), [file]);
-
-  async function load() {
-    const r = await fetch('/api/windlass');
-    if (!r.ok) return;
-    const data = await r.json();
-    setTurns(Array.isArray(data.turns) ? data.turns : []);
-  }
+  const sizeLabel = useMemo(() => {
+    if (!file) return '';
+    if (file.size < 1024) return `${file.size} B`;
+    if (file.size < 1024 * 1024) return `${Math.round(file.size / 1024)} KB`;
+    return `${(file.size / (1024 * 1024)).toFixed(1)} MB`;
+  }, [file]);
 
   useEffect(() => {
-    load().catch(() => {});
+    fetch('/api/windlass')
+      .then((r) => r.json())
+      .then((data) => setTurns(Array.isArray(data.turns) ? data.turns : []))
+      .catch(() => {});
   }, []);
 
-  useEffect(() => {
-    if (!shareId) return;
-    fetch(`/api/windlass?id=${encodeURIComponent(shareId)}`)
-      .then((r) => r.json())
-      .then((data) => setOpen(data.turn || null))
-      .catch(() => {});
-  }, [shareId]);
+  const read = async (next: File | null) => {
+    setErr('');
+    setCard('');
+    setFile(next);
+    if (!next) return;
+    setWarn(next.size > 25 * 1024 * 1024 ? 'chunky file. the tab may pause while it reads the head. nothing is refused.' : '');
+    const head = await next.slice(0, 16).arrayBuffer();
+    const bytes = new Uint8Array(head);
+    setHex(hexPreview(head));
+    setKind(sniff(bytes, next.name.toLowerCase(), next.type || 'application/octet-stream'));
+  };
 
-  async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!file) {
-      setErr('choose a local file first');
-      return;
-    }
+  const fileIt = async () => {
+    if (!file) return;
     setBusy(true);
     setErr('');
     try {
-      const sha = await fingerprint(file);
-      const body = new FormData();
-      body.set('file', file);
-      body.set('author', hauledBy);
-      body.set('caption', note || `hauled for ${forWhom || 'the desk'}`);
-      body.set('cardTitle', file.name);
-      const share = await fetch('/api/share', { method: 'POST', body });
-      const shared = await share.json().catch(() => ({}));
-      if (!share.ok) throw new Error(shared.error || 'share table did not take the file');
+      const result = await publishLocalFile(file, {
+        caption: caption || `${kind} · ${sizeLabel}`,
+        cardTitle: file.name,
+        color: '#0A84FF',
+        author: hauledBy || 'windlass',
+      });
+      if (!result.ok || !result.id) {
+        setErr(result.error || 'the share table did not take it');
+        return;
+      }
+      const urls = shareUrls(result.id);
       const slip = await fetch('/api/windlass', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          id: shared.id,
-          share_id: shared.id,
+          id: result.id,
+          share_id: result.id,
           file_name: file.name,
           mime: file.type || 'application/octet-stream',
           size: file.size,
-          sha256: sha,
           hauled_by: hauledBy,
           for_whom: forWhom,
-          note,
+          note: caption,
         }),
       });
       const saved = await slip.json().catch(() => ({}));
-      if (!slip.ok) throw new Error(saved.error || 'haul note was not saved');
-      setFile(null);
-      setNote('');
-      setOpen(saved.turn || null);
-      await load();
-    } catch (error) {
-      setErr(error instanceof Error ? error.message : 'haul failed');
+      if (!slip.ok) {
+        setErr(saved.error || 'file landed, haul note did not');
+      } else if (saved.turn) {
+        setTurns((prev) => [saved.turn, ...prev.filter((t) => t.id !== saved.turn.id)]);
+      }
+      setCard(urls.embed);
+      try { await navigator.clipboard.writeText(urls.embed); } catch {}
+      if (result.warn) setWarn(result.warn);
+    } catch (e: any) {
+      setErr(e?.message || 'file failed');
     } finally {
       setBusy(false);
     }
-  }
-
-  async function copy(path: string) {
-    const url = `${window.location.origin}${path}`;
-    await navigator.clipboard.writeText(url);
-    setCopied(path);
-    window.setTimeout(() => setCopied(''), 1400);
-  }
-
-  const shown = open ? [open, ...turns.filter((t) => t.id !== open.id)] : turns;
+  };
 
   return (
-    <div className="mesh min-h-screen text-[#f5f5f7]">
+    <div className="mesh min-h-screen">
       <Navbar />
-      <main className="max-w-3xl mx-auto px-5 pt-28 pb-24 apple-in">
-        <p className="text-[13px] tracking-[0.16em] uppercase text-[#8e8e93]">windlass</p>
-        <h1 className="mt-2 text-4xl sm:text-5xl font-semibold tracking-tight">Haul a file, keep the turn.</h1>
-        <p className="mt-4 text-[17px] leading-relaxed text-[#a1a1aa] max-w-xl">
-          A local file lands in the share table. The haul note lives beside it: who turned, who it is for, and a fingerprint. Not another drawer.
-        </p>
-        <form onSubmit={onSubmit} className="mt-8 apple-card rounded-3xl border border-white/10 bg-white/[0.04] p-5 sm:p-6 space-y-3">
-          <label className="block rounded-2xl border border-dashed border-white/15 bg-black/20 px-4 py-6 text-center cursor-pointer hover:border-[#0a84ff]/60 transition-colors duration-200">
-            <input type="file" className="sr-only" onChange={(e) => setFile(e.target.files?.[0] || null)} />
-            <span className="text-sm text-[#d1d1d6]">{file ? file.name : 'Choose a file from this machine'}</span>
-            {file ? <span className="block mt-1 text-xs text-[#8e8e93]">{pretty(file.size)}</span> : null}
+      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-8">
+          <p className="text-[#0a84ff] text-sm mb-2">windlass</p>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">read the head, then file it.</h1>
+          <p className="text-neutral-400 text-sm mb-6">not a cabinet. the first sixteen bytes stay in the tab. filing writes the local file into the share table, keeps who turned the windlass, and hands Discord a card.</p>
+          <label
+            className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition duration-300"
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => { e.preventDefault(); read(e.dataTransfer.files?.[0] || null); }}
+          >
+            <input type="file" className="hidden" onChange={(e) => read(e.target.files?.[0] || null)} />
+            <p className="text-white font-medium">{file ? file.name : 'drop one local file'}</p>
+            <p className="text-xs text-neutral-500 mt-2">no size cap. a warning only if the read may feel slow.</p>
           </label>
-          {warn ? <p className="text-sm text-[#ffd60a]">{warn}</p> : null}
-          <div className="grid sm:grid-cols-2 gap-3">
-            <input value={hauledBy} onChange={(e) => setHauledBy(e.target.value)} placeholder="hauled by" className="rounded-2xl bg-black/30 border border-white/10 px-4 py-3 outline-none focus:border-[#0a84ff]" />
-            <input value={forWhom} onChange={(e) => setForWhom(e.target.value)} placeholder="for" className="rounded-2xl bg-black/30 border border-white/10 px-4 py-3 outline-none focus:border-[#0a84ff]" />
-          </div>
-          <textarea value={note} onChange={(e) => setNote(e.target.value)} maxLength={280} placeholder="what the turn was for" className="w-full min-h-24 rounded-2xl bg-black/30 border border-white/10 px-4 py-3 outline-none focus:border-[#0a84ff]" />
-          {err ? <p className="text-sm text-[#ff453a]">{err}</p> : null}
-          <button disabled={busy} className="rounded-full bg-white text-black px-5 py-2.5 text-sm font-medium disabled:opacity-60 transition-transform duration-200 active:scale-[0.98]">
-            {busy ? 'Hauling…' : 'Haul file'}
-          </button>
-        </form>
-        <ul className="mt-8 space-y-2">
-          {shown.map((turn) => (
-            <li key={turn.id} className="apple-card rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="font-medium">{turn.file_name}</p>
-                  <p className="mt-1 text-sm text-[#a1a1aa]">
-                    {pretty(Number(turn.size) || 0)}
-                    {turn.hauled_by ? ` · ${turn.hauled_by}` : ''}
-                    {turn.for_whom ? ` → ${turn.for_whom}` : ''}
-                  </p>
-                  {turn.note ? <p className="mt-1 text-sm text-[#d1d1d6]">{turn.note}</p> : null}
-                  {turn.sha256 ? <p className="mt-1 text-[12px] text-[#8e8e93] break-all">{turn.sha256}</p> : null}
-                </div>
-                <button onClick={() => copy(`/windlass/${turn.id}`)} className="shrink-0 text-[12px] text-[#64d2ff]">
-                  {copied === `/windlass/${turn.id}` ? 'copied' : 'copy card'}
-                </button>
+          {file && (
+            <div className="mt-6 space-y-3 text-sm">
+              <p className="text-neutral-300">{kind} · {sizeLabel} · {file.type || 'unknown type'}</p>
+              <p className="font-mono text-xs text-neutral-500 break-all">{hex || '—'}</p>
+              <div className="grid sm:grid-cols-2 gap-3">
+                <input value={hauledBy} onChange={(e) => setHauledBy(e.target.value)} placeholder="hauled by" className="w-full rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/40" />
+                <input value={forWhom} onChange={(e) => setForWhom(e.target.value)} placeholder="for" className="w-full rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/40" />
               </div>
-              {turn.share_id ? (
-                <a className="mt-2 inline-block text-sm text-[#64d2ff]" href={`/s/${turn.share_id}`}>open the file</a>
-              ) : null}
-            </li>
-          ))}
-          {!shown.length ? <li className="text-sm text-[#8e8e93]">No turns yet.</li> : null}
-        </ul>
-      </main>
-      <Footer />
+              <input value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="card line for Discord" className="w-full rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/40" />
+              <button onClick={fileIt} disabled={busy} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-50 active:scale-[0.98] transition-transform">{busy ? 'filing…' : 'file into the share table'}</button>
+            </div>
+          )}
+          {warn && <p className="text-xs text-amber-300/80 mt-4">{warn}</p>}
+          {err && <p className="text-xs text-red-400 mt-4">{err}</p>}
+          {card && <p className="text-xs text-neutral-400 mt-4 break-all">discord card copied: {card}</p>}
+        </motion.div>
+        {turns.length > 0 && (
+          <ul className="mt-4 space-y-2">
+            {turns.slice(0, 8).map((turn) => (
+              <li key={turn.id} className="glass rounded-2xl px-4 py-3 text-sm">
+                <p className="text-white">{turn.file_name}</p>
+                <p className="text-neutral-500 mt-1">{turn.hauled_by || 'windlass'}{turn.for_whom ? ` → ${turn.for_whom}` : ''}{turn.note ? ` · ${turn.note}` : ''}</p>
+                {turn.share_id ? <a className="text-[#64d2ff] text-xs" href={`/s/${turn.share_id}`}>open file</a> : null}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }

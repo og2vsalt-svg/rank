@@ -48,6 +48,7 @@ import sheave from '../lib/endpoints/sheave.js';
 import leechoth from '../lib/endpoints/leecloth.js';
 import oakdesk from '../lib/endpoints/oakdesk.js';
 import daybook from '../lib/endpoints/daybook.js';
+import pinboard from '../lib/endpoints/pinboard.js';
 
 const routes = {
   atelier, beacon, card, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -90,6 +91,7 @@ const routes = {
   crossjack: leechoth,
   oakdesk,
   daybook,
+  pinboard,
 };
 
 export default function handler(req, res) {

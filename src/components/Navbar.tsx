@@ -9,7 +9,7 @@ const primary: NavItem[] = [
   { to: 'crossjack', label: 'crossjack' },
   { to: 'coak', label: 'coak' },
   { to: 'grommet', label: 'grommet' },
-  { to: 'oakdesk', label: 'oakdesk' },
+  { to: 'larder', label: 'larder' }, { to: 'pinboard', label: 'pinboard' }, { to: 'oakdesk', label: 'oakdesk' },
   { to: 'daybook', label: 'daybook' },
   { to: 'vault', label: 'vault' },
   { to: 'slip', label: 'slip' },

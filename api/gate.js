@@ -57,6 +57,7 @@ import lodestone from '../lib/endpoints/lodestone.js';
 import inkstand from '../lib/endpoints/inkstand.js';
 import windlass from '../lib/endpoints/windlass.js';
 import outbox from '../lib/endpoints/outbox.js';
+import hamper from '../lib/endpoints/hamper.js';
 
 const routes = {
   atelier, beacon, card, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -113,6 +114,8 @@ const routes = {
   windlass,
   outbox,
   postbag: outbox,
+  hamper,
+  marginalia: hamper,
 };
 
 export default function handler(req, res) {

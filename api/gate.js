@@ -44,6 +44,7 @@ import grommet from '../lib/endpoints/grommet.js';
 import splice from '../lib/endpoints/splice.js';
 import vellum from '../lib/endpoints/vellum.js';
 import thimble from '../lib/endpoints/thimble.js';
+import sheave from '../lib/endpoints/sheave.js';
 
 const routes = {
   atelier, beacon, card, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -79,6 +80,9 @@ const routes = {
   vellumboard: vellum,
   thimble,
   thimbles: thimble,
+  sheave,
+  coak: sheave,
+  sheaveboard: sheave,
 };
 
 export default function handler(req, res) {

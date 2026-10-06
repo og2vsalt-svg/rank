@@ -33,6 +33,7 @@ import handoff from '../lib/endpoints/handoff.js';
 import wick from '../lib/endpoints/wick.js';
 import slip from '../lib/endpoints/slip.js';
 import cask from '../lib/endpoints/cask.js';
+import tender from '../lib/endpoints/tender.js';
 
 const routes = {
   atelier, beacon, card, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -48,6 +49,8 @@ const routes = {
   slip,
   cask,
   stave: cask,
+  tender,
+  gangway: tender,
 };
 
 export default function handler(req, res) {

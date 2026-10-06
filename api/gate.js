@@ -53,6 +53,7 @@ import fathom from '../lib/endpoints/fathom.js';
 import sconce from '../lib/endpoints/sconce.js';
 import watchglass from '../lib/endpoints/watchglass.js';
 import logline from '../lib/endpoints/logline.js';
+import lodestone from '../lib/endpoints/lodestone.js';
 
 const routes = {
   atelier, beacon, card, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -102,6 +103,8 @@ const routes = {
   sandglass: watchglass,
   logline,
   chipboard: logline,
+  lodestone,
+  mariner: lodestone,
 };
 
 export default function handler(req, res) {

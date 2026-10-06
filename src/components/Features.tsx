@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'cask', body: 'bundle several local files. each one lands in the share table, then a cask row keeps the list. discord unfurls /cask. large bundles are warned, never refused. not a vault drawer.' },
+  { title: 'stave', body: 'a public index of casks. open one to see the files already stored. discord unfurls /stave. not a vault drawer.' },
   { title: 'slip', body: 'a shared table. pick a short code, drop a local file, and the bytes land in the share database. discord unfurls /slip. large drops are warned, never refused. not a vault drawer.' },
   { title: 'wick', body: 'attach a local file and pick how long the link stays warm. bytes land in the share table, then the row fades. discord unfurls /wick. large drops are warned, never refused. not a vault drawer.' },
   { title: 'handoff', body: 'name a person, attach a local file, and the bytes land in the share table. discord unfurls /handoff. not a vault drawer. large drops are warned, never refused.' },

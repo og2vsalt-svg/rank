@@ -5,7 +5,7 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
-  { to: 'fathom', label: 'fathom' },
+  { to: 'watchglass', label: 'watchglass' },
   { to: 'sconce', label: 'sconce' },
   { to: 'larder', label: 'larder' },
   { to: 'pinboard', label: 'pinboard' },
@@ -15,7 +15,7 @@ const primary: NavItem[] = [
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
-  { title: 'new', items: [{ to: 'fathom', label: 'fathom' }, { to: 'sconce', label: 'sconce' }, { to: 'oakdesk', label: 'oakdesk' }, { to: 'daybook', label: 'daybook' }, { to: 'leecloth', label: 'leecloth' }, { to: 'crossjack', label: 'crossjack' }, { to: 'coak', label: 'coak' }, { to: 'sheaveboard', label: 'sheaveboard' }, { to: 'thimble', label: 'thimble' }, { to: 'grommet', label: 'grommet' }, { to: 'latch', label: 'latch' }, { to: 'quoin', label: 'quoin' }, { to: 'wayleave', label: 'wayleave' }] },
+  { title: 'new', items: [{ to: 'watchglass', label: 'watchglass' }, { to: 'sandglass', label: 'sandglass' }, { to: 'fathom', label: 'fathom' }, { to: 'sconce', label: 'sconce' }, { to: 'oakdesk', label: 'oakdesk' }, { to: 'daybook', label: 'daybook' }, { to: 'leecloth', label: 'leecloth' }, { to: 'crossjack', label: 'crossjack' }, { to: 'coak', label: 'coak' }, { to: 'sheaveboard', label: 'sheaveboard' }, { to: 'thimble', label: 'thimble' }, { to: 'grommet', label: 'grommet' }, { to: 'latch', label: 'latch' }, { to: 'quoin', label: 'quoin' }, { to: 'wayleave', label: 'wayleave' }] },
   { title: 'hosting', items: [{ to: 'fathom', label: 'fathom' }, { to: 'oakdesk', label: 'oakdesk' }, { to: 'daybook', label: 'daybook' }, { to: 'vault', label: 'vault' }, { to: 'scuttle', label: 'scuttle' }, { to: 'forefoot', label: 'forefoot' }, { to: 'catfall', label: 'catfall' }, { to: 'fiferail', label: 'fiferail' }, { to: 'atelier', label: 'atelier' }, { to: 'quarter', label: 'quarter' }, { to: 'hawsepipe', label: 'hawsepipe' }, { to: 'bollard', label: 'bollard' }, { to: 'unfurl', label: 'unfurl' }] },
   { title: 'notes', items: [{ to: 'sconce', label: 'sconce' }, { to: 'pinboard', label: 'pinboard' }, { to: 'wayleave', label: 'wayleave' }, { to: 'nightglass', label: 'nightglass' }, { to: 'quire', label: 'quire' }, { to: 'docket', label: 'docket' }, { to: 'vesper', label: 'vesper' }, { to: 'ledger', label: 'ledger' }, { to: 'lantern', label: 'lantern' }] },
   { title: 'share', items: [{ to: 'fathom', label: 'fathom' }, { to: 'coak', label: 'coak' }, { to: 'sheaveboard', label: 'sheaveboard' }, { to: 'thimble', label: 'thimble' }, { to: 'grommet', label: 'grommet' }, { to: 'courier', label: 'courier' }, { to: 'folio', label: 'folio' }, { to: 'deadlight', label: 'deadlight' }, { to: 'tender', label: 'tender' }, { to: 'cask', label: 'cask' }, { to: 'wick', label: 'wick' }] },

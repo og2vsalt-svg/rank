@@ -51,6 +51,7 @@ import daybook from '../lib/endpoints/daybook.js';
 import pinboard from '../lib/endpoints/pinboard.js';
 import fathom from '../lib/endpoints/fathom.js';
 import sconce from '../lib/endpoints/sconce.js';
+import watchglass from '../lib/endpoints/watchglass.js';
 
 const routes = {
   atelier, beacon, card, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -96,6 +97,8 @@ const routes = {
   pinboard,
   fathom,
   sconce,
+  watchglass,
+  sandglass: watchglass,
 };
 
 export default function handler(req, res) {

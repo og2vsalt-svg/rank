@@ -35,6 +35,7 @@ import slip from '../lib/endpoints/slip.js';
 import cask from '../lib/endpoints/cask.js';
 import tender from '../lib/endpoints/tender.js';
 import holdfast from '../lib/endpoints/holdfast.js';
+import deadlight from '../lib/endpoints/deadlight.js';
 
 const routes = {
   atelier, beacon, card, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -54,6 +55,8 @@ const routes = {
   gangway: tender,
   holdfast,
   clew: holdfast,
+  deadlight,
+  beeswax: deadlight,
 };
 
 export default function handler(req, res) {

@@ -25,11 +25,7 @@ function parseLocation() {
   const [path, qs] = raw.split('?');
   const params = new URLSearchParams(qs || window.location.search.replace(/^\?/, ''));
   const slug = (path || '').replace(/[^a-z0-9/_-]/gi, '').toLowerCase();
-  if (slug === 'share' || slug.startsWith('file/')) {
-    return { route: 'share', shareId: params.get('f') || slug.replace('file/', '') };
-  }
-  if (params.get('f') && !slug) return { route: 'share', shareId: params.get('f') };
-  if (slug) return { route: slug, shareId: params.get('f') };
+  // Path wins. A leftover hash used to hide /holdfast and other desks.
   if (parts.length >= 2 && SHARE_PREFIX.has(parts[0])) {
     return { route: 'share', shareId: decodeURIComponent(parts[1]) };
   }
@@ -42,6 +38,11 @@ function parseLocation() {
   if (parts.length === 1 && parts[0] !== 'index.html') {
     return { route: parts[0].toLowerCase(), shareId: params.get('f') };
   }
+  if (slug === 'share' || slug.startsWith('file/')) {
+    return { route: 'share', shareId: params.get('f') || slug.replace('file/', '') };
+  }
+  if (params.get('f') && !slug) return { route: 'share', shareId: params.get('f') };
+  if (slug) return { route: slug, shareId: params.get('f') };
   return { route: 'home', shareId: null };
 }
 

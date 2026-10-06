@@ -1,72 +1,82 @@
-import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 import Navbar from './Navbar';
-import { publishLocalFile } from '../lib/cloudShare';
+import { listShares } from '../lib/db';
+import { useRouter } from './Router';
+
+type Row = {
+  id: string;
+  name: string;
+  mime?: string;
+  size?: number;
+  caption?: string | null;
+  author?: string | null;
+  created_at?: string;
+};
+
+function pretty(bytes: number) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
 
 export default function ClewPage() {
-  const [title, setTitle] = useState('');
-  const [body, setBody] = useState('');
-  const [sign, setSign] = useState('');
-  const [busy, setBusy] = useState(false);
-  const [embed, setEmbed] = useState('');
-  const [error, setError] = useState('');
-  const [copied, setCopied] = useState(false);
-  const [warn, setWarn] = useState<string | null>(null);
+  const { navigate } = useRouter();
+  const [rows, setRows] = useState<Row[]>([]);
+  const [status, setStatus] = useState('loading pins…');
 
-  const letter = useMemo(() => {
-    const head = title.trim() || 'untitled letter';
-    const who = sign.trim() ? `\n\n— ${sign.trim()}` : '';
-    return `${head}\n\n${body.trim()}${who}\n`;
-  }, [title, body, sign]);
-
-  const send = async () => {
-    if (!body.trim()) return;
-    setBusy(true);
-    setError('');
-    const file = new File([letter], `${(title.trim() || 'letter').slice(0, 48).replace(/[^\w.-]+/g, '-')}.txt`, {
-      type: 'text/plain',
-    });
-    const res = await publishLocalFile(file, {
-      caption: title.trim().slice(0, 140) || 'a letter from clew',
-      author: sign.trim() || undefined,
-      color: '#64D2FF',
-    });
-    setBusy(false);
-    if (!res.ok || !res.id) {
-      setError(res.error || 'the letter did not leave');
-      return;
-    }
-    setEmbed(res.embed || '');
-    setWarn(res.warn || (file.size > 200_000 ? 'long letter. the send may feel slow. there is no cutoff.' : null));
-  };
+  useEffect(() => {
+    let live = true;
+    listShares(40)
+      .then((data: Row[]) => {
+        if (!live) return;
+        const pins = (data || []).filter((row) => {
+          const author = (row.author || '').toLowerCase();
+          const caption = (row.caption || '').toLowerCase();
+          return author === 'holdfast' || caption.includes('holdfast');
+        });
+        setRows(pins);
+        setStatus(pins.length ? '' : 'no holdfast pins yet. the older shares stay on their own desks.');
+      })
+      .catch(() => {
+        if (live) setStatus('could not read the share table.');
+      });
+    return () => {
+      live = false;
+    };
+  }, []);
 
   return (
-    <div className="mesh min-h-screen">
+    <div className="min-h-screen bg-[#070708] text-white">
       <Navbar />
-      <main className="mx-auto max-w-2xl px-5 pb-24 pt-10">
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}>
-          <p className="text-[12px] uppercase tracking-[0.16em] text-white/45">clew</p>
-          <h1 className="mt-2 text-[34px] font-semibold tracking-[-0.04em]">a letter, not a cabinet</h1>
+      <main className="mx-auto max-w-2xl px-5 pb-24 pt-28">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}>
+          <p className="text-[12px] uppercase tracking-[0.18em] text-white/40">index</p>
+          <h1 className="mt-2 text-4xl font-semibold tracking-tight">clew</h1>
           <p className="mt-3 text-[15px] leading-relaxed text-white/60">
-            Write in the tab. Sending turns the letter into a text file on the share table and hands you a Discord card. Nothing is refused for length — a very long one may just feel slow.
+            Open pins already stored from holdfast. This is not a vault drawer. Discord unfurls /clew.
           </p>
         </motion.div>
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }} className="glass mt-8 rounded-3xl p-5">
-          <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="subject" className="w-full rounded-2xl bg-black/30 px-4 py-3 text-[15px] outline-none placeholder:text-white/30" />
-          <textarea value={body} onChange={(e) => setBody(e.target.value)} placeholder="the letter" rows={8} className="mt-3 w-full resize-y rounded-2xl bg-black/30 px-4 py-3 text-[15px] leading-relaxed outline-none placeholder:text-white/30" />
-          <input value={sign} onChange={(e) => setSign(e.target.value)} placeholder="signed" className="mt-3 w-full rounded-2xl bg-black/30 px-4 py-3 text-[15px] outline-none placeholder:text-white/30" />
-          <button onClick={send} disabled={!body.trim() || busy} className="mt-4 rounded-full bg-white px-5 py-2.5 text-[14px] font-medium text-black transition hover:bg-neutral-200 disabled:opacity-50">
-            {busy ? 'filing…' : 'file the letter'}
-          </button>
-          {warn && <p className="mt-3 text-[13px] text-amber-200/80">{warn}</p>}
-          {error && <p className="mt-3 text-[13px] text-red-300/90">{error}</p>}
-          {embed && (
-            <div className="mt-4 flex items-center gap-2">
-              <p className="min-w-0 flex-1 truncate text-[13px] text-white/70">{embed}</p>
-              <button onClick={async () => { await navigator.clipboard.writeText(embed); setCopied(true); }} className="shrink-0 rounded-full bg-white/10 px-3 py-1.5 text-[12px] text-white">{copied ? 'copied' : 'copy'}</button>
-            </div>
-          )}
-        </motion.div>
+        {status && <p className="mt-8 text-sm text-white/45">{status}</p>}
+        <div className="mt-6 space-y-2">
+          {rows.map((row, i) => (
+            <motion.button
+              key={row.id}
+              type="button"
+              onClick={() => navigate('holdfast', row.id)}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: Math.min(i, 10) * 0.04, duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+              className="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-left transition hover:bg-white/[0.06]"
+            >
+              <span>
+                <span className="block text-sm text-white">{row.name}</span>
+                <span className="mt-0.5 block text-[12px] text-white/40">{row.caption || 'pinned file'}</span>
+              </span>
+              <span className="text-[12px] text-white/35">{pretty(Number(row.size) || 0)}</span>
+            </motion.button>
+          ))}
+        </div>
       </main>
     </div>
   );

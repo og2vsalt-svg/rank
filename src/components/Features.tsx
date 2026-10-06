@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'holdfast', body: 'pin one local file with a keeper note. the bytes land in the share table, then /holdfast/id is the card. large drops are warned, never refused. not a vault drawer.' },
+  { title: 'clew', body: 'a public index of holdfast pins already in the share table. open one to read the note and the file. discord unfurls /clew. not a vault drawer.' },
   { title: 'tender', body: 'ask one question and attach one local file. the bytes land in the share table, replies stay on the tender. discord unfurls /tender. large files are warned, never refused. not a vault drawer.' },
   { title: 'gangway', body: 'a public index of open tenders. open one to read the question and the file already stored. discord unfurls /gangway. not a vault drawer.' },
   { title: 'cask', body: 'bundle several local files. each one lands in the share table, then a cask row keeps the list. discord unfurls /cask. large bundles are warned, never refused. not a vault drawer.' },

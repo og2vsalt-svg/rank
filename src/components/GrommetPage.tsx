@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
 import { publishLocalFile, shareUrls } from '../lib/cloudShare';
@@ -8,6 +8,16 @@ const SB_URL = 'https://tqfocdktvjuwoiyfgesb.supabase.co';
 const SB_KEY =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
 
+type Filed = {
+  id: string;
+  label: string;
+  for_whom: string | null;
+  note: string | null;
+  file_name: string | null;
+  size: number;
+  file_url: string | null;
+};
+
 function pretty(n: number) {
   if (n < 1024) return n + ' B';
   if (n < 1024 * 1024) return Math.round(n / 1024) + ' KB';
@@ -16,7 +26,7 @@ function pretty(n: number) {
 }
 
 export default function GrommetPage() {
-  const { navigate } = useRouter();
+  const { navigate, shareId } = useRouter();
   const [label, setLabel] = useState('');
   const [forWhom, setForWhom] = useState('');
   const [note, setNote] = useState('');
@@ -26,6 +36,36 @@ export default function GrommetPage() {
   const [stats, setStats] = useState<{ name: string; size: number; type: string } | null>(null);
   const [embed, setEmbed] = useState('');
   const [app, setApp] = useState('');
+  const [filed, setFiled] = useState<Filed | null>(null);
+  const [loading, setLoading] = useState(Boolean(shareId));
+
+  useEffect(() => {
+    if (!shareId) {
+      setFiled(null);
+      setLoading(false);
+      return;
+    }
+    let live = true;
+    setLoading(true);
+    fetch(`${SB_URL}/rest/v1/grommets?id=eq.${encodeURIComponent(shareId)}&select=id,label,for_whom,note,file_name,size,file_url&limit=1`, {
+      headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` },
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        if (!live) return;
+        setFiled(Array.isArray(data) && data[0] ? data[0] : null);
+        if (!Array.isArray(data) || !data[0]) setErr('that label is not on the ring.');
+      })
+      .catch(() => {
+        if (live) setErr('could not open this grommet.');
+      })
+      .finally(() => {
+        if (live) setLoading(false);
+      });
+    return () => {
+      live = false;
+    };
+  }, [shareId]);
 
   const send = async (list: FileList | null) => {
     const file = list?.[0];
@@ -69,9 +109,7 @@ export default function GrommetPage() {
           author: null,
         }),
       });
-      if (!row.ok) {
-        setErr('file is in the share table, but the label row did not save');
-      }
+      if (!row.ok) setErr('file is in the share table, but the label row did not save');
       const urls = shareUrls(res.id);
       const card = `${location.origin}/grommet/${res.id}`;
       setEmbed(card);
@@ -94,53 +132,53 @@ export default function GrommetPage() {
           transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
           className="glass rounded-[32px] p-8"
         >
-          <p className="text-[#0a84ff] text-sm mb-2">grommet</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">label a file for someone.</h1>
-          <p className="text-neutral-400 text-sm mb-6">
-            not a drawer. you name the drop, say who it is for, and the local file lands in the share table. discord gets a card on /grommet/id. older desks stay where they are.
-          </p>
-          <input
-            value={label}
-            onChange={(e) => setLabel(e.target.value)}
-            placeholder="label, like invoice or mix"
-            className="w-full mb-3 rounded-2xl bg-white/[0.04] border border-white/10 px-4 py-3 text-sm text-white placeholder:text-neutral-600 outline-none focus:border-[#0a84ff]/50"
-          />
-          <input
-            value={forWhom}
-            onChange={(e) => setForWhom(e.target.value)}
-            placeholder="for whom (optional)"
-            className="w-full mb-3 rounded-2xl bg-white/[0.04] border border-white/10 px-4 py-3 text-sm text-white placeholder:text-neutral-600 outline-none focus:border-[#0a84ff]/50"
-          />
-          <textarea
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            placeholder="a short note that rides with the card"
-            rows={3}
-            className="w-full mb-4 rounded-2xl bg-white/[0.04] border border-white/10 px-4 py-3 text-sm text-white placeholder:text-neutral-600 outline-none focus:border-[#0a84ff]/50 resize-none"
-          />
-          <label
-            className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition duration-200"
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => { e.preventDefault(); send(e.dataTransfer.files); }}
-          >
-            <input type="file" className="hidden" onChange={(e) => send(e.target.files)} />
-            <p className="text-white font-medium">{busy ? 'setting the grommet…' : 'drop one local file'}</p>
-            <p className="text-xs text-neutral-500 mt-2">no size lock. we only mention it if the tab might lag.</p>
-          </label>
-          {stats && (
-            <div className="mt-5 rounded-2xl bg-white/[0.03] border border-white/8 px-4 py-3 text-sm text-neutral-300">
-              <p>{stats.name}</p>
-              <p className="text-xs text-neutral-500 mt-1">{pretty(stats.size)} · {stats.type}</p>
-            </div>
-          )}
-          {warn && <p className="text-xs text-amber-300/80 mt-3">{warn}</p>}
-          {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
-          {embed && (
-            <div className="mt-6 space-y-2">
-              <p className="text-xs text-neutral-400 break-all">discord card (copied): {embed}</p>
-              <p className="text-xs text-neutral-500 break-all">open link: {app}</p>
-              <button type="button" onClick={() => navigate('ring')} className="text-xs text-[#6eb6ff]">see the ring</button>
-            </div>
+          {shareId ? (
+            <>
+              <p className="text-[#0a84ff] text-sm mb-2">grommet</p>
+              <h1 className="text-3xl font-semibold tracking-tight mb-3">{loading ? 'opening…' : filed?.label || 'missing label'}</h1>
+              {filed && (
+                <>
+                  <p className="text-neutral-400 text-sm mb-4">{filed.note || 'no note on this drop.'}{filed.for_whom ? ` for ${filed.for_whom}.` : ''}</p>
+                  <p className="text-xs text-neutral-500 mb-5">{filed.file_name || 'file'} · {pretty(Number(filed.size) || 0)}</p>
+                  {filed.file_url && (
+                    <a href={filed.file_url} className="inline-flex rounded-full bg-white text-black text-sm font-medium px-4 py-2 hover:bg-neutral-200 transition" download>open the file</a>
+                  )}
+                </>
+              )}
+              {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
+              <button type="button" onClick={() => navigate('grommet')} className="mt-6 block text-xs text-[#6eb6ff]">label another</button>
+            </>
+          ) : (
+            <>
+              <p className="text-[#0a84ff] text-sm mb-2">grommet</p>
+              <h1 className="text-3xl font-semibold tracking-tight mb-3">label a file for someone.</h1>
+              <p className="text-neutral-400 text-sm mb-6">
+                not a drawer. you name the drop, say who it is for, and the local file lands in the share table. discord gets a card on /grommet/id. older desks stay where they are.
+              </p>
+              <input value={label} onChange={(e) => setLabel(e.target.value)} placeholder="label, like invoice or mix" className="w-full mb-3 rounded-2xl bg-white/[0.04] border border-white/10 px-4 py-3 text-sm text-white placeholder:text-neutral-600 outline-none focus:border-[#0a84ff]/50" />
+              <input value={forWhom} onChange={(e) => setForWhom(e.target.value)} placeholder="for whom (optional)" className="w-full mb-3 rounded-2xl bg-white/[0.04] border border-white/10 px-4 py-3 text-sm text-white placeholder:text-neutral-600 outline-none focus:border-[#0a84ff]/50" />
+              <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="a short note that rides with the card" rows={3} className="w-full mb-4 rounded-2xl bg-white/[0.04] border border-white/10 px-4 py-3 text-sm text-white placeholder:text-neutral-600 outline-none focus:border-[#0a84ff]/50 resize-none" />
+              <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition duration-200" onDragOver={(e) => e.preventDefault()} onDrop={(e) => { e.preventDefault(); send(e.dataTransfer.files); }}>
+                <input type="file" className="hidden" onChange={(e) => send(e.target.files)} />
+                <p className="text-white font-medium">{busy ? 'setting the grommet…' : 'drop one local file'}</p>
+                <p className="text-xs text-neutral-500 mt-2">no size lock. we only mention it if the tab might lag.</p>
+              </label>
+              {stats && (
+                <div className="mt-5 rounded-2xl bg-white/[0.03] border border-white/8 px-4 py-3 text-sm text-neutral-300">
+                  <p>{stats.name}</p>
+                  <p className="text-xs text-neutral-500 mt-1">{pretty(stats.size)} · {stats.type}</p>
+                </div>
+              )}
+              {warn && <p className="text-xs text-amber-300/80 mt-3">{warn}</p>}
+              {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
+              {embed && (
+                <div className="mt-6 space-y-2">
+                  <p className="text-xs text-neutral-400 break-all">discord card (copied): {embed}</p>
+                  <p className="text-xs text-neutral-500 break-all">open link: {app}</p>
+                  <button type="button" onClick={() => navigate('ring')} className="text-xs text-[#6eb6ff]">see the ring</button>
+                </div>
+              )}
+            </>
           )}
         </motion.div>
       </div>

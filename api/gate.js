@@ -3,7 +3,7 @@ import beacon from '../lib/endpoints/beacon.js';
 import card from '../lib/endpoints/card.js';
 import catfall from '../lib/endpoints/catfall.js';
 import cathead from '../lib/endpoints/cathead.js';
-import chock from '../lib/endpoints/crosstree.js';
+import chock from '../lib/endpoints/chock.js';
 import crosstree from '../lib/endpoints/crosstree.js';
 import desk from '../lib/endpoints/desk.js';
 import embed from '../lib/endpoints/embed.js';

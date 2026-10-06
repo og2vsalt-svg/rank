@@ -31,6 +31,7 @@ import spunyarn from '../lib/endpoints/spunyarn.js';
 import shelf from './shelf.js';
 import handoff from '../lib/endpoints/handoff.js';
 import wick from '../lib/endpoints/wick.js';
+import slip from '../lib/endpoints/slip.js';
 
 const routes = {
   atelier, beacon, card, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -43,6 +44,7 @@ const routes = {
   trundle: shelf, coping: shelf, springline: shelf,
   handoff, proof: handoff, quiet: handoff,
   wick,
+  slip,
 };
 
 export default function handler(req, res) {

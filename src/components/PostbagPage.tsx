@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
+import { sbRest } from '../lib/supabase';
 
 type Drop = {
   id: string;
@@ -26,9 +27,9 @@ export default function PostbagPage() {
   const [who, setWho] = useState('all');
 
   useEffect(() => {
-    fetch('/api/outbox')
+    sbRest('outbox_drops?select=id,name,mime,size,file_url,note,sent_to,author,created_at&order=created_at.desc&limit=40')
       .then((r) => r.json())
-      .then((data) => setDrops(Array.isArray(data.drops) ? data.drops : []))
+      .then((data) => setDrops(Array.isArray(data) ? data : []))
       .catch(() => {});
   }, []);
 

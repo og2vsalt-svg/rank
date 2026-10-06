@@ -40,9 +40,9 @@ export default function OutboxPage() {
   const sizeLabel = useMemo(() => (file ? pretty(file.size) : ''), [file]);
 
   const load = () => {
-    fetch('/api/outbox')
+    sbRest('outbox_drops?select=id,name,mime,size,file_url,note,sent_to,author,created_at&order=created_at.desc&limit=40')
       .then((r) => r.json())
-      .then((data) => setDrops(Array.isArray(data.drops) ? data.drops : []))
+      .then((data) => setDrops(Array.isArray(data) ? data : []))
       .catch(() => {});
   };
 
@@ -52,9 +52,9 @@ export default function OutboxPage() {
 
   useEffect(() => {
     if (!shareId) return;
-    fetch(`/api/outbox?id=${encodeURIComponent(shareId)}`)
+    sbRest(`outbox_drops?id=eq.${encodeURIComponent(shareId)}&select=*&limit=1`)
       .then((r) => r.json())
-      .then((data) => setFocus(data.drop || null))
+      .then((data) => setFocus(Array.isArray(data) ? data[0] || null : null))
       .catch(() => {});
   }, [shareId]);
 

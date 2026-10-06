@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'deadlight', body: 'name a pane and attach one local file. the bytes land in the share table, and a pane row keeps the note. /deadlight/id is the card. large drops are warned, never refused. not a vault drawer.' },
+  { title: 'beeswax', body: 'a public index of deadlight panes already filed. open one to read the note and the file. discord unfurls /beeswax. not a vault drawer.' },
   { title: 'holdfast', body: 'pin one local file with a keeper note. the bytes land in the share table, then /holdfast/id is the card. large drops are warned, never refused. not a vault drawer.' },
   { title: 'clew', body: 'a public index of holdfast pins already in the share table. open one to read the note and the file. discord unfurls /clew. not a vault drawer.' },
   { title: 'tender', body: 'ask one question and attach one local file. the bytes land in the share table, replies stay on the tender. discord unfurls /tender. large files are warned, never refused. not a vault drawer.' },

@@ -3,7 +3,7 @@ import beacon from '../lib/endpoints/beacon.js';
 import card from '../lib/endpoints/card.js';
 import catfall from '../lib/endpoints/catfall.js';
 import cathead from '../lib/endpoints/cathead.js';
-import chock from '../lib/endpoints/chock.js';
+import chock from '../lib/endpoints/crosstree.js';
 import crosstree from '../lib/endpoints/crosstree.js';
 import desk from '../lib/endpoints/desk.js';
 import embed from '../lib/endpoints/embed.js';
@@ -54,6 +54,7 @@ import sconce from '../lib/endpoints/sconce.js';
 import watchglass from '../lib/endpoints/watchglass.js';
 import logline from '../lib/endpoints/logline.js';
 import lodestone from '../lib/endpoints/lodestone.js';
+import inkstand from '../lib/endpoints/inkstand.js';
 
 const routes = {
   atelier, beacon, card, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -105,6 +106,8 @@ const routes = {
   chipboard: logline,
   lodestone,
   mariner: lodestone,
+  inkstand,
+  waypost: inkstand,
 };
 
 export default function handler(req, res) {

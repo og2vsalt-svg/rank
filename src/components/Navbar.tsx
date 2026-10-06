@@ -5,6 +5,8 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'outbox', label: 'outbox' },
+  { to: 'postbag', label: 'postbag' },
   { to: 'windlass', label: 'windlass' },
   { to: 'inkstand', label: 'inkstand' },
   { to: 'waypost', label: 'waypost' },
@@ -18,10 +20,10 @@ const primary: NavItem[] = [
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
-  { title: 'new', items: [{ to: 'windlass', label: 'windlass' }, { to: 'inkstand', label: 'inkstand' }, { to: 'waypost', label: 'waypost' }, { to: 'lodestone', label: 'lodestone' }, { to: 'mariner', label: 'mariner' }, { to: 'logline', label: 'logline' }, { to: 'chipboard', label: 'chipboard' }, { to: 'watchglass', label: 'watchglass' }, { to: 'sandglass', label: 'sandglass' }, { to: 'fathom', label: 'fathom' }, { to: 'sconce', label: 'sconce' }, { to: 'oakdesk', label: 'oakdesk' }, { to: 'daybook', label: 'daybook' }] },
-  { title: 'hosting', items: [{ to: 'windlass', label: 'windlass' }, { to: 'waypost', label: 'waypost' }, { to: 'lodestone', label: 'lodestone' }, { to: 'logline', label: 'logline' }, { to: 'fathom', label: 'fathom' }, { to: 'oakdesk', label: 'oakdesk' }, { to: 'daybook', label: 'daybook' }, { to: 'vault', label: 'vault' }, { to: 'scuttle', label: 'scuttle' }, { to: 'forefoot', label: 'forefoot' }, { to: 'catfall', label: 'catfall' }] },
+  { title: 'new', items: [{ to: 'outbox', label: 'outbox' }, { to: 'postbag', label: 'postbag' }, { to: 'windlass', label: 'windlass' }, { to: 'inkstand', label: 'inkstand' }, { to: 'waypost', label: 'waypost' }, { to: 'lodestone', label: 'lodestone' }, { to: 'mariner', label: 'mariner' }, { to: 'logline', label: 'logline' }, { to: 'chipboard', label: 'chipboard' }, { to: 'watchglass', label: 'watchglass' }, { to: 'sandglass', label: 'sandglass' }, { to: 'fathom', label: 'fathom' }, { to: 'sconce', label: 'sconce' }, { to: 'oakdesk', label: 'oakdesk' }, { to: 'daybook', label: 'daybook' }] },
+  { title: 'hosting', items: [{ to: 'outbox', label: 'outbox' }, { to: 'windlass', label: 'windlass' }, { to: 'waypost', label: 'waypost' }, { to: 'lodestone', label: 'lodestone' }, { to: 'logline', label: 'logline' }, { to: 'fathom', label: 'fathom' }, { to: 'oakdesk', label: 'oakdesk' }, { to: 'daybook', label: 'daybook' }, { to: 'vault', label: 'vault' }, { to: 'scuttle', label: 'scuttle' }, { to: 'forefoot', label: 'forefoot' }, { to: 'catfall', label: 'catfall' }] },
   { title: 'notes', items: [{ to: 'inkstand', label: 'inkstand' }, { to: 'mariner', label: 'mariner' }, { to: 'sconce', label: 'sconce' }, { to: 'pinboard', label: 'pinboard' }, { to: 'wayleave', label: 'wayleave' }, { to: 'nightglass', label: 'nightglass' }, { to: 'quire', label: 'quire' }, { to: 'docket', label: 'docket' }, { to: 'vesper', label: 'vesper' }] },
-  { title: 'share', items: [{ to: 'waypost', label: 'waypost' }, { to: 'lodestone', label: 'lodestone' }, { to: 'chipboard', label: 'chipboard' }, { to: 'fathom', label: 'fathom' }, { to: 'coak', label: 'coak' }, { to: 'thimble', label: 'thimble' }, { to: 'grommet', label: 'grommet' }, { to: 'deadlight', label: 'deadlight' }, { to: 'tender', label: 'tender' }, { to: 'cask', label: 'cask' }] },
+  { title: 'share', items: [{ to: 'outbox', label: 'outbox' }, { to: 'postbag', label: 'postbag' }, { to: 'waypost', label: 'waypost' }, { to: 'lodestone', label: 'lodestone' }, { to: 'chipboard', label: 'chipboard' }, { to: 'fathom', label: 'fathom' }, { to: 'coak', label: 'coak' }, { to: 'thimble', label: 'thimble' }, { to: 'grommet', label: 'grommet' }, { to: 'deadlight', label: 'deadlight' }, { to: 'tender', label: 'tender' }, { to: 'cask', label: 'cask' }] },
   { title: 'tools', items: [{ to: 'hash', label: 'hash' }, { to: 'convert', label: 'convert' }, { to: 'diff', label: 'diff' }, { to: 'sounding', label: 'sounding' }, { to: 'counter', label: 'counter' }] },
 ];
 
@@ -109,7 +111,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">paste /windlass/id, /inkstand/id, /waypost/id, or /s/id in Discord for a card. older desks stay on their routes.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">paste /outbox/id, /windlass/id, /inkstand/id, /waypost/id, or /s/id in Discord for a card. older desks stay on their routes.</p>
         </div>
       </div>
     </nav>

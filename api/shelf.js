@@ -210,6 +210,21 @@ export default async function handler(req, res) {
     }
   }
 
+  if (id && (page === 'outbox' || page === 'postbag')) {
+    const r = await fetch(SUPABASE_URL + '/rest/v1/outbox_drops?id=eq.' + encodeURIComponent(id) + '&select=name,note,size,mime,file_url,sent_to,author&limit=1', {
+      headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },
+    });
+    if (r.ok) {
+      const rows = await r.json();
+      const row = rows && rows[0];
+      if (row) {
+        title = row.name + ' — outbox';
+        desc = (row.note || 'a sent file') + (row.sent_to ? ' · for ' + row.sent_to : '') + (row.author ? ' · ' + row.author : '');
+        if (String(row.mime || '').indexOf('image/') === 0 && /^https?:/i.test(row.file_url || '')) image = row.file_url;
+      }
+    }
+  }
+
   if (id && page === 'oriel') {
     const r = await fetch(SUPABASE_URL + '/rest/v1/whispers?id=eq.' + encodeURIComponent(id) + '&select=body,author,kind&limit=1', {
       headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },

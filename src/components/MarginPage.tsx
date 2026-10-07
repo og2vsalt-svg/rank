@@ -1,85 +1,72 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
+import { sbRest } from '../lib/supabase';
+import { useRouter } from './Router';
 
-type Line = { id: string; share_id: string; body: string; author?: string | null; created_at?: string };
+type Note = { id: string; share_id: string; author: string | null; body: string; created_at: string };
 
 export default function MarginPage() {
-  const [shareId, setShareId] = useState('');
-  const [body, setBody] = useState('');
+  const { shareId } = useRouter();
+  const [target, setTarget] = useState(shareId || '');
   const [author, setAuthor] = useState('');
-  const [lines, setLines] = useState<Line[]>([]);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
-  const [card, setCard] = useState('');
+  const [body, setBody] = useState('');
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [err, setErr] = useState('');
+  const [link, setLink] = useState('');
 
   const load = (id: string) => {
-    if (!id.trim()) return;
-    fetch(`/api/desk?desk=margins&shareId=${encodeURIComponent(id.trim())}`)
+    if (!id) { setNotes([]); return; }
+    sbRest(`margin_notes?share_id=eq.${encodeURIComponent(id)}&select=*&order=created_at.asc&limit=40`)
       .then((r) => r.json())
-      .then((d) => setLines(Array.isArray(d?.margins) ? d.margins : []))
-      .catch(() => setLines([]));
+      .then((data) => setNotes(Array.isArray(data) ? data : []))
+      .catch(() => setNotes([]));
   };
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const from = params.get('share') || '';
-    if (from) {
-      setShareId(from);
-      load(from);
-    }
-  }, []);
+  useEffect(() => { if (shareId) { setTarget(shareId); load(shareId); } }, [shareId]);
 
   const send = async () => {
-    if (!shareId.trim() || !body.trim()) return;
-    setBusy(true);
-    setError('');
-    const row = await fetch('/api/desk?desk=margins', {
+    if (!target.trim() || !body.trim()) return;
+    setErr('');
+    const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    const res = await sbRest('margin_notes', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ shareId: shareId.trim(), body: body.trim(), author: author.trim() || 'margin' }),
-    }).then((r) => r.json()).catch(() => ({}));
-    setBusy(false);
-    if (!row?.ok) {
-      setError(row?.error || 'the line did not stick');
-      return;
-    }
+      body: JSON.stringify({ id, share_id: target.trim(), author: author || null, body: body.trim().slice(0, 500) }),
+    });
+    if (!res.ok) { setErr((await res.text()).slice(0, 180)); return; }
+    setLink(`${window.location.origin}/margin/${id}`);
     setBody('');
-    setCard(`${location.origin}/s/${shareId.trim()}`);
-    load(shareId.trim());
+    load(target.trim());
   };
 
   return (
-    <div className="mesh min-h-screen text-[#1d1d1f]">
+    <div className="min-h-screen bg-[#050506] text-[#f5f5f7]">
       <Navbar />
       <main className="mx-auto max-w-3xl px-5 pb-24 pt-28">
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}>
-          <p className="text-[13px] font-medium tracking-wide text-[#6e6e73]">notes</p>
-          <h1 className="mt-2 text-[40px] font-semibold tracking-tight">margin</h1>
-          <p className="mt-3 max-w-xl text-[17px] leading-relaxed text-[#6e6e73]">
-            a line beside a file that already landed. nothing new is uploaded. the note lives in the margin table, not in a drawer.
-          </p>
-        </motion.div>
-        <motion.section initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08, duration: 0.5, ease: [0.22, 1, 0.36, 1] }} className="mt-8 rounded-[28px] bg-white/80 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.06)] ring-1 ring-black/5">
-          <input value={shareId} onChange={(e) => setShareId(e.target.value)} onBlur={() => load(shareId)} className="w-full rounded-2xl bg-[#f5f5f7] px-4 py-3 text-[15px] outline-none ring-1 ring-transparent transition duration-300 focus:ring-[#0A84FF]" placeholder="share id, from /s/" />
-          <textarea value={body} onChange={(e) => setBody(e.target.value)} rows={3} className="mt-3 w-full resize-none rounded-2xl bg-[#f5f5f7] px-4 py-3 text-[15px] outline-none ring-1 ring-transparent transition duration-300 focus:ring-[#0A84FF]" placeholder="the line in the margin" />
-          <input value={author} onChange={(e) => setAuthor(e.target.value)} className="mt-3 w-full rounded-2xl bg-[#f5f5f7] px-4 py-3 text-[15px] outline-none ring-1 ring-transparent transition duration-300 focus:ring-[#0A84FF]" placeholder="your name, optional" />
-          {error && <p className="mt-3 text-[13px] text-[#ff3b30]">{error}</p>}
-          <button type="button" disabled={!shareId.trim() || !body.trim() || busy} onClick={send} className="mt-5 rounded-full bg-[#1d1d1f] px-5 py-2.5 text-[15px] font-medium text-white transition duration-300 enabled:hover:scale-[1.02] disabled:opacity-40">
-            {busy ? 'writing…' : 'leave the line'}
-          </button>
-          {card && <a className="mt-4 block text-[14px] text-[#0A84FF]" href={card}>{card}</a>}
-        </motion.section>
-        {lines.length > 0 && (
-          <section className="mt-8 space-y-3">
-            {lines.map((line) => (
-              <article key={line.id} className="rounded-[22px] bg-white/70 px-5 py-4 ring-1 ring-black/5">
-                <p className="text-[15px] leading-relaxed">{line.body}</p>
-                <p className="mt-1 text-[13px] text-[#6e6e73]">{line.author || 'unsigned'}{line.created_at ? ` · ${new Date(line.created_at).toLocaleString()}` : ''}</p>
-              </article>
-            ))}
-          </section>
-        )}
+        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[13px] tracking-[0.16em] uppercase text-white/40">beside the file</motion.p>
+        <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-2 text-4xl font-semibold tracking-tight">Margin</motion.h1>
+        <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-white/60">Notes on a share that already exists. No new file, no size gate. Paste a share id, write in the margin, and /margin/id unfurls in Discord without leaking the file itself.</p>
+        <section className="mt-8 rounded-[28px] border border-white/10 bg-white/[0.03] p-5">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <input value={target} onChange={(e) => setTarget(e.target.value)} placeholder="share id" className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none focus:border-[#0a84ff]" />
+            <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="your name" className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none focus:border-[#0a84ff]" />
+          </div>
+          <textarea value={body} onChange={(e) => setBody(e.target.value)} placeholder="a line in the margin" className="mt-3 min-h-28 w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none focus:border-[#0a84ff]" />
+          <div className="mt-3 flex gap-2">
+            <button onClick={() => load(target.trim())} className="rounded-full border border-white/10 px-4 py-2 text-sm text-white/70">load notes</button>
+            <button onClick={send} className="rounded-full bg-white px-5 py-2 text-sm font-medium text-black transition-transform duration-200 hover:scale-[1.02]">leave a note</button>
+          </div>
+          {err && <p className="mt-3 text-sm text-red-300">{err}</p>}
+          {link && <p className="mt-3 text-sm"><a className="text-[#0a84ff]" href={link}>{link}</a></p>}
+        </section>
+        <ul className="mt-8 space-y-3">
+          {notes.map((row, i) => (
+            <motion.li key={row.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }} className="rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-3">
+              <p className="text-[15px] leading-relaxed">{row.body}</p>
+              <p className="mt-1 text-xs text-white/40">{row.author || 'unsigned'} · {row.share_id}</p>
+            </motion.li>
+          ))}
+        </ul>
       </main>
     </div>
   );

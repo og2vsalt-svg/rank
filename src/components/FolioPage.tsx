@@ -1,118 +1,137 @@
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { useMemo, useState } from 'react';
 import Navbar from './Navbar';
 import { publishLocalFile } from '../lib/cloudShare';
+import { sbRest } from '../lib/supabase';
+import { useRouter } from './Router';
 
-function pretty(bytes: number) {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+type Folio = {
+  id: string;
+  title: string;
+  author: string | null;
+  note: string | null;
+  file_name: string;
+  mime: string | null;
+  size: number;
+  file_url: string;
+  excerpt: string | null;
+  created_at: string;
+};
+
+function pretty(n: number) {
+  if (n < 1024) return `${n} B`;
+  if (n < 1024 * 1024) return `${Math.round(n / 1024)} KB`;
+  if (n < 1024 * 1024 * 1024) return `${(n / (1024 * 1024)).toFixed(1)} MB`;
+  return `${(n / (1024 * 1024 * 1024)).toFixed(2)} GB`;
 }
 
 export default function FolioPage() {
+  const { shareId, navigate } = useRouter();
   const [file, setFile] = useState<File | null>(null);
-  const [caption, setCaption] = useState('');
+  const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
-  const [status, setStatus] = useState('a local file lands in the share table. no size cap.');
+  const [note, setNote] = useState('');
   const [warn, setWarn] = useState('');
-  const [card, setCard] = useState('');
   const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState('');
+  const [link, setLink] = useState('');
+  const [open, setOpen] = useState<Folio | null>(null);
+  const [recent, setRecent] = useState<Folio[]>([]);
 
-  const tone = useMemo(() => (warn ? 'text-amber-200/90' : 'text-white/45'), [warn]);
+  const load = () => {
+    sbRest('folios?select=*&order=created_at.desc&limit=8')
+      .then((r) => r.json())
+      .then((data) => setRecent(Array.isArray(data) ? data : []))
+      .catch(() => {});
+  };
 
-  function pick(next: File | null) {
-    setFile(next);
-    setCard('');
-    if (!next) {
-      setWarn('');
+  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    if (!shareId) return;
+    sbRest(`folios?id=eq.${encodeURIComponent(shareId)}&select=*&limit=1`)
+      .then((r) => r.json())
+      .then((data) => setOpen(Array.isArray(data) ? data[0] || null : null))
+      .catch(() => setOpen(null));
+  }, [shareId]);
+
+  const send = async () => {
+    if (!file) return;
+    setBusy(true);
+    setErr('');
+    const published = await publishLocalFile(file, { caption: note || title, author, cardTitle: title || file.name });
+    if (!published.ok || !published.url) {
+      setBusy(false);
+      setErr(published.error || 'could not store the file');
       return;
     }
-    if (next.size > 8 * 1024 * 1024) {
-      setWarn('this one is heavy. the upload can feel slow, especially on a phone. it is still accepted.');
-    } else setWarn('');
-  }
-
-  async function fileIt() {
-    if (!file || busy) return;
-    setBusy(true);
-    setStatus('writing the row…');
-    try {
-      const body = new FormData();
-      body.append('file', file, file.name);
-      body.append('author', author.trim() || 'folio');
-      body.append('caption', caption.trim() || file.name);
-      body.append('cardTitle', file.name);
-      const r = await fetch('/api/share', { method: 'POST', body });
-      const data = await r.json().catch(() => ({}));
-      if (r.ok && data.id) {
-        setCard(`${window.location.origin}/s/${data.id}`);
-        setStatus(data.warn || 'filed. paste the card in Discord.');
-        return;
-      }
-      const sent = await publishLocalFile(file, {
-        author: author.trim() || 'folio',
-        caption: caption.trim() || file.name,
-        cardTitle: file.name,
-      });
-      if (!sent.ok || !sent.id) throw new Error(sent.error || data.error || 'the share table did not take the file');
-      setCard(sent.embed || `${window.location.origin}/s/${sent.id}`);
-      setStatus(sent.warn || 'filed. paste the card in Discord.');
-      if (sent.warn) setWarn(sent.warn);
-    } catch (err) {
-      setStatus(err instanceof Error ? err.message : 'could not file that drop');
-    } finally {
-      setBusy(false);
+    let excerpt = '';
+    if ((file.type || '').startsWith('text/') || /\.(txt|md|csv)$/i.test(file.name)) {
+      excerpt = (await file.slice(0, 480).text()).replace(/\s+/g, ' ').slice(0, 220);
     }
-  }
+    const id = published.id || Date.now().toString(36);
+    const row = await sbRest('folios', {
+      method: 'POST',
+      body: JSON.stringify({
+        id,
+        title: title || file.name,
+        author: author || null,
+        note: note || null,
+        file_name: file.name,
+        mime: file.type || 'application/octet-stream',
+        size: file.size,
+        file_url: published.url,
+        share_id: published.id || null,
+        excerpt: excerpt || null,
+      }),
+    });
+    setBusy(false);
+    if (!row.ok) {
+      setErr((await row.text()).slice(0, 180));
+      return;
+    }
+    setLink(`${window.location.origin}/folio/${id}`);
+    setFile(null);
+    setTitle('');
+    setNote('');
+    load();
+  };
 
   return (
-    <div className="mesh min-h-screen">
+    <div className="min-h-screen bg-[#050506] text-[#f5f5f7]">
       <Navbar />
-      <main className="max-w-3xl mx-auto px-5 pt-16 pb-24">
-        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[12px] tracking-[0.18em] uppercase text-white/40">
-          folio
-        </motion.p>
-        <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="mt-2 text-[40px] leading-none font-semibold tracking-tight">
-          File it once.
-        </motion.h1>
-        <p className="mt-3 max-w-xl text-[15px] text-white/60">
-          The vault stays on this device. Folio is the public desk: one local file, one row in the share table, one Discord card.
-        </p>
-
-        <motion.label
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="glass mt-8 block rounded-3xl p-8 cursor-pointer"
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={(e) => {
-            e.preventDefault();
-            pick(e.dataTransfer.files?.[0] || null);
-          }}
-        >
-          <input className="sr-only" type="file" onChange={(e) => pick(e.target.files?.[0] || null)} />
-          <div className="text-[17px] font-medium">{file ? file.name : 'Drop a file, or click to choose'}</div>
-          <div className="mt-1 text-[13px] text-white/45">{file ? pretty(file.size) : 'images, audio, archives, anything the browser can read'}</div>
-          {warn && <p className={`mt-3 text-[13px] ${tone}`}>{warn}</p>}
-        </motion.label>
-
-        <div className="mt-4 grid sm:grid-cols-2 gap-3">
-          <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="name on the card" className="glass rounded-2xl px-4 py-3 text-[14px] bg-transparent outline-none" />
-          <input value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="short caption" className="glass rounded-2xl px-4 py-3 text-[14px] bg-transparent outline-none" />
-        </div>
-
-        <div className="mt-4 flex items-center gap-3">
-          <button onClick={fileIt} disabled={!file || busy} className="rounded-full bg-white text-black px-5 py-2.5 text-[14px] font-medium disabled:opacity-40">
-            {busy ? 'Filing…' : 'File to the share table'}
-          </button>
-          <span className="text-[13px] text-white/50">{status}</span>
-        </div>
-
-        {card && (
-          <motion.a initial={{ opacity: 0 }} animate={{ opacity: 1 }} href={card} className="glass mt-6 block rounded-2xl px-4 py-3 text-[14px] text-[#64b5ff]">
-            {card}
-          </motion.a>
+      <main className="mx-auto max-w-3xl px-5 pb-24 pt-28">
+        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[13px] tracking-[0.16em] uppercase text-white/40">reading copy</motion.p>
+        <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="mt-2 text-4xl font-semibold tracking-tight">Folio</motion.h1>
+        <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-white/60">A reading copy, not a drawer. The local file goes to storage, the title and excerpt land in the folios table, and /folio/id unfurls in Discord. Large files get a slowness note, never a refusal.</p>
+        {open && (
+          <motion.article initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} className="mt-8 rounded-[28px] border border-white/10 bg-white/[0.04] p-6 shadow-[0_24px_80px_rgba(0,0,0,0.35)]">
+            <p className="text-[12px] uppercase tracking-[0.14em] text-white/40">{open.author || 'unsigned'}</p>
+            <h2 className="mt-1 text-3xl font-semibold tracking-tight">{open.title}</h2>
+            {open.excerpt && <p className="mt-4 text-[17px] leading-relaxed text-white/80">{open.excerpt}</p>}
+            {open.note && <p className="mt-3 text-sm text-white/50">{open.note}</p>}
+            <a href={open.file_url} className="mt-5 inline-flex rounded-full bg-[#0a84ff] px-4 py-2 text-sm font-medium text-white transition-transform duration-200 hover:scale-[1.02]">{open.file_name} · {pretty(Number(open.size) || 0)}</a>
+          </motion.article>
         )}
+        <section className="mt-8 rounded-[28px] border border-white/10 bg-white/[0.03] p-5">
+          <label className="block text-sm text-white/70">file<input type="file" onChange={(e) => { const next = e.target.files?.[0] || null; setFile(next); setWarn(next && next.size > 25 * 1024 * 1024 ? 'large folio. the tab may pause while it sends. nothing is refused.' : ''); }} className="mt-2 block w-full text-sm file:mr-3 file:rounded-full file:border-0 file:bg-white/10 file:px-4 file:py-2 file:text-white" /></label>
+          {warn && <p className="mt-2 text-sm text-amber-200/80">{warn}</p>}
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="title" className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none focus:border-[#0a84ff]" />
+            <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="author" className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none focus:border-[#0a84ff]" />
+            <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="colophon note" className="sm:col-span-2 rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none focus:border-[#0a84ff]" />
+          </div>
+          <button disabled={!file || busy} onClick={send} className="mt-4 rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition-transform duration-200 hover:scale-[1.02] disabled:opacity-40">{busy ? 'setting type…' : 'set the folio'}</button>
+          {err && <p className="mt-3 text-sm text-red-300">{err}</p>}
+          {link && <p className="mt-3 text-sm text-white/70">card link <a className="text-[#0a84ff]" href={link}>{link}</a></p>}
+        </section>
+        <section className="mt-10">
+          <h2 className="text-lg font-medium">recent folios</h2>
+          <ul className="mt-3 space-y-2">
+            {recent.map((row) => (
+              <li key={row.id}><button onClick={() => navigate('folio', row.id)} className="flex w-full items-center justify-between rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-3 text-left transition hover:bg-white/[0.06]"><span className="text-sm font-medium">{row.title}</span><span className="text-xs text-white/40">{pretty(Number(row.size) || 0)}</span></button></li>
+            ))}
+          </ul>
+        </section>
       </main>
     </div>
   );

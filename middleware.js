@@ -1,178 +1,19 @@
+const BOT = /discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|applebot|iframely|unfurl|pinterest|embedly|skype|slack-imgproxy|preview|bot|crawler|spider/i;
+
 export const config = {
-  matcher: ['/((?!api/|assets/|src/|favicon.ico|og.png|.*\\..*).*)'],
-};
-
-const BOT = /discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|skype|redditbot|applebot|iframely|unfurl|pinterest|notion|embedly|slack-imgproxy|discordbot|Discordbot/i;
-const ID_PREFIX = new Set(['inkstand', 'waypost', 'fathom', 'sconce', 'oakdesk', 'daybook', 'slip', 'ribbon', 'loom', 'scuttle', 'wale', 'flemish', 'knee', 'transom', 'belaying', 'loft', 'quay', 's', 'f', 'x', 'd', 'go', 'open', 'link', 'card', 'embed', 'y', 'q', 'l', 'n', 'k', 'w', 'u', 'r', 'b', 'g', 'c', 'm', 'o', 't', 'i', 'a', 'e', 'z', 'h', 'v', 'j', 'p', 'room', 'parcel', 'spirket', 'catfall', 'washboard', 'beakhead', 'partners', 'waybill', 'fid', 'pelorus', 'cuddy', 'hawse', 'futtock', 'stringer', 'samson', 'gudgeon', 'pintle', 'sternpost', 'breasthook', 'capstan', 'treenail', 'fairlead', 'hounds', 'seizing', 'deadeye', 'sounding', 'marline', 'orlop', 'cleat', 'passage', 'lantern', 'forepeak', 'lazarette', 'skylight', 'limber', 'bitt', 'taffrail', 'counter', 'scupper', 'rider', 'gunwale', 'bumkin', 'apostle', 'tumblehome', 'sheerstrake', 'washstrake', 'waterway', 'bulwark', 'coaming', 'carvel', 'bearding', 'rowlock', 'margin', 'thwart', 'kevel', 'stemson', 'lodging', 'oakum', 'painter', 'rabbet', 'floors', 'chestree', 'kedge', 'binnacle', 'davits', 'hawser', 'gammon', 'cathead', 'wharf', 'lashing', 'blotter', 'billboard', 'companion', 'bowsprit', 'chainplate', 'bollard', 'unfurl', 'forefoot', 'swifter', 'chock', 'mizzen', 'kelson', 'garboard', 'channels', 'selvage', 'vesper', 'luff', 'ketch', 'beacon', 'quarter', 'bilge', 'atelier', 'ledger', 'fiferail', 'gantline', 'tiller', 'crosstree', 'jackstay', 'quire', 'docket', 'vitrine', 'pressmark', 'shelf', 'board', 'receipt', 'satchel', 'keepsake', 'lintel', 'oriel', 'sill', 'ashlar', 'tympanum', 'nosing', 'trundle', 'coping', 'spunyarn', 'eyelet', 'plinth', 'corbel', 'springline', 'handoff', 'proof', 'quiet', 'wick', 'cask', 'stave', 'tender', 'gangway', 'holdfast', 'clew', 'deadlight', 'beeswax', 'wayleave', 'courier', 'folio', 'quoin', 'rebate', 'newel', 'latch', 'hasp', 'grommet', 'ring', 'splice', 'serving', 'vellum', 'vellumboard', 'thimble', 'thimbles', 'coak', 'sheaveboard', 'larder', 'pinboard', 'watchglass', 'sandglass', 'logline', 'chipboard', 'lodestone', 'mariner', 'windlass', 'outbox', 'postbag', 'hamper', 'marginalia', 'billet', 'ack', 'porch', 'hearth', 'apron', 'mantel']);
-
-const DEDICATED = {
-  inkstand: '/api/inkstand',
-  waypost: '/api/inkstand',
-  fathom: '/api/fathom',
-  sconce: '/api/sconce',
-  wayleave: '/api/wayleave',
-  ribbon: '/api/ribbon',
-  loom: '/api/ribbon',
-  spunyarn: '/api/spunyarn',
-  eyelet: '/api/spunyarn',
-  plinth: '/api/shelf',
-  corbel: '/api/shelf',
-  ashlar: '/api/shelf',
-  tympanum: '/api/shelf',
-  nosing: '/api/shelf',
-  trundle: '/api/shelf',
-  coping: '/api/shelf',
-  springline: '/api/shelf',
-  sill: '/api/shelf',
-  keepsake: '/api/shelf',
-  lintel: '/api/shelf',
-  oriel: '/api/shelf',
-  vitrine: '/api/shelf',
-  pressmark: '/api/shelf',
-  shelf: '/api/shelf',
-  board: '/api/shelf',
-  receipt: '/api/shelf',
-  satchel: '/api/shelf',
-  scuttle: '/api/scuttle',
-  atelier: '/api/atelier',
-  fiferail: '/api/embed',
-  gantline: '/api/embed',
-  tiller: '/api/embed',
-  crosstree: '/api/crosstree',
-  jackstay: '/api/jackstay',
-  hawsepipe: '/api/embed',
-  stemhead: '/api/embed',
-  counterrail: '/api/embed',
-  quayfile: '/api/quay',
-  ledger: '/api/atelier',
-  nightglass: '/api/nightglass',
-  quire: '/api/quire',
-  docket: '/api/docket',
-  pintle: '/api/embed',
-  rowlock: '/api/embed',
-  gunwale: '/api/embed',
-  carvel: '/api/embed',
-  bearding: '/api/embed',
-  thwart: '/api/embed',
-  kevel: '/api/embed',
-  stemson: '/api/embed',
-  lodging: '/api/embed',
-  oakum: '/api/embed',
-  painter: '/api/embed',
-  rabbet: '/api/embed',
-  floors: '/api/embed',
-  chestree: '/api/embed',
-  davits: '/api/embed',
-  blotter: '/api/wall',
-  billboard: '/api/wall',
-  companion: '/api/wall',
-  hawser: '/api/embed',
-  wale: '/api/embed',
-  flemish: '/api/embed',
-  wharf: '/api/tide',
-  lashing: '/api/tide',
-  gammon: '/api/card',
-  cathead: '/api/card',
-  catfall: '/api/catfall',
-  spirket: '/api/catfall',
-  bowsprit: '/api/stay',
-  chainplate: '/api/stay',
-  s: '/api/card',
-  f: '/api/card',
-  open: '/api/card',
-  go: '/api/card',
-  link: '/api/card',
-  card: '/api/card',
-  bollard: '/api/embed',
-  unfurl: '/api/embed',
-  forefoot: '/api/forefoot',
-  swifter: '/api/forefoot',
-  chock: '/api/chock',
-  mizzen: '/api/chock',
-  kelson: '/api/chock',
-  garboard: '/api/desk',
-  channels: '/api/desk',
-  selvage: '/api/selvage',
-  vesper: '/api/vesper',
-  luff: '/api/signal',
-  ketch: '/api/signal',
-  beacon: '/api/signal',
-  quarter: '/api/quarter',
-  bilge: '/api/quarter',
-  handoff: '/api/handoff',
-  proof: '/api/handoff',
-  quiet: '/api/handoff',
-  wick: '/api/wick',
-  slip: '/api/slip',
-  cask: '/api/cask',
-  stave: '/api/cask',
-  tender: '/api/tender',
-  gangway: '/api/tender',
-  holdfast: '/api/holdfast',
-  clew: '/api/holdfast',
-  deadlight: '/api/deadlight',
-  beeswax: '/api/deadlight',
-  quoin: '/api/quoin',
-  rebate: '/api/quoin',
-  newel: '/api/newel',
-  latch: '/api/latch',
-  hasp: '/api/latch',
-  grommet: '/api/grommet',
-  ring: '/api/grommet',
-  splice: '/api/splice',
-  serving: '/api/splice',
-  vellum: '/api/vellum',
-  vellumboard: '/api/vellum',
-  thimble: '/api/thimble',
-  thimbles: '/api/thimble',
-  coak: '/api/sheave',
-  sheaveboard: '/api/sheave',
-  leechoth: '/api/leecloth',
-  crossjack: '/api/leecloth',
-  oakdesk: '/api/oakdesk',
-  daybook: '/api/daybook',
-  larder: '/api/embed',
-  pinboard: '/api/embed',
-  watchglass: '/api/watchglass',
-  sandglass: '/api/watchglass',
-  logline: '/api/logline',
-  chipboard: '/api/logline',
-  lodestone: '/api/lodestone',
-  mariner: '/api/lodestone',
-  windlass: '/api/windlass',
-  outbox: '/api/outbox',
-  postbag: '/api/outbox',
-  hamper: '/api/hamper',
-  marginalia: '/api/hamper',
-  billet: '/api/billet',
-  ack: '/api/billet',
-  porch: '/api/porch',
-  hearth: '/api/hearth',
-  apron: '/api/apron',
-  mantel: '/api/mantel',
-  flyleaf: '/api/flyleaf',
-  endpaper: '/api/endpaper',
+  matcher: ['/((?!api/|assets/|og\.png|favicon|robots).*)'],
 };
 
 export default function middleware(request) {
   const ua = request.headers.get('user-agent') || '';
   if (!BOT.test(ua)) return;
   const url = new URL(request.url);
+  if (url.searchParams.get('embed') === '0') return;
   const parts = url.pathname.split('/').filter(Boolean);
-  const head = parts[0] || '';
-  if (DEDICATED[head]) {
-    const dest = new URL(DEDICATED[head], request.url);
-    dest.searchParams.set('page', head);
-    if (parts[1]) dest.searchParams.set('id', decodeURIComponent(parts[1]));
-    return Response.redirect(dest.toString(), 307);
-  }
-  const dest = new URL('/api/embed', request.url);
-  if (!parts.length) dest.searchParams.set('page', 'home');
-  else if (parts[0] === 'parcel' && parts[1]) dest.searchParams.set('parcel', decodeURIComponent(parts[1]));
-  else if (parts[0] === 'room' && parts[1]) dest.searchParams.set('room', decodeURIComponent(parts[1]));
-  else if (parts.length >= 2 && (ID_PREFIX.has(parts[0]) || /^[a-z][a-z0-9-]{1,40}$/.test(parts[0]))) {
-    dest.searchParams.set('page', parts[0]);
-    dest.searchParams.set('id', decodeURIComponent(parts[1]));
-  } else dest.searchParams.set('page', decodeURIComponent(parts[0] || 'home').toLowerCase());
-  return Response.redirect(dest.toString(), 307);
+  if (!parts.length) return;
+  const dest = new URL('/api/gate', request.url);
+  dest.searchParams.set('name', 'cardfront');
+  dest.searchParams.set('page', parts[0].toLowerCase());
+  if (parts[1]) dest.searchParams.set('id', decodeURIComponent(parts[1]));
+  return fetch(dest.toString(), { headers: { 'user-agent': ua, 'x-forwarded-host': url.host, 'x-forwarded-proto': url.protocol.replace(':', '') } });
 }

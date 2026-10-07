@@ -71,6 +71,8 @@ import parcel from '../lib/endpoints/parcel.js';
 import dossier from '../lib/endpoints/dossier.js';
 import pressmark from '../lib/endpoints/pressmark.js';
 import colophon from '../lib/endpoints/colophon.js';
+import seal from '../lib/endpoints/seal.js';
+import handover from '../lib/endpoints/handover.js';
 
 const routes = {
   atelier, beacon, card, cardfront, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -147,6 +149,8 @@ const routes = {
   folio: cardfront,
   swatch: cardfront,
   margin: cardfront,
+  seal,
+  handover,
 };
 
 export default function handler(req, res) {

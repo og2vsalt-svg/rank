@@ -75,6 +75,8 @@ import seal from '../lib/endpoints/seal.js';
 import handover from '../lib/endpoints/handover.js';
 import transom from '../lib/endpoints/transom.js';
 import ledger from '../lib/endpoints/ledger.js';
+import knocker from '../lib/endpoints/knocker.js';
+import commonplace from '../lib/endpoints/commonplace.js';
 
 const routes = {
   atelier, beacon, card, cardfront, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -156,6 +158,8 @@ const routes = {
   transom,
   casement: transom,
   ledger,
+  knocker,
+  commonplace,
 };
 
 export default function handler(req, res) {

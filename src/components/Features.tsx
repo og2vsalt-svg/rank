@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'knocker', href: '/knocker', body: 'leave one local file at the door with a calling note. bytes land in storage, the row lands in knockers. /knocker/id is the discord card. large drops are warned, never refused. not a vault drawer.' },
+  { title: 'commonplace', href: '/commonplace', body: 'keep a sentence in the commonplace table. no file. /commonplace/id unfurls the line in discord. older desks stay.' },
   { title: 'transom', href: '/transom', body: 'open a receiving window. other people drop a local file into it. bytes land in storage, the slip lands in the database. /transom/id is the discord card. large drops are warned, never refused. not a vault drawer.' },
   { title: 'casement', href: '/casement', body: 'the index of open windows. no file lives on this page. paste /casement in discord for the card. older desks stay.' },
   { title: 'ledger', href: '/ledger/house', body: 'a running book of lines, with an optional amount. no file. /ledger/house unfurls the latest line in discord. not a file vault.' },

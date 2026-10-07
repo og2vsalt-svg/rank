@@ -1,74 +1,167 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
+import { useRouter } from './Router';
 import { publishLocalFile, shareUrls } from '../lib/cloudShare';
-import { prettySize } from '../lib/db';
+import { sbRest } from '../lib/supabase';
+
+type Row = {
+  id: string;
+  title: string;
+  note: string | null;
+  author: string | null;
+  file_name: string;
+  mime: string | null;
+  size: number;
+  file_url: string;
+  accent: string | null;
+  created_at: string;
+};
+
+function pretty(n: number) {
+  if (n < 1024) return `${n} B`;
+  if (n < 1024 * 1024) return `${Math.round(n / 1024)} KB`;
+  if (n < 1024 * 1024 * 1024) return `${(n / (1024 * 1024)).toFixed(1)} MB`;
+  return `${(n / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+}
 
 export default function KeepsakePage() {
+  const { shareId } = useRouter();
   const [file, setFile] = useState<File | null>(null);
-  const [caption, setCaption] = useState('');
+  const [title, setTitle] = useState('');
+  const [note, setNote] = useState('');
   const [author, setAuthor] = useState('');
+  const [accent, setAccent] = useState('#0A84FF');
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
   const [warn, setWarn] = useState('');
-  const [links, setLinks] = useState<{ embed: string; file: string } | null>(null);
-  const [copied, setCopied] = useState(false);
+  const [link, setLink] = useState('');
+  const [row, setRow] = useState<Row | null>(null);
+  const [recent, setRecent] = useState<Row[]>([]);
 
-  async function send(e: React.FormEvent) {
-    e.preventDefault();
+  const slow = useMemo(() => (file && file.size > 40 * 1024 * 1024 ? 'this drop is large. the tab may feel slow while it sends. nothing is refused for size.' : ''), [file]);
+
+  const loadRecent = () => {
+    sbRest('keepsakes?select=*&order=created_at.desc&limit=8')
+      .then((r) => r.json())
+      .then((data) => setRecent(Array.isArray(data) ? data : []))
+      .catch(() => setRecent([]));
+  };
+
+  useEffect(() => { loadRecent(); }, []);
+
+  useEffect(() => {
+    if (!shareId) return;
+    sbRest(`keepsakes?id=eq.${encodeURIComponent(shareId)}&select=*&limit=1`)
+      .then((r) => r.json())
+      .then((data) => setRow(Array.isArray(data) ? data[0] || null : null))
+      .catch(() => setRow(null));
+  }, [shareId]);
+
+  const fileIt = async () => {
     if (!file) return;
     setBusy(true);
     setErr('');
-    setLinks(null);
-    const slow = file.size > 12 * 1024 * 1024 ? 'this one is heavy. the tab may feel slow while it sends. nothing is refused.' : '';
-    setWarn(slow);
-    const res = await publishLocalFile(file, { caption, author, cardTitle: file.name });
-    setBusy(false);
-    if (!res.ok || !res.id) {
-      setErr(res.error || 'the share table did not take the file');
+    setWarn('');
+    const published = await publishLocalFile(file, {
+      caption: note,
+      author,
+      color: accent,
+      cardTitle: title || file.name,
+    });
+    if (!published.ok || !published.id) {
+      setBusy(false);
+      setErr(published.error || 'could not file that');
       return;
     }
-    const urls = shareUrls(res.id);
-    setLinks({ embed: urls.embed, file: res.url || urls.file });
-    if (res.warn) setWarn(res.warn);
-  }
+    const res = await sbRest('keepsakes', {
+      method: 'POST',
+      headers: { Prefer: 'resolution=merge-duplicates,return=representation' },
+      body: JSON.stringify({
+        id: published.id,
+        title: title || file.name,
+        note: note || null,
+        author: author || null,
+        file_name: file.name,
+        mime: file.type || 'application/octet-stream',
+        size: file.size,
+        file_url: published.url,
+        accent,
+      }),
+    });
+    setBusy(false);
+    if (!res.ok) {
+      setErr((await res.text()).slice(0, 180));
+      return;
+    }
+    const saved = await res.json();
+    const next = Array.isArray(saved) ? saved[0] : null;
+    setRow(next);
+    const urls = shareUrls(published.id);
+    setLink(`${location.origin}/keepsake/${published.id}`);
+    setWarn(published.warn || slow || '');
+    if (next) setRecent((prev) => [next, ...prev.filter((item) => item.id !== next.id)].slice(0, 8));
+    history.pushState(null, '', `/keepsake/${published.id}`);
+    void urls;
+  };
 
-  async function copy() {
-    if (!links) return;
-    await navigator.clipboard.writeText(links.embed);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1400);
-  }
+  const shown = row;
+  const image = shown?.mime?.startsWith('image/') ? shown.file_url : '';
 
   return (
-    <div className="mesh min-h-screen">
+    <div className="min-h-screen bg-[#050506] text-[#f5f5f7]">
       <Navbar />
-      <main className="mx-auto max-w-3xl px-5 pt-28 pb-24">
-        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-xs tracking-[0.22em] uppercase text-[#30d158]">keepsake</motion.p>
-        <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="mt-3 text-4xl font-semibold tracking-tight">hand a local file to the table</motion.h1>
-        <p className="mt-3 text-neutral-400 max-w-xl">The file leaves this computer and lands in the shared shelf table. There is no size gate. A large drop only warns that the send may feel slow. Paste the card link in Discord.</p>
-        <form onSubmit={send} className="mt-8 glass rounded-[28px] p-5">
-          <label className="block rounded-2xl border border-dashed border-white/15 bg-black/30 px-4 py-8 text-center cursor-pointer hover:-translate-y-0.5">
+      <main className="mx-auto max-w-3xl px-5 pb-24 pt-28">
+        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[13px] tracking-[0.16em] uppercase text-white/40">filed copy</motion.p>
+        <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04, duration: 0.45, ease: [0.22, 1, 0.36, 1] }} className="mt-2 text-4xl font-semibold tracking-tight">Keepsake</motion.h1>
+        <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-white/60">Not the vault. A local file is sent to storage, then a row is written so the link can be opened later. Paste /keepsake/id in Discord for a card. Older desks stay where they were.</p>
+
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }} className="mt-8 rounded-3xl border border-white/10 bg-white/[0.04] p-5">
+          <label className="flex cursor-pointer flex-col items-center rounded-2xl border border-dashed border-white/15 bg-black/20 px-4 py-10 text-center transition duration-200 hover:border-[#0a84ff]/60">
+            <span className="text-sm text-white/80">{file ? file.name : 'choose a file from this device'}</span>
+            <span className="mt-1 text-xs text-white/40">{file ? pretty(file.size) : 'no size cap'}</span>
             <input type="file" className="hidden" onChange={(e) => setFile(e.target.files?.[0] || null)} />
-            <span className="block text-sm">{file ? file.name : 'Choose a file from this computer'}</span>
-            <span className="block text-xs text-neutral-500 mt-1">{file ? prettySize(file.size) : 'any type'}</span>
           </label>
-          <input value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="a line for the card" className="mt-4 w-full rounded-2xl bg-black/40 border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#30d158]/50" />
-          <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="from" className="mt-3 w-full rounded-2xl bg-black/40 border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#30d158]/50" />
-          {warn && <p className="mt-3 text-sm text-amber-200/90">{warn}</p>}
-          {err && <p className="mt-3 text-sm text-rose-300">{err}</p>}
-          <button disabled={busy || !file} className="mt-4 rounded-full bg-[#30d158] text-black px-5 py-2.5 text-sm font-medium disabled:opacity-40">{busy ? 'sending…' : 'share the file'}</button>
-        </form>
-        {links && (
-          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mt-6 glass rounded-3xl p-5">
-            <p className="text-xs uppercase tracking-widest text-neutral-500">filed</p>
-            <p className="mt-2 text-sm break-all text-[#64b5ff]">{links.embed}</p>
-            <div className="mt-4 flex gap-2">
-              <button onClick={copy} className="rounded-full bg-white text-black px-4 py-2 text-xs font-medium">{copied ? 'copied' : 'copy discord link'}</button>
-              <a href={links.file} className="rounded-full border border-white/10 px-4 py-2 text-xs">open file</a>
+          {slow && <p className="mt-3 text-xs text-amber-200/80">{slow}</p>}
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="card title" className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none transition focus:border-[#0a84ff]" />
+            <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="your name" className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none transition focus:border-[#0a84ff]" />
+          </div>
+          <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="a short note for the discord card" className="mt-3 min-h-24 w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none transition focus:border-[#0a84ff]" />
+          <label className="mt-3 flex items-center gap-3 text-sm text-white/60">
+            accent
+            <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="h-9 w-12 rounded-lg border-0 bg-transparent" />
+          </label>
+          <button disabled={!file || busy} onClick={fileIt} className="mt-4 rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition duration-200 hover:scale-[1.02] disabled:opacity-40">{busy ? 'filing…' : 'file it'}</button>
+          {err && <p className="mt-3 text-sm text-red-300">{err}</p>}
+          {warn && <p className="mt-3 text-sm text-amber-200/80">{warn}</p>}
+          {link && (
+            <button onClick={() => navigator.clipboard.writeText(link)} className="mt-3 block text-left text-sm text-[#7ab6ff]">{link} — copied on click</button>
+          )}
+        </motion.div>
+
+        {shown && (
+          <motion.article layout className="mt-6 overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04]" style={{ borderColor: shown.accent || undefined }}>
+            {image && <img src={image} alt="" className="max-h-72 w-full object-cover" />}
+            <div className="p-5">
+              <p className="text-xs uppercase tracking-[0.14em] text-white/40">open keepsake</p>
+              <h2 className="mt-1 text-2xl font-semibold tracking-tight">{shown.title}</h2>
+              <p className="mt-2 text-sm text-white/60">{shown.note || 'no note'} · {pretty(Number(shown.size) || 0)}{shown.author ? ` · ${shown.author}` : ''}</p>
+              <a href={shown.file_url} className="mt-3 inline-block text-sm text-[#7ab6ff]">download {shown.file_name}</a>
             </div>
-          </motion.div>
+          </motion.article>
         )}
+
+        <ul className="mt-8 space-y-2">
+          {recent.map((item) => (
+            <li key={item.id}>
+              <a href={`/keepsake/${item.id}`} className="flex items-center justify-between rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-3 text-sm transition duration-200 hover:-translate-y-0.5 hover:bg-white/[0.06]">
+                <span>{item.title}</span>
+                <span className="text-white/40">{pretty(Number(item.size) || 0)}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
       </main>
     </div>
   );

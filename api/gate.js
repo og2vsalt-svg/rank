@@ -67,6 +67,8 @@ import apron from '../lib/endpoints/apron.js';
 import mantel from '../lib/endpoints/mantel.js';
 import flyleaf from '../lib/endpoints/flyleaf.js';
 import endpaper from '../lib/endpoints/endpaper.js';
+import parcel from '../lib/endpoints/parcel.js';
+import colophon from '../lib/endpoints/colophon.js';
 
 const routes = {
   atelier, beacon, card, cardfront, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -135,6 +137,8 @@ const routes = {
   mantel,
   flyleaf,
   endpaper,
+  parcel,
+  colophon,
   folio: cardfront,
   swatch: cardfront,
   margin: cardfront,

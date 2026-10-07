@@ -13,13 +13,12 @@ export default function Hero() {
           drop a file.<br />share only if you want.
         </motion.h1>
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.12 }} className="text-neutral-400 text-lg leading-relaxed max-w-xl mb-8">
-          A quiet place for clips, docs, and dumps. Fold one on the linen press, or leave a note in the stillroom. Large drops get a warning, not a refusal. Older desks stay on their routes.
+          Open a receiving window, keep a running book, or file something into the vault. Large drops get a warning, not a refusal. Older desks stay on their routes.
         </motion.p>
         <div className="flex flex-wrap gap-3 mb-12">
-          <button onClick={() => navigate('linen')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">fold on the linen press</button>
-          <button onClick={() => navigate('stillroom')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">leave a stillroom note</button>
-          <button onClick={() => navigate('keepsake')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">file a keepsake</button>
-          <button onClick={() => navigate('courier')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">send by courier</button>
+          <button onClick={() => navigate('transom')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">open a transom</button>
+          <button onClick={() => navigate('ledger', 'house')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">open the ledger</button>
+          <button onClick={() => navigate('casement')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">see open windows</button>
           <button onClick={() => navigate('vault')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">open vault</button>
           <a href="#features" className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">see features</a>
         </div>

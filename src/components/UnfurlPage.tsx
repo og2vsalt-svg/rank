@@ -8,7 +8,7 @@ function readMeta(html: string, key: string) {
   const re = new RegExp(`property="${key}" content="([^"]*)"`, 'i');
   const name = new RegExp(`name="${key}" content="([^"]*)"`, 'i');
   const hit = html.match(re) || html.match(name);
-  return hit ? hit[1].replace(/&/g, '&').replace(/"/g, '"').replace(/</g, '<') : '';
+  return hit ? hit[1].replace(/&/g, '&').replace(/"/g, '"').replace(/</g, '<').replace(/>/g, '>') : '';
 }
 
 export default function UnfurlPage() {

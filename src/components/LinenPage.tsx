@@ -1,126 +1,193 @@
-import { useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 import Navbar from './Navbar';
-import { publishShare, shareUrls } from '../lib/cloudShare';
+import { useRouter } from './Router';
+import { sbRest, supabaseConfig } from '../lib/supabase';
+
+type Row = {
+  id: string;
+  name: string;
+  mime: string | null;
+  size: number;
+  file_url: string;
+  fold: string | null;
+  receiver: string | null;
+  note: string | null;
+  author: string | null;
+};
+
+const FOLDS = ['plain', 'letter', 'bundle', 'keep'];
 
 function uid() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+  return Math.random().toString(36).slice(2, 8) + Date.now().toString(36);
 }
 
-function formatBytes(n: number) {
-  if (n < 1024) return n + ' b';
-  if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' kb';
-  return (n / (1024 * 1024)).toFixed(2) + ' mb';
+function pretty(n: number) {
+  if (n < 1024) return n + ' B';
+  if (n < 1024 * 1024) return Math.round(n / 1024) + ' KB';
+  if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(1) + ' MB';
+  return (n / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
 }
 
 export default function LinenPage() {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [busy, setBusy] = useState(false);
-  const [warn, setWarn] = useState('');
-  const [err, setErr] = useState('');
+  const { shareId, navigate } = useRouter();
+  const [file, setFile] = useState<File | null>(null);
+  const [fold, setFold] = useState('letter');
+  const [receiver, setReceiver] = useState('');
   const [note, setNote] = useState('');
-  const [done, setDone] = useState<{ id: string; name: string; size: number; embed: string; app: string } | null>(null);
-  const [copied, setCopied] = useState('');
+  const [author, setAuthor] = useState('');
+  const [warn, setWarn] = useState('');
+  const [status, setStatus] = useState('fold a local file for someone. the bytes go to storage; the label goes in linen_press.');
+  const [busy, setBusy] = useState(false);
+  const [link, setLink] = useState('');
+  const [opened, setOpened] = useState<Row | null>(null);
+  const [recent, setRecent] = useState<Row[]>([]);
 
-  const onFile = async (file: File) => {
-    setErr('');
-    setDone(null);
-    const size = file.size || 0;
-    setWarn(size > 12 * 1024 * 1024 ? 'chunky file. no cap, the tab just might lag while it lands.' : '');
+  useEffect(() => {
+    sbRest('linen_press?select=id,name,mime,size,file_url,fold,receiver,note,author,created_at&order=created_at.desc&limit=10')
+      .then((r) => r.json())
+      .then((rows) => setRecent(Array.isArray(rows) ? rows : []))
+      .catch(() => setRecent([]));
+  }, [link]);
+
+  useEffect(() => {
+    if (!shareId) {
+      setOpened(null);
+      return;
+    }
+    sbRest(`linen_press?id=eq.${encodeURIComponent(shareId)}&select=*&limit=1`)
+      .then((r) => r.json())
+      .then((rows) => setOpened(Array.isArray(rows) && rows[0] ? rows[0] : null))
+      .catch(() => setOpened(null));
+  }, [shareId]);
+
+  function take(next: File | null) {
+    setFile(next);
+    if (!next) {
+      setWarn('');
+      return;
+    }
+    setWarn(next.size > 24 * 1024 * 1024 ? 'large fold. the browser may feel slow while it sends. nothing is refused.' : '');
+  }
+
+  async function press() {
+    if (!file || busy) return;
     setBusy(true);
+    setStatus('pressing…');
+    const id = uid();
+    const safe = file.name.replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 90) || 'file';
+    const path = `linen/${id}/${safe}`;
     try {
-      const dataUrl = await new Promise<string>((resolve, reject) => {
-        const r = new FileReader();
-        r.onload = () => resolve(String(r.result || ''));
-        r.onerror = () => reject(new Error('could not read file'));
-        r.readAsDataURL(file);
+      const up = await fetch(`${supabaseConfig.url}/storage/v1/object/shares/${path}`, {
+        method: 'POST',
+        headers: {
+          apikey: supabaseConfig.anonKey,
+          Authorization: `Bearer ${supabaseConfig.anonKey}`,
+          'Content-Type': file.type || 'application/octet-stream',
+          'x-upsert': 'true',
+        },
+        body: file,
       });
-      const id = uid();
-      const res = await publishShare({
-        id,
-        name: file.name || 'linen',
-        type: file.type || 'application/octet-stream',
-        size,
-        dataUrl,
-        author: note || undefined,
-      });
-      if (!res.ok) {
-        setErr(res.error || 'share failed');
-        return;
+      if (!up.ok) {
+        const detail = await up.text();
+        throw new Error(detail.slice(0, 180) || 'storage did not take the file');
       }
-      const urls = shareUrls(res.id || id);
-      setDone({ id: res.id || id, name: file.name, size, embed: urls.embed, app: urls.app });
-      if (res.warn) setWarn(res.warn);
-    } catch (e: any) {
-      setErr(e?.message || 'could not publish');
+      const fileUrl = `${supabaseConfig.url}/storage/v1/object/public/shares/${path}`;
+      const row = {
+        id,
+        name: file.name,
+        mime: file.type || 'application/octet-stream',
+        size: file.size,
+        file_url: fileUrl,
+        fold,
+        receiver: receiver.trim() || null,
+        note: note.trim() || null,
+        author: author.trim() || null,
+      };
+      const saved = await sbRest('linen_press', { method: 'POST', body: JSON.stringify(row) });
+      if (!saved.ok) throw new Error((await saved.text()).slice(0, 180) || 'could not write the linen row');
+      await sbRest('public_shares', {
+        method: 'POST',
+        body: JSON.stringify({
+          id,
+          name: file.name,
+          mime: file.type || 'application/octet-stream',
+          size: file.size,
+          file_url: fileUrl,
+          is_public: true,
+          author: author.trim() || null,
+          caption: note.trim() || null,
+          meta: { desk: 'linen', fold, receiver: receiver.trim() || null },
+        }),
+      });
+      const href = `${window.location.origin}/linen/${id}`;
+      setLink(href);
+      setStatus('folded. the Discord card reads the receiver and the note.');
+      navigate('linen', id);
+    } catch (err) {
+      setStatus(err instanceof Error ? err.message : 'could not press that');
     } finally {
       setBusy(false);
     }
-  };
+  }
+
+  const preview = opened?.mime?.startsWith('image/') ? opened.file_url : '';
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="glass rounded-[32px] p-8"
-        >
-          <p className="text-[#0a84ff] text-sm mb-2">linen</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">print a share ticket.</h1>
-          <p className="text-neutral-400 text-sm mb-6">
-            pick a local file, park it in the share db, walk away with a discord-ready /s/ card. not a vault clone.
-          </p>
-          <input
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            placeholder="optional label on the ticket"
-            className="w-full mb-4 rounded-2xl bg-white/[0.04] border border-white/8 px-4 py-3 text-sm outline-none focus:border-white/20"
-          />
-          <input
-            ref={inputRef}
-            type="file"
-            className="hidden"
-            onChange={(e) => {
-              const f = e.target.files?.[0];
-              if (f) void onFile(f);
-            }}
-          />
-          <motion.button
-            whileTap={{ scale: 0.985 }}
-            onClick={() => inputRef.current?.click()}
-            disabled={busy}
-            className="w-full rounded-[28px] border border-white/10 bg-white/[0.03] px-6 py-16 text-center transition-colors hover:bg-white/[0.05]"
-          >
-            <p className="text-white text-sm font-medium">{busy ? 'pressing the ticket…' : 'choose a file'}</p>
-            <p className="text-xs text-neutral-500 mt-2">no hard size lock</p>
-          </motion.button>
-          {warn && <p className="text-xs text-amber-300/80 mt-4">{warn}</p>}
-          {err && <p className="text-xs text-red-300/80 mt-4">{err}</p>}
-          {done && (
-            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mt-6 rounded-2xl bg-white/[0.03] border border-white/5 p-5">
-              <p className="text-[11px] uppercase tracking-[0.18em] text-neutral-500 mb-2">ticket</p>
-              <p className="text-white text-sm truncate">{done.name}</p>
-              <p className="text-xs text-neutral-500 mb-4">{formatBytes(done.size)} · {done.id}</p>
-              <div className="flex flex-wrap gap-2">
-                <button
-                  onClick={async () => {
-                    await navigator.clipboard.writeText(done.embed);
-                    setCopied(done.embed);
-                  }}
-                  className="px-4 py-2 rounded-full bg-white text-black text-sm font-medium"
-                >
-                  copy discord link
-                </button>
-                <a href={done.app} className="px-4 py-2 rounded-full bg-white/5 text-sm">open drop</a>
-              </div>
-              {copied && <p className="text-xs text-neutral-500 mt-3 break-all">{copied}</p>}
-            </motion.div>
-          )}
-        </motion.div>
-      </div>
+      <main className="max-w-3xl mx-auto px-5 pt-28 pb-24 apple-in">
+        <p className="text-[12px] uppercase tracking-[0.16em] text-white/40">linen press</p>
+        <h1 className="mt-2 text-4xl font-semibold tracking-tight text-white">Fold a file for someone.</h1>
+        <p className="mt-3 text-neutral-400 max-w-xl leading-relaxed">
+          Not a cabinet. A press: one local file, a fold, and a name on the outside. The file lands in storage and a row in linen_press. Vault, courier, and keepsake stay as they were.
+        </p>
+
+        {opened && (
+          <section className="glass apple-card rounded-3xl p-6 mt-8">
+            <p className="text-xs text-white/40">{opened.fold || 'plain'} fold{opened.receiver ? ` for ${opened.receiver}` : ''}</p>
+            <h2 className="text-xl text-white mt-1">{opened.name}</h2>
+            <p className="text-sm text-neutral-400 mt-1">{pretty(Number(opened.size) || 0)}{opened.author ? ` · ${opened.author}` : ''}</p>
+            {opened.note && <p className="text-sm text-neutral-300 mt-3 leading-relaxed">{opened.note}</p>}
+            {preview && <img src={preview} alt="" className="mt-4 rounded-2xl max-h-72 object-cover" />}
+            <a href={opened.file_url} className="inline-flex mt-4 text-sm px-4 py-2 rounded-full bg-white text-black" download>download</a>
+          </section>
+        )}
+
+        <section className="glass apple-card rounded-3xl p-6 mt-8">
+          <label className="block rounded-2xl border border-dashed border-white/15 bg-white/[0.03] px-5 py-10 text-center cursor-pointer hover:bg-white/[0.05] transition">
+            <input type="file" className="hidden" onChange={(e) => take(e.target.files?.[0] || null)} />
+            <span className="text-white">{file ? file.name : 'choose the file to fold'}</span>
+            <span className="block text-xs text-neutral-500 mt-2">{file ? pretty(file.size) : 'no size cap. a warning only if it may feel slow.'}</span>
+          </label>
+          {warn && <p className="text-sm text-amber-200/90 mt-3">{warn}</p>}
+          <div className="flex flex-wrap gap-2 mt-4">
+            {FOLDS.map((item) => (
+              <button key={item} type="button" onClick={() => setFold(item)} className={`text-[13px] px-3 py-1.5 rounded-full transition ${fold === item ? 'bg-white text-black' : 'bg-white/5 text-neutral-300'}`}>{item}</button>
+            ))}
+          </div>
+          <div className="grid sm:grid-cols-2 gap-3 mt-4">
+            <input value={receiver} onChange={(e) => setReceiver(e.target.value)} placeholder="who it is for" className="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white outline-none" />
+            <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="from, optional" className="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white outline-none" />
+          </div>
+          <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="a line to sit on the outside of the fold" className="mt-3 w-full min-h-24 bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white outline-none" />
+          <button onClick={press} disabled={!file || busy} className="mt-4 text-sm font-medium px-4 py-2.5 rounded-full bg-white text-black disabled:opacity-40 active:scale-[0.98] transition">{busy ? 'pressing…' : 'press and share'}</button>
+          <p className="text-sm text-neutral-400 mt-3">{status}</p>
+          {link && <a className="block text-sm text-white mt-2 break-all" href={link}>{link}</a>}
+        </section>
+
+        <section className="mt-10">
+          <h2 className="text-sm text-white/50 mb-3">recent folds</h2>
+          <div className="space-y-2">
+            {recent.map((row) => (
+              <button key={row.id} onClick={() => navigate('linen', row.id)} className="w-full text-left glass rounded-2xl px-4 py-3 lift">
+                <span className="text-white text-sm">{row.name}</span>
+                <span className="block text-xs text-neutral-500">{row.fold || 'plain'}{row.receiver ? ` for ${row.receiver}` : ''} · {pretty(Number(row.size) || 0)}</span>
+              </button>
+            ))}
+            {!recent.length && <p className="text-sm text-neutral-500">the press is empty.</p>}
+          </div>
+        </section>
+      </main>
     </div>
   );
 }

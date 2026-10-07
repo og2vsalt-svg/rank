@@ -1,99 +1,122 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 import Navbar from './Navbar';
-import { publishShare, shareUrls } from '../lib/cloudShare';
+import { useRouter } from './Router';
+import { sbRest } from '../lib/supabase';
 
-function pretty(n: number) {
-  if (n < 1024) return n + ' b';
-  if (n < 1024 * 1024) return Math.round(n / 1024) + ' kb';
-  if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(1) + ' mb';
-  return (n / (1024 * 1024 * 1024)).toFixed(2) + ' gb';
-}
+type Note = {
+  id: string;
+  title: string;
+  body: string;
+  mood: string | null;
+  author: string | null;
+  created_at?: string;
+};
 
-function readAsDataUrl(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const r = new FileReader();
-    r.onload = () => resolve(String(r.result || ''));
-    r.onerror = () => reject(new Error('could not read file'));
-    r.readAsDataURL(file);
-  });
+const MOODS = ['quiet', 'warm', 'late', 'clear'];
+
+function uid() {
+  return Math.random().toString(36).slice(2, 8) + Date.now().toString(36);
 }
 
 export default function StillroomPage() {
-  const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState('');
+  const { shareId, navigate } = useRouter();
+  const [title, setTitle] = useState('');
+  const [body, setBody] = useState('');
+  const [author, setAuthor] = useState('');
+  const [mood, setMood] = useState('quiet');
+  const [status, setStatus] = useState('a stillroom is for a short note. no file, no vault.');
   const [busy, setBusy] = useState(false);
-  const [warn, setWarn] = useState('');
-  const [err, setErr] = useState('');
-  const [embed, setEmbed] = useState('');
-  const [app, setApp] = useState('');
+  const [opened, setOpened] = useState<Note | null>(null);
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [tick, setTick] = useState(0);
 
-  const pick = async (next?: File) => {
-    if (!next) return;
-    setFile(next);
-    setErr('');
-    setEmbed('');
-    setApp('');
-    setWarn(next.size > 40 * 1024 * 1024 ? 'no cap. this size can make the tab feel sleepy while it encodes.' : '');
-    if (next.type.startsWith('image/') || next.type.startsWith('audio/') || next.type.startsWith('video/')) {
-      setPreview(URL.createObjectURL(next));
-    } else {
-      setPreview('');
-    }
-  };
+  useEffect(() => {
+    sbRest('stillroom_notes?select=id,title,body,mood,author,created_at&order=created_at.desc&limit=16')
+      .then((r) => r.json())
+      .then((rows) => setNotes(Array.isArray(rows) ? rows : []))
+      .catch(() => setNotes([]));
+  }, [tick]);
 
-  const ship = async () => {
-    if (!file) {
-      setErr('drop something first');
+  useEffect(() => {
+    if (!shareId) {
+      setOpened(null);
       return;
     }
+    sbRest(`stillroom_notes?id=eq.${encodeURIComponent(shareId)}&select=*&limit=1`)
+      .then((r) => r.json())
+      .then((rows) => setOpened(Array.isArray(rows) && rows[0] ? rows[0] : null))
+      .catch(() => setOpened(null));
+  }, [shareId]);
+
+  async function leave() {
+    if (busy || title.trim().length < 1 || body.trim().length < 1) return;
     setBusy(true);
-    setErr('');
+    const id = uid();
     try {
-      const dataUrl = await readAsDataUrl(file);
-      const id = crypto.randomUUID().slice(0, 10);
-      const res = await publishShare({
-        id,
-        name: file.name,
-        type: file.type || 'application/octet-stream',
-        size: file.size,
-        dataUrl,
+      const saved = await sbRest('stillroom_notes', {
+        method: 'POST',
+        body: JSON.stringify({
+          id,
+          title: title.trim().slice(0, 140),
+          body: body.trim().slice(0, 4000),
+          mood,
+          author: author.trim() || null,
+        }),
       });
-      if (!res.ok) throw new Error(res.error || 'share failed');
-      const urls = shareUrls(res.id || id);
-      setEmbed(urls.embed);
-      setApp(urls.app);
-      if (res.warn) setWarn(res.warn);
-    } catch (e: any) {
-      setErr(e?.message || 'stillroom failed');
+      if (!saved.ok) throw new Error((await saved.text()).slice(0, 160) || 'could not leave the note');
+      setTitle('');
+      setBody('');
+      setStatus('left on the shelf. paste /stillroom/' + id + ' in Discord for a card.');
+      setTick((n) => n + 1);
+      navigate('stillroom', id);
+    } catch (err) {
+      setStatus(err instanceof Error ? err.message : 'could not leave that');
     } finally {
       setBusy(false);
     }
-  };
+  }
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-8">
-          <p className="text-[#0a84ff] text-sm mb-2">stillroom</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">look at a file, then send it public.</h1>
-          <p className="text-neutral-400 text-sm mb-6">preview images, audio, or video locally. when you are ready it hits the share db and you get a discord /s card.</p>
-          <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition" onDragOver={(e) => e.preventDefault()} onDrop={(e) => { e.preventDefault(); pick(e.dataTransfer.files?.[0]); }}>
-            <input type="file" className="hidden" onChange={(e) => pick(e.target.files?.[0] || undefined)} />
-            <p className="text-white font-medium">{file ? file.name : 'drop one file'}</p>
-            <p className="text-xs text-neutral-500 mt-2">no hard limit. we only warn when it might feel slow.</p>
-          </label>
-          {file && <p className="text-xs text-neutral-500 mt-4">{pretty(file.size)} · {file.type || 'unknown'}</p>}
-          {preview && file?.type.startsWith('image/') && <img src={preview} alt="" className="mt-5 w-full max-h-72 object-contain rounded-2xl bg-black/30" />}
-          {preview && file?.type.startsWith('audio/') && <audio src={preview} controls className="mt-5 w-full" />}
-          {preview && file?.type.startsWith('video/') && <video src={preview} controls className="mt-5 w-full rounded-2xl max-h-72 bg-black/40" />}
-          <button onClick={ship} disabled={busy || !file} className="mt-6 px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-50">{busy ? 'distilling…' : 'publish drop'}</button>
-          {warn && <p className="text-xs text-amber-300/80 mt-3">{warn}</p>}
-          {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
-          {embed && <div className="mt-6 space-y-2"><p className="text-xs text-neutral-400 break-all">discord: {embed}</p><p className="text-xs text-neutral-500 break-all">app: {app}</p></div>}
-        </motion.div>
-      </div>
+      <main className="max-w-3xl mx-auto px-5 pt-28 pb-24 apple-in">
+        <p className="text-[12px] uppercase tracking-[0.16em] text-white/40">stillroom</p>
+        <h1 className="mt-2 text-4xl font-semibold tracking-tight text-white">Leave a note, not a file.</h1>
+        <p className="mt-3 text-neutral-400 max-w-xl leading-relaxed">
+          The stillroom is beside the hosting desks. It keeps a title, a mood, and a paragraph in stillroom_notes. File sharing stays on linen, courier, and keepsake.
+        </p>
+
+        {opened && (
+          <article className="glass apple-card rounded-3xl p-6 mt-8">
+            <p className="text-xs text-white/40">{opened.mood || 'quiet'}{opened.author ? ` · ${opened.author}` : ''}</p>
+            <h2 className="text-2xl text-white mt-2 tracking-tight">{opened.title}</h2>
+            <p className="text-neutral-300 mt-3 leading-relaxed whitespace-pre-wrap">{opened.body}</p>
+          </article>
+        )}
+
+        <section className="glass apple-card rounded-3xl p-6 mt-8">
+          <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="a short title" className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white outline-none" />
+          <div className="flex flex-wrap gap-2 mt-3">
+            {MOODS.map((item) => (
+              <button key={item} type="button" onClick={() => setMood(item)} className={`text-[13px] px-3 py-1.5 rounded-full transition ${mood === item ? 'bg-white text-black' : 'bg-white/5 text-neutral-300'}`}>{item}</button>
+            ))}
+          </div>
+          <textarea value={body} onChange={(e) => setBody(e.target.value)} placeholder="what you wanted to leave" className="mt-3 w-full min-h-32 bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white outline-none" />
+          <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="name, optional" className="mt-3 w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white outline-none" />
+          <button onClick={leave} disabled={busy || !title.trim() || !body.trim()} className="mt-4 text-sm font-medium px-4 py-2.5 rounded-full bg-white text-black disabled:opacity-40 active:scale-[0.98] transition">{busy ? 'leaving…' : 'leave it'}</button>
+          <p className="text-sm text-neutral-400 mt-3">{status}</p>
+        </section>
+
+        <section className="mt-10 space-y-2">
+          {notes.map((note) => (
+            <button key={note.id} onClick={() => navigate('stillroom', note.id)} className="w-full text-left glass rounded-2xl px-4 py-3 lift">
+              <span className="text-white text-sm">{note.title}</span>
+              <span className="block text-xs text-neutral-500 mt-1">{note.mood || 'quiet'} · {note.body.slice(0, 90)}</span>
+            </button>
+          ))}
+          {!notes.length && <p className="text-sm text-neutral-500">nothing on the shelf yet.</p>}
+        </section>
+      </main>
     </div>
   );
 }

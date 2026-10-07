@@ -81,6 +81,7 @@ import wicket from '../lib/endpoints/wicket.js';
 import letterpress from '../lib/endpoints/letterpress.js';
 import beading from '../lib/endpoints/beading.js';
 import weatherboard from '../lib/endpoints/weatherboard.js';
+import listening from '../lib/endpoints/listening.js';
 
 const routes = {
   atelier, beacon, card, cardfront, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -170,6 +171,8 @@ const routes = {
   beading,
   skirting: beading,
   weatherboard,
+  listening,
+  setlist: listening,
 };
 
 export default function handler(req, res) {

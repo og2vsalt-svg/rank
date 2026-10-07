@@ -1,6 +1,7 @@
 import atelier from '../lib/endpoints/atelier.js';
 import beacon from '../lib/endpoints/beacon.js';
 import card from '../lib/endpoints/card.js';
+import cardfront from '../lib/endpoints/cardfront.js';
 import catfall from '../lib/endpoints/catfall.js';
 import cathead from '../lib/endpoints/cathead.js';
 import chock from '../lib/endpoints/chock.js';
@@ -68,7 +69,7 @@ import flyleaf from '../lib/endpoints/flyleaf.js';
 import endpaper from '../lib/endpoints/endpaper.js';
 
 const routes = {
-  atelier, beacon, card, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
+  atelier, beacon, card, cardfront, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
   docket, jackstay, ketch, luff, nightglass, quarter, quay, scuttle, selvage, quire, share, signal, stay, tide,
   tiller, vesper, wall, ribbon, loom: ribbon,
   spunyarn, eyelet: spunyarn,
@@ -134,6 +135,9 @@ const routes = {
   mantel,
   flyleaf,
   endpaper,
+  folio: cardfront,
+  swatch: cardfront,
+  margin: cardfront,
 };
 
 export default function handler(req, res) {

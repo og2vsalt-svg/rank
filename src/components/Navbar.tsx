@@ -13,7 +13,7 @@ const primary: NavItem[] = [
   { to: 'apron', label: 'apron' },
   { to: 'billet', label: 'billet' },
   { to: 'ack', label: 'ack' },
-  { to: 'vault', label: 'vault' },
+  { to: 'courier', label: 'courier' }, { to: 'vault', label: 'vault' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [

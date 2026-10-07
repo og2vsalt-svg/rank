@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'courier', href: '/courier', body: 'file a local file into the drops bucket and the hosted_files table. Discord unfurls /courier and /s. large drops are warned, never refused.' },
   { title: 'folio', href: '/folio', body: 'a reading copy of one local file. bytes land in storage, the title and excerpt land in the folios table. /folio/id is the discord card. large files are warned, never refused. not a vault drawer.' },
   { title: 'swatch', href: '/swatch', body: 'pull five colors from a local image in the tab, then keep the file and the chips in the swatches table. /swatch/id unfurls with the lead color. not a vault drawer.' },
   { title: 'margin', href: '/margin', body: 'notes beside a share that already exists. no new file. /margin/id unfurls in discord without the file itself.' },

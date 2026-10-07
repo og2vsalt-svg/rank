@@ -79,6 +79,8 @@ import knocker from '../lib/endpoints/knocker.js';
 import commonplace from '../lib/endpoints/commonplace.js';
 import wicket from '../lib/endpoints/wicket.js';
 import letterpress from '../lib/endpoints/letterpress.js';
+import wainscot from '../lib/endpoints/wainscot.js';
+import weatherboard from '../lib/endpoints/weatherboard.js';
 
 const routes = {
   atelier, beacon, card, cardfront, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -165,6 +167,9 @@ const routes = {
   commonplace,
   wicket,
   letterpress,
+  wainscot,
+  skirting: wainscot,
+  weatherboard,
 };
 
 export default function handler(req, res) {

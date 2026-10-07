@@ -1,115 +1,94 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import Footer from './Footer';
-import { useRouter } from './Router';
+import { publishShare, shareUrls } from '../lib/cloudShare';
 
-type Panel = {
-  id: string;
-  room: string | null;
-  caption: string | null;
-  file_name: string;
-  mime: string | null;
-  size: number;
-  file_url: string;
-  accent?: string | null;
-  created_at: string;
-  pretty?: string;
-  warn?: string | null;
-};
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
 
-function readFile(file: File) {
+function readAsDataUrl(file: File) {
   return new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result || ''));
-    reader.onerror = () => reject(new Error('could not read that file'));
-    reader.readAsDataURL(file);
+    const r = new FileReader();
+    r.onload = () => resolve(String(r.result || ''));
+    r.onerror = () => reject(new Error('could not read file'));
+    r.readAsDataURL(file);
   });
 }
 
 export default function WainscotPage() {
-  const { shareId } = useRouter();
-  const [room, setRoom] = useState('');
-  const [caption, setCaption] = useState('');
-  const [file, setFile] = useState<File | null>(null);
+  const [label, setLabel] = useState('');
   const [busy, setBusy] = useState(false);
-  const [err, setErr] = useState('');
   const [warn, setWarn] = useState('');
-  const [link, setLink] = useState('');
-  const [open, setOpen] = useState<Panel | null>(null);
+  const [err, setErr] = useState('');
+  const [embed, setEmbed] = useState('');
 
-  useEffect(() => {
-    if (!shareId) return;
-    fetch(`/api/wainscot?id=${encodeURIComponent(shareId)}`)
-      .then(async (r) => {
-        const data = await r.json();
-        if (!r.ok) throw new Error(data.error || 'missing panel');
-        setOpen(data);
-        setWarn(data.warn || '');
-      })
-      .catch((error) => setErr(error instanceof Error ? error.message : 'could not open that panel'));
-  }, [shareId]);
-
-  async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!file) { setErr('choose a local file'); return; }
-    setBusy(true);
+  const onFile = async (list: FileList | null) => {
+    const f = list?.[0];
+    if (!f) return;
     setErr('');
-    setWarn(file.size > 12 * 1024 * 1024 ? 'large drop. the browser may feel slow while it sends. it will not be refused.' : '');
+    setEmbed('');
+    setWarn(f.size > 12 * 1024 * 1024 ? 'large drop. encoding may feel slow. no hard cap.' : '');
+    setBusy(true);
     try {
-      const dataUrl = await readFile(file);
-      const r = await fetch('/api/wainscot', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ room, caption, name: file.name, type: file.type, dataUrl, accent: '#0A84FF' }),
+      const dataUrl = await readAsDataUrl(f);
+      const id = uid();
+      const name = label.trim() ? `${label.trim()} — ${f.name}` : f.name;
+      const pub = await publishShare({
+        id,
+        name,
+        type: f.type || 'application/octet-stream',
+        size: f.size,
+        dataUrl,
+        author: label.trim() || undefined,
       });
-      const data = await r.json().catch(() => ({}));
-      if (!r.ok) throw new Error(data.error || 'the panel did not land');
-      setLink(data.link || '');
-      setWarn(data.warn || '');
-      history.pushState(null, '', `/wainscot/${data.id}`);
-    } catch (error) {
-      setErr(error instanceof Error ? error.message : 'panel failed');
+      if (!pub.ok) {
+        setErr(pub.error || 'could not publish');
+        return;
+      }
+      if (pub.warn) setWarn(pub.warn);
+      setEmbed(shareUrls(id).embed);
+      try {
+        await navigator.clipboard.writeText(shareUrls(id).embed);
+      } catch {}
+    } catch (e: any) {
+      setErr(e?.message || 'wainscot failed');
     } finally {
       setBusy(false);
     }
-  }
+  };
 
   return (
-    <div className="mesh min-h-screen text-[#f5f5f7]">
+    <div className="mesh min-h-screen">
       <Navbar />
-      <main className="max-w-3xl mx-auto px-5 pt-28 pb-20">
-        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[13px] tracking-[0.14em] uppercase text-[#8e8e93]">wainscot</motion.p>
-        <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }} className="mt-2 text-4xl sm:text-5xl font-semibold tracking-tight">Set a file into the panel.</motion.h1>
-        <p className="mt-4 text-[17px] leading-relaxed text-[#a1a1aa] max-w-xl">Name the room, write a caption, and the local file lands in storage and the wainscot table. Paste /wainscot/id in Discord for the card. Large drops are warned, never refused.</p>
-        {open ? (
-          <section className="mt-8 rounded-3xl border border-white/10 bg-white/[0.04] p-6">
-            <p className="text-sm text-[#8e8e93]">{open.room || 'an unnamed room'}</p>
-            <h2 className="mt-1 text-2xl font-semibold tracking-tight">{open.file_name}</h2>
-            {open.caption ? <p className="mt-3 text-[#d1d1d6]">{open.caption}</p> : null}
-            <p className="mt-3 text-sm text-[#8e8e93]">{open.pretty || `${open.size} bytes`}</p>
-            {warn ? <p className="mt-2 text-sm text-[#ffd60a]">{warn}</p> : null}
-            {open.file_url && !open.file_url.startsWith('data:') ? (
-              <a href={open.file_url} className="mt-5 inline-flex rounded-full bg-white text-black px-5 py-2.5 text-sm font-medium" download={open.file_name}>download</a>
-            ) : null}
-          </section>
-        ) : (
-          <form onSubmit={onSubmit} className="mt-8 rounded-3xl border border-white/10 bg-white/[0.04] p-5 sm:p-6 space-y-3">
-            <input value={room} onChange={(e) => setRoom(e.target.value)} placeholder="room name" className="w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 outline-none focus:border-[#0a84ff]" />
-            <textarea value={caption} onChange={(e) => setCaption(e.target.value)} maxLength={280} placeholder="a caption for the panel" className="w-full min-h-24 rounded-2xl bg-black/30 border border-white/10 px-4 py-3 outline-none focus:border-[#0a84ff]" />
-            <label className="block rounded-2xl border border-dashed border-white/15 px-4 py-6 text-sm text-[#a1a1aa] cursor-pointer hover:border-[#0a84ff]/50 transition">
-              <input type="file" className="hidden" onChange={(e) => setFile(e.target.files?.[0] || null)} />
-              {file ? file.name : 'choose a local file'}
-            </label>
-            {warn ? <p className="text-sm text-[#ffd60a]">{warn}</p> : null}
-            {err ? <p className="text-sm text-[#ff453a]">{err}</p> : null}
-            {link ? <p className="text-sm text-[#64d2ff] break-all">{link}</p> : null}
-            <button disabled={busy} className="rounded-full bg-white text-black px-5 py-2.5 text-sm font-medium disabled:opacity-60 active:scale-[0.98] transition">{busy ? 'Setting it…' : 'Set the panel'}</button>
-          </form>
-        )}
-        <p className="mt-8 text-sm text-[#8e8e93]">The public index lives at <a className="text-[#64d2ff]" href="/skirting">/skirting</a>. Older desks stay where they were.</p>
-      </main>
-      <Footer />
+      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          className="glass rounded-[32px] p-8"
+        >
+          <p className="text-[#0a84ff] text-sm mb-2">wainscot</p>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">panel a local file with a provenance line.</h1>
+          <p className="text-neutral-400 text-sm mb-6">
+            the label rides on the public drop. discord unfurls the /s card.
+          </p>
+          <input
+            value={label}
+            onChange={(e) => setLabel(e.target.value)}
+            placeholder="who filed this, or why"
+            className="w-full mb-4 rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-white outline-none focus:border-[#0a84ff]/40"
+          />
+          <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition">
+            <input type="file" className="hidden" onChange={(e) => onFile(e.target.files)} />
+            <p className="text-white font-medium">{busy ? 'publishing…' : 'choose a local file'}</p>
+            <p className="text-xs text-neutral-500 mt-2">no file limit. only a slowness ping.</p>
+          </label>
+          {warn && <p className="text-amber-300/90 text-xs mt-3">{warn}</p>}
+          {err && <p className="text-red-400 text-xs mt-3">{err}</p>}
+          {embed && <p className="text-xs text-neutral-400 break-all mt-4">discord embed (copied): {embed}</p>}
+        </motion.div>
+      </div>
     </div>
   );
 }

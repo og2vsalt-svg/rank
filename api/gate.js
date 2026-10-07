@@ -79,7 +79,7 @@ import knocker from '../lib/endpoints/knocker.js';
 import commonplace from '../lib/endpoints/commonplace.js';
 import wicket from '../lib/endpoints/wicket.js';
 import letterpress from '../lib/endpoints/letterpress.js';
-import wainscot from '../lib/endpoints/wainscot.js';
+import beading from '../lib/endpoints/beading.js';
 import weatherboard from '../lib/endpoints/weatherboard.js';
 
 const routes = {
@@ -167,8 +167,8 @@ const routes = {
   commonplace,
   wicket,
   letterpress,
-  wainscot,
-  skirting: wainscot,
+  beading,
+  skirting: beading,
   weatherboard,
 };
 

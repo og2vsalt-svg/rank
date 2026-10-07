@@ -1,8 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
-  { title: 'wainscot', href: '/wainscot', body: 'set one local file into a named room panel. bytes land in storage, the row lands in wainscot_panels and the share table. /wainscot/id is the discord card. large drops are warned, never refused. not a vault drawer.' },
-  { title: 'skirting', href: '/skirting', body: 'the public index of panels already filed. open one to download the file from the database. discord unfurls /skirting. not a vault drawer.' },
+  { title: 'beading', href: '/beading', body: 'set one local file into a named room panel. bytes land in storage, the row lands in beading_panels and the share table. /beading/id is the discord card. large drops are warned, never refused. not a vault drawer. the older wainscot desk stays.' },
+  { title: 'skirting', href: '/skirting', body: 'the public index of beading panels already filed. open one to download the file from the database. discord unfurls /skirting. not a vault drawer.' },
   { title: 'weatherboard', href: '/weatherboard', body: 'pin a notice with no file. the line lands in weatherboard_notes and /weatherboard/id unfurls in discord. older desks stay.' },
   { title: 'knocker', href: '/knocker', body: 'leave one local file at the door with a calling note. bytes land in storage, the row lands in knockers. /knocker/id is the discord card. large drops are warned, never refused. not a vault drawer.' },
   { title: 'commonplace', href: '/commonplace', body: 'keep a sentence in the commonplace table. no file. /commonplace/id unfurls the line in discord. older desks stay.' },

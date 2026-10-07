@@ -17,7 +17,7 @@ export default function SkirtingPage() {
   const [err, setErr] = useState('');
 
   useEffect(() => {
-    fetch('/api/wainscot')
+    fetch('/api/beading')
       .then(async (r) => {
         const data = await r.json();
         if (!r.ok) throw new Error(data.error || 'could not read the index');
@@ -37,13 +37,13 @@ export default function SkirtingPage() {
         <ul className="mt-8 space-y-2">
           {panels.map((row, i) => (
             <motion.li key={row.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i, 8) * 0.04 }}>
-              <a href={`/wainscot/${row.id}`} className="block rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 hover:bg-white/[0.06] hover:-translate-y-0.5 transition">
+              <a href={`/beading/${row.id}`} className="block rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 hover:bg-white/[0.06] hover:-translate-y-0.5 transition">
                 <span className="text-white">{row.file_name}</span>
                 <span className="block text-sm text-[#8e8e93]">{row.room || 'unnamed room'}{row.caption ? ` · ${row.caption}` : ''}</span>
               </a>
             </motion.li>
           ))}
-          {!panels.length && !err ? <li className="text-sm text-[#8e8e93]">Nothing set yet. The first panel goes up at /wainscot.</li> : null}
+          {!panels.length && !err ? <li className="text-sm text-[#8e8e93]">Nothing set yet. The first panel goes up at /beading.</li> : null}
         </ul>
       </main>
       <Footer />

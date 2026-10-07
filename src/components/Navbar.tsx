@@ -5,26 +5,24 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'transom', label: 'transom' },
+  { to: 'casement', label: 'casement' },
+  { to: 'ledger', label: 'ledger' },
   { to: 'seal', label: 'seal' },
   { to: 'handover', label: 'handover' },
   { to: 'dado', label: 'dado' },
   { to: 'linen', label: 'linen' },
   { to: 'stillroom', label: 'stillroom' },
   { to: 'keepsake', label: 'keepsake' },
-  { to: 'passage', label: 'passage' },
-  { to: 'courier', label: 'courier' },
-  { to: 'satchel', label: 'satchel' },
-  { to: 'copydesk', label: 'copy desk' },
   { to: 'vault', label: 'vault' },
-  { to: 'unfurl', label: 'unfurl' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
-  { title: 'new', items: [{ to: 'seal', label: 'seal' }, { to: 'handover', label: 'handover' }, { to: 'dado', label: 'dado' }, { to: 'pallet', label: 'pallet' }, { to: 'unfurl', label: 'unfurl' }, { to: 'linen', label: 'linen' }, { to: 'stillroom', label: 'stillroom' }, { to: 'keepsake', label: 'keepsake' }, { to: 'passage', label: 'passage' }, { to: 'cardroom', label: 'card room' }, { to: 'folio', label: 'folio' }, { to: 'parcel', label: 'parcel' }] },
-  { title: 'hosting', items: [{ to: 'seal', label: 'seal' }, { to: 'handover', label: 'handover' }, { to: 'dado', label: 'dado' }, { to: 'pallet', label: 'pallet' }, { to: 'linen', label: 'linen' }, { to: 'keepsake', label: 'keepsake' }, { to: 'vault', label: 'vault' }, { to: 'scuttle', label: 'scuttle' }] },
-  { title: 'notes', items: [{ to: 'stillroom', label: 'stillroom' }, { to: 'margin', label: 'margin' }, { to: 'hearth', label: 'hearth' }, { to: 'inkstand', label: 'inkstand' }, { to: 'pinboard', label: 'pinboard' }, { to: 'vesper', label: 'vesper' }] },
-  { title: 'share', items: [{ to: 'handover', label: 'handover' }, { to: 'seal', label: 'seal' }, { to: 'dossier', label: 'dossier' }, { to: 'satchel', label: 'satchel' }, { to: 'parcel', label: 'parcel' }, { to: 'copydesk', label: 'copy desk' }, { to: 'pallet', label: 'pallet' }] },
-  { title: 'tools', items: [{ to: 'unfurl', label: 'unfurl' }, { to: 'passage', label: 'passage' }, { to: 'hash', label: 'hash' }, { to: 'convert', label: 'convert' }, { to: 'diff', label: 'diff' }] },
+  { title: 'new', items: [{ to: 'transom', label: 'transom' }, { to: 'casement', label: 'casement' }, { to: 'ledger', label: 'ledger' }, { to: 'seal', label: 'seal' }, { to: 'handover', label: 'handover' }, { to: 'dado', label: 'dado' }, { to: 'pallet', label: 'pallet' }, { to: 'unfurl', label: 'unfurl' }] },
+  { title: 'hosting', items: [{ to: 'transom', label: 'transom' }, { to: 'seal', label: 'seal' }, { to: 'handover', label: 'handover' }, { to: 'dado', label: 'dado' }, { to: 'pallet', label: 'pallet' }, { to: 'linen', label: 'linen' }, { to: 'keepsake', label: 'keepsake' }, { to: 'vault', label: 'vault' }] },
+  { title: 'notes', items: [{ to: 'ledger', label: 'ledger' }, { to: 'stillroom', label: 'stillroom' }, { to: 'margin', label: 'margin' }, { to: 'hearth', label: 'hearth' }, { to: 'inkstand', label: 'inkstand' }, { to: 'pinboard', label: 'pinboard' }] },
+  { title: 'share', items: [{ to: 'transom', label: 'transom' }, { to: 'handover', label: 'handover' }, { to: 'seal', label: 'seal' }, { to: 'dossier', label: 'dossier' }, { to: 'satchel', label: 'satchel' }, { to: 'parcel', label: 'parcel' }] },
+  { title: 'tools', items: [{ to: 'casement', label: 'casement' }, { to: 'unfurl', label: 'unfurl' }, { to: 'passage', label: 'passage' }, { to: 'hash', label: 'hash' }, { to: 'convert', label: 'convert' }, { to: 'diff', label: 'diff' }] },
 ];
 
 export default function Navbar() {
@@ -111,7 +109,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">older desks stay on their routes. paste /seal/id, /handover/id, /parcel/id, or /s/id in Discord for a card.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">older desks stay on their routes. paste /transom/id, /ledger/house, /seal/id, or /s/id in Discord for a card.</p>
         </div>
       </div>
     </nav>

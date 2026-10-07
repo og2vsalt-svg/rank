@@ -1,92 +1,102 @@
+import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
 import Navbar from './Navbar';
+import { useRouter } from './Router';
+import { db } from '../lib/db';
 
-const SUPABASE_URL = 'https://tqfocdktvjuwoiyfgesb.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
+type Line = { id: string; book: string; label: string; amount: number | null; note: string | null; author: string | null; created_at: string };
 
-type LinkRow = { id: string; url: string; note: string | null; author: string | null; created_at: string };
-
-function headers() {
-  return {
-    apikey: SUPABASE_KEY,
-    Authorization: `Bearer ${SUPABASE_KEY}`,
-    'Content-Type': 'application/json',
-    Prefer: 'return=representation',
-  };
+function headers(extra?: Record<string, string>) {
+  return { apikey: db.key, Authorization: `Bearer ${db.key}`, ...extra };
 }
 
 export default function LedgerPage() {
-  const [rows, setRows] = useState<LinkRow[]>([]);
-  const [url, setUrl] = useState('');
+  const { shareId, navigate } = useRouter();
+  const book = (shareId || 'house').toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 32) || 'house';
+  const [lines, setLines] = useState<Line[]>([]);
+  const [label, setLabel] = useState('');
+  const [amount, setAmount] = useState('');
   const [note, setNote] = useState('');
   const [author, setAuthor] = useState('');
-  const [status, setStatus] = useState('addresses live on the links shelf. files stay on folio.');
+  const [err, setErr] = useState('');
   const [busy, setBusy] = useState(false);
 
-  async function load() {
-    const r = await fetch(`${SUPABASE_URL}/rest/v1/links?select=id,url,note,author,created_at&order=created_at.desc&limit=40`, { headers: headers() });
-    const data = await r.json();
-    if (r.ok && Array.isArray(data)) setRows(data);
-    else setStatus('could not read the shelf');
-  }
-
-  useEffect(() => {
-    load().catch(() => setStatus('could not read the shelf'));
-  }, []);
-
-  async function pin() {
-    if (busy) return;
-    if (!/^https?:\/\//i.test(url.trim())) {
-      setStatus('an http address is required');
+  const load = async () => {
+    const res = await fetch(`${db.url}/rest/v1/ledger_lines?book=eq.${encodeURIComponent(book)}&select=*&order=created_at.desc&limit=40`, { headers: headers() });
+    if (!res.ok) {
+      setErr('could not read the book');
       return;
     }
+    setLines(await res.json());
+  };
+
+  useEffect(() => { load(); }, [book]);
+
+  const total = useMemo(() => lines.reduce((sum, line) => sum + (Number(line.amount) || 0), 0), [lines]);
+
+  const add = async () => {
+    if (!label.trim()) return;
     setBusy(true);
-    try {
-      const r = await fetch(`${SUPABASE_URL}/rest/v1/links`, {
-        method: 'POST',
-        headers: headers(),
-        body: JSON.stringify({ url: url.trim().slice(0, 2000), note: note.trim().slice(0, 280) || null, author: (author || 'ledger').slice(0, 80) }),
-      });
-      if (!r.ok) throw new Error('the shelf refused that address');
-      setUrl('');
-      setNote('');
-      setStatus('pinned. paste /ledger in Discord for the card.');
-      await load();
-    } catch (err) {
-      setStatus(err instanceof Error ? err.message : 'could not pin that');
-    } finally {
-      setBusy(false);
+    setErr('');
+    const id = Math.random().toString(36).slice(2, 10);
+    const res = await fetch(`${db.url}/rest/v1/ledger_lines`, {
+      method: 'POST',
+      headers: headers({ 'Content-Type': 'application/json', Prefer: 'return=representation' }),
+      body: JSON.stringify({
+        id,
+        book,
+        label: label.trim(),
+        amount: amount.trim() ? Number(amount) : null,
+        note: note.trim() || null,
+        author: author.trim() || null,
+      }),
+    });
+    setBusy(false);
+    if (!res.ok) {
+      setErr((await res.text()).slice(0, 180) || 'line did not stick');
+      return;
     }
-  }
+    setLabel('');
+    setAmount('');
+    setNote('');
+    const rows = await res.json();
+    setLines((prev) => [rows[0], ...prev]);
+    if (!shareId) navigate('ledger', book);
+  };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <main className="max-w-3xl mx-auto px-5 pt-16 pb-24">
-        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[12px] tracking-[0.18em] uppercase text-white/40">ledger</motion.p>
-        <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-2 text-[40px] leading-none font-semibold tracking-tight">A shelf for addresses.</motion.h1>
-        <p className="mt-3 max-w-xl text-[15px] text-white/60">Not another drawer. Pin a link with a note. The row lands in the links table, and Discord unfurls this page.</p>
-        <div className="glass mt-8 rounded-3xl p-5 space-y-3">
-          <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://" className="w-full bg-white/5 rounded-2xl px-4 py-3 text-[14px] outline-none" />
-          <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="why it is here" className="w-full bg-white/5 rounded-2xl px-4 py-3 text-[14px] outline-none" />
-          <div className="flex gap-3">
-            <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="your name" className="flex-1 bg-white/5 rounded-2xl px-4 py-3 text-[14px] outline-none" />
-            <button onClick={pin} disabled={busy || !url.trim()} className="rounded-full bg-white text-black px-5 text-[14px] font-medium disabled:opacity-40">{busy ? 'Pinning…' : 'Pin'}</button>
+      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-8">
+          <p className="text-[#30d158] text-sm mb-2">shared book</p>
+          <h1 className="text-3xl font-semibold tracking-tight mb-2">ledger / {book}</h1>
+          <p className="text-neutral-400 text-sm mb-6">a running list, not a file cabinet. paste /ledger/{book} in Discord and the latest line becomes the card.</p>
+          <div className="grid sm:grid-cols-2 gap-3 mb-3">
+            <input value={label} onChange={(e) => setLabel(e.target.value)} placeholder="what happened" className="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm outline-none focus:border-[#30d158]/50" />
+            <input value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="amount, optional" inputMode="decimal" className="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm outline-none focus:border-[#30d158]/50" />
           </div>
-          <p className="text-[13px] text-white/45">{status}</p>
-        </div>
-        <ul className="mt-6 space-y-2">
-          {rows.map((row) => (
-            <li key={row.id} className="glass rounded-2xl px-4 py-3">
-              <a href={row.url} className="text-[14px] text-[#64b5ff] break-all">{row.url}</a>
-              {row.note && <p className="mt-1 text-[13px] text-white/70">{row.note}</p>}
-              <p className="mt-1 text-[11px] text-white/35">{row.author || 'someone'} · {new Date(row.created_at).toLocaleString()}</p>
-            </li>
-          ))}
-          {!rows.length && <li className="text-[13px] text-white/40">nothing pinned yet.</li>}
-        </ul>
-      </main>
+          <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="note" className="w-full mb-3 bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm outline-none focus:border-[#30d158]/50" />
+          <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="name, optional" className="w-full mb-4 bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm outline-none focus:border-[#30d158]/50" />
+          <div className="flex items-center justify-between gap-3 mb-6">
+            <button onClick={add} disabled={busy || !label.trim()} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40 active:scale-[0.98] transition">{busy ? 'writing…' : 'add line'}</button>
+            <p className="text-sm text-neutral-400">running {total.toLocaleString(undefined, { maximumFractionDigits: 2 })}</p>
+          </div>
+          {err && <p className="text-xs text-red-400 mb-4">{err}</p>}
+          <ul className="space-y-2">
+            {lines.map((line) => (
+              <li key={line.id} className="rounded-2xl bg-white/[0.03] px-4 py-3">
+                <div className="flex justify-between gap-3">
+                  <p className="text-sm">{line.label}</p>
+                  <p className="text-sm text-neutral-300">{line.amount != null ? Number(line.amount).toLocaleString() : ''}</p>
+                </div>
+                <p className="text-xs text-neutral-500 mt-1">{line.note || 'no note'}{line.author ? ` · ${line.author}` : ''}</p>
+              </li>
+            ))}
+            {!lines.length && <p className="text-sm text-neutral-500">the book is empty.</p>}
+          </ul>
+        </motion.div>
+      </div>
     </div>
   );
 }

@@ -64,6 +64,8 @@ import porch from '../lib/endpoints/porch.js';
 import hearth from '../lib/endpoints/hearth.js';
 import apron from '../lib/endpoints/apron.js';
 import mantel from '../lib/endpoints/mantel.js';
+import flyleaf from '../lib/endpoints/flyleaf.js';
+import endpaper from '../lib/endpoints/endpaper.js';
 
 const routes = {
   atelier, beacon, card, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -130,6 +132,8 @@ const routes = {
   hearth,
   apron,
   mantel,
+  flyleaf,
+  endpaper,
 };
 
 export default function handler(req, res) {

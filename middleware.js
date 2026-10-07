@@ -150,6 +150,8 @@ const DEDICATED = {
   hearth: '/api/hearth',
   apron: '/api/apron',
   mantel: '/api/mantel',
+  flyleaf: '/api/flyleaf',
+  endpaper: '/api/endpaper',
 };
 
 export default function middleware(request) {

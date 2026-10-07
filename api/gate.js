@@ -73,6 +73,8 @@ import pressmark from '../lib/endpoints/pressmark.js';
 import colophon from '../lib/endpoints/colophon.js';
 import seal from '../lib/endpoints/seal.js';
 import handover from '../lib/endpoints/handover.js';
+import transom from '../lib/endpoints/transom.js';
+import ledger from '../lib/endpoints/ledger.js';
 
 const routes = {
   atelier, beacon, card, cardfront, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -151,6 +153,9 @@ const routes = {
   margin: cardfront,
   seal,
   handover,
+  transom,
+  casement: transom,
+  ledger,
 };
 
 export default function handler(req, res) {

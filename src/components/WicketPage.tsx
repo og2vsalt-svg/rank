@@ -1,82 +1,135 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishShare, shareUrls } from '../lib/cloudShare';
+import Footer from './Footer';
+import { useRouter } from './Router';
 
-const WORDS = ['ash', 'brook', 'cedar', 'dusk', 'ember', 'flint', 'gale', 'haven', 'iris', 'jade', 'keel', 'lark', 'mist', 'nook', 'opal', 'pine', 'quill', 'reed', 'silt', 'tide'];
+type Wicket = {
+  id: string;
+  caller: string | null;
+  note: string | null;
+  file_name: string;
+  mime: string | null;
+  size: number;
+  file_url: string;
+  created_at: string;
+  pretty?: string;
+  warn?: string | null;
+};
 
-function uid() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+function readFile(file: File) {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ''));
+    reader.onerror = () => reject(new Error('could not read that file'));
+    reader.readAsDataURL(file);
+  });
 }
 
-function phrase() {
-  const pick = () => WORDS[Math.floor(Math.random() * WORDS.length)];
-  return `${pick()}-${pick()}-${Math.floor(10 + Math.random() * 89)}`;
-}
+const ease = [0.22, 1, 0.36, 1] as const;
 
 export default function WicketPage() {
-  const gate = useMemo(() => phrase(), []);
+  const { shareId, navigate } = useRouter();
+  const [caller, setCaller] = useState('');
   const [note, setNote] = useState('');
+  const [file, setFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
+  const [warn, setWarn] = useState('');
   const [link, setLink] = useState('');
+  const [open, setOpen] = useState<Wicket | null>(null);
+  const [recent, setRecent] = useState<Wicket[]>([]);
 
-  const pour = async () => {
-    if (!note.trim()) return;
+  useEffect(() => {
+    fetch('/api/wicket')
+      .then((r) => r.json())
+      .then((data) => setRecent(Array.isArray(data.wickets) ? data.wickets : []))
+      .catch(() => {});
+  }, [shareId]);
+
+  useEffect(() => {
+    if (!shareId) { setOpen(null); return; }
+    fetch(`/api/wicket?id=${encodeURIComponent(shareId)}`)
+      .then(async (r) => {
+        const data = await r.json();
+        if (!r.ok) throw new Error(data.error || 'missing wicket');
+        setOpen(data);
+        setWarn(data.warn || '');
+        setErr('');
+      })
+      .catch((error) => setErr(error instanceof Error ? error.message : 'could not open that wicket'));
+  }, [shareId]);
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!file) { setErr('choose a local file'); return; }
     setBusy(true);
     setErr('');
+    setWarn(file.size > 8 * 1024 * 1024 ? 'large drop. the browser may feel slow while it sends. it will not be refused.' : '');
     try {
-      const blob = new Blob([note], { type: 'text/plain' });
-      const dataUrl = await new Promise<string>((resolve, reject) => {
-        const r = new FileReader();
-        r.onload = () => resolve(String(r.result || ''));
-        r.onerror = () => reject(new Error('read failed'));
-        r.readAsDataURL(blob);
+      const dataUrl = await readFile(file);
+      const r = await fetch('/api/wicket', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ caller, note, name: file.name, type: file.type, dataUrl, accent: '#0A84FF' }),
       });
-      const id = uid();
-      const res = await publishShare({
-        id,
-        name: 'wicket.txt',
-        type: 'text/plain',
-        size: blob.size,
-        dataUrl,
-        lockPass: gate,
-        author: 'wicket',
-      });
-      if (!res.ok) throw new Error(res.error || 'the gate stuck');
-      const urls = shareUrls(res.id || id);
-      setLink(urls.embed);
-      try { await navigator.clipboard.writeText(`${urls.embed}  gate: ${gate}`); } catch {}
-    } catch (e: any) {
-      setErr(e?.message || 'failed');
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(data.error || 'the wicket did not open');
+      setLink(data.link || '');
+      setWarn(data.warn || '');
+      navigate('wicket', data.id);
+    } catch (error) {
+      setErr(error instanceof Error ? error.message : 'wicket failed');
+    } finally {
+      setBusy(false);
     }
-    setBusy(false);
-  };
+  }
 
   return (
-    <div className="mesh min-h-screen">
+    <div className="mesh min-h-screen text-[#f5f5f7]">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[28px] p-7">
-          <p className="text-[#0a84ff] text-sm mb-2">wicket</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">a small gate for a note.</h1>
-          <p className="text-neutral-400 text-sm mb-6">write something short. we hang it on the public table with a spoken phrase as the lock. discord still cards the /s link. not the vault.</p>
-          <p className="text-xs text-neutral-500 mb-2">gate phrase</p>
-          <p className="font-mono text-sm text-white mb-5 px-3 py-2 rounded-xl bg-white/5 border border-white/10">{gate}</p>
-          <textarea
-            value={note}
-            onChange={(e) => { setNote(e.target.value); setLink(''); }}
-            rows={7}
-            placeholder="what sits behind the wicket…"
-            className="w-full mb-4 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm outline-none focus:border-[#0a84ff]/40 transition-colors resize-y min-h-[140px]"
-          />
-          {err && <p className="text-xs text-red-400 mb-3">{err}</p>}
-          <button onClick={pour} disabled={busy || !note.trim()} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40 transition-transform active:scale-[0.98]">
-            {busy ? 'latching…' : 'hang behind the gate'}
-          </button>
-          {link && <p className="text-xs text-neutral-500 mt-4 break-all">discord embed + gate copied: {link}</p>}
-        </motion.div>
-      </div>
+      <main className="max-w-3xl mx-auto px-5 pt-28 pb-20">
+        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease }} className="text-[13px] tracking-[0.14em] uppercase text-[#8e8e93]">wicket</motion.p>
+        <motion.h1 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease }} className="mt-2 text-4xl sm:text-5xl font-semibold tracking-tight">Pass a file through.</motion.h1>
+        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.12, duration: 0.5 }} className="mt-4 text-[17px] leading-relaxed text-[#a1a1aa] max-w-xl">One local file, a short note, a link. The bytes go to storage and the row lands in wickets. Paste /wicket/id in Discord for the card. Large drops are warned, never refused.</motion.p>
+        {open ? (
+          <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease }} className="mt-8 rounded-3xl border border-white/10 bg-white/[0.04] p-6">
+            <p className="text-sm text-[#8e8e93]">{open.caller || 'someone'} passed this through</p>
+            <h2 className="mt-1 text-2xl font-semibold tracking-tight">{open.file_name}</h2>
+            {open.note ? <p className="mt-3 text-[#d1d1d6]">{open.note}</p> : null}
+            <p className="mt-3 text-sm text-[#8e8e93]">{open.pretty || `${open.size} bytes`}</p>
+            {warn ? <p className="mt-2 text-sm text-[#ffd60a]">{warn}</p> : null}
+            {open.file_url && !open.file_url.startsWith('data:') ? (
+              <a href={open.file_url} className="mt-5 inline-flex rounded-full bg-white text-black px-5 py-2.5 text-sm font-medium active:scale-[0.98] transition" download={open.file_name}>download</a>
+            ) : null}
+            <button onClick={() => navigate('wicket')} className="mt-4 ml-3 text-sm text-[#8e8e93] hover:text-white">leave another</button>
+          </motion.section>
+        ) : (
+          <motion.form initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }} onSubmit={onSubmit} className="mt-8 rounded-3xl border border-white/10 bg-white/[0.04] p-5 sm:p-6 space-y-3">
+            <input value={caller} onChange={(e) => setCaller(e.target.value)} placeholder="your name" className="w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 outline-none focus:border-[#0a84ff] transition" />
+            <textarea value={note} onChange={(e) => setNote(e.target.value)} maxLength={280} placeholder="what should the other person know" className="w-full min-h-24 rounded-2xl bg-black/30 border border-white/10 px-4 py-3 outline-none focus:border-[#0a84ff] transition" />
+            <label className="block rounded-2xl border border-dashed border-white/15 px-4 py-6 text-sm text-[#a1a1aa] cursor-pointer hover:border-[#0a84ff]/50 transition">
+              <input type="file" className="hidden" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+              {file ? file.name : 'choose a local file'}
+            </label>
+            {warn ? <p className="text-sm text-[#ffd60a]">{warn}</p> : null}
+            {err ? <p className="text-sm text-[#ff453a]">{err}</p> : null}
+            {link ? <p className="text-sm text-[#64d2ff] break-all">{link}</p> : null}
+            <button disabled={busy} className="rounded-full bg-white text-black px-5 py-2.5 text-sm font-medium disabled:opacity-60 active:scale-[0.98] transition">{busy ? 'Passing it…' : 'Pass through'}</button>
+          </motion.form>
+        )}
+        <ul className="mt-10 space-y-2">
+          {recent.map((row, i) => (
+            <motion.li key={row.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 * i, duration: 0.35, ease }}>
+              <a href={`/wicket/${row.id}`} className="block rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 hover:bg-white/[0.06] transition">
+                <span className="text-white">{row.file_name}</span>
+                <span className="block text-sm text-[#8e8e93]">{row.caller || 'someone'}{row.note ? ` · ${row.note}` : ''}</span>
+              </a>
+            </motion.li>
+          ))}
+        </ul>
+      </main>
+      <Footer />
     </div>
   );
 }

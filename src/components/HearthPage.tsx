@@ -1,140 +1,88 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
+import Footer from './Footer';
 import { useRouter } from './Router';
-import { fetchShare, publishShare, shareUrls } from '../lib/cloudShare';
 
-function roomCode() {
-  const alphabet = 'abcdefghjkmnpqrstuvwxyz23456789';
-  let s = '';
-  for (let i = 0; i < 5; i++) s += alphabet[Math.floor(Math.random() * alphabet.length)];
-  return s;
-}
-
-function formatBytes(n: number) {
-  if (n < 1024) return n + ' b';
-  if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' kb';
-  return (n / (1024 * 1024)).toFixed(2) + ' mb';
-}
-
-function readAsDataUrl(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const r = new FileReader();
-    r.onload = () => resolve(String(r.result || ''));
-    r.onerror = () => reject(new Error('could not read file'));
-    r.readAsDataURL(file);
-  });
-}
+type Note = { id: string; name: string; caption: string; author: string | null; created_at: string };
 
 export default function HearthPage() {
-  const { navigate } = useRouter();
-  const [code, setCode] = useState(roomCode);
-  const [join, setJoin] = useState('');
+  const { shareId } = useRouter();
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [title, setTitle] = useState('');
+  const [note, setNote] = useState('');
+  const [author, setAuthor] = useState('');
   const [busy, setBusy] = useState(false);
-  const [warn, setWarn] = useState('');
-  const [err, setErr] = useState('');
-  const [link, setLink] = useState('');
-  const [found, setFound] = useState<{ name: string; size: number; type: string; url: string; id: string } | null>(null);
+  const [error, setError] = useState('');
 
-  const send = async (list: FileList | null) => {
-    const file = list?.[0];
-    if (!file) return;
-    setErr('');
-    setWarn(file.size > 12 * 1024 * 1024 ? 'chunky file. the tab may lag while it encodes. no hard cap.' : '');
-    setBusy(true);
-    try {
-      const dataUrl = await readAsDataUrl(file);
-      const id = `hearth-${code}`;
-      const res = await publishShare({
-        id,
-        name: file.name,
-        type: file.type || 'application/octet-stream',
-        size: file.size,
-        dataUrl,
-        author: 'hearth',
-      });
-      if (!res.ok) {
-        setErr(res.error || 'could not publish to the share db');
-        return;
-      }
-      if (res.warn) setWarn(res.warn);
-      const urls = shareUrls(id);
-      setLink(urls.embed);
-      try { await navigator.clipboard.writeText(urls.embed); } catch {}
-    } catch (e: any) {
-      setErr(e?.message || 'send failed');
-    } finally {
-      setBusy(false);
-    }
-  };
+  async function load() {
+    const res = await fetch('/api/hearth');
+    const data = await res.json();
+    setNotes(Array.isArray(data.notes) ? data.notes : []);
+  }
 
-  const pull = async (e: React.FormEvent) => {
+  useEffect(() => {
+    load().catch(() => setError('hearth is quiet right now'));
+  }, []);
+
+  const focus = shareId ? notes.find((n) => n.id === shareId) : null;
+
+  async function keep(e: React.FormEvent) {
     e.preventDefault();
-    const id = `hearth-${join.trim().toLowerCase()}`;
-    setErr('');
-    setFound(null);
     setBusy(true);
+    setError('');
     try {
-      const meta = await fetchShare(id);
-      if (!meta) {
-        setErr('nothing on that hearth yet.');
-        return;
-      }
-      setFound({ id: meta.id, name: meta.name, size: meta.size, type: meta.type, url: meta.url });
-    } catch {
-      setErr('could not reach the share db.');
+      const res = await fetch('/api/hearth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, note, author }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'could not keep the note');
+      setTitle('');
+      setNote('');
+      history.pushState(null, '', `/hearth/${data.id}`);
+      await load();
+    } catch (err: any) {
+      setError(err.message || 'hearth failed');
     } finally {
       setBusy(false);
     }
-  };
+  }
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          className="glass rounded-[32px] p-8"
-        >
-          <p className="text-[#0a84ff] text-sm mb-2">hearth</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">hand a file across devices.</h1>
-          <p className="text-neutral-400 text-sm mb-8">
-            not a vault grid. one code, one drop in the share database. discord unfurls the /s card.
-          </p>
-          <div className="rounded-3xl bg-white/[0.04] border border-white/10 p-6 mb-6">
-            <p className="text-xs text-neutral-500 mb-2">this hearth</p>
-            <p className="text-4xl font-semibold tracking-[0.18em] uppercase mb-4">{code}</p>
-            <div className="flex flex-wrap gap-2 mb-5">
-              <button type="button" onClick={() => { setCode(roomCode()); setLink(''); }} className="px-4 py-2 rounded-full bg-white/5 text-sm">new code</button>
-              <button type="button" onClick={() => navigator.clipboard.writeText(code).catch(() => {})} className="px-4 py-2 rounded-full bg-white/5 text-sm">copy code</button>
-            </div>
-            <label className="block cursor-pointer rounded-[22px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-8 text-center" onDragOver={(e) => e.preventDefault()} onDrop={(e) => { e.preventDefault(); send(e.dataTransfer.files); }}>
-              <input type="file" className="hidden" onChange={(e) => send(e.target.files)} />
-              <p className="text-white font-medium">{busy ? 'warming the hearth…' : 'drop a file on this code'}</p>
-              <p className="text-xs text-neutral-500 mt-2">no file limit. just a slowness ping if it is huge.</p>
-            </label>
-          </div>
-          <form onSubmit={pull} className="flex gap-2 mb-4">
-            <input value={join} onChange={(e) => setJoin(e.target.value.toLowerCase())} placeholder="enter a code" className="flex-1 px-4 py-2.5 rounded-full bg-white/5 border border-white/10 text-sm outline-none" maxLength={8} />
-            <button type="submit" className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium">pull</button>
-          </form>
-          {warn && <p className="text-xs text-amber-300/80 mb-3">{warn}</p>}
-          {err && <p className="text-xs text-red-400 mb-3">{err}</p>}
-          {link && <p className="text-xs text-neutral-500 mb-3 break-all">discord embed copied: {link}</p>}
-          {found && (
-            <div className="rounded-2xl bg-black/30 p-4">
-              <p className="text-sm text-white mb-1">{found.name}</p>
-              <p className="text-xs text-neutral-500 mb-3">{formatBytes(found.size)} · {found.type || 'file'}</p>
-              <div className="flex flex-wrap gap-2">
-                <a href={found.url} download={found.name} className="px-4 py-2 rounded-full bg-white text-black text-sm font-medium">download</a>
-                <button onClick={() => navigate('share', found.id)} className="px-4 py-2 rounded-full bg-white/5 text-sm">open share</button>
-              </div>
-            </div>
+      <main className="pt-24 pb-20 px-5">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }} className="max-w-xl mx-auto">
+          <p className="text-[#ff9f0a] text-sm font-medium mb-2">notes, not files</p>
+          <h1 className="text-4xl font-semibold tracking-tight text-white mb-3">sit by the hearth.</h1>
+          <p className="text-neutral-400 mb-8 leading-relaxed">A short line kept in the same database as the shares. No upload, no drawer. The link still unfurls as a Discord card.</p>
+          {focus && (
+            <motion.article initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="glass rounded-3xl p-6 mb-6">
+              <h2 className="text-xl text-white font-semibold">{focus.name}</h2>
+              <p className="text-neutral-300 mt-2 leading-relaxed">{focus.caption}</p>
+              <p className="text-xs text-neutral-500 mt-3">{focus.author || 'someone'} · {new Date(focus.created_at).toLocaleString()}</p>
+            </motion.article>
           )}
+          <form onSubmit={keep} className="glass rounded-3xl p-6 space-y-3 mb-8">
+            <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="a title" className="w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 text-white outline-none focus:border-[#ff9f0a]/50" />
+            <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="what you wanted to leave" rows={4} className="w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 text-white outline-none focus:border-[#ff9f0a]/50" />
+            <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="your name, if you want it" className="w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 text-white outline-none" />
+            {error && <p className="text-red-400 text-sm">{error}</p>}
+            <button disabled={busy} className="w-full rounded-full bg-white text-black py-3 text-sm font-medium disabled:opacity-60 active:scale-[0.99] transition">{busy ? 'keeping…' : 'keep the note'}</button>
+          </form>
+          <div className="space-y-3">
+            {notes.map((n) => (
+              <a key={n.id} href={`/hearth/${n.id}`} className="block glass rounded-2xl px-4 py-3 hover:bg-white/[0.04] transition">
+                <p className="text-white font-medium">{n.name}</p>
+                <p className="text-neutral-400 text-sm line-clamp-2">{n.caption}</p>
+              </a>
+            ))}
+          </div>
         </motion.div>
-      </div>
+      </main>
+      <Footer />
     </div>
   );
 }

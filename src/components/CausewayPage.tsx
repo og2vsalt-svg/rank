@@ -1,119 +1,129 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { useRouter } from './Router';
-import { sbRest } from '../lib/supabase';
+import { publishShare, shareUrls } from '../lib/cloudShare';
 
-type Relay = {
-  id: string;
-  label: string;
-  target: string;
-  note: string | null;
-  created_at?: string;
-};
-
-function uid() {
-  return Math.random().toString(36).slice(2, 7) + Date.now().toString(36).slice(-4);
+function pretty(n: number) {
+  if (n < 1024) return n + ' b';
+  if (n < 1024 * 1024) return Math.round(n / 1024) + ' kb';
+  if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(1) + ' mb';
+  return (n / (1024 * 1024 * 1024)).toFixed(2) + ' gb';
 }
 
-function safeHttp(raw: string) {
-  try {
-    const url = new URL(raw.trim());
-    if (url.protocol !== 'https:' && url.protocol !== 'http:') return '';
-    return url.toString();
-  } catch {
-    return '';
-  }
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+
+function readAsDataUrl(file: File) {
+  return new Promise<string>((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(String(r.result || ''));
+    r.onerror = () => reject(new Error('could not read file'));
+    r.readAsDataURL(file);
+  });
 }
 
 export default function CausewayPage() {
-  const { shareId, navigate } = useRouter();
-  const [label, setLabel] = useState('');
-  const [target, setTarget] = useState('');
-  const [note, setNote] = useState('');
-  const [status, setStatus] = useState('a causeway is a short link. the older relay desk still files a timed handoff.');
   const [busy, setBusy] = useState(false);
-  const [opened, setOpened] = useState<Relay | null>(null);
-  const [rows, setRows] = useState<Relay[]>([]);
+  const [author, setAuthor] = useState('');
+  const [lock, setLock] = useState('');
+  const [warn, setWarn] = useState('');
+  const [err, setErr] = useState('');
+  const [meta, setMeta] = useState<{ name: string; size: number; type: string } | null>(null);
+  const [embed, setEmbed] = useState('');
+  const [app, setApp] = useState('');
 
-  useEffect(() => {
-    sbRest('relays?select=id,label,target,note,created_at&order=created_at.desc&limit=12')
-      .then((r) => r.json())
-      .then((data) => setRows(Array.isArray(data) ? data : []))
-      .catch(() => setRows([]));
-  }, [opened]);
-
-  useEffect(() => {
-    if (!shareId) {
-      setOpened(null);
-      return;
-    }
-    sbRest(`relays?id=eq.${encodeURIComponent(shareId)}&select=*&limit=1`)
-      .then((r) => r.json())
-      .then((data) => {
-        const row = Array.isArray(data) ? data[0] || null : null;
-        setOpened(row);
-        const href = row?.target ? safeHttp(row.target) : '';
-        if (href) window.setTimeout(() => window.location.assign(href), 900);
-      })
-      .catch(() => setOpened(null));
-  }, [shareId]);
-
-  const save = async () => {
-    const href = safeHttp(target);
-    if (!label.trim() || !href) {
-      setStatus('needs a label and an http(s) address.');
-      return;
-    }
+  const send = async (file?: File) => {
+    if (!file) return;
+    setErr('');
+    setEmbed('');
+    setApp('');
+    setMeta({ name: file.name, size: file.size, type: file.type || 'application/octet-stream' });
+    setWarn(file.size > 40 * 1024 * 1024 ? 'no cap. encoding this size can make the tab feel sleepy.' : '');
     setBusy(true);
-    const id = uid();
-    const res = await sbRest('relays', {
-      method: 'POST',
-      body: JSON.stringify({ id, label: label.trim().slice(0, 120), target: href, note: note.trim() || null }),
-    });
-    setBusy(false);
-    if (!res.ok) {
-      setStatus('the causeway did not land.');
-      return;
+    try {
+      const dataUrl = await readAsDataUrl(file);
+      const id = uid();
+      const res = await publishShare({
+        id,
+        name: file.name,
+        type: file.type || 'application/octet-stream',
+        size: file.size,
+        dataUrl,
+        lockPass: lock.trim() || undefined,
+        author: author.trim() || undefined,
+      });
+      if (!res.ok) throw new Error(res.error || 'causeway failed');
+      const urls = shareUrls(res.id || id);
+      setEmbed(urls.embed);
+      setApp(urls.app);
+      try {
+        await navigator.clipboard.writeText(urls.embed);
+      } catch {}
+      if (res.warn) setWarn(res.warn);
+    } catch (e: any) {
+      setErr(e?.message || 'causeway failed');
+    } finally {
+      setBusy(false);
     }
-    setLabel('');
-    setTarget('');
-    setNote('');
-    setStatus('filed. paste /causeway/' + id + ' into discord.');
-    navigate('causeway', id);
   };
 
   return (
-    <div className="min-h-screen mesh">
+    <div className="mesh min-h-screen">
       <Navbar />
-      <main className="max-w-3xl mx-auto px-5 pt-28 pb-24">
-        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[11px] uppercase tracking-[0.22em] text-neutral-500">causeway</motion.p>
-        <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05, duration: 0.55, ease: [0.22, 1, 0.36, 1] }} className="mt-3 text-4xl font-semibold tracking-tight text-white">a short way through</motion.h1>
-        <p className="mt-3 text-neutral-400 max-w-xl leading-relaxed">{status}</p>
-        {opened && (
-          <motion.article initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="apple-card mt-8 rounded-3xl p-6">
-            <h2 className="text-2xl text-white tracking-tight">{opened.label}</h2>
-            <p className="mt-2 text-sm text-neutral-400">{opened.note || 'opening the address in a moment.'}</p>
-            <a className="mt-4 inline-block text-sm text-[#0A84FF]" href={opened.target}>{opened.target}</a>
-          </motion.article>
-        )}
-        <div className="apple-card mt-8 rounded-3xl p-6 space-y-4">
-          <input value={label} onChange={(e) => setLabel(e.target.value)} placeholder="label" className="w-full bg-transparent border-b border-white/10 py-2 text-white outline-none placeholder:text-neutral-600" />
-          <input value={target} onChange={(e) => setTarget(e.target.value)} placeholder="https://" className="w-full bg-transparent border-b border-white/10 py-2 text-white outline-none placeholder:text-neutral-600" />
-          <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="note, optional" className="w-full bg-transparent border-b border-white/10 py-2 text-white outline-none placeholder:text-neutral-600" />
-          <button type="button" onClick={save} disabled={busy} className="rounded-full bg-white text-black px-5 py-2 text-sm font-medium disabled:opacity-50">{busy ? 'filing…' : 'file the causeway'}</button>
-        </div>
-        <ul className="mt-10 space-y-3">
-          {rows.map((row) => (
-            <li key={row.id}>
-              <button type="button" onClick={() => navigate('causeway', row.id)} className="w-full text-left apple-card rounded-2xl px-4 py-3">
-                <span className="text-white">{row.label}</span>
-                <span className="block text-xs text-neutral-500 mt-1 truncate">{row.target}</span>
-              </button>
-            </li>
-          ))}
-        </ul>
-      </main>
+      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          className="glass rounded-[32px] p-8"
+        >
+          <p className="text-[#0a84ff] text-sm mb-2">causeway</p>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">walk a local file across to the share db.</h1>
+          <p className="text-neutral-400 text-sm mb-6">
+            not the vault. one file becomes a public drop. discord unfurls the /s card. optional phrase gates the preview.
+          </p>
+          <div className="grid sm:grid-cols-2 gap-3 mb-4">
+            <input
+              value={author}
+              onChange={(e) => setAuthor(e.target.value)}
+              placeholder="optional author"
+              className="w-full px-4 py-2.5 rounded-full bg-white/5 border border-white/10 text-sm outline-none focus:border-[#0a84ff]/40 transition-colors"
+            />
+            <input
+              value={lock}
+              onChange={(e) => setLock(e.target.value)}
+              placeholder="optional lock phrase"
+              className="w-full px-4 py-2.5 rounded-full bg-white/5 border border-white/10 text-sm outline-none focus:border-[#0a84ff]/40 transition-colors"
+            />
+          </div>
+          <label
+            className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition-all duration-300"
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => {
+              e.preventDefault();
+              send(e.dataTransfer.files?.[0]);
+            }}
+          >
+            <input type="file" className="hidden" onChange={(e) => send(e.target.files?.[0] || undefined)} />
+            <p className="text-white font-medium">{busy ? 'crossing…' : 'drop a local file to share'}</p>
+            <p className="text-xs text-neutral-500 mt-2">no hard limit. only a slowness warning if it is huge.</p>
+          </label>
+          {meta && (
+            <p className="text-xs text-neutral-500 mt-4">
+              {meta.name} · {pretty(meta.size)} · {meta.type}
+            </p>
+          )}
+          {warn && <p className="text-xs text-amber-300/80 mt-3">{warn}</p>}
+          {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
+          {embed && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-6 space-y-2">
+              <p className="text-xs text-neutral-300 break-all">discord (copied): {embed}</p>
+              <p className="text-xs text-neutral-500 break-all">app: {app}</p>
+            </motion.div>
+          )}
+        </motion.div>
+      </div>
     </div>
   );
 }

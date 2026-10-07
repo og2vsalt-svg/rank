@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 
 const items = [
   { title: 'fieldbook', href: '/fieldbook', body: 'a page of notes in the fieldbook table. no file. /fieldbook/id is the discord card. older desks stay.' },
-  { title: 'causeway', href: '/causeway', body: 'a short link to any http address. the row lives in relays, not the vault. /causeway/id unfurls in discord, then opens the address. the older relay desk stays.' },
+  { title: 'stile', href: '/stile', body: 'a short link to any http address. the row lives in relays, not the vault. /stile/id unfurls in discord, then opens the address. causeway still files a local file.' },
   { title: 'inlay', href: '/inlay', body: 'stamp one local file into the pressmarks table. the bytes live in postgres, and /inlay/id is the discord card. large files are warned, never refused. not a vault drawer.' },
   { title: 'rack', href: '/rack', body: 'a public index of inlays already filed. open one to download the file from the database. discord unfurls /rack. not a vault drawer.' },
   { title: 'parcel', href: '/parcel', body: 'address one local file to a person, with a return note. bytes land in storage and a row in the share table. /parcel/id is the discord card. large drops are warned, never refused. not a vault drawer.' },

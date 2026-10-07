@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import Navbar from './Navbar';
 import { useVault } from './VaultContext';
 import { useRouter } from './Router';
-import { shareUrls } from '../lib/cloudShare';
+import { publishLocalFile, shareUrls } from '../lib/cloudShare';
 
 export default function DropPage() {
   const { addFiles, togglePublic } = useVault();
@@ -16,31 +16,34 @@ export default function DropPage() {
 
   const onFiles = async (list: FileList | null) => {
     if (!list?.length) return;
+    const file = list[0];
     const big = [...list].some((f) => f.size > 40 * 1024 * 1024);
-    setWarn(big ? 'this one is chunky. the tab might lag while it encodes. no cap tho.' : '');
+    setWarn(big ? 'this one is chunky. the tab might lag while it sends. no cap tho.' : '');
     setErr('');
     setLink('');
     setBusy(true);
     try {
       const result = await addFiles(list, 'inbox');
-      if (!result.ok) {
-        setErr(result.error || 'could not save file — are you logged in?');
+      if (result.ok && result.ids?.[0]) {
+        if (result.warn) setWarn(result.warn);
+        const id = result.ids[0];
+        const pub = await togglePublic(id);
+        if (pub.ok) {
+          setLastId(id);
+          const urls = shareUrls(id);
+          setLink(urls.app);
+          try { await navigator.clipboard.writeText(urls.app); } catch {}
+          return;
+        }
+      }
+      const direct = await publishLocalFile(file, { caption: 'quick drop' });
+      if (!direct.ok || !direct.id) {
+        setErr(direct.error || result.error || 'could not publish the file');
         return;
       }
-      if (result.warn) setWarn(result.warn);
-      const id = result.ids?.[0];
-      if (!id) {
-        setErr('saved, but no id to publish');
-        return;
-      }
-      const pub = await togglePublic(id);
-      if (!pub.ok) {
-        setErr(pub.error || 'saved locally but cloud publish failed');
-        setLastId(id);
-        return;
-      }
-      setLastId(id);
-      const urls = shareUrls(id);
+      if (direct.warn) setWarn(direct.warn);
+      setLastId(direct.id);
+      const urls = shareUrls(direct.id);
       setLink(urls.app);
       try { await navigator.clipboard.writeText(urls.app); } catch {}
     } catch (e: any) {
@@ -57,7 +60,7 @@ export default function DropPage() {
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-[32px] p-8">
           <p className="text-[#0a84ff] text-sm mb-2">quick drop</p>
           <h1 className="text-3xl font-semibold mb-3">upload local, flip public.</h1>
-          <p className="text-neutral-400 text-sm mb-6">lands in your vault, then publishes to the cloud db so anyone with the link can open it.</p>
+          <p className="text-neutral-400 text-sm mb-6">tries the vault first, then writes the file straight into storage and the share table if you are not signed in.</p>
           <label
             className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition"
             onDragOver={(e) => e.preventDefault()}

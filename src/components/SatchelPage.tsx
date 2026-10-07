@@ -1,136 +1,149 @@
 import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
+import Footer from './Footer';
 import { useRouter } from './Router';
-import { getSatchel, prettySize, saveSatchel, toggleSatchelStep, uploadShare } from '../lib/db';
+import { publishLocalFile } from '../lib/cloudShare';
 
-type Step = { id: string; label: string; done: boolean };
+const SB_URL = (
+  (import.meta as any).env?.VITE_SUPABASE_URL ||
+  'https://tqfocdktvjuwoiyfgesb.supabase.co'
+).replace(/\/$/, '');
+const SB_KEY =
+  (import.meta as any).env?.VITE_SUPABASE_ANON_KEY ||
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
+
+type Piece = { id: string; name: string; mime: string; size: number; url: string };
+
+function pretty(n: number) {
+  if (n < 1024) return `${n} B`;
+  if (n < 1024 * 1024) return `${Math.max(1, Math.round(n / 1024))} KB`;
+  if (n < 1024 * 1024 * 1024) return `${(n / (1024 * 1024)).toFixed(1)} MB`;
+  return `${(n / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+}
+
+async function loadSatchel(id: string) {
+  const res = await fetch(`${SB_URL}/rest/v1/satchels?id=eq.${encodeURIComponent(id)}&select=*&limit=1`, {
+    headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` },
+  });
+  if (!res.ok) return null;
+  const rows = await res.json();
+  return rows[0] || null;
+}
 
 export default function SatchelPage() {
   const { shareId } = useRouter();
-  const [file, setFile] = useState<File | null>(null);
-  const [title, setTitle] = useState('');
-  const [note, setNote] = useState('');
+  const [title, setTitle] = useState('weekend bag');
+  const [cover, setCover] = useState('');
   const [author, setAuthor] = useState('');
-  const [draft, setDraft] = useState('open the file\nreply when it lands');
+  const [accent, setAccent] = useState('#0A84FF');
+  const [files, setFiles] = useState<File[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [link, setLink] = useState('');
-  const [row, setRow] = useState<any>(null);
-
-  const warn = useMemo(() => {
-    if (!file) return '';
-    if (file.size > 80 * 1024 * 1024) return 'this file is large. the tab may feel slow while it uploads. nothing is refused.';
-    if (file.size > 20 * 1024 * 1024) return 'over 20 MB. it will go through, just leave the tab open.';
-    return '';
-  }, [file]);
+  const [bag, setBag] = useState<any>(null);
 
   useEffect(() => {
     if (!shareId) return;
-    getSatchel(shareId).then(setRow).catch(() => setRow(null));
+    loadSatchel(shareId).then(setBag);
   }, [shareId]);
 
-  async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!file) return;
-    setBusy(true);
+  const slow = useMemo(() => files.some((file) => file.size > 40 * 1024 * 1024) || files.reduce((n, file) => n + file.size, 0) > 80 * 1024 * 1024, [files]);
+
+  async function pack() {
     setError('');
+    if (!title.trim() || !files.length) {
+      setError('name the bag and drop at least one file.');
+      return;
+    }
+    setBusy(true);
     try {
-      const share = await uploadShare(file, note.trim(), author.trim());
-      const steps: Step[] = draft
-        .split('\n')
-        .map((line) => line.trim())
-        .filter(Boolean)
-        .slice(0, 12)
-        .map((label, i) => ({ id: String(i + 1), label, done: false }));
-      const saved = await saveSatchel({
-        shareId: share.id,
-        title: title.trim() || file.name,
-        note: note.trim(),
-        author: author.trim(),
-        steps,
-        fileName: file.name,
-        fileUrl: share.file_url,
-        mime: file.type,
-        size: file.size,
+      const pieces: Piece[] = [];
+      for (const file of files) {
+        const sent = await publishLocalFile(file, { caption: cover, author, color: accent, cardTitle: file.name });
+        if (!sent.ok || !sent.id || !sent.url) throw new Error(sent.error || `could not file ${file.name}`);
+        pieces.push({ id: sent.id, name: file.name, mime: file.type || 'application/octet-stream', size: file.size, url: sent.url });
+      }
+      const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+      const row = { id, title: title.trim(), cover: cover.trim() || null, author: author.trim() || null, accent, pieces };
+      const saved = await fetch(`${SB_URL}/rest/v1/satchels`, {
+        method: 'POST',
+        headers: {
+          apikey: SB_KEY,
+          Authorization: `Bearer ${SB_KEY}`,
+          'Content-Type': 'application/json',
+          Prefer: 'return=representation',
+        },
+        body: JSON.stringify(row),
       });
-      const url = `${window.location.origin}/satchel/${saved.id}`;
-      setLink(url);
-      setRow(saved);
-      history.pushState(null, '', `/satchel/${saved.id}`);
-    } catch (err) {
-      setError(err instanceof Error ? err.message.slice(0, 240) : 'could not pack the satchel');
+      if (!saved.ok) throw new Error((await saved.text()).slice(0, 180) || 'bag row failed');
+      const href = `${location.origin}/satchel/${id}`;
+      setLink(href);
+      setBag(row);
+    } catch (err: any) {
+      setError(err?.message || 'could not pack the bag');
     } finally {
       setBusy(false);
     }
   }
 
-  async function flip(stepId: string) {
-    if (!row) return;
-    const next = (row.steps || []).map((s: Step) => (s.id === stepId ? { ...s, done: !s.done } : s));
-    setRow({ ...row, steps: next });
-    try {
-      await toggleSatchelStep(row.id, next);
-    } catch {
-      setError('the tick did not save. try again.');
-    }
-  }
+  const pieces: Piece[] = Array.isArray(bag?.pieces) ? bag.pieces : [];
 
   return (
-    <div className="min-h-screen bg-[#050506] text-white">
+    <div className="min-h-screen bg-[#0b0b0d] text-white">
       <Navbar />
-      <main className="max-w-xl mx-auto px-5 pt-24 pb-24">
-        <motion.p initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="text-[#0a84ff] text-sm mb-3">satchel</motion.p>
-        <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }} className="text-4xl font-semibold tracking-tight mb-3">
-          Pack a file with a short checklist.
-        </motion.h1>
-        <p className="text-neutral-400 mb-8 leading-relaxed">
-          Different from the vault. A local file goes into the shared database, then rides with a few steps the other person can tick. Paste the link in Discord for a card. Older desks stay put. Large files are warned, never blocked.
-        </p>
+      <main className="max-w-3xl mx-auto px-5 pt-24 pb-20">
+        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[13px] tracking-wide text-[#0a84ff]">satchel</motion.p>
+        <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="mt-2 text-4xl font-semibold tracking-tight">One bag. Several files.</motion.h1>
+        <p className="mt-3 text-[15px] leading-relaxed text-white/60 max-w-xl">Not the vault. Pick files from this machine, file each one into the share table, and keep the bag as a single Discord card. Nothing is refused for size — a large drop only warns that the browser may pause.</p>
 
-        {row ? (
-          <motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="rounded-[28px] border border-white/10 bg-white/[0.04] p-5">
-            <p className="text-xs uppercase tracking-wide text-neutral-500">{row.author || 'unsigned'}</p>
-            <h2 className="text-2xl font-semibold tracking-tight mt-1">{row.title}</h2>
-            {row.note && <p className="text-neutral-400 mt-2">{row.note}</p>}
-            <a href={row.file_url} className="mt-4 flex items-center justify-between rounded-2xl bg-black/40 border border-white/10 px-4 py-3 hover:border-white/25 transition" download>
-              <span>
-                <span className="block text-sm">{row.file_name || 'file'}</span>
-                <span className="block text-xs text-neutral-500">{prettySize(Number(row.size) || 0)}</span>
-              </span>
-              <span className="text-sm text-[#0a84ff]">open</span>
-            </a>
+        {shareId && bag && (
+          <section className="mt-8 rounded-3xl border border-white/10 bg-white/[0.03] p-5">
+            <h2 className="text-xl font-medium">{bag.title}</h2>
+            {bag.cover && <p className="mt-2 text-sm text-white/60">{bag.cover}</p>}
             <ul className="mt-4 space-y-2">
-              {(row.steps || []).map((step: Step) => (
-                <li key={step.id}>
-                  <button onClick={() => flip(step.id)} className="w-full text-left rounded-2xl px-4 py-3 bg-black/30 border border-white/10 flex items-center gap-3 active:scale-[0.99] transition">
-                    <span className={`w-5 h-5 rounded-full border ${step.done ? 'bg-[#0a84ff] border-[#0a84ff]' : 'border-white/30'}`} />
-                    <span className={step.done ? 'text-neutral-500 line-through' : ''}>{step.label}</span>
-                  </button>
+              {pieces.map((piece) => (
+                <li key={piece.id} className="flex items-center justify-between gap-3 rounded-2xl bg-black/30 px-3 py-2 text-sm">
+                  <a className="truncate hover:text-[#0a84ff]" href={piece.url} target="_blank" rel="noreferrer">{piece.name}</a>
+                  <span className="shrink-0 text-white/40">{pretty(piece.size || 0)}</span>
                 </li>
               ))}
             </ul>
-            <p className="mt-4 text-xs text-neutral-500 break-all">{link || `${window.location.origin}/satchel/${row.id}`}</p>
-          </motion.section>
-        ) : (
-          <form onSubmit={onSubmit} className="rounded-[28px] border border-white/10 bg-white/[0.04] p-5 shadow-[0_20px_80px_rgba(0,0,0,0.35)]">
-            <label className="block rounded-2xl border border-dashed border-white/15 bg-black/30 px-4 py-8 text-center cursor-pointer hover:border-white/30 transition">
-              <input type="file" className="hidden" onChange={(e) => setFile(e.target.files?.[0] || null)} />
-              <span className="block text-sm">{file ? file.name : 'Choose a file from this computer'}</span>
-              <span className="block text-xs text-neutral-500 mt-1">{file ? prettySize(file.size) : 'stored with the handoff, not only in the vault'}</span>
-            </label>
-            {warn && <p className="mt-3 text-sm text-amber-200/90">{warn}</p>}
-            <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="what this handoff is called" className="mt-4 w-full rounded-2xl bg-black/40 border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/60" />
-            <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="your name, optional" className="mt-3 w-full rounded-2xl bg-black/40 border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/60" />
-            <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="a line for the Discord card" rows={2} className="mt-3 w-full rounded-2xl bg-black/40 border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/60" />
-            <textarea value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="one step per line" rows={4} className="mt-3 w-full rounded-2xl bg-black/40 border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/60" />
-            {error && <p className="mt-3 text-sm text-red-300">{error}</p>}
-            <button disabled={!file || busy} className="mt-4 w-full rounded-full bg-white text-black py-3 text-sm font-medium disabled:opacity-40 active:scale-[0.99] transition">
-              {busy ? 'packing…' : 'share this satchel'}
-            </button>
-          </form>
+          </section>
         )}
+
+        <section className="mt-8 rounded-[28px] border border-white/10 bg-gradient-to-b from-white/[0.05] to-transparent p-5 shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
+          <label className="block text-xs text-white/45">bag name</label>
+          <input value={title} onChange={(e) => setTitle(e.target.value)} className="mt-1 w-full rounded-2xl bg-black/40 border border-white/10 px-3 py-2.5 outline-none focus:border-[#0a84ff]" />
+          <label className="block mt-4 text-xs text-white/45">cover line</label>
+          <input value={cover} onChange={(e) => setCover(e.target.value)} placeholder="what is in here" className="mt-1 w-full rounded-2xl bg-black/40 border border-white/10 px-3 py-2.5 outline-none focus:border-[#0a84ff]" />
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs text-white/45">from</label>
+              <input value={author} onChange={(e) => setAuthor(e.target.value)} className="mt-1 w-full rounded-2xl bg-black/40 border border-white/10 px-3 py-2.5 outline-none focus:border-[#0a84ff]" />
+            </div>
+            <div>
+              <label className="block text-xs text-white/45">card accent</label>
+              <input value={accent} onChange={(e) => setAccent(e.target.value)} className="mt-1 w-full rounded-2xl bg-black/40 border border-white/10 px-3 py-2.5 outline-none focus:border-[#0a84ff]" />
+            </div>
+          </div>
+          <label className="mt-4 flex cursor-pointer items-center justify-center rounded-2xl border border-dashed border-white/15 px-4 py-8 text-sm text-white/70 hover:border-[#0a84ff]/60 transition-colors">
+            <input type="file" multiple className="hidden" onChange={(e) => setFiles(Array.from(e.target.files || []))} />
+            {files.length ? `${files.length} file${files.length === 1 ? '' : 's'} ready · ${pretty(files.reduce((n, file) => n + file.size, 0))}` : 'choose local files'}
+          </label>
+          {slow && <p className="mt-3 text-xs text-amber-300">this bag is heavy. sending may feel slow. there is no size cap.</p>}
+          {error && <p className="mt-3 text-xs text-red-300">{error}</p>}
+          <button disabled={busy} onClick={pack} className="mt-4 rounded-full bg-[#0a84ff] px-5 py-2.5 text-sm font-medium text-white disabled:opacity-50 transition-transform active:scale-[0.98]">
+            {busy ? 'packing…' : 'pack and share'}
+          </button>
+          {link && (
+            <p className="mt-4 text-sm break-all text-white/80">
+              Discord card: <a className="text-[#0a84ff]" href={link}>{link}</a>
+            </p>
+          )}
+        </section>
       </main>
+      <Footer />
     </div>
   );
 }

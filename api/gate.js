@@ -68,6 +68,7 @@ import mantel from '../lib/endpoints/mantel.js';
 import flyleaf from '../lib/endpoints/flyleaf.js';
 import endpaper from '../lib/endpoints/endpaper.js';
 import parcel from '../lib/endpoints/parcel.js';
+import dossier from '../lib/endpoints/dossier.js';
 import pressmark from '../lib/endpoints/pressmark.js';
 import colophon from '../lib/endpoints/colophon.js';
 
@@ -139,6 +140,7 @@ const routes = {
   flyleaf,
   endpaper,
   parcel,
+  dossier,
   inlay: pressmark,
   rack: pressmark,
   colophon,

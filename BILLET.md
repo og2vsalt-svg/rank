@@ -1,0 +1,1 @@
+Billet files one local file into storage, then a row in billets with a name on the envelope. Ack marks that row received. Paste /billet/id or /ack in Discord for a card. No size cap, only a slowness note.

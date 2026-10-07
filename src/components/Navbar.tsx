@@ -5,19 +5,17 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'billet', label: 'billet' },
+  { to: 'ack', label: 'ack' },
   { to: 'hamper', label: 'hamper' },
   { to: 'marginalia', label: 'marginalia' },
   { to: 'outbox', label: 'outbox' },
   { to: 'postbag', label: 'postbag' },
-  { to: 'windlass', label: 'windlass' },
-  { to: 'inkstand', label: 'inkstand' },
-  { to: 'waypost', label: 'waypost' },
-  { to: 'lodestone', label: 'lodestone' },
   { to: 'vault', label: 'vault' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
-  { title: 'new', items: [{ to: 'hamper', label: 'hamper' }, { to: 'marginalia', label: 'marginalia' }, { to: 'outbox', label: 'outbox' }, { to: 'postbag', label: 'postbag' }, { to: 'windlass', label: 'windlass' }, { to: 'inkstand', label: 'inkstand' }, { to: 'waypost', label: 'waypost' }, { to: 'lodestone', label: 'lodestone' }, { to: 'mariner', label: 'mariner' }, { to: 'logline', label: 'logline' }, { to: 'chipboard', label: 'chipboard' }, { to: 'watchglass', label: 'watchglass' }, { to: 'sandglass', label: 'sandglass' }, { to: 'fathom', label: 'fathom' }, { to: 'sconce', label: 'sconce' }, { to: 'oakdesk', label: 'oakdesk' }, { to: 'daybook', label: 'daybook' }] },
+  { title: 'new', items: [{ to: 'billet', label: 'billet' }, { to: 'ack', label: 'ack' }, { to: 'hamper', label: 'hamper' }, { to: 'marginalia', label: 'marginalia' }, { to: 'outbox', label: 'outbox' }, { to: 'postbag', label: 'postbag' }, { to: 'windlass', label: 'windlass' }, { to: 'inkstand', label: 'inkstand' }, { to: 'waypost', label: 'waypost' }, { to: 'lodestone', label: 'lodestone' }, { to: 'mariner', label: 'mariner' }, { to: 'logline', label: 'logline' }, { to: 'chipboard', label: 'chipboard' }, { to: 'watchglass', label: 'watchglass' }, { to: 'sandglass', label: 'sandglass' }, { to: 'fathom', label: 'fathom' }, { to: 'sconce', label: 'sconce' }, { to: 'oakdesk', label: 'oakdesk' }, { to: 'daybook', label: 'daybook' }] },
   { title: 'hosting', items: [{ to: 'hamper', label: 'hamper' }, { to: 'outbox', label: 'outbox' }, { to: 'windlass', label: 'windlass' }, { to: 'waypost', label: 'waypost' }, { to: 'lodestone', label: 'lodestone' }, { to: 'logline', label: 'logline' }, { to: 'fathom', label: 'fathom' }, { to: 'oakdesk', label: 'oakdesk' }, { to: 'daybook', label: 'daybook' }, { to: 'vault', label: 'vault' }, { to: 'scuttle', label: 'scuttle' }, { to: 'forefoot', label: 'forefoot' }, { to: 'catfall', label: 'catfall' }] },
   { title: 'notes', items: [{ to: 'marginalia', label: 'marginalia' }, { to: 'inkstand', label: 'inkstand' }, { to: 'mariner', label: 'mariner' }, { to: 'sconce', label: 'sconce' }, { to: 'pinboard', label: 'pinboard' }, { to: 'wayleave', label: 'wayleave' }, { to: 'nightglass', label: 'nightglass' }, { to: 'quire', label: 'quire' }, { to: 'docket', label: 'docket' }, { to: 'vesper', label: 'vesper' }] },
   { title: 'share', items: [{ to: 'hamper', label: 'hamper' }, { to: 'marginalia', label: 'marginalia' }, { to: 'outbox', label: 'outbox' }, { to: 'postbag', label: 'postbag' }, { to: 'waypost', label: 'waypost' }, { to: 'lodestone', label: 'lodestone' }, { to: 'chipboard', label: 'chipboard' }, { to: 'fathom', label: 'fathom' }, { to: 'coak', label: 'coak' }, { to: 'thimble', label: 'thimble' }, { to: 'grommet', label: 'grommet' }, { to: 'deadlight', label: 'deadlight' }, { to: 'tender', label: 'tender' }, { to: 'cask', label: 'cask' }] },

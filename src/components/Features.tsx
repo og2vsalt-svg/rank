@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'billet', href: '/billet', body: 'file one local file as a delivery slip. the bytes go to storage, a row lands in billets, and /billet/id is the discord card. large slips are warned, never refused. not a vault drawer.' },
+  { title: 'ack', href: '/ack', body: 'the receipt board for billets. mark a slip received and the stamp writes back to the same row. discord unfurls /ack. not a file vault.' },
   { title: 'watchglass', href: '/watchglass', body: 'write one local file into the public share table, with a keep note beside it. no size gate, only a slowness note. /watchglass/id is the discord card. not a vault drawer.' },
   { title: 'sandglass', href: '/sandglass', body: 'a public index of watchglass drops already in the database. open one to read the note and the file. discord unfurls /sandglass. not a vault drawer.' },
   { title: 'oakdesk', href: '/oakdesk', body: 'write one local file into the oakdesk table in Postgres. a public url is kept on the row when storage accepts it. no size gate, only a slowness note. /oakdesk/id is the discord card. not a vault drawer.' },

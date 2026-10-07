@@ -1,108 +1,172 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
 import { publishLocalFile } from '../lib/cloudShare';
+import { sbRest } from '../lib/supabase';
+import { useRouter } from './Router';
 
-const SB_URL = (
-  (import.meta as any).env?.VITE_SUPABASE_URL ||
-  'https://tqfocdktvjuwoiyfgesb.supabase.co'
-).replace(/\/$/, '');
-const SB_KEY =
-  (import.meta as any).env?.VITE_SUPABASE_ANON_KEY ||
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
+type Slip = {
+  id: string;
+  title: string;
+  for_whom: string | null;
+  note: string | null;
+  author: string | null;
+  file_name: string;
+  mime: string | null;
+  size: number;
+  file_url: string;
+  share_id: string | null;
+  received_at: string | null;
+  received_by: string | null;
+  created_at: string;
+};
 
-type LinkRow = { id: string; url: string; note: string | null; author: string | null; created_at: string };
+function pretty(n: number) {
+  if (n < 1024) return `${n} B`;
+  if (n < 1024 * 1024) return `${Math.round(n / 1024)} KB`;
+  if (n < 1024 * 1024 * 1024) return `${(n / (1024 * 1024)).toFixed(1)} MB`;
+  return `${(n / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+}
 
 export default function BilletPage() {
-  const [url, setUrl] = useState('');
+  const { shareId, navigate } = useRouter();
+  const [file, setFile] = useState<File | null>(null);
+  const [title, setTitle] = useState('');
+  const [forWhom, setForWhom] = useState('');
   const [note, setNote] = useState('');
   const [author, setAuthor] = useState('');
+  const [warn, setWarn] = useState('');
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
-  const [card, setCard] = useState('');
-  const [rows, setRows] = useState<LinkRow[]>([]);
-  const [copied, setCopied] = useState(false);
+  const [err, setErr] = useState('');
+  const [link, setLink] = useState('');
+  const [open, setOpen] = useState<Slip | null>(null);
+  const [recent, setRecent] = useState<Slip[]>([]);
 
-  const load = async () => {
-    const res = await fetch(`${SB_URL}/rest/v1/links?select=id,url,note,author,created_at&order=created_at.desc&limit=12`, {
-      headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` },
-    });
-    if (!res.ok) return;
-    const data = await res.json();
-    if (Array.isArray(data)) setRows(data);
+  const size = useMemo(() => file?.size || 0, [file]);
+
+  const load = () => {
+    sbRest('billets?select=*&order=created_at.desc&limit=8')
+      .then((r) => r.json())
+      .then((data) => setRecent(Array.isArray(data) ? data : []))
+      .catch(() => {});
   };
 
   useEffect(() => { load(); }, []);
 
+  useEffect(() => {
+    if (!shareId) return;
+    sbRest(`billets?id=eq.${encodeURIComponent(shareId)}&select=*&limit=1`)
+      .then((r) => r.json())
+      .then((data) => setOpen(Array.isArray(data) ? data[0] || null : null))
+      .catch(() => setOpen(null));
+  }, [shareId]);
+
+  const onFile = (list: FileList | null) => {
+    const next = list && list[0] ? list[0] : null;
+    setFile(next);
+    setErr('');
+    setLink('');
+    setWarn(next && next.size > 25 * 1024 * 1024 ? 'large slip. the tab may pause while it sends. nothing is refused.' : '');
+  };
+
   const send = async () => {
-    const clean = url.trim();
-    if (!/^https?:\/\//i.test(clean)) {
-      setError('needs a full http or https address');
+    if (!file) return;
+    setBusy(true);
+    setErr('');
+    const published = await publishLocalFile(file, {
+      caption: note || title || undefined,
+      author: author || undefined,
+      cardTitle: title || file.name,
+    });
+    if (!published.ok || !published.url) {
+      setBusy(false);
+      setErr(published.error || 'could not store the file');
       return;
     }
-    setBusy(true);
-    setError('');
-    setCopied(false);
-    const slip = new File(
-      [`${note.trim() || 'a billet'}\n${clean}\n`],
-      'billet.txt',
-      { type: 'text/plain' },
-    );
-    const filed = await publishLocalFile(slip, {
-      caption: (note.trim() || clean).slice(0, 180),
-      author: author.trim() || undefined,
-    });
-    const ins = await fetch(`${SB_URL}/rest/v1/links`, {
+    const id = published.id || Date.now().toString(36);
+    const row = await sbRest('billets', {
       method: 'POST',
-      headers: {
-        apikey: SB_KEY,
-        Authorization: `Bearer ${SB_KEY}`,
-        'Content-Type': 'application/json',
-        Prefer: 'return=representation',
-      },
-      body: JSON.stringify({ url: clean, note: note.trim() || null, author: author.trim() || null }),
+      body: JSON.stringify({
+        id,
+        title: title || file.name,
+        for_whom: forWhom || null,
+        note: note || null,
+        author: author || null,
+        file_name: file.name,
+        mime: file.type || 'application/octet-stream',
+        size: file.size,
+        file_url: published.url,
+        share_id: published.id || null,
+      }),
     });
     setBusy(false);
-    if (!ins.ok) {
-      setError((await ins.text()).slice(0, 180) || 'the shelf did not take it');
+    if (!row.ok) {
+      setErr((await row.text()).slice(0, 180));
       return;
     }
-    setCard(filed.embed || '');
-    setUrl('');
+    setLink(`${window.location.origin}/billet/${id}`);
+    setFile(null);
+    setTitle('');
     setNote('');
+    setForWhom('');
     load();
   };
 
   return (
-    <div className="mesh min-h-screen">
+    <div className="min-h-screen bg-[#050506] text-[#f5f5f7]">
       <Navbar />
-      <main className="mx-auto max-w-2xl px-5 pb-24 pt-10">
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}>
-          <p className="text-[12px] uppercase tracking-[0.16em] text-white/45">billet</p>
-          <h1 className="mt-2 text-[34px] font-semibold tracking-[-0.04em]">a slip for an address</h1>
-          <p className="mt-3 text-[15px] leading-relaxed text-white/60">This desk is not a file cabinet. It keeps a link on the shelf, then files a one-line card so Discord can unfurl it. The address stays readable on the quay.</p>
-        </motion.div>
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08, duration: 0.5 }} className="glass mt-8 rounded-3xl p-5">
-          <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://" className="w-full rounded-2xl bg-black/30 px-4 py-3 text-[15px] outline-none placeholder:text-white/30" />
-          <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="what it is" className="mt-3 w-full rounded-2xl bg-black/30 px-4 py-3 text-[15px] outline-none placeholder:text-white/30" />
-          <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="from" className="mt-3 w-full rounded-2xl bg-black/30 px-4 py-3 text-[15px] outline-none placeholder:text-white/30" />
-          <button onClick={send} disabled={busy || !url.trim()} className="mt-4 rounded-full bg-white px-5 py-2.5 text-[14px] font-medium text-black transition hover:bg-neutral-200 disabled:opacity-50">{busy ? 'filing…' : 'leave the slip'}</button>
-          {error && <p className="mt-3 text-[13px] text-red-300/90">{error}</p>}
-          {card && (
-            <div className="mt-4 flex items-center gap-2">
-              <p className="min-w-0 flex-1 truncate text-[13px] text-white/70">{card}</p>
-              <button onClick={async () => { await navigator.clipboard.writeText(card); setCopied(true); }} className="shrink-0 rounded-full bg-white/10 px-3 py-1.5 text-[12px] text-white">{copied ? 'copied' : 'copy'}</button>
-            </div>
-          )}
-        </motion.div>
-        <div className="mt-6 space-y-2">
-          {rows.map((row) => (
-            <a key={row.id} href={row.url} target="_blank" rel="noreferrer" className="glass block rounded-2xl px-4 py-3 transition hover:-translate-y-0.5">
-              <p className="truncate text-[14px] text-white">{row.note || row.url}</p>
-              <p className="truncate text-[12px] text-white/40">{row.url}</p>
-            </a>
-          ))}
-        </div>
+      <main className="mx-auto max-w-3xl px-5 pb-24 pt-28">
+        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[13px] tracking-[0.16em] uppercase text-white/40">delivery slip</motion.p>
+        <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 }} className="mt-2 text-4xl font-semibold tracking-tight">Billet</motion.h1>
+        <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-white/60">One local file, a name on the envelope, and a note. The bytes go to storage, then a row lands in the billets table. Someone can mark it received on ack. Large slips get a slowness note, not a ceiling. Paste /billet/id in Discord for a card.</p>
+
+        {open && (
+          <motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="mt-8 rounded-3xl border border-white/10 bg-white/[0.04] p-5 backdrop-blur-xl">
+            <p className="text-[12px] uppercase tracking-[0.14em] text-white/40">{open.received_at ? 'received' : 'waiting'}</p>
+            <h2 className="mt-1 text-2xl font-semibold tracking-tight">{open.title}</h2>
+            <p className="mt-2 text-sm text-white/60">{open.for_whom ? `for ${open.for_whom}` : 'no name on the envelope'}{open.author ? ` · from ${open.author}` : ''}</p>
+            {open.note && <p className="mt-3 text-[15px] leading-relaxed text-white/80">{open.note}</p>}
+            <a href={open.file_url} className="mt-4 inline-flex items-center gap-2 rounded-full bg-[#0a84ff] px-4 py-2 text-sm font-medium text-white transition-transform duration-200 hover:scale-[1.02]">{open.file_name} · {pretty(Number(open.size) || 0)}</a>
+          </motion.section>
+        )}
+
+        <section className="mt-8 rounded-[28px] border border-white/10 bg-white/[0.03] p-5 shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
+          <label className="block text-sm text-white/70">
+            file
+            <input type="file" onChange={(e) => onFile(e.target.files)} className="mt-2 block w-full text-sm text-white/70 file:mr-3 file:rounded-full file:border-0 file:bg-white/10 file:px-4 file:py-2 file:text-white" />
+          </label>
+          {file && <p className="mt-2 text-sm text-white/50">{file.name} · {pretty(size)}</p>}
+          {warn && <p className="mt-2 text-sm text-amber-200/80">{warn}</p>}
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="slip title" className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none transition focus:border-[#0a84ff]" />
+            <input value={forWhom} onChange={(e) => setForWhom(e.target.value)} placeholder="for whom" className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none transition focus:border-[#0a84ff]" />
+            <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="from" className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none transition focus:border-[#0a84ff]" />
+            <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="note on the slip" className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none transition focus:border-[#0a84ff]" />
+          </div>
+          <button disabled={!file || busy} onClick={send} className="mt-4 rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition-transform duration-200 hover:scale-[1.02] disabled:opacity-40">{busy ? 'sending…' : 'file the slip'}</button>
+          {err && <p className="mt-3 text-sm text-red-300">{err}</p>}
+          {link && <p className="mt-3 text-sm text-white/70">card link <a className="text-[#0a84ff]" href={link}>{link}</a></p>}
+        </section>
+
+        <section className="mt-10">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-medium">recent slips</h2>
+            <button onClick={() => navigate('ack')} className="text-sm text-[#0a84ff]">open ack</button>
+          </div>
+          <ul className="mt-3 space-y-2">
+            {recent.map((row) => (
+              <li key={row.id}>
+                <button onClick={() => navigate('billet', row.id)} className="flex w-full items-center justify-between rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-3 text-left transition hover:bg-white/[0.06]">
+                  <span>
+                    <span className="block text-sm font-medium">{row.title}</span>
+                    <span className="text-xs text-white/45">{row.file_name} · {pretty(Number(row.size) || 0)}</span>
+                  </span>
+                  <span className="text-xs text-white/40">{row.received_at ? 'received' : 'open'}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </section>
       </main>
     </div>
   );

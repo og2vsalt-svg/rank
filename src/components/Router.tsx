@@ -25,12 +25,9 @@ function parseLocation() {
   const [path, qs] = raw.split('?');
   const params = new URLSearchParams(qs || window.location.search.replace(/^\?/, ''));
   const slug = (path || '').replace(/[^a-z0-9/_-]/gi, '').toLowerCase();
-  // Path wins. A leftover hash used to hide /holdfast and other desks.
+  // Path wins. A leftover hash used to hide desks that live on a real path.
   if (parts.length >= 2 && SHARE_PREFIX.has(parts[0])) {
     return { route: 'share', shareId: decodeURIComponent(parts[1]) };
-  }
-  if (parts.length >= 2 && parts[0] === 'parcel') {
-    return { route: 'hawse', shareId: decodeURIComponent(parts[1]) };
   }
   if (parts.length >= 2) {
     return { route: parts[0].toLowerCase(), shareId: decodeURIComponent(parts[1]) };

@@ -62,6 +62,8 @@ import sideboard from '../lib/endpoints/sideboard.js';
 import billet from '../lib/endpoints/billet.js';
 import porch from '../lib/endpoints/porch.js';
 import hearth from '../lib/endpoints/hearth.js';
+import apron from '../lib/endpoints/apron.js';
+import mantel from '../lib/endpoints/mantel.js';
 
 const routes = {
   atelier, beacon, card, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -126,6 +128,8 @@ const routes = {
   ack: billet,
   porch,
   hearth,
+  apron,
+  mantel,
 };
 
 export default function handler(req, res) {

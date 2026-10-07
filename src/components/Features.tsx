@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'apron', href: '/apron', body: 'leave one local file for a person, with a folded note. bytes land in storage and a row in the share table. /apron/id is the discord card. large drops are warned, never refused. not a vault drawer.' },
+  { title: 'mantel', href: '/mantel', body: 'a letter shelf beside the files. no upload. discord unfurls /mantel/id. older desks stay.' },
   { title: 'billet', href: '/billet', body: 'file one local file as a delivery slip. the bytes go to storage, a row lands in billets, and /billet/id is the discord card. large slips are warned, never refused. not a vault drawer.' },
   { title: 'ack', href: '/ack', body: 'the receipt board for billets. mark a slip received and the stamp writes back to the same row. discord unfurls /ack. not a file vault.' },
   { title: 'watchglass', href: '/watchglass', body: 'write one local file into the public share table, with a keep note beside it. no size gate, only a slowness note. /watchglass/id is the discord card. not a vault drawer.' },

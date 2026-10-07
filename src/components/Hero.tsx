@@ -13,17 +13,13 @@ export default function Hero() {
           drop a file.<br />share only if you want.
         </motion.h1>
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.12 }} className="text-neutral-400 text-lg leading-relaxed max-w-xl mb-8">
-          A quiet place for clips, docs, and dumps. The shelf writes the file into the shared database. Large drops get a warning, not a refusal. Older desks are still on their routes.
+          A quiet place for clips, docs, and dumps. Fold one on the linen press, or leave a note in the stillroom. Large drops get a warning, not a refusal. Older desks stay on their routes.
         </motion.p>
         <div className="flex flex-wrap gap-3 mb-12">
-          <button onClick={() => navigate('flyleaf')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">write a flyleaf</button>
-          <button onClick={() => navigate('endpaper')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">close with an endpaper</button>
-          <button onClick={() => navigate('apron')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">leave it on the apron</button>
-          <button onClick={() => navigate('mantel')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">set a letter on the mantel</button>
-          <button onClick={() => navigate('porch')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">porch</button>
-          <button onClick={() => navigate('hearth')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">sit by the hearth</button>
-          <button onClick={() => navigate('watchglass')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">file on watchglass</button>
-          <button onClick={() => navigate('handoff')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">hand a file off</button>
+          <button onClick={() => navigate('linen')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">fold on the linen press</button>
+          <button onClick={() => navigate('stillroom')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">leave a stillroom note</button>
+          <button onClick={() => navigate('keepsake')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">file a keepsake</button>
+          <button onClick={() => navigate('courier')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">send by courier</button>
           <button onClick={() => navigate('vault')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">open vault</button>
           <a href="#features" className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">see features</a>
         </div>

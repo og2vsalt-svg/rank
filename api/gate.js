@@ -60,6 +60,8 @@ import outbox from '../lib/endpoints/outbox.js';
 import hamper from '../lib/endpoints/hamper.js';
 import sideboard from '../lib/endpoints/sideboard.js';
 import billet from '../lib/endpoints/billet.js';
+import porch from '../lib/endpoints/porch.js';
+import hearth from '../lib/endpoints/hearth.js';
 
 const routes = {
   atelier, beacon, card, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -122,6 +124,8 @@ const routes = {
   linseed: sideboard,
   billet,
   ack: billet,
+  porch,
+  hearth,
 };
 
 export default function handler(req, res) {

@@ -11,6 +11,8 @@ const primary: NavItem[] = [
   { to: 'passage', label: 'passage' },
   { to: 'courier', label: 'courier' },
   { to: 'vault', label: 'vault' },
+  { to: 'inlay', label: 'inlay' },
+  { to: 'rack', label: 'rack' },
   { to: 'pallet', label: 'pallet' },
   { to: 'unfurl', label: 'unfurl' },
 ];

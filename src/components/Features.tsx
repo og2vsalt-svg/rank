@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'inlay', href: '/inlay', body: 'stamp one local file into the pressmarks table. the bytes live in postgres, and /inlay/id is the discord card. large files are warned, never refused. not a vault drawer.' },
+  { title: 'rack', href: '/rack', body: 'a public index of inlays already filed. open one to download the file from the database. discord unfurls /rack. not a vault drawer.' },
   { title: 'parcel', href: '/parcel', body: 'address one local file to a person, with a return note. bytes land in storage and a row in the share table. /parcel/id is the discord card. large drops are warned, never refused. not a vault drawer.' },
   { title: 'colophon', href: '/colophon', body: 'credits beside a local file: title, edition, imprint. bytes land in storage and a row in the share table. /colophon/id is the discord card. large drops are warned, never refused. not a vault drawer.' },
   { title: 'courier', href: '/courier', body: 'file a local file into the drops bucket and the hosted_files table. Discord unfurls /courier and /s. large drops are warned, never refused.' },

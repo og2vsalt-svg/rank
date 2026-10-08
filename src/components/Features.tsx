@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'loft', href: '/loft', body: 'hang one local file in a room with a title and caption. bytes land in storage and the lofts table. /loft/id is the discord card. large drops are warned, never refused. not a vault drawer. older desks stay.' },
+  { title: 'eaves', href: '/eaves', body: 'the public index of loft rooms already filed. open one to read the caption and the file. discord unfurls /eaves. not a cabinet.' },
   { title: 'haversack', href: '/haversack', body: 'send one local file with an errand. the row lands in the couriers table, and smaller files keep a byte copy in Postgres. /haversack/id is the discord card. large drops are warned, never refused. not a vault drawer. the satchel and courier desks stay.' },
   { title: 'pegboard', href: '/pegboard', body: 'the public board of haversacks already sent. open one to download, or mark it picked up. discord unfurls /pegboard. not a cabinet.' },
   { title: 'stub', href: '/stub', body: 'tear a counterfoil for someone. an optional local file lands in storage and the share table, the label lands in stubs. /stub/id is the discord card. large drops are warned, never refused. not a vault drawer.' },

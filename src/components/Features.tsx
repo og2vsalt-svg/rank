@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'stringcourse', href: '/stringcourse', body: 'one line on the wall and one local file. bytes land in storage and the share table, the line lands in stringcourses. discord unfurls /stringcourse. large drops are warned, never refused. not a vault drawer. older desks stay.' },
+  { title: 'beltcourse', href: '/beltcourse', body: 'the public index of courses already set. open one to read the line and download the file. discord unfurls /beltcourse. not a cabinet.' },
   { title: 'spandrel', href: '/spandrel', body: 'two notes framing one local file. bytes land in the share table, the lines land in spandrels. discord unfurls /spandrel. large drops are warned, never refused. not a vault drawer. older desks stay.' },
   { title: 'fascia', href: '/fascia', body: 'the line people read before the file. a local file lands in the share table, the face line lands in fascia. discord unfurls /fascia. large drops are warned, never refused. not a vault drawer.' },
   { title: 'finial', href: '/finial', body: 'a closing mark on a share that already exists. no new file. discord unfurls /finial. older desks stay.' },

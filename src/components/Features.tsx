@@ -1,6 +1,9 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'impost', href: '/impost', body: 'a line that stays quiet until a time you pick. an optional local file lands in the share table. discord unfurls /impost. large drops are warned, never refused. not a vault drawer. older desks stay.' },
+  { title: 'scotia', href: '/scotia', body: 'where you listened, for how long, in what mood. an optional local file lands in the share table. discord unfurls /scotia. large drops are warned, never refused. not a cabinet.' },
+  { title: 'modillion', href: '/modillion', body: 'a short thanks for a share that already exists. optional local file. discord unfurls /modillion. large drops are warned, never refused. older desks stay.' },
   { title: 'hoodmold', href: '/hoodmold', body: 'hang one local file over a door for a named person. bytes land in storage and the share table. discord unfurls /hoodmold. large drops are warned, never refused. not a vault drawer. older desks stay.' },
   { title: 'gutta', href: '/gutta', body: 'the public index of hoodmolds already hung. open one to read the drip and download the file. discord unfurls /gutta. not a cabinet.' },
   { title: 'echinus', href: '/echinus', body: 'three words, filed as a note in the share table. no disk upload. discord unfurls /echinus. not a file vault.' },

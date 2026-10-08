@@ -36,6 +36,7 @@ export default function PalimpsestPage() {
   const [later, setLater] = useState('');
   const [earlier, setEarlier] = useState('');
   const [author, setAuthor] = useState('');
+  const [layers, setLayers] = useState(['', '']);
   const [file, setFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -69,8 +70,9 @@ export default function PalimpsestPage() {
 
   async function fileIt(e: React.FormEvent) {
     e.preventDefault();
-    if (!file) {
-      setError('choose a local file. the earlier share id is optional.');
+    const layerBody = layers.map((l) => l.trim()).filter(Boolean).join('\n\n—\n\n');
+    if (!file && !layerBody && !later.trim() && !scraped.trim()) {
+      setError('write a layer, or choose a local file. nothing is size-capped.');
       return;
     }
     setBusy(true);
@@ -78,6 +80,28 @@ export default function PalimpsestPage() {
     setWarn(slow);
     try {
       const id = uid();
+      if (!file) {
+        const note = await fetch('/api/desk', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id,
+            title: title.trim() || 'palimpsest',
+            body: [scraped.trim(), later.trim(), layerBody].filter(Boolean).join('\n\n'),
+            author: author.trim() || null,
+            kind: 'note',
+          }),
+        });
+        if (!note.ok) {
+          setError('the layered note did not land');
+          setBusy(false);
+          return;
+        }
+        setRow({ id, title: title.trim() || 'palimpsest', scraped, later: later.trim() || layerBody, author });
+        navigate('palimpsest', id);
+        setBusy(false);
+        return;
+      }
       const published = await publishLocalFile(file, {
         caption: later.trim() || scraped.trim() || title.trim(),
         author: author.trim() || undefined,
@@ -201,8 +225,15 @@ export default function PalimpsestPage() {
               from
               <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="optional" className="mt-1 w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 text-white outline-none focus:border-white/25" />
             </label>
+            <div className="space-y-2">
+              <p className="text-sm text-neutral-400">layers, if this is a note and not a file</p>
+              {layers.map((layer, i) => (
+                <textarea key={i} value={layer} onChange={(e) => setLayers(layers.map((l, j) => (j === i ? e.target.value : l)))} rows={2} placeholder={`layer ${i + 1}`} className="w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 text-white outline-none focus:border-white/25 resize-y" />
+              ))}
+              <button type="button" onClick={() => setLayers([...layers, ''])} className="text-sm text-[#64d2ff]">add a layer</button>
+            </div>
             <label className="block text-sm text-neutral-400">
-              local file
+              local file, optional
               <input type="file" onChange={(e) => setFile(e.target.files?.[0] || null)} className="mt-1 block w-full text-sm text-neutral-300 file:mr-3 file:rounded-full file:border-0 file:bg-white file:px-4 file:py-2 file:text-sm file:text-black" />
             </label>
             {slow ? <p className="text-sm text-amber-300/90">{slow}</p> : <p className="text-sm text-neutral-500">no size cap. a note appears only if the drop may be slow.</p>}

@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'lantern', href: '/lantern', body: 'a reading room beside the vault. drop a local file into the share table, leave a margin, and hand over the link. discord unfurls /lantern. large drops are warned, never refused. older desks stay.' },
   { title: 'impost', href: '/impost', body: 'a line that stays quiet until a time you pick. an optional local file lands in the share table. discord unfurls /impost. large drops are warned, never refused. not a vault drawer. older desks stay.' },
   { title: 'scotia', href: '/scotia', body: 'where you listened, for how long, in what mood. an optional local file lands in the share table. discord unfurls /scotia. large drops are warned, never refused. not a cabinet.' },
   { title: 'modillion', href: '/modillion', body: 'a short thanks for a share that already exists. optional local file. discord unfurls /modillion. large drops are warned, never refused. older desks stay.' },

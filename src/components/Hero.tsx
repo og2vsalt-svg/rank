@@ -16,6 +16,7 @@ export default function Hero() {
           Open a receiving window, keep a running book, or file something into the vault. Large drops get a warning, not a refusal. Older desks stay on their routes.
         </motion.p>
         <div className="flex flex-wrap gap-3 mb-12">
+          <button onClick={() => navigate('lantern')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">set a lantern</button>
           <button onClick={() => navigate('stringcourse')} className="inline-flex px-5 py-2.5 rounded-full bg-[#0a84ff] text-white text-sm font-medium hover:bg-[#409cff] transition active:scale-[0.98]">set a stringcourse</button>
           <button onClick={() => navigate('studio')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">open studio</button>
           <button onClick={() => navigate('pulse')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">pulse</button>

@@ -88,6 +88,7 @@ import passbook from '../lib/endpoints/passbook.js';
 import haversack from '../lib/endpoints/haversack.js';
 import loft from '../lib/endpoints/loft.js';
 import keep from '../lib/endpoints/keep.js';
+import keystone from '../lib/endpoints/keystone.js';
 
 const routes = {
   atelier, beacon, card, cardfront, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -190,6 +191,8 @@ const routes = {
   eaves: loft,
   keep,
   studio: keep,
+  keystone,
+  voussoir: keystone,
 };
 
 export default function handler(req, res) {

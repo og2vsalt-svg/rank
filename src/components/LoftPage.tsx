@@ -1,176 +1,128 @@
-import { useMemo, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect, useMemo, useState } from 'react';
+import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { useVault } from './VaultContext';
+import Footer from './Footer';
 import { useRouter } from './Router';
-import { shareUrls } from '../lib/cloudShare';
+
+type Loft = {
+  id: string;
+  title?: string | null;
+  caption?: string | null;
+  file_name?: string | null;
+  mime?: string | null;
+  size?: number;
+  file_url?: string | null;
+  author?: string | null;
+  pretty?: string | null;
+  warn?: string | null;
+};
+
+const SLOW = 8 * 1024 * 1024;
+const SB_URL = 'https://tqfocdktvjuwoiyfgesb.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
 
 function pretty(n: number) {
   if (n < 1024) return `${n} B`;
-  if (n < 1024 * 1024) return `${Math.round(n / 1024)} KB`;
+  if (n < 1024 * 1024) return `${Math.max(1, Math.round(n / 1024))} KB`;
   if (n < 1024 * 1024 * 1024) return `${(n / (1024 * 1024)).toFixed(1)} MB`;
   return `${(n / (1024 * 1024 * 1024)).toFixed(2)} GB`;
 }
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
 
 export default function LoftPage() {
-  const { addFiles, togglePublic, files } = useVault();
-  const { navigate } = useRouter();
+  const { shareId, navigate } = useRouter();
+  const [title, setTitle] = useState('');
+  const [caption, setCaption] = useState('');
+  const [author, setAuthor] = useState('');
+  const [file, setFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
   const [warn, setWarn] = useState('');
-  const [err, setErr] = useState('');
-  const [link, setLink] = useState('');
-  const [preview, setPreview] = useState<{ name: string; type: string; url: string; size: number } | null>(null);
+  const [row, setRow] = useState<Loft | null>(null);
+  const [copied, setCopied] = useState(false);
+  const slow = useMemo(() => (file && file.size > SLOW ? `about ${pretty(file.size)} — this may open slowly. nothing is refused.` : ''), [file]);
 
-  const recent = useMemo(
-    () => files.filter((f) => f.folder === 'loft').slice(0, 8),
-    [files],
-  );
+  useEffect(() => {
+    if (!shareId) return;
+    let stop = false;
+    fetch(`/api/loft?id=${encodeURIComponent(shareId)}`).then(async (res) => {
+      if (!res.ok) { if (!stop) setError('that loft is not on the eaves'); return; }
+      const data = await res.json();
+      if (!stop) setRow(data);
+    }).catch(() => { if (!stop) setError('could not reach the loft'); });
+    return () => { stop = true; };
+  }, [shareId]);
 
-  const handle = async (list: FileList | File[] | null) => {
-    if (!list || !('length' in list) || !list.length) return;
-    const arr = [...list];
-    const first = arr[0];
-    const heavy = arr.some((f) => f.size > 32 * 1024 * 1024);
-    setWarn(heavy ? 'large file — encoding may feel slow in this tab. nothing is blocked.' : '');
-    setErr('');
-    setLink('');
-    if (first.type.startsWith('image/') || first.type.startsWith('video/') || first.type.startsWith('audio/')) {
-      setPreview({ name: first.name, type: first.type, url: URL.createObjectURL(first), size: first.size });
-    } else {
-      setPreview({ name: first.name, type: first.type || 'file', url: '', size: first.size });
-    }
-    setBusy(true);
+  async function fileIt(e: React.FormEvent) {
+    e.preventDefault();
+    if (!file) { setError('choose a local file first'); return; }
+    setBusy(true); setError(''); setWarn(slow);
     try {
-      const result = await addFiles(arr, 'loft');
-      if (!result.ok) {
-        setErr(result.error || 'could not keep the file locally');
-        return;
+      const id = uid();
+      const path = `${id}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+      const up = await fetch(`${SB_URL}/storage/v1/object/shares/${path}`, {
+        method: 'POST',
+        headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}`, 'Content-Type': file.type || 'application/octet-stream', 'x-upsert': 'true' },
+        body: file,
+      });
+      if (!up.ok) {
+        const text = await up.text();
+        throw new Error(text.slice(0, 180) || 'storage refused the bytes');
       }
-      if (result.warn) setWarn(result.warn);
-      const id = result.ids?.[0];
-      if (!id) return;
-      const pub = await togglePublic(id);
-      if (!pub.ok) {
-        setErr(pub.error || 'kept locally; cloud publish missed');
-        return;
-      }
-      const urls = shareUrls(id);
-      setLink(urls.app);
-      try { await navigator.clipboard.writeText(urls.app); } catch {}
-    } catch (e: any) {
-      setErr(e?.message || 'upload failed');
+      const fileUrl = `${SB_URL}/storage/v1/object/public/shares/${path}`;
+      const res = await fetch('/api/loft', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, title: title || file.name, caption, author, file_name: file.name, mime: file.type || 'application/octet-stream', size: file.size, file_url: fileUrl }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'could not write the loft');
+      if (data.warn) setWarn(data.warn);
+      navigate('loft', id);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'loft failed');
     } finally {
       setBusy(false);
     }
-  };
+  }
+
+  const link = typeof window !== 'undefined' && row ? `${window.location.origin}/loft/${row.id}` : '';
 
   return (
-    <div className="mesh min-h-screen">
+    <div className="min-h-screen bg-[#f5f5f7] text-[#1d1d1f]">
       <Navbar />
-      <div className="pt-28 pb-24 px-5 max-w-5xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          className="grid lg:grid-cols-[1.1fr_0.9fr] gap-6"
-        >
-          <div className="glass rounded-[32px] p-8">
-            <p className="text-[#0a84ff] text-sm mb-2">loft</p>
-            <h1 className="text-3xl font-semibold tracking-tight mb-3">preview first, then send it out.</h1>
-            <p className="text-neutral-400 text-sm mb-7 leading-relaxed">
-              a studio bench for a local file. we keep it in your vault folder called loft, publish a public share
-              into the database, and mint a discord-ready card. no hard cap — just a slowness warning when the file is heavy.
-            </p>
-            <label
-              className="block cursor-pointer rounded-[28px] border border-dashed border-white/15 hover:border-[#0a84ff]/60 p-12 text-center transition-all duration-300"
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={(e) => {
-                e.preventDefault();
-                handle(e.dataTransfer.files);
-              }}
-            >
-              <input type="file" className="hidden" multiple onChange={(e) => handle(e.target.files)} />
-              <div className="text-white text-base">{busy ? 'encoding…' : 'drop a file onto the loft'}</div>
-              <div className="text-neutral-500 text-sm mt-2">images, clips, notes, dumps — anything</div>
-            </label>
-            {warn && <p className="mt-4 text-amber-300/90 text-sm">{warn}</p>}
-            {err && <p className="mt-4 text-rose-300 text-sm">{err}</p>}
-            {link && (
-              <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mt-5">
-                <p className="text-neutral-500 text-xs mb-1">public link copied</p>
-                <button
-                  onClick={() => navigate('share', link.split('f=')[1] || '')}
-                  className="text-[#0a84ff] text-sm break-all text-left"
-                >
-                  {link}
-                </button>
-              </motion.div>
-            )}
-          </div>
-
-          <div className="glass rounded-[32px] p-8 min-h-[320px] flex flex-col">
-            <p className="text-neutral-500 text-xs uppercase tracking-[0.18em] mb-4">live still</p>
-            <AnimatePresence mode="wait">
-              {preview ? (
-                <motion.div
-                  key={preview.name}
-                  initial={{ opacity: 0, scale: 0.98 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                  className="flex-1"
-                >
-                  {preview.type.startsWith('image/') && preview.url && (
-                    <img src={preview.url} alt="" className="w-full max-h-72 object-contain rounded-2xl" />
-                  )}
-                  {preview.type.startsWith('video/') && preview.url && (
-                    <video src={preview.url} controls className="w-full rounded-2xl" />
-                  )}
-                  {preview.type.startsWith('audio/') && preview.url && (
-                    <audio src={preview.url} controls className="w-full mt-8" />
-                  )}
-                  {!preview.url && (
-                    <div className="h-40 rounded-2xl bg-white/5 flex items-center justify-center text-neutral-400 text-sm">
-                      {preview.type || 'file'}
-                    </div>
-                  )}
-                  <div className="mt-4">
-                    <div className="text-white text-sm truncate">{preview.name}</div>
-                    <div className="text-neutral-500 text-xs mt-1">{pretty(preview.size)}</div>
-                  </div>
-                </motion.div>
-              ) : (
-                <motion.p
-                  key="empty"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-neutral-500 text-sm leading-relaxed"
-                >
-                  nothing on the bench yet. drop something and the still appears here before the public link is minted.
-                </motion.p>
-              )}
-            </AnimatePresence>
-          </div>
-        </motion.div>
-
-        {recent.length > 0 && (
-          <div className="mt-10">
-            <p className="text-neutral-500 text-xs uppercase tracking-[0.18em] mb-4">recent in loft</p>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              {recent.map((f) => (
-                <button
-                  key={f.id}
-                  onClick={() => navigate('share', f.id)}
-                  className="glass rounded-2xl p-4 text-left hover:bg-white/5 transition"
-                >
-                  <div className="text-white text-sm truncate">{f.name}</div>
-                  <div className="text-neutral-500 text-xs mt-1">{pretty(f.size)}</div>
-                </button>
-              ))}
+      <main className="mx-auto max-w-3xl px-5 pb-24 pt-28">
+        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[13px] font-medium tracking-wide text-[#6e6e73]">rankvault · loft</motion.p>
+        <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">A room for one file.</motion.h1>
+        <p className="mt-3 max-w-xl text-[17px] leading-relaxed text-[#6e6e73]">Hang a local file with a title. The bytes land in storage, the card lands in the loft table. Not a drawer. Older desks stay.</p>
+        {shareId && row ? (
+          <motion.article initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 260, damping: 28 }} className="mt-10 rounded-[28px] bg-white p-7 shadow-[0_20px_60px_rgba(0,0,0,0.06)]">
+            <p className="text-xs uppercase tracking-[0.16em] text-[#86868b]">{row.author || 'unsigned'}</p>
+            <h2 className="mt-2 text-3xl font-semibold tracking-tight">{row.title || row.file_name}</h2>
+            {row.caption ? <p className="mt-3 text-[17px] leading-relaxed text-[#3a3a3c]">{row.caption}</p> : null}
+            <p className="mt-4 text-sm text-[#6e6e73]">{row.file_name} · {row.pretty || pretty(row.size || 0)}{row.mime ? ` · ${row.mime}` : ''}</p>
+            {row.warn ? <p className="mt-3 rounded-2xl bg-[#fff6e5] px-4 py-3 text-sm text-[#8a5a00]">{row.warn}</p> : null}
+            <div className="mt-6 flex flex-wrap gap-3">
+              {row.file_url ? <a href={row.file_url} className="rounded-full bg-[#0071e3] px-5 py-2.5 text-sm font-medium text-white transition hover:bg-[#0077ed]">Open file</a> : null}
+              <button type="button" onClick={() => { navigator.clipboard.writeText(link); setCopied(true); }} className="rounded-full bg-[#f5f5f7] px-5 py-2.5 text-sm font-medium text-[#1d1d1f]">{copied ? 'Copied' : 'Copy link'}</button>
+              <button type="button" onClick={() => navigate('eaves')} className="rounded-full px-4 py-2.5 text-sm text-[#0071e3]">See the eaves</button>
             </div>
-          </div>
+            <p className="mt-4 text-xs text-[#86868b]">Paste this link in Discord for the card.</p>
+          </motion.article>
+        ) : (
+          <motion.form onSubmit={fileIt} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 240, damping: 26 }} className="mt-10 space-y-4 rounded-[28px] bg-white p-7 shadow-[0_20px_60px_rgba(0,0,0,0.06)]">
+            <label className="block text-sm font-medium">Title<input value={title} onChange={(e) => setTitle(e.target.value)} className="mt-1 w-full rounded-2xl border border-black/5 bg-[#f5f5f7] px-4 py-3 outline-none focus:ring-2 focus:ring-[#0071e3]/40" placeholder="evening mix" /></label>
+            <label className="block text-sm font-medium">Caption<input value={caption} onChange={(e) => setCaption(e.target.value)} className="mt-1 w-full rounded-2xl border border-black/5 bg-[#f5f5f7] px-4 py-3 outline-none focus:ring-2 focus:ring-[#0071e3]/40" placeholder="what this file is for" /></label>
+            <label className="block text-sm font-medium">Signed<input value={author} onChange={(e) => setAuthor(e.target.value)} className="mt-1 w-full rounded-2xl border border-black/5 bg-[#f5f5f7] px-4 py-3 outline-none focus:ring-2 focus:ring-[#0071e3]/40" placeholder="optional" /></label>
+            <label className="block text-sm font-medium">Local file<input type="file" onChange={(e) => setFile(e.target.files?.[0] || null)} className="mt-1 w-full text-sm" /></label>
+            {slow ? <p className="rounded-2xl bg-[#fff6e5] px-4 py-3 text-sm text-[#8a5a00]">{slow}</p> : null}
+            {error ? <p className="text-sm text-[#b42318]">{error}</p> : null}
+            {warn ? <p className="text-sm text-[#8a5a00]">{warn}</p> : null}
+            <button disabled={busy} className="rounded-full bg-[#1d1d1f] px-6 py-3 text-sm font-medium text-white transition hover:bg-black disabled:opacity-50">{busy ? 'Filing…' : 'File in the loft'}</button>
+          </motion.form>
         )}
-      </div>
+      </main>
+      <Footer />
     </div>
   );
 }

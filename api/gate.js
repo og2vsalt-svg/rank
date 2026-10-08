@@ -94,6 +94,7 @@ import palimpsest from '../lib/endpoints/palimpsest.js';
 import quittance from '../lib/endpoints/quittance.js';
 import spandrel from '../lib/endpoints/spandrel.js';
 import stringcourse from '../lib/endpoints/stringcourse.js';
+import plinth from '../lib/endpoints/plinth.js';
 
 const routes = {
   atelier, beacon, card, cardfront, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -208,6 +209,8 @@ const routes = {
   spandrel,
   stringcourse,
   beltcourse: stringcourse,
+  plinth,
+  inlet: plinth,
 };
 
 export default function handler(req, res) {

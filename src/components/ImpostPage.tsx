@@ -1,81 +1,112 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishShare, shareUrls } from '../lib/cloudShare';
-
-function uid() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-}
-
-function readAsDataUrl(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const r = new FileReader();
-    r.onload = () => resolve(String(r.result || ''));
-    r.onerror = () => reject(new Error('could not read'));
-    r.readAsDataURL(file);
-  });
-}
+import Footer from './Footer';
+import { publishLocalFile, fetchShare } from '../lib/cloudShare';
+import { useRouter } from './Router';
 
 export default function ImpostPage() {
+  const { shareId } = useRouter();
+  const [title, setTitle] = useState('');
+  const [note, setNote] = useState('');
+  const [when, setWhen] = useState('');
+  const [file, setFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
   const [warn, setWarn] = useState('');
-  const [err, setErr] = useState('');
-  const [preview, setPreview] = useState('');
-  const [embed, setEmbed] = useState('');
+  const [link, setLink] = useState('');
+  const [saved, setSaved] = useState<any>(null);
+  const [now, setNow] = useState(Date.now());
 
-  const run = async (file: File) => {
-    setErr('');
-    setEmbed('');
-    setWarn(file.size > 20 * 1024 * 1024 ? 'heavy stone. encoding may hitch. no hard cap.' : '');
+  const slow = useMemo(
+    () => (file && file.size > 40 * 1024 * 1024 ? 'large file. sending may feel slow. nothing is refused.' : ''),
+    [file],
+  );
+
+  useEffect(() => {
+    if (!shareId) return;
+    fetchShare(shareId).then(setSaved);
+  }, [shareId]);
+
+  useEffect(() => {
+    const t = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(t);
+  }, []);
+
+  const revealAt = saved?.meta?.revealAt ? Date.parse(saved.meta.revealAt) : 0;
+  const sealed = revealAt && now < revealAt;
+
+  async function setBlock() {
+    setError('');
+    setLink('');
+    setWarn('');
+    if (!title.trim() || !note.trim()) {
+      setError('a title and a line. the file is optional.');
+      return;
+    }
     setBusy(true);
     try {
-      const dataUrl = await readAsDataUrl(file);
-      setPreview(file.type.startsWith('image/') ? dataUrl : '');
-      const id = uid();
-      const res = await publishShare({
-        id,
-        name: file.name,
-        type: file.type || 'application/octet-stream',
-        size: file.size,
-        dataUrl,
-        author: 'impost',
+      const body = `${title.trim()}\n\n${note.trim()}\n`;
+      const payload = file || new File([body], 'impost.txt', { type: 'text/plain' });
+      const published = await publishLocalFile(payload, {
+        caption: note.trim(),
+        cardTitle: title.trim(),
+        color: '#64d2ff',
+        expiresAt: when ? new Date(when).toISOString() : undefined,
+        meta: { kind: 'impost', revealAt: when ? new Date(when).toISOString() : null, title: title.trim() },
       });
-      if (!res.ok) throw new Error(res.error || 'could not seat the file');
-      const urls = shareUrls(res.id || id);
-      setEmbed(urls.embed);
-      if (res.warn) setWarn(res.warn);
-      try { await navigator.clipboard.writeText(urls.embed); } catch {}
+      if (!published.ok || !published.id) {
+        setError(published.error || 'the block did not land.');
+        return;
+      }
+      setWarn(published.warn || slow);
+      setLink(`${location.origin}/impost/${published.id}`);
     } catch (e: any) {
-      setErr(e?.message || 'failed');
+      setError(e?.message || 'something slipped.');
     } finally {
       setBusy(false);
     }
-  };
+  }
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          className="glass rounded-[32px] p-8"
-        >
-          <p className="text-[#0a84ff] text-sm font-medium mb-2 tracking-wide">impost</p>
-          <h1 className="text-3xl font-semibold text-white tracking-tight mb-2">seat one file on the springing</h1>
-          <p className="text-neutral-400 text-sm mb-6">uploads a local into the share db. discord cards on /s. slowness warning only.</p>
-          <label className="block cursor-pointer rounded-2xl border border-dashed border-white/15 px-5 py-10 text-center text-neutral-400 text-sm hover:border-[#0a84ff]/40 transition">
-            {busy ? 'seating…' : 'drop a file or click to choose'}
-            <input type="file" className="hidden" onChange={(e) => e.target.files?.[0] && run(e.target.files[0])} />
-          </label>
-          {warn && <p className="text-amber-300/80 text-xs mt-3">{warn}</p>}
-          {preview && <img src={preview} alt="" className="mt-5 rounded-2xl max-h-64 object-contain mx-auto" />}
-          {err && <p className="text-red-400 text-sm mt-4">{err}</p>}
-          {embed && <p className="text-sm text-[#0a84ff] mt-4 break-all">{embed}</p>}
-          <p className="text-xs text-neutral-500 mt-4">no file limit. just a slowness ping if it is huge.</p>
+      <main className="pt-24 pb-16 px-5">
+        <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }} className="max-w-xl mx-auto">
+          <p className="text-[#64d2ff] text-sm font-medium mb-3">a block over the opening</p>
+          <h1 className="text-4xl font-semibold tracking-tight text-white mb-3">impost</h1>
+          <p className="text-neutral-400 leading-relaxed mb-8">Leave a line that stays quiet until a time you pick. An optional local file lands in the share table. Discord unfurls /impost. Large drops are warned, never refused. The older desks stay.</p>
+          {saved ? (
+            <div className="glass rounded-[28px] p-8 mb-6">
+              {sealed ? (
+                <>
+                  <p className="text-sm text-neutral-500 mb-2">sealed until</p>
+                  <p className="text-2xl text-white tracking-tight">{new Date(revealAt).toLocaleString()}</p>
+                </>
+              ) : (
+                <>
+                  <p className="text-sm text-neutral-500 mb-2">{saved.meta?.title || saved.name}</p>
+                  <p className="text-xl text-white leading-relaxed">{saved.caption}</p>
+                  {saved.file_url ? <a href={saved.file_url} className="inline-block mt-4 text-sm text-[#64d2ff]">open the file</a> : null}
+                </>
+              )}
+            </div>
+          ) : null}
+          <div className="glass rounded-[28px] p-6 grid gap-3">
+            <input value={title} onChange={(e) => setTitle(e.target.value)} className="rounded-2xl bg-black/40 border border-white/10 px-4 py-3 text-white outline-none focus:border-[#64d2ff]/70 transition" placeholder="what it is called" />
+            <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={4} className="rounded-2xl bg-black/40 border border-white/10 px-4 py-3 text-white outline-none focus:border-[#64d2ff]/70 transition resize-none" placeholder="the line under the block" />
+            <label className="text-xs text-neutral-500">open after (optional)</label>
+            <input type="datetime-local" value={when} onChange={(e) => setWhen(e.target.value)} className="rounded-2xl bg-black/40 border border-white/10 px-4 py-3 text-white outline-none focus:border-[#64d2ff]/70 transition" />
+            <input type="file" onChange={(e) => setFile(e.target.files?.[0] || null)} className="text-sm text-neutral-400" />
+            {slow ? <p className="text-sm text-[#ffd60a]">{slow}</p> : null}
+            {warn ? <p className="text-sm text-[#ffd60a]">{warn}</p> : null}
+            {error ? <p className="text-sm text-[#ff453a]">{error}</p> : null}
+            {link ? <a href={link} className="text-sm text-[#64b5ff] break-all">{link}</a> : null}
+            <button disabled={busy} onClick={setBlock} className="rounded-full bg-white text-black py-3 text-sm font-medium hover:bg-neutral-200 active:scale-[0.98] transition disabled:opacity-60">{busy ? 'setting…' : 'set the block'}</button>
+          </div>
         </motion.div>
-      </div>
+      </main>
+      <Footer />
     </div>
   );
 }

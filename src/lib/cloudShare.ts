@@ -32,6 +32,7 @@ export type ShareOpts = {
   expiresAt?: string | null;
   color?: string;
   cardTitle?: string;
+  meta?: Record<string, unknown>;
 };
 
 function sbHeaders(extra: Record<string, string> = {}) {
@@ -147,7 +148,7 @@ export async function publishLocalFile(
       download_count: 0,
       author: opts.author || null,
       caption: opts.caption || null,
-      meta: { warn, source: 'rankvault', caption: opts.caption || null, color: opts.color || null, cardTitle: opts.cardTitle || null },
+      meta: { warn, source: 'rankvault', caption: opts.caption || null, color: opts.color || null, cardTitle: opts.cardTitle || null, ...(opts.meta || {}) },
     };
     const ins = await fetch(`${SB_URL}/rest/v1/public_shares?on_conflict=id`, {
       method: 'POST',

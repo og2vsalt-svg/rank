@@ -1,6 +1,10 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'hoodmold', href: '/hoodmold', body: 'hang one local file over a door for a named person. bytes land in storage and the share table. discord unfurls /hoodmold. large drops are warned, never refused. not a vault drawer. older desks stay.' },
+  { title: 'gutta', href: '/gutta', body: 'the public index of hoodmolds already hung. open one to read the drip and download the file. discord unfurls /gutta. not a cabinet.' },
+  { title: 'echinus', href: '/echinus', body: 'three words, filed as a note in the share table. no disk upload. discord unfurls /echinus. not a file vault.' },
+  { title: 'cavetto', href: '/cavetto', body: 'a reading hollow. an optional local file lands in the share table, or the passage itself is filed. discord unfurls /cavetto. large drops are warned, never refused.' },
   { title: 'lintel', href: '/lintel', body: 'hang one local file over a doorway and let people knock. bytes land in storage and the share table. the greeting lives in lintels. /lintel/id is the discord card. large drops are warned, never refused. not a vault drawer.' },
   { title: 'sill', href: '/sill', body: 'leave a note on the window. no file. optional link back to a lintel. /sill/id unfurls in discord. older desks stay.' },
 

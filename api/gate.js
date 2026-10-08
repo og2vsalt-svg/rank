@@ -84,6 +84,7 @@ import weatherboard from '../lib/endpoints/weatherboard.js';
 import listening from '../lib/endpoints/listening.js';
 import waybill from '../lib/endpoints/waybill.js';
 import stub from '../lib/endpoints/stub.js';
+import passbook from '../lib/endpoints/passbook.js';
 
 const routes = {
   atelier, beacon, card, cardfront, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -179,6 +180,7 @@ const routes = {
   porter: waybill,
   stub,
   counterfoil: stub,
+  passbook,
 };
 
 export default function handler(req, res) {

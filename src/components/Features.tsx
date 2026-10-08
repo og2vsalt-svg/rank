@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'stub', href: '/stub', body: 'tear a counterfoil for someone. an optional local file lands in storage and the share table, the label lands in stubs. /stub/id is the discord card. large drops are warned, never refused. not a vault drawer.' },
   { title: 'waybill', href: '/waybill', body: 'a delivery slip with stamped stops and an optional local file. bytes land in storage and the waybills table. /waybill/id is the discord card. large drops are warned, never refused. not a vault drawer.' },
   { title: 'porter', href: '/porter', body: 'the public index of waybills. open one to stamp a stop or download the file. discord unfurls /porter. not a cabinet.' },
   { title: 'beading', href: '/beading', body: 'set one local file into a named room panel. bytes land in storage, the row lands in beading_panels and the share table. /beading/id is the discord card. large drops are warned, never refused. not a vault drawer. the older wainscot desk stays.' },

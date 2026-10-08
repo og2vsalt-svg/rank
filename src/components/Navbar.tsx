@@ -5,6 +5,7 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'quittance', label: 'quittance' },
   { to: 'clip', label: 'clip' },
   { to: 'studio', label: 'studio' },
   { to: 'pulse', label: 'pulse' },
@@ -17,10 +18,10 @@ const primary: NavItem[] = [
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
-  { title: 'new', items: [{ to: 'clip', label: 'clip' }, { to: 'studio', label: 'studio' }, { to: 'pulse', label: 'pulse' }, { to: 'rooms', label: 'rooms' }, { to: 'loft', label: 'loft' }, { to: 'eaves', label: 'eaves' }, { to: 'witness', label: 'witness' }, { to: 'indent', label: 'indent' }, { to: 'haversack', label: 'haversack' }, { to: 'pegboard', label: 'pegboard' }, { to: 'passbook', label: 'passbook' }, { to: 'stub', label: 'stub' }, { to: 'waybill', label: 'waybill' }, { to: 'porter', label: 'porter' }, { to: 'listening', label: 'listening' }, { to: 'setlist', label: 'setlist' }, { to: 'wicket', label: 'wicket' }, { to: 'letterpress', label: 'letterpress' }, { to: 'knocker', label: 'knocker' }, { to: 'commonplace', label: 'commonplace' }, { to: 'transom', label: 'transom' }, { to: 'ledger', label: 'ledger' }] },
-  { title: 'hosting', items: [{ to: 'clip', label: 'clip' }, { to: 'haversack', label: 'haversack' }, { to: 'pegboard', label: 'pegboard' }, { to: 'passbook', label: 'passbook' }, { to: 'stub', label: 'stub' }, { to: 'waybill', label: 'waybill' }, { to: 'listening', label: 'listening' }, { to: 'wicket', label: 'wicket' }, { to: 'knocker', label: 'knocker' }, { to: 'transom', label: 'transom' }, { to: 'seal', label: 'seal' }, { to: 'handover', label: 'handover' }, { to: 'pallet', label: 'pallet' }, { to: 'linen', label: 'linen' }, { to: 'keepsake', label: 'keepsake' }, { to: 'vault', label: 'vault' }] },
+  { title: 'new', items: [{ to: 'quittance', label: 'quittance' }, { to: 'acquittance', label: 'acquittance' }, { to: 'clip', label: 'clip' }, { to: 'studio', label: 'studio' }, { to: 'pulse', label: 'pulse' }, { to: 'rooms', label: 'rooms' }, { to: 'loft', label: 'loft' }, { to: 'eaves', label: 'eaves' }, { to: 'witness', label: 'witness' }, { to: 'indent', label: 'indent' }, { to: 'haversack', label: 'haversack' }, { to: 'pegboard', label: 'pegboard' }, { to: 'passbook', label: 'passbook' }, { to: 'stub', label: 'stub' }, { to: 'waybill', label: 'waybill' }, { to: 'porter', label: 'porter' }, { to: 'listening', label: 'listening' }, { to: 'setlist', label: 'setlist' }, { to: 'wicket', label: 'wicket' }, { to: 'letterpress', label: 'letterpress' }, { to: 'knocker', label: 'knocker' }, { to: 'commonplace', label: 'commonplace' }, { to: 'transom', label: 'transom' }, { to: 'ledger', label: 'ledger' }] },
+  { title: 'hosting', items: [{ to: 'quittance', label: 'quittance' }, { to: 'clip', label: 'clip' }, { to: 'haversack', label: 'haversack' }, { to: 'pegboard', label: 'pegboard' }, { to: 'passbook', label: 'passbook' }, { to: 'stub', label: 'stub' }, { to: 'waybill', label: 'waybill' }, { to: 'listening', label: 'listening' }, { to: 'wicket', label: 'wicket' }, { to: 'knocker', label: 'knocker' }, { to: 'transom', label: 'transom' }, { to: 'seal', label: 'seal' }, { to: 'handover', label: 'handover' }, { to: 'pallet', label: 'pallet' }, { to: 'linen', label: 'linen' }, { to: 'keepsake', label: 'keepsake' }, { to: 'vault', label: 'vault' }] },
   { title: 'notes', items: [{ to: 'clip', label: 'clip' }, { to: 'letterpress', label: 'letterpress' }, { to: 'commonplace', label: 'commonplace' }, { to: 'ledger', label: 'ledger' }, { to: 'stillroom', label: 'stillroom' }, { to: 'margin', label: 'margin' }, { to: 'hearth', label: 'hearth' }, { to: 'inkstand', label: 'inkstand' }] },
-  { title: 'share', items: [{ to: 'clip', label: 'clip' }, { to: 'haversack', label: 'haversack' }, { to: 'pegboard', label: 'pegboard' }, { to: 'passbook', label: 'passbook' }, { to: 'stub', label: 'stub' }, { to: 'waybill', label: 'waybill' }, { to: 'listening', label: 'listening' }, { to: 'setlist', label: 'setlist' }, { to: 'wicket', label: 'wicket' }, { to: 'transom', label: 'transom' }, { to: 'handover', label: 'handover' }, { to: 'seal', label: 'seal' }, { to: 'dossier', label: 'dossier' }, { to: 'parcel', label: 'parcel' }] },
+  { title: 'share', items: [{ to: 'quittance', label: 'quittance' }, { to: 'clip', label: 'clip' }, { to: 'haversack', label: 'haversack' }, { to: 'pegboard', label: 'pegboard' }, { to: 'passbook', label: 'passbook' }, { to: 'stub', label: 'stub' }, { to: 'waybill', label: 'waybill' }, { to: 'listening', label: 'listening' }, { to: 'setlist', label: 'setlist' }, { to: 'wicket', label: 'wicket' }, { to: 'transom', label: 'transom' }, { to: 'handover', label: 'handover' }, { to: 'seal', label: 'seal' }, { to: 'dossier', label: 'dossier' }, { to: 'parcel', label: 'parcel' }] },
   { title: 'tools', items: [{ to: 'casement', label: 'casement' }, { to: 'unfurl', label: 'unfurl' }, { to: 'passage', label: 'passage' }, { to: 'hash', label: 'hash' }, { to: 'convert', label: 'convert' }, { to: 'diff', label: 'diff' }] },
 ];
 
@@ -108,7 +109,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">older desks stay on their routes. paste /clip/id, /s/id, or /haversack/id in Discord for a card.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">older desks stay on their routes. paste /quittance/id, /clip/id, /s/id, or /haversack/id in Discord for a card.</p>
         </div>
       </div>
     </nav>

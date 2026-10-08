@@ -90,6 +90,7 @@ import loft from '../lib/endpoints/loft.js';
 import keep from '../lib/endpoints/keep.js';
 import keystone from '../lib/endpoints/keystone.js';
 import clip from '../lib/endpoints/clip.js';
+import palimpsest from '../lib/endpoints/palimpsest.js';
 
 const routes = {
   atelier, beacon, card, cardfront, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -196,6 +197,8 @@ const routes = {
   voussoir: keystone,
   clip,
   rail: clip,
+  palimpsest,
+  underwriting: palimpsest,
 };
 
 export default function handler(req, res) {

@@ -12,6 +12,50 @@
       "destination": "/api/gate?name=:name"
     },
     {
+      "source": "/stringcourse/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely).*"
+        }
+      ],
+      "destination": "/api/gate?name=stringcourse&page=stringcourse&id=:id"
+    },
+    {
+      "source": "/stringcourse",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+        }
+      ],
+      "destination": "/api/gate?name=stringcourse&page=stringcourse"
+    },
+    {
+      "source": "/beltcourse/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely).*"
+        }
+      ],
+      "destination": "/api/gate?name=stringcourse&page=beltcourse&id=:id"
+    },
+    {
+      "source": "/beltcourse",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+        }
+      ],
+      "destination": "/api/gate?name=stringcourse&page=beltcourse"
+    },
+    {
       "source": "/spandrel/:id",
       "has": [
         {

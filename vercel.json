@@ -12,6 +12,26 @@
       "destination": "/api/gate?name=:name"
     },
     {
+      "source": "/plinth/:id",
+      "has": [{ "type": "header", "key": "user-agent", "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely).*" }],
+      "destination": "/api/gate?name=plinth&page=plinth&id=:id&card=1"
+    },
+    {
+      "source": "/plinth",
+      "has": [{ "type": "header", "key": "user-agent", "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*" }],
+      "destination": "/api/gate?name=plinth&page=plinth&card=1"
+    },
+    {
+      "source": "/inlet/:id",
+      "has": [{ "type": "header", "key": "user-agent", "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely).*" }],
+      "destination": "/api/gate?name=plinth&page=inlet&id=:id&card=1"
+    },
+    {
+      "source": "/inlet",
+      "has": [{ "type": "header", "key": "user-agent", "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*" }],
+      "destination": "/api/gate?name=plinth&page=inlet&card=1"
+    },
+    {
       "source": "/lintel/:id",
       "has": [{ "type": "header", "key": "user-agent", "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely).*" }],
       "destination": "/api/gate?name=embed&page=lintel&id=:id"

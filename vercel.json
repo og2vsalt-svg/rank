@@ -12,6 +12,26 @@
       "destination": "/api/gate?name=:name"
     },
     {
+      "source": "/lintel/:id",
+      "has": [{ "type": "header", "key": "user-agent", "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely).*" }],
+      "destination": "/api/gate?name=embed&page=lintel&id=:id"
+    },
+    {
+      "source": "/lintel",
+      "has": [{ "type": "header", "key": "user-agent", "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*" }],
+      "destination": "/api/gate?name=embed&page=lintel"
+    },
+    {
+      "source": "/sill/:id",
+      "has": [{ "type": "header", "key": "user-agent", "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely).*" }],
+      "destination": "/api/gate?name=embed&page=sill&id=:id"
+    },
+    {
+      "source": "/sill",
+      "has": [{ "type": "header", "key": "user-agent", "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*" }],
+      "destination": "/api/gate?name=embed&page=sill"
+    },
+    {
       "source": "/stringcourse/:id",
       "has": [
         {

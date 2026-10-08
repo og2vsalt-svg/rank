@@ -1,6 +1,9 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'lintel', href: '/lintel', body: 'hang one local file over a doorway and let people knock. bytes land in storage and the share table. the greeting lives in lintels. /lintel/id is the discord card. large drops are warned, never refused. not a vault drawer.' },
+  { title: 'sill', href: '/sill', body: 'leave a note on the window. no file. optional link back to a lintel. /sill/id unfurls in discord. older desks stay.' },
+
   { title: 'stringcourse', href: '/stringcourse', body: 'one line on the wall and one local file. bytes land in storage and the share table, the line lands in stringcourses. discord unfurls /stringcourse. large drops are warned, never refused. not a vault drawer. older desks stay.' },
   { title: 'beltcourse', href: '/beltcourse', body: 'the public index of courses already set. open one to read the line and download the file. discord unfurls /beltcourse. not a cabinet.' },
   { title: 'spandrel', href: '/spandrel', body: 'two notes framing one local file. bytes land in the share table, the lines land in spandrels. discord unfurls /spandrel. large drops are warned, never refused. not a vault drawer. older desks stay.' },

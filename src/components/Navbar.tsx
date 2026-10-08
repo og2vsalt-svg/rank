@@ -5,7 +5,7 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
-  { to: 'etui', label: 'etui' },
+  { to: 'lintel', label: 'lintel' }, { to: 'sill', label: 'sill' }, { to: 'etui', label: 'etui' },
   { to: 'bandbox', label: 'bandbox' },
   { to: 'fascia', label: 'fascia' },
   { to: 'finial', label: 'finial' },

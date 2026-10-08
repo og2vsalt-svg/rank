@@ -12,6 +12,116 @@
       "destination": "/api/gate?name=:name"
     },
     {
+      "source": "/s/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot|pinterest).*"
+        }
+      ],
+      "destination": "/api/gate?name=embed&id=:id"
+    },
+    {
+      "source": "/f/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely).*"
+        }
+      ],
+      "destination": "/api/gate?name=embed&id=:id"
+    },
+    {
+      "source": "/open/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+        }
+      ],
+      "destination": "/api/gate?name=embed&id=:id"
+    },
+    {
+      "source": "/go/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+        }
+      ],
+      "destination": "/api/gate?name=embed&id=:id"
+    },
+    {
+      "source": "/link/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+        }
+      ],
+      "destination": "/api/gate?name=embed&id=:id"
+    },
+    {
+      "source": "/card/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+        }
+      ],
+      "destination": "/api/gate?name=embed&id=:id"
+    },
+    {
+      "source": "/clip/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely).*"
+        }
+      ],
+      "destination": "/api/gate?name=clip&id=:id&card=1"
+    },
+    {
+      "source": "/clip",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+        }
+      ],
+      "destination": "/api/gate?name=clip&card=1"
+    },
+    {
+      "source": "/:page/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely).*"
+        }
+      ],
+      "destination": "/api/gate?name=embed&page=:page&id=:id"
+    },
+    {
+      "source": "/:page",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+        }
+      ],
+      "destination": "/api/gate?name=embed&page=:page"
+    },
+    {
       "source": "/((?!api/|assets/).*)",
       "destination": "/index.html"
     }

@@ -89,6 +89,7 @@ import haversack from '../lib/endpoints/haversack.js';
 import loft from '../lib/endpoints/loft.js';
 import keep from '../lib/endpoints/keep.js';
 import keystone from '../lib/endpoints/keystone.js';
+import clip from '../lib/endpoints/clip.js';
 
 const routes = {
   atelier, beacon, card, cardfront, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -193,6 +194,8 @@ const routes = {
   studio: keep,
   keystone,
   voussoir: keystone,
+  clip,
+  rail: clip,
 };
 
 export default function handler(req, res) {

@@ -12,6 +12,28 @@
       "destination": "/api/gate?name=:name"
     },
     {
+      "source": "/spandrel/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely).*"
+        }
+      ],
+      "destination": "/api/gate?name=spandrel&id=:id&card=1"
+    },
+    {
+      "source": "/spandrel",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+        }
+      ],
+      "destination": "/api/gate?name=spandrel&card=1"
+    },
+    {
       "source": "/quittance/:id",
       "has": [
         {

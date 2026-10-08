@@ -1,92 +1,45 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishShare, shareUrls } from '../lib/cloudShare';
+import Footer from './Footer';
+import { useRouter } from './Router';
 
-function uid() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-}
-
-function pretty(n: number) {
-  if (n < 1024) return n + ' b';
-  if (n < 1024 * 1024) return Math.round(n / 1024) + ' kb';
-  if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(1) + ' mb';
-  return (n / (1024 * 1024 * 1024)).toFixed(2) + ' gb';
-}
-
-function readAsDataUrl(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const r = new FileReader();
-    r.onload = () => resolve(String(r.result || ''));
-    r.onerror = () => reject(new Error('could not read that file'));
-    r.readAsDataURL(file);
-  });
-}
+type Pin = { id: string; place?: string | null; reading?: string | null; file_name?: string | null; pretty?: string | null; size?: number; author?: string | null };
 
 export default function VoussoirPage() {
-  const [file, setFile] = useState<File | null>(null);
-  const [caption, setCaption] = useState('');
-  const [lock, setLock] = useState('');
-  const [warn, setWarn] = useState('');
-  const [err, setErr] = useState('');
-  const [link, setLink] = useState('');
-  const [busy, setBusy] = useState(false);
+  const { navigate } = useRouter();
+  const [pins, setPins] = useState<Pin[]>([]);
+  const [error, setError] = useState('');
 
-  const pick = (f: File | null) => {
-    setFile(f);
-    setLink('');
-    setErr('');
-    setWarn(f && f.size > 12 * 1024 * 1024 ? 'heavy stone. the tab may pause while it encodes. no size lock.' : '');
-  };
-
-  const setStone = async () => {
-    if (!file) return;
-    setBusy(true);
-    setErr('');
-    try {
-      const dataUrl = await readAsDataUrl(file);
-      const id = uid();
-      const res = await publishShare({
-        id,
-        name: file.name,
-        type: file.type || 'application/octet-stream',
-        size: file.size,
-        dataUrl,
-        lockPass: lock.trim() || undefined,
-        author: 'voussoir',
-        caption: caption.trim() || file.name,
-      });
-      if (!res.ok) throw new Error(res.error || 'the arch did not take');
-      const urls = shareUrls(res.id || id);
-      setLink(urls.embed);
-      if (res.warn) setWarn(res.warn);
-      try { await navigator.clipboard.writeText(urls.embed); } catch {}
-    } catch (e: any) {
-      setErr(e?.message || 'failed');
-    }
-    setBusy(false);
-  };
+  useEffect(() => {
+    fetch('/api/keystone?list=1').then(async (res) => {
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'could not read the arch');
+      setPins(data.pins || []);
+    }).catch((err) => setError(err instanceof Error ? err.message : 'could not read the arch'));
+  }, []);
 
   return (
-    <div className="mesh min-h-screen">
+    <div className="min-h-screen bg-[#f5f5f7] text-[#1d1d1f]">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-xl mx-auto">
-        <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-7">
-          <p className="text-[#0a84ff] text-sm font-medium mb-2">voussoir</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-2">set one local in the arch</h1>
-          <p className="text-neutral-400 text-sm mb-6">uploads the file into the public shares table. discord reads the /s card, caption included. a spoken phrase only gates the preview in the tab.</p>
-          <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/40 p-8 text-center mb-4 transition-colors duration-300">
-            <input type="file" className="hidden" onChange={(e) => pick(e.target.files?.[0] || null)} />
-            <span className="text-sm text-neutral-200">{file ? `${file.name} · ${pretty(file.size)}` : 'choose a file from this device'}</span>
-          </label>
-          <input value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="caption for the discord card" className="w-full rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-white outline-none mb-3" />
-          <input value={lock} onChange={(e) => setLock(e.target.value)} placeholder="optional spoken phrase" className="w-full rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-white outline-none mb-4" />
-          {warn && <p className="text-xs text-amber-300/80 mb-3">{warn}</p>}
-          {err && <p className="text-xs text-red-400 mb-3">{err}</p>}
-          <button onClick={setStone} disabled={busy || !file} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40">{busy ? 'setting the stone…' : 'upload and share'}</button>
-          {link && <p className="text-xs text-neutral-500 mt-4 break-all">discord embed copied: {link}</p>}
-        </motion.div>
-      </div>
+      <main className="mx-auto max-w-3xl px-5 pb-24 pt-28">
+        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[13px] font-medium tracking-wide text-[#6e6e73]">rankvault · voussoir</motion.p>
+        <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-2 text-4xl font-semibold tracking-tight">Pins already set.</motion.h1>
+        <p className="mt-3 max-w-xl text-[17px] leading-relaxed text-[#6e6e73]">The public arch of keystones. Open one for the file and the reading. Paste /voussoir in Discord for the card. Not a cabinet.</p>
+        <button type="button" onClick={() => navigate('keystone')} className="mt-6 rounded-full bg-[#1d1d1f] px-5 py-2.5 text-sm font-medium text-white transition hover:bg-black active:scale-[0.98]">Set a pin</button>
+        {error ? <p className="mt-6 text-sm text-[#b42318]">{error}</p> : null}
+        <div className="mt-8 space-y-3">
+          {pins.map((pin, i) => (
+            <motion.button key={pin.id} type="button" onClick={() => navigate('keystone', pin.id)} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i, 8) * 0.04 }} className="block w-full rounded-[24px] bg-white p-5 text-left shadow-[0_12px_40px_rgba(0,0,0,0.05)] transition hover:-translate-y-0.5">
+              <p className="text-lg font-semibold tracking-tight">{pin.place}</p>
+              {pin.reading ? <p className="mt-1 text-sm text-[#6e6e73]">{pin.reading}</p> : null}
+              <p className="mt-2 text-xs text-[#86868b]">{pin.file_name || 'file'} · {pin.pretty || ''}{pin.author ? ` · ${pin.author}` : ''}</p>
+            </motion.button>
+          ))}
+          {!error && pins.length === 0 ? <p className="text-sm text-[#6e6e73]">No pins yet.</p> : null}
+        </div>
+      </main>
+      <Footer />
     </div>
   );
 }

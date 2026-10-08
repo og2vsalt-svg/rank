@@ -1,199 +1,129 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { shareUrls } from '../lib/cloudShare';
+import Footer from './Footer';
+import { useRouter } from './Router';
+
+type Pin = {
+  id: string;
+  place?: string | null;
+  reading?: string | null;
+  file_name?: string | null;
+  mime?: string | null;
+  size?: number;
+  file_url?: string | null;
+  author?: string | null;
+  pretty?: string | null;
+  warn?: string | null;
+};
+
+const SLOW = 8 * 1024 * 1024;
+const SB_URL = 'https://tqfocdktvjuwoiyfgesb.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
 
 function pretty(n: number) {
-  if (n < 1024) return n + ' b';
-  if (n < 1024 * 1024) return Math.round(n / 1024) + ' kb';
-  if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(1) + ' mb';
-  return (n / (1024 * 1024 * 1024)).toFixed(2) + ' gb';
+  if (n < 1024) return `${n} B`;
+  if (n < 1024 * 1024) return `${Math.max(1, Math.round(n / 1024))} KB`;
+  if (n < 1024 * 1024 * 1024) return `${(n / (1024 * 1024)).toFixed(1)} MB`;
+  return `${(n / (1024 * 1024 * 1024)).toFixed(2)} GB`;
 }
-
-function hexFromBytes(bytes: Uint8Array) {
-  const a = bytes[0] ?? 10;
-  const b = bytes[Math.floor(bytes.length / 2)] ?? 132;
-  const c = bytes[bytes.length - 1] ?? 255;
-  return `#${[a, b, c].map((x) => x.toString(16).padStart(2, '0')).join('')}`;
-}
-
-async function sha256(buf: ArrayBuffer) {
-  const digest = await crypto.subtle.digest('SHA-256', buf);
-  return Array.from(new Uint8Array(digest))
-    .map((x) => x.toString(16).padStart(2, '0'))
-    .join('');
-}
-
-function readAsDataUrl(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const r = new FileReader();
-    r.onload = () => resolve(String(r.result || ''));
-    r.onerror = () => reject(new Error('could not read file'));
-    r.readAsDataURL(file);
-  });
-}
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
 
 export default function KeystonePage() {
+  const { shareId, navigate } = useRouter();
+  const [place, setPlace] = useState('');
+  const [reading, setReading] = useState('');
+  const [author, setAuthor] = useState('');
   const [file, setFile] = useState<File | null>(null);
-  const [hash, setHash] = useState('');
-  const [stone, setStone] = useState('#0a84ff');
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
   const [warn, setWarn] = useState('');
-  const [err, setErr] = useState('');
-  const [embed, setEmbed] = useState('');
-  const [app, setApp] = useState('');
-  const [mode, setMode] = useState<'receipt' | 'file'>('receipt');
+  const [row, setRow] = useState<Pin | null>(null);
+  const [copied, setCopied] = useState(false);
+  const slow = useMemo(() => (file && file.size > SLOW ? `about ${pretty(file.size)} — this may open slowly. nothing is refused.` : ''), [file]);
 
-  const pick = async (f?: File) => {
-    if (!f) return;
-    setFile(f);
-    setErr('');
-    setEmbed('');
-    setApp('');
-    setWarn(f.size > 40 * 1024 * 1024 ? 'no cap. large files just make this tab slower while they encode.' : '');
-    try {
-      const buf = await f.arrayBuffer();
-      const bytes = new Uint8Array(buf.slice(0, 64));
-      setStone(hexFromBytes(bytes));
-      setHash(await sha256(buf));
-    } catch {
-      setHash('');
-    }
-  };
+  useEffect(() => {
+    if (!shareId) return;
+    let stop = false;
+    fetch(`/api/keystone?id=${encodeURIComponent(shareId)}`).then(async (res) => {
+      if (!res.ok) { if (!stop) setError('that pin is not on the arch'); return; }
+      const data = await res.json();
+      if (!stop) setRow(data);
+    }).catch(() => { if (!stop) setError('could not reach the pin'); });
+    return () => { stop = true; };
+  }, [shareId]);
 
-  const ship = async () => {
-    if (!file) return;
-    setBusy(true);
-    setErr('');
+  async function fileIt(e: React.FormEvent) {
+    e.preventDefault();
+    if (!file) { setError('choose a local file first'); return; }
+    if (!place.trim()) { setError('name the place'); return; }
+    setBusy(true); setError(''); setWarn(slow);
     try {
-      let name = file.name;
-      let type = file.type || 'application/octet-stream';
-      let size = file.size;
-      let dataUrl: string;
-      if (mode === 'receipt') {
-        const receipt = {
-          kind: 'keystone',
-          name: file.name,
-          mime: type,
-          size,
-          sha256: hash,
-          stone,
-          notedAt: new Date().toISOString(),
-        };
-        const blob = new Blob([JSON.stringify(receipt, null, 2)], { type: 'application/json' });
-        name = file.name.replace(/\.[^.]+$/, '') + '.keystone.json';
-        type = 'application/json';
-        size = blob.size;
-        dataUrl = await readAsDataUrl(new File([blob], name, { type }));
-      } else {
-        dataUrl = await readAsDataUrl(file);
+      const id = uid();
+      const path = `${id}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+      const up = await fetch(`${SB_URL}/storage/v1/object/shares/${path}`, {
+        method: 'POST',
+        headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}`, 'Content-Type': file.type || 'application/octet-stream', 'x-upsert': 'true' },
+        body: file,
+      });
+      if (!up.ok) {
+        const text = await up.text();
+        throw new Error(text.slice(0, 180) || 'storage did not take the file. it was not refused for size.');
       }
-      const r = await fetch('/api/share', {
+      const fileUrl = `${SB_URL}/storage/v1/object/public/shares/${path}`;
+      const res = await fetch('/api/keystone', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name,
-          type,
-          size,
-          dataUrl,
-          author: 'keystone',
-        }),
+        body: JSON.stringify({ id, place: place.trim(), reading, author, file_name: file.name, mime: file.type || 'application/octet-stream', size: file.size, file_url: fileUrl }),
       });
-      const json = await r.json();
-      if (!r.ok || !json?.ok) throw new Error(json?.error || 'share failed');
-      const urls = shareUrls(json.id);
-      setEmbed(urls.embed);
-      setApp(urls.app);
-      try { await navigator.clipboard.writeText(urls.embed); } catch {}
-      if (json.warn) setWarn(json.warn);
-    } catch (e: any) {
-      setErr(e?.message || 'keystone failed');
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'could not write the pin');
+      if (data.warn) setWarn(data.warn);
+      navigate('keystone', id);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'pin failed');
     } finally {
       setBusy(false);
     }
-  };
+  }
+
+  const link = typeof window !== 'undefined' && row ? `${window.location.origin}/keystone/${row.id}` : '';
 
   return (
-    <div className="mesh min-h-screen">
+    <div className="min-h-screen bg-[#f5f5f7] text-[#1d1d1f]">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          className="glass rounded-[32px] p-8"
-        >
-          <p className="text-[#0a84ff] text-sm mb-2">keystone</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">weigh a local file, then pin a receipt.</h1>
-          <p className="text-neutral-400 text-sm mb-6">
-            not a vault. hash stays in the tab first. ship either a tiny json receipt or the original into the public share table. discord unfurls /s.
-          </p>
-
-          <label
-            className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-10 text-center transition mb-6"
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => { e.preventDefault(); pick(e.dataTransfer.files?.[0]); }}
-          >
-            <input type="file" className="hidden" onChange={(e) => pick(e.target.files?.[0])} />
-            <p className="text-white font-medium">{file ? file.name : 'drop one file'}</p>
-            {file && <p className="text-xs text-neutral-500 mt-2">{pretty(file.size)} · {file.type || 'unknown'}</p>}
-            <p className="text-xs text-neutral-500 mt-2">no hard limit. we only warn when it might feel slow.</p>
-          </label>
-
-          {file && (
-            <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="rounded-2xl border border-white/10 overflow-hidden mb-6"
-            >
-              <div className="h-16" style={{ background: `linear-gradient(135deg, ${stone}, #0a84ff)` }} />
-              <div className="p-4">
-                <p className="text-xs text-neutral-500">stone</p>
-                <p className="text-sm text-white font-medium">{stone}</p>
-                {hash && (
-                  <>
-                    <p className="text-xs text-neutral-500 mt-3">sha-256</p>
-                    <p className="text-[11px] break-all text-neutral-300 font-mono">{hash}</p>
-                  </>
-                )}
-              </div>
-            </motion.div>
-          )}
-
-          <div className="flex gap-2 mb-5">
-            <button
-              onClick={() => setMode('receipt')}
-              className={`px-4 py-2 rounded-full text-sm transition ${mode === 'receipt' ? 'bg-white text-black' : 'bg-white/5 text-neutral-300'}`}
-            >
-              ship receipt
-            </button>
-            <button
-              onClick={() => setMode('file')}
-              className={`px-4 py-2 rounded-full text-sm transition ${mode === 'file' ? 'bg-white text-black' : 'bg-white/5 text-neutral-300'}`}
-            >
-              ship original
-            </button>
-          </div>
-
-          {warn && <p className="text-xs text-amber-300/80 mb-3">{warn}</p>}
-          {err && <p className="text-xs text-red-400 mb-3">{err}</p>}
-
-          <button
-            disabled={!file || busy}
-            onClick={ship}
-            className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40"
-          >
-            {busy ? 'setting the stone…' : 'pin to share db'}
-          </button>
-
-          {embed && (
-            <div className="mt-6 space-y-2">
-              <p className="text-xs text-neutral-400 break-all">discord: {embed}</p>
-              <p className="text-xs text-neutral-500 break-all">app: {app}</p>
+      <main className="mx-auto max-w-3xl px-5 pb-24 pt-28">
+        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[13px] font-medium tracking-wide text-[#6e6e73]">rankvault · keystone</motion.p>
+        <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05, duration: 0.45, ease: [0.22, 1, 0.36, 1] }} className="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">A pin, not a drawer.</motion.h1>
+        <p className="mt-3 max-w-xl text-[17px] leading-relaxed text-[#6e6e73]">Name a place, leave a reading, and hang one local file under the arch. Bytes land in storage. The pin lands in the keystones table. Older desks stay.</p>
+        {shareId && row ? (
+          <motion.article initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 260, damping: 28 }} className="mt-10 rounded-[28px] bg-white p-7 shadow-[0_20px_60px_rgba(0,0,0,0.06)]">
+            <p className="text-xs uppercase tracking-[0.16em] text-[#86868b]">{row.author || 'unsigned'}</p>
+            <h2 className="mt-2 text-3xl font-semibold tracking-tight">{row.place}</h2>
+            {row.reading ? <p className="mt-3 text-[17px] leading-relaxed text-[#3a3a3c]">{row.reading}</p> : null}
+            <p className="mt-4 text-sm text-[#6e6e73]">{row.file_name} · {row.pretty || pretty(row.size || 0)}{row.mime ? ` · ${row.mime}` : ''}</p>
+            {row.warn || warn ? <p className="mt-3 rounded-2xl bg-[#fff6e5] px-4 py-3 text-sm text-[#8a5a00]">{row.warn || warn}</p> : null}
+            <div className="mt-6 flex flex-wrap gap-3">
+              {row.file_url ? <a href={row.file_url} className="rounded-full bg-[#0071e3] px-5 py-2.5 text-sm font-medium text-white transition hover:bg-[#0077ed]">Open file</a> : null}
+              <button type="button" onClick={() => { navigator.clipboard.writeText(link); setCopied(true); }} className="rounded-full bg-[#f5f5f7] px-5 py-2.5 text-sm font-medium text-[#1d1d1f] transition active:scale-[0.98]">{copied ? 'Copied' : 'Copy link'}</button>
+              <button type="button" onClick={() => navigate('voussoir')} className="rounded-full px-4 py-2.5 text-sm text-[#0071e3]">See the arch</button>
             </div>
-          )}
-        </motion.div>
-      </div>
+            <p className="mt-4 text-xs text-[#86868b]">Paste this link in Discord for the card.</p>
+          </motion.article>
+        ) : (
+          <motion.form onSubmit={fileIt} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 240, damping: 26 }} className="mt-10 space-y-4 rounded-[28px] bg-white p-7 shadow-[0_20px_60px_rgba(0,0,0,0.06)]">
+            <label className="block text-sm font-medium">Place<input value={place} onChange={(e) => setPlace(e.target.value)} className="mt-1 w-full rounded-2xl border border-black/5 bg-[#f5f5f7] px-4 py-3 outline-none transition focus:ring-2 focus:ring-[#0071e3]/40" placeholder="north pier" /></label>
+            <label className="block text-sm font-medium">Reading<input value={reading} onChange={(e) => setReading(e.target.value)} className="mt-1 w-full rounded-2xl border border-black/5 bg-[#f5f5f7] px-4 py-3 outline-none transition focus:ring-2 focus:ring-[#0071e3]/40" placeholder="what the file is marking" /></label>
+            <label className="block text-sm font-medium">Signed<input value={author} onChange={(e) => setAuthor(e.target.value)} className="mt-1 w-full rounded-2xl border border-black/5 bg-[#f5f5f7] px-4 py-3 outline-none transition focus:ring-2 focus:ring-[#0071e3]/40" placeholder="optional" /></label>
+            <label className="block text-sm font-medium">Local file<input type="file" onChange={(e) => setFile(e.target.files?.[0] || null)} className="mt-1 w-full text-sm" /></label>
+            {slow ? <p className="rounded-2xl bg-[#fff6e5] px-4 py-3 text-sm text-[#8a5a00]">{slow}</p> : null}
+            {error ? <p className="text-sm text-[#b42318]">{error}</p> : null}
+            {warn ? <p className="text-sm text-[#8a5a00]">{warn}</p> : null}
+            <button disabled={busy} className="rounded-full bg-[#1d1d1f] px-6 py-3 text-sm font-medium text-white transition hover:bg-black active:scale-[0.98] disabled:opacity-50">{busy ? 'Pinning…' : 'Set the keystone'}</button>
+          </motion.form>
+        )}
+      </main>
+      <Footer />
     </div>
   );
 }

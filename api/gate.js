@@ -91,6 +91,7 @@ import keep from '../lib/endpoints/keep.js';
 import keystone from '../lib/endpoints/keystone.js';
 import clip from '../lib/endpoints/clip.js';
 import palimpsest from '../lib/endpoints/palimpsest.js';
+import quittance from '../lib/endpoints/quittance.js';
 
 const routes = {
   atelier, beacon, card, cardfront, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -199,6 +200,9 @@ const routes = {
   rail: clip,
   palimpsest,
   underwriting: palimpsest,
+  quittance,
+  acquittance: quittance,
+  pressmark,
 };
 
 export default function handler(req, res) {

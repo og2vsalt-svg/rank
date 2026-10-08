@@ -12,6 +12,50 @@
       "destination": "/api/gate?name=:name"
     },
     {
+      "source": "/quittance/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely).*"
+        }
+      ],
+      "destination": "/api/gate?name=quittance&id=:id&card=1"
+    },
+    {
+      "source": "/quittance",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+        }
+      ],
+      "destination": "/api/gate?name=quittance&card=1"
+    },
+    {
+      "source": "/acquittance/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely).*"
+        }
+      ],
+      "destination": "/api/gate?name=quittance&id=:id&card=1"
+    },
+    {
+      "source": "/acquittance",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+        }
+      ],
+      "destination": "/api/gate?name=quittance&card=1"
+    },
+    {
       "source": "/s/:id",
       "has": [
         {

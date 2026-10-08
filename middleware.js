@@ -7,7 +7,7 @@ export const config = {
 function card(request, page, id) {
   const url = new URL(request.url);
   const dest = new URL('/api/gate', request.url);
-  dest.searchParams.set('name', 'cardfront');
+  dest.searchParams.set('name', 'embed');
   dest.searchParams.set('page', page);
   if (id) dest.searchParams.set('id', id);
   const ua = request.headers.get('user-agent') || '';

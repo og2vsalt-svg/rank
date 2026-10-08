@@ -1,6 +1,9 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'fascia', href: '/fascia', body: 'the line people read before the file. a local file lands in the share table, the face line lands in fascia. discord unfurls /fascia. large drops are warned, never refused. not a vault drawer.' },
+  { title: 'finial', href: '/finial', body: 'a closing mark on a share that already exists. no new file. discord unfurls /finial. older desks stay.' },
+  { title: 'quirk', href: '/quirk', body: 'a short oddity with a colour. an optional local file lands in the share table. discord unfurls /quirk. large files are warned, never refused.' },
   { title: 'palimpsest', href: '/palimpsest', body: 'write over an earlier file. the later local file lands in the share table, the scrape note lands in palimpsests. /palimpsest/id is the discord card. large drops are warned, never refused. not a vault drawer. older desks stay.' },
   { title: 'underwriting', href: '/underwriting', body: 'the public index of later writings. open one to read what was scraped off and download the file. discord unfurls /underwriting. not a cabinet.' },
   { title: 'keystone', href: '/keystone', body: 'pin one local file to a place with a reading. bytes land in storage and the keystones table. /keystone/id is the discord card. large drops are warned, never refused. not a vault drawer. older desks stay.' },

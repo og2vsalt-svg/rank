@@ -3,7 +3,7 @@ import { useState } from 'react';
 const faqs = [
   {
     q: 'where do files actually live?',
-    a: 'private stuff lives in this browser. public drops also write to the cloud table so a share link works off-device.',
+    a: 'private vault files stay in this browser. studio drops write the bytes into the database in pieces, then a public share link points at them.',
   },
   {
     q: 'can other people see my files?',

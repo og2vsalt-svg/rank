@@ -1,53 +1,58 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { fetchShare } from '../lib/cloudShare';
+import Footer from './Footer';
+
+type Row = { id: string; name: string; size?: number; caption?: string | null; created_at?: string };
 
 export default function PulsePage() {
-  const [id, setId] = useState('');
-  const [msg, setMsg] = useState('');
-  const [ok, setOk] = useState<boolean | null>(null);
-  const [busy, setBusy] = useState(false);
+  const [rows, setRows] = useState<Row[]>([]);
 
-  const ping = async () => {
-    const raw = id.trim().replace(/^.*[?#]f=/, '').replace(/^.*\//, '');
-    if (!raw) return;
-    setBusy(true);
-    setMsg('');
-    try {
-      const meta = await fetchShare(raw);
-      if (!meta) {
-        setOk(false);
-        setMsg('no live share on that id. maybe expired or still private.');
-      } else {
-        setOk(true);
-        setMsg(`${meta.name} · ${(meta.size / 1024).toFixed(1)} kb · ${meta.type}`);
+  useEffect(() => {
+    Promise.all([
+      fetch('/api/keep?list=1').then((r) => r.json()).catch(() => ({ files: [] })),
+      fetch('/api/share?list=1').then((r) => r.json()).catch(() => ({ shares: [] })),
+    ]).then(([kept, shared]) => {
+      const a = Array.isArray(kept.files) ? kept.files : [];
+      const b = Array.isArray(shared.shares) ? shared.shares : [];
+      const seen = new Set<string>();
+      const merged: Row[] = [];
+      for (const row of [...a, ...b]) {
+        if (!row?.id || seen.has(row.id)) continue;
+        seen.add(row.id);
+        merged.push(row);
       }
-    } catch (e: any) {
-      setOk(false);
-      setMsg(e?.message || 'could not reach host');
-    } finally {
-      setBusy(false);
-    }
-  };
+      setRows(merged.slice(0, 24));
+    });
+  }, []);
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-[32px] p-8">
-          <p className="text-[#0a84ff] text-sm mb-2">pulse</p>
-          <h1 className="text-3xl font-semibold mb-3">is this drop still breathing</h1>
-          <p className="text-neutral-400 text-sm mb-6">paste a share id or full link. we only read the public db row.</p>
-          <div className="flex gap-2">
-            <input value={id} onChange={(e) => setId(e.target.value)} placeholder="id or /s/abc" className="flex-1 bg-white/5 rounded-full px-4 py-2.5 text-sm outline-none" />
-            <button onClick={ping} disabled={busy} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium">{busy ? 'checking' : 'pulse'}</button>
+      <main className="pt-24 pb-16 px-5">
+        <div className="max-w-2xl mx-auto">
+          <motion.p initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="text-[#0a84ff] text-sm font-medium mb-3">pulse</motion.p>
+          <h1 className="text-4xl font-semibold tracking-tight text-white mb-3">what just landed.</h1>
+          <p className="text-neutral-400 mb-8">Recent files from the database and the public share table. Paste a link in Discord for the card.</p>
+          <div className="space-y-2">
+            {rows.map((row, i) => (
+              <motion.a
+                key={row.id}
+                href={`/s/${row.id}`}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.03 }}
+                className="block glass rounded-2xl px-4 py-3 hover:bg-white/[0.05] transition"
+              >
+                <p className="text-sm text-white">{row.name}</p>
+                <p className="text-xs text-neutral-500">{row.caption || `${row.size || 0} bytes`} · /s/{row.id}</p>
+              </motion.a>
+            ))}
+            {!rows.length && <p className="text-sm text-neutral-500">quiet for now.</p>}
           </div>
-          {msg && (
-            <p className={`mt-5 text-sm ${ok ? 'text-emerald-300' : 'text-amber-300'}`}>{msg}</p>
-          )}
-        </motion.div>
-      </div>
+        </div>
+      </main>
+      <Footer />
     </div>
   );
 }

@@ -83,6 +83,7 @@ import beading from '../lib/endpoints/beading.js';
 import weatherboard from '../lib/endpoints/weatherboard.js';
 import listening from '../lib/endpoints/listening.js';
 import waybill from '../lib/endpoints/waybill.js';
+import stub from '../lib/endpoints/stub.js';
 
 const routes = {
   atelier, beacon, card, cardfront, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -176,6 +177,8 @@ const routes = {
   setlist: listening,
   waybill,
   porter: waybill,
+  stub,
+  counterfoil: stub,
 };
 
 export default function handler(req, res) {

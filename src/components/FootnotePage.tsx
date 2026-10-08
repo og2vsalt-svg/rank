@@ -10,6 +10,7 @@ function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 }
 
+// public margin board
 export default function FootnotePage() {
   const { shareId } = useRouter();
   const [body, setBody] = useState('');

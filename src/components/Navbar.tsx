@@ -5,6 +5,8 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'etui', label: 'etui' },
+  { to: 'bandbox', label: 'bandbox' },
   { to: 'fascia', label: 'fascia' },
   { to: 'finial', label: 'finial' },
   { to: 'quirk', label: 'quirk' },
@@ -19,8 +21,8 @@ const primary: NavItem[] = [
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
-  { title: 'new', items: [{ to: 'fascia', label: 'fascia' }, { to: 'finial', label: 'finial' }, { to: 'quirk', label: 'quirk' }, { to: 'mailslot', label: 'mailslot' }, { to: 'footnote', label: 'footnote' }, { to: 'quittance', label: 'quittance' }, { to: 'clip', label: 'clip' }, { to: 'studio', label: 'studio' }, { to: 'pulse', label: 'pulse' }, { to: 'rooms', label: 'rooms' }, { to: 'loft', label: 'loft' }, { to: 'witness', label: 'witness' }, { to: 'indent', label: 'indent' }, { to: 'haversack', label: 'haversack' }, { to: 'vault', label: 'vault' }] },
-  { title: 'hosting', items: [{ to: 'mailslot', label: 'mailslot' }, { to: 'quittance', label: 'quittance' }, { to: 'clip', label: 'clip' }, { to: 'haversack', label: 'haversack' }, { to: 'handover', label: 'handover' }, { to: 'vault', label: 'vault' }] },
+  { title: 'new', items: [{ to: 'etui', label: 'etui' }, { to: 'bandbox', label: 'bandbox' }, { to: 'fascia', label: 'fascia' }, { to: 'finial', label: 'finial' }, { to: 'quirk', label: 'quirk' }, { to: 'mailslot', label: 'mailslot' }, { to: 'footnote', label: 'footnote' }, { to: 'quittance', label: 'quittance' }, { to: 'clip', label: 'clip' }, { to: 'studio', label: 'studio' }, { to: 'pulse', label: 'pulse' }, { to: 'rooms', label: 'rooms' }, { to: 'loft', label: 'loft' }, { to: 'witness', label: 'witness' }, { to: 'indent', label: 'indent' }, { to: 'haversack', label: 'haversack' }, { to: 'vault', label: 'vault' }] },
+  { title: 'hosting', items: [{ to: 'etui', label: 'etui' }, { to: 'bandbox', label: 'bandbox' }, { to: 'mailslot', label: 'mailslot' }, { to: 'quittance', label: 'quittance' }, { to: 'clip', label: 'clip' }, { to: 'haversack', label: 'haversack' }, { to: 'handover', label: 'handover' }, { to: 'vault', label: 'vault' }] },
   { title: 'notes', items: [{ to: 'footnote', label: 'footnote' }, { to: 'letterpress', label: 'letterpress' }, { to: 'commonplace', label: 'commonplace' }, { to: 'ledger', label: 'ledger' }, { to: 'hearth', label: 'hearth' }] },
   { title: 'share', items: [{ to: 'mailslot', label: 'mailslot' }, { to: 'quittance', label: 'quittance' }, { to: 'clip', label: 'clip' }, { to: 'handover', label: 'handover' }, { to: 'parcel', label: 'parcel' }] },
 ];
@@ -109,7 +111,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">older desks stay on their routes. paste /s/id, /footnote/id, or /mailslot in Discord for a card.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">older desks stay on their routes. paste /etui/id or /s/id in Discord for a card.</p>
         </div>
       </div>
     </nav>

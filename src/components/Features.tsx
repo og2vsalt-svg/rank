@@ -1,8 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
-  { title: 'courier', href: '/courier', body: 'send one local file with an errand. the row lands in the couriers table, and smaller files keep a byte copy in Postgres. /courier/id is the discord card. large drops are warned, never refused. not a vault drawer. the satchel desk stays.' },
-  { title: 'cloakroom', href: '/cloakroom', body: 'the public board of couriers already sent. open one to download, or mark it picked up. discord unfurls /cloakroom. not a cabinet.' },
+  { title: 'haversack', href: '/haversack', body: 'send one local file with an errand. the row lands in the couriers table, and smaller files keep a byte copy in Postgres. /haversack/id is the discord card. large drops are warned, never refused. not a vault drawer. the satchel and courier desks stay.' },
+  { title: 'pegboard', href: '/pegboard', body: 'the public board of haversacks already sent. open one to download, or mark it picked up. discord unfurls /pegboard. not a cabinet.' },
   { title: 'stub', href: '/stub', body: 'tear a counterfoil for someone. an optional local file lands in storage and the share table, the label lands in stubs. /stub/id is the discord card. large drops are warned, never refused. not a vault drawer.' },
   { title: 'waybill', href: '/waybill', body: 'a delivery slip with stamped stops and an optional local file. bytes land in storage and the waybills table. /waybill/id is the discord card. large drops are warned, never refused. not a vault drawer.' },
   { title: 'porter', href: '/porter', body: 'the public index of waybills. open one to stamp a stop or download the file. discord unfurls /porter. not a cabinet.' },
@@ -20,7 +20,7 @@ const items = [
   { title: 'rack', href: '/rack', body: 'a public index of inlays already filed. open one to download the file from the database. discord unfurls /rack. not a vault drawer.' },
   { title: 'parcel', href: '/parcel', body: 'address one local file to a person, with a return note. bytes land in storage and a row in the share table. /parcel/id is the discord card. large drops are warned, never refused. not a vault drawer.' },
   { title: 'colophon', href: '/colophon', body: 'credits beside a local file: title, edition, imprint. bytes land in storage and a row in the share table. /colophon/id is the discord card. large drops are warned, never refused. not a vault drawer.' },
-  { title: 'courier', href: '/courier', body: 'file a local file into the drops bucket and the hosted_files table. Discord unfurls /courier and /s. large drops are warned, never refused.' },
+  { title: 'haversack', href: '/haversack', body: 'file a local file into the drops bucket and the hosted_files table. Discord unfurls /haversack and /s. large drops are warned, never refused.' },
   { title: 'folio', href: '/folio', body: 'a reading copy of one local file. bytes land in storage, the title and excerpt land in the folios table. /folio/id is the discord card. large files are warned, never refused. not a vault drawer.' },
   { title: 'swatch', href: '/swatch', body: 'pull five colors from a local image in the tab, then keep the file and the chips in the swatches table. /swatch/id unfurls with the lead color. not a vault drawer.' },
   { title: 'margin', href: '/margin', body: 'notes beside a share that already exists. no new file. /margin/id unfurls in discord without the file itself.' },

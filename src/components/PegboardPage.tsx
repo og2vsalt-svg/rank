@@ -13,23 +13,23 @@ function pretty(n: number) {
   return `${(n / (1024 * 1024 * 1024)).toFixed(2)} GB`;
 }
 
-export default function CloakroomPage() {
+export default function PegboardPage() {
   const { navigate } = useRouter();
   const [rows, setRows] = useState<Row[]>([]);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState('');
 
   async function load() {
-    const res = await fetch('/api/courier');
+    const res = await fetch('/api/haversack');
     const data = await res.json().catch(() => ({}));
-    if (!res.ok) { setError(data.error || 'could not read the cloakroom'); return; }
+    if (!res.ok) { setError(data.error || 'could not read the pegboard'); return; }
     setRows(data.couriers || []);
   }
   useEffect(() => { load(); }, []);
 
   async function toggle(row: Row) {
     setBusy(row.id);
-    await fetch('/api/courier', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: row.id, picked_up: !row.picked_up }) });
+    await fetch('/api/haversack', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: row.id, picked_up: !row.picked_up }) });
     await load();
     setBusy('');
   }
@@ -38,10 +38,10 @@ export default function CloakroomPage() {
     <div className="mesh min-h-screen text-[#f5f5f7]">
       <Navbar />
       <main className="max-w-3xl mx-auto px-5 pt-24 pb-16 apple-in">
-        <p className="text-[12px] tracking-[0.18em] uppercase text-[#ff9f0a]/80">cloakroom</p>
-        <h1 className="mt-2 text-4xl font-semibold tracking-tight">Couriers waiting to be collected.</h1>
+        <p className="text-[12px] tracking-[0.18em] uppercase text-[#ff9f0a]/80">pegboard</p>
+        <h1 className="mt-2 text-4xl font-semibold tracking-tight">Haversacks waiting to be collected.</h1>
         <p className="mt-3 text-neutral-400 max-w-xl">A public board, not a vault drawer. Open a run to download the file, or mark it picked up. Discord unfurls this page.</p>
-        <button onClick={() => navigate('courier')} className="mt-5 px-4 py-2 rounded-full bg-white text-black text-sm font-medium">send a courier</button>
+        <button onClick={() => navigate('haversack')} className="mt-5 px-4 py-2 rounded-full bg-white text-black text-sm font-medium">send a haversack</button>
         {error ? <p className="mt-4 text-sm text-red-400">{error}</p> : null}
         <div className="mt-6 space-y-3">
           {rows.map((row, i) => (
@@ -52,7 +52,7 @@ export default function CloakroomPage() {
                 <p className="text-sm text-neutral-400">{row.errand || 'no errand'} · {pretty(Number(row.size) || 0)}{row.for_whom ? ` · for ${row.for_whom}` : ''}</p>
               </div>
               <div className="flex gap-2">
-                <button onClick={() => navigate('courier', row.id)} className="px-3 py-2 rounded-full bg-white text-black text-sm">open</button>
+                <button onClick={() => navigate('haversack', row.id)} className="px-3 py-2 rounded-full bg-white text-black text-sm">open</button>
                 <button onClick={() => toggle(row)} className="px-3 py-2 rounded-full glass text-sm" disabled={busy === row.id}>{row.picked_up ? 'send back out' : 'mark picked up'}</button>
               </div>
             </motion.article>

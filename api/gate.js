@@ -85,6 +85,7 @@ import listening from '../lib/endpoints/listening.js';
 import waybill from '../lib/endpoints/waybill.js';
 import stub from '../lib/endpoints/stub.js';
 import passbook from '../lib/endpoints/passbook.js';
+import courier from '../lib/endpoints/courier.js';
 
 const routes = {
   atelier, beacon, card, cardfront, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -181,6 +182,8 @@ const routes = {
   stub,
   counterfoil: stub,
   passbook,
+  courier,
+  cloakroom: courier,
 };
 
 export default function handler(req, res) {

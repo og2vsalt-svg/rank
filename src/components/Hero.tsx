@@ -16,6 +16,8 @@ export default function Hero() {
           Open a receiving window, keep a running book, or file something into the vault. Large drops get a warning, not a refusal. Older desks stay on their routes.
         </motion.p>
         <div className="flex flex-wrap gap-3 mb-12">
+          <button onClick={() => navigate('courier')} className="inline-flex px-5 py-2.5 rounded-full bg-[#ff9f0a] text-black text-sm font-medium hover:bg-[#ffb340] transition active:scale-[0.98]">send a courier</button>
+          <button onClick={() => navigate('cloakroom')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">cloakroom</button>
           <button onClick={() => navigate('knocker')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">leave a knock</button>
           <button onClick={() => navigate('commonplace')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">open commonplace</button>
           <button onClick={() => navigate('transom')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">open a transom</button>

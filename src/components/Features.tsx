@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'courier', href: '/courier', body: 'send one local file with an errand. the row lands in the couriers table, and smaller files keep a byte copy in Postgres. /courier/id is the discord card. large drops are warned, never refused. not a vault drawer. the satchel desk stays.' },
+  { title: 'cloakroom', href: '/cloakroom', body: 'the public board of couriers already sent. open one to download, or mark it picked up. discord unfurls /cloakroom. not a cabinet.' },
   { title: 'stub', href: '/stub', body: 'tear a counterfoil for someone. an optional local file lands in storage and the share table, the label lands in stubs. /stub/id is the discord card. large drops are warned, never refused. not a vault drawer.' },
   { title: 'waybill', href: '/waybill', body: 'a delivery slip with stamped stops and an optional local file. bytes land in storage and the waybills table. /waybill/id is the discord card. large drops are warned, never refused. not a vault drawer.' },
   { title: 'porter', href: '/porter', body: 'the public index of waybills. open one to stamp a stop or download the file. discord unfurls /porter. not a cabinet.' },

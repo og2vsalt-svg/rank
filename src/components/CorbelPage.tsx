@@ -1,144 +1,174 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { db, prettySize } from '../lib/db';
-import { publishLocalFile } from '../lib/cloudShare';
 import { useRouter } from './Router';
+import { publishLocalFile } from '../lib/cloudShare';
+import { sbRest } from '../lib/supabase';
 
-type Note = {
+type Row = {
   id: string;
-  load_note: string;
-  bearer: string | null;
-  share_id: string | null;
-  file_name: string | null;
-  author: string | null;
+  bearer: string;
+  load_note: string | null;
+  file_name: string;
+  mime: string | null;
+  size: number;
+  file_url: string;
   created_at: string;
 };
 
-function noteId() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+function pretty(n: number) {
+  if (n < 1024) return `${n} B`;
+  if (n < 1024 * 1024) return `${Math.round(n / 1024)} KB`;
+  if (n < 1024 * 1024 * 1024) return `${(n / (1024 * 1024)).toFixed(1)} MB`;
+  return `${(n / (1024 * 1024 * 1024)).toFixed(2)} GB`;
 }
 
 export default function CorbelPage() {
   const { shareId } = useRouter();
-  const [loadNote, setLoadNote] = useState('');
-  const [bearer, setBearer] = useState('');
-  const [author, setAuthor] = useState('');
   const [file, setFile] = useState<File | null>(null);
-  const [rows, setRows] = useState<Note[]>([]);
+  const [bearer, setBearer] = useState('');
+  const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
   const [warn, setWarn] = useState('');
-  const [copied, setCopied] = useState('');
+  const [link, setLink] = useState('');
+  const [row, setRow] = useState<Row | null>(null);
+  const [recent, setRecent] = useState<Row[]>([]);
 
-  async function load() {
-    const res = await fetch(
-      `${db.url}/rest/v1/corbel_notes?select=id,load_note,bearer,share_id,file_name,author,created_at&order=created_at.desc&limit=18`,
-      { headers: { apikey: db.key, Authorization: `Bearer ${db.key}` } },
-    );
-    if (!res.ok) return;
-    const data = await res.json();
-    if (Array.isArray(data)) setRows(data);
-  }
+  const slow = useMemo(
+    () => (file && file.size > 40 * 1024 * 1024 ? 'this bracket is carrying a large file. the tab may feel slow. nothing is refused for size.' : ''),
+    [file],
+  );
+
+  const loadRecent = () => {
+    sbRest('corbels?select=*&order=created_at.desc&limit=8')
+      .then((r) => r.json())
+      .then((data) => setRecent(Array.isArray(data) ? data : []))
+      .catch(() => setRecent([]));
+  };
 
   useEffect(() => {
-    load().catch(() => setErr('the corbel table did not answer'));
+    loadRecent();
   }, []);
 
-  async function save(e: React.FormEvent) {
-    e.preventDefault();
-    if (!loadNote.trim() || !file) return;
+  useEffect(() => {
+    if (!shareId) return;
+    sbRest(`corbels?id=eq.${encodeURIComponent(shareId)}&select=*&limit=1`)
+      .then((r) => r.json())
+      .then((data) => setRow(Array.isArray(data) ? data[0] || null : null))
+      .catch(() => setRow(null));
+  }, [shareId]);
+
+  const fileIt = async () => {
+    if (!file || !bearer.trim()) return;
     setBusy(true);
     setErr('');
-    setWarn(file.size > 12 * 1024 * 1024 ? 'this load is heavy. the tab may feel slow. nothing is refused.' : '');
-    const sent = await publishLocalFile(file, {
-      caption: loadNote.trim(),
-      author,
-      cardTitle: file.name,
+    setWarn('');
+    const published = await publishLocalFile(file, {
+      caption: note,
+      author: bearer,
+      cardTitle: `${bearer.trim()} — corbel`,
     });
-    if (!sent.ok || !sent.id) {
+    if (!published.ok || !published.id) {
       setBusy(false);
-      setErr(sent.error || 'the share table did not take the file');
+      setErr(published.error || 'could not set that bracket');
       return;
     }
-    if (sent.warn) setWarn(sent.warn);
-    const id = noteId();
-    const res = await fetch(`${db.url}/rest/v1/corbel_notes`, {
+    const res = await sbRest('corbels', {
       method: 'POST',
-      headers: {
-        apikey: db.key,
-        Authorization: `Bearer ${db.key}`,
-        'Content-Type': 'application/json',
-        Prefer: 'return=representation',
-      },
+      headers: { Prefer: 'resolution=merge-duplicates,return=representation' },
       body: JSON.stringify({
-        id,
-        load_note: loadNote.trim(),
-        bearer: bearer.trim() || null,
-        share_id: sent.id,
+        id: published.id,
+        bearer: bearer.trim(),
+        load_note: note || null,
         file_name: file.name,
-        author: author.trim() || null,
+        mime: file.type || 'application/octet-stream',
+        size: file.size,
+        file_url: published.url,
+        share_id: published.id,
       }),
     });
     setBusy(false);
     if (!res.ok) {
-      setErr('the file landed, but the load note did not');
+      setErr((await res.text()).slice(0, 180));
       return;
     }
-    setLoadNote('');
-    setBearer('');
-    setFile(null);
-    await load();
-  }
+    const saved = await res.json();
+    const next = Array.isArray(saved) ? saved[0] : null;
+    setRow(next);
+    setLink(`${location.origin}/corbel/${published.id}`);
+    setWarn(published.warn || slow || '');
+    if (next) setRecent((prev) => [next, ...prev.filter((item) => item.id !== next.id)].slice(0, 8));
+    history.pushState(null, '', `/corbel/${published.id}`);
+  };
 
-  async function copy(id: string) {
-    await navigator.clipboard.writeText(`${location.origin}/corbel/${id}`);
-    setCopied(id);
-    setTimeout(() => setCopied(''), 1400);
-  }
-
-  const focus = shareId ? rows.find((r) => r.id === shareId) : null;
+  const shown = row;
+  const image = shown?.mime?.startsWith('image/') ? shown.file_url : '';
 
   return (
-    <div className="mesh min-h-screen">
+    <div className="min-h-screen bg-[#050506] text-[#f5f5f7]">
       <Navbar />
-      <main className="mx-auto max-w-3xl px-5 pt-28 pb-24">
-        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} className="text-xs tracking-[0.22em] uppercase text-[#ffd60a]">corbel</motion.p>
-        <motion.h1 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06, duration: 0.55, ease: [0.22, 1, 0.36, 1] }} className="mt-3 text-4xl font-semibold tracking-tight">what the file is holding up</motion.h1>
-        <p className="mt-3 text-neutral-400 max-w-xl">Not a drawer. Name the bearer, write the load, and the local file goes into the share table. Paste /corbel in Discord for the card. Large files are warned, never refused.</p>
-        {focus && (
-          <motion.article initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mt-6 glass rounded-3xl p-5">
-            <p className="text-xs text-neutral-500">{focus.bearer || 'unassigned'}</p>
-            <h2 className="mt-1 text-xl">{focus.file_name || 'load'}</h2>
-            <p className="mt-2 text-sm text-neutral-300 whitespace-pre-wrap">{focus.load_note}</p>
-            {focus.share_id && <a className="mt-3 inline-block text-sm text-[#64b5ff]" href={`/s/${focus.share_id}`}>open the file</a>}
+      <main className="mx-auto max-w-3xl px-5 pb-24 pt-28">
+        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[13px] tracking-[0.16em] uppercase text-white/40">
+          projecting bracket
+        </motion.p>
+        <motion.h1
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.04, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          className="mt-2 text-4xl font-semibold tracking-tight"
+        >
+          Corbel
+        </motion.h1>
+        <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-white/60">
+          Set one local file on a bracket for a named bearer. The bytes land in storage and the row lands in corbels. Paste /corbel/id in Discord for a card. Large drops are warned, never refused. Older desks stay.
+        </p>
+
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }} className="mt-8 rounded-3xl border border-white/10 bg-white/[0.04] p-5">
+          <label className="flex cursor-pointer flex-col items-center rounded-2xl border border-dashed border-white/15 bg-black/20 px-4 py-10 text-center transition duration-200 hover:border-[#ff9f0a]/70">
+            <span className="text-sm text-white/80">{file ? file.name : 'choose a file from this device'}</span>
+            <span className="mt-1 text-xs text-white/40">{file ? pretty(file.size) : 'no size cap'}</span>
+            <input type="file" className="hidden" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+          </label>
+          {slow && <p className="mt-3 text-xs text-amber-200/80">{slow}</p>}
+          <input value={bearer} onChange={(e) => setBearer(e.target.value)} placeholder="who this bracket holds" className="mt-4 w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none transition focus:border-[#ff9f0a]" />
+          <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="the load, in one line" className="mt-3 min-h-24 w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none transition focus:border-[#ff9f0a]" />
+          <button disabled={!file || !bearer.trim() || busy} onClick={fileIt} className="mt-4 rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition duration-200 hover:scale-[1.02] disabled:opacity-40">
+            {busy ? 'setting…' : 'set the bracket'}
+          </button>
+          {err && <p className="mt-3 text-sm text-red-300">{err}</p>}
+          {warn && <p className="mt-3 text-sm text-amber-200/80">{warn}</p>}
+          {link && (
+            <button onClick={() => navigator.clipboard.writeText(link)} className="mt-3 block text-left text-sm text-[#ffd6a0]">
+              {link} — copied on click
+            </button>
+          )}
+        </motion.div>
+
+        {shown && (
+          <motion.article layout className="mt-6 overflow-hidden rounded-3xl border border-[#ff9f0a]/40 bg-white/[0.04]">
+            {image && <img src={image} alt="" className="max-h-72 w-full object-cover" />}
+            <div className="p-5">
+              <p className="text-xs uppercase tracking-[0.14em] text-white/40">for</p>
+              <h2 className="mt-1 text-2xl font-semibold tracking-tight">{shown.bearer}</h2>
+              <p className="mt-2 text-sm text-white/60">
+                {shown.load_note || 'no load note'} · {pretty(Number(shown.size) || 0)}
+              </p>
+              <a href={shown.file_url} className="mt-3 inline-block text-sm text-[#ffd6a0]">
+                download {shown.file_name}
+              </a>
+            </div>
           </motion.article>
         )}
-        <form onSubmit={save} className="mt-8 glass rounded-[28px] p-5 space-y-3">
-          <input value={bearer} onChange={(e) => setBearer(e.target.value)} placeholder="who it carries, optional" className="w-full rounded-2xl bg-black/40 border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#ffd60a]/60" />
-          <textarea value={loadNote} onChange={(e) => setLoadNote(e.target.value)} placeholder="what it is holding up" rows={4} className="w-full rounded-2xl bg-black/40 border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#ffd60a]/60" />
-          <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="from, optional" className="w-full rounded-2xl bg-black/40 border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#ffd60a]/60" />
-          <label className="block rounded-2xl border border-dashed border-white/15 bg-black/30 px-4 py-6 text-center cursor-pointer">
-            <input type="file" className="hidden" onChange={(e) => setFile(e.target.files?.[0] || null)} />
-            <span className="text-sm">{file ? file.name : 'file from this computer'}</span>
-            <span className="block text-xs text-neutral-500 mt-1">{file ? prettySize(file.size) : 'any size, warned if slow'}</span>
-          </label>
-          {warn && <p className="text-sm text-amber-200/90">{warn}</p>}
-          {err && <p className="text-sm text-rose-300">{err}</p>}
-          <button disabled={busy || !loadNote.trim() || !file} className="rounded-full bg-white text-black px-5 py-2.5 text-sm font-medium disabled:opacity-40">{busy ? 'setting…' : 'set the load'}</button>
-        </form>
-        <ul className="mt-8 space-y-3">
-          {rows.map((row, i) => (
-            <motion.li key={row.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i, 8) * 0.04, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-3xl p-4">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="text-sm text-neutral-100">{row.bearer || 'unassigned'}</p>
-                  <p className="text-xs text-neutral-500 mt-1 line-clamp-2">{row.load_note}</p>
-                  {row.share_id && <a className="text-xs text-[#64b5ff]" href={`/s/${row.share_id}`}>{row.file_name || 'file'}</a>}
-                </div>
-                <button onClick={() => copy(row.id)} className="shrink-0 text-xs rounded-full border border-white/10 px-3 py-1.5">{copied === row.id ? 'copied' : 'card link'}</button>
-              </div>
-            </motion.li>
+
+        <ul className="mt-8 space-y-2">
+          {recent.map((item) => (
+            <li key={item.id}>
+              <a href={`/corbel/${item.id}`} className="flex items-center justify-between rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-3 text-sm transition duration-200 hover:-translate-y-0.5 hover:bg-white/[0.06]">
+                <span>{item.bearer}</span>
+                <span className="text-white/40">{item.file_name}</span>
+              </a>
+            </li>
           ))}
         </ul>
       </main>

@@ -34,17 +34,6 @@
       "destination": "/api/gate?name=lorgnette&page=lorgnette&card=1"
     },
     {
-      "source": "/monocle/:id",
-      "has": [
-        {
-          "type": "header",
-          "key": "user-agent",
-          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely).*"
-        }
-      ],
-      "destination": "/api/gate?name=lorgnette&page=monocle&card=1"
-    },
-    {
       "source": "/monocle",
       "has": [
         {
@@ -78,17 +67,6 @@
       "destination": "/api/gate?name=reticule&card=1"
     },
     {
-      "source": "/drawstring/:id",
-      "has": [
-        {
-          "type": "header",
-          "key": "user-agent",
-          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely).*"
-        }
-      ],
-      "destination": "/api/gate?name=reticule&id=:id&card=1"
-    },
-    {
       "source": "/drawstring",
       "has": [
         {
@@ -109,6 +87,417 @@
         }
       ],
       "destination": "/api/gate?name=scantling&id=:id&card=1"
+    },
+    {
+      "source": "/scantling",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+        }
+      ],
+      "destination": "/api/gate?name=scantling&card=1"
+    },
+    {
+      "source": "/margent/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely).*"
+        }
+      ],
+      "destination": "/api/gate?name=margent&id=:id&card=1"
+    },
+    {
+      "source": "/margent",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+        }
+      ],
+      "destination": "/api/gate?name=margent&card=1"
+    },
+    {
+      "source": "/plinth/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely).*"
+        }
+      ],
+      "destination": "/api/gate?name=plinth&page=plinth&id=:id&card=1"
+    },
+    {
+      "source": "/plinth",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+        }
+      ],
+      "destination": "/api/gate?name=plinth&page=plinth&card=1"
+    },
+    {
+      "source": "/inlet/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely).*"
+        }
+      ],
+      "destination": "/api/gate?name=plinth&page=inlet&id=:id&card=1"
+    },
+    {
+      "source": "/inlet",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+        }
+      ],
+      "destination": "/api/gate?name=plinth&page=inlet&card=1"
+    },
+    {
+      "source": "/lintel/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely).*"
+        }
+      ],
+      "destination": "/api/gate?name=embed&page=lintel&id=:id"
+    },
+    {
+      "source": "/lintel",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+        }
+      ],
+      "destination": "/api/gate?name=embed&page=lintel"
+    },
+    {
+      "source": "/sill/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely).*"
+        }
+      ],
+      "destination": "/api/gate?name=embed&page=sill&id=:id"
+    },
+    {
+      "source": "/sill",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+        }
+      ],
+      "destination": "/api/gate?name=embed&page=sill"
+    },
+    {
+      "source": "/stringcourse/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely).*"
+        }
+      ],
+      "destination": "/api/gate?name=stringcourse&page=stringcourse&id=:id"
+    },
+    {
+      "source": "/stringcourse",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+        }
+      ],
+      "destination": "/api/gate?name=stringcourse&page=stringcourse"
+    },
+    {
+      "source": "/beltcourse/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely).*"
+        }
+      ],
+      "destination": "/api/gate?name=stringcourse&page=beltcourse&id=:id"
+    },
+    {
+      "source": "/beltcourse",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+        }
+      ],
+      "destination": "/api/gate?name=stringcourse&page=beltcourse"
+    },
+    {
+      "source": "/spandrel/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely).*"
+        }
+      ],
+      "destination": "/api/gate?name=spandrel&id=:id&card=1"
+    },
+    {
+      "source": "/spandrel",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+        }
+      ],
+      "destination": "/api/gate?name=spandrel&card=1"
+    },
+    {
+      "source": "/quittance/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely).*"
+        }
+      ],
+      "destination": "/api/gate?name=quittance&id=:id&card=1"
+    },
+    {
+      "source": "/quittance",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+        }
+      ],
+      "destination": "/api/gate?name=quittance&card=1"
+    },
+    {
+      "source": "/acquittance/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely).*"
+        }
+      ],
+      "destination": "/api/gate?name=quittance&id=:id&card=1"
+    },
+    {
+      "source": "/acquittance",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+        }
+      ],
+      "destination": "/api/gate?name=quittance&card=1"
+    },
+    {
+      "source": "/s/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot|pinterest).*"
+        }
+      ],
+      "destination": "/api/gate?name=embed&id=:id"
+    },
+    {
+      "source": "/f/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely).*"
+        }
+      ],
+      "destination": "/api/gate?name=embed&id=:id"
+    },
+    {
+      "source": "/open/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+        }
+      ],
+      "destination": "/api/gate?name=embed&id=:id"
+    },
+    {
+      "source": "/go/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+        }
+      ],
+      "destination": "/api/gate?name=embed&id=:id"
+    },
+    {
+      "source": "/link/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+        }
+      ],
+      "destination": "/api/gate?name=embed&id=:id"
+    },
+    {
+      "source": "/card/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+        }
+      ],
+      "destination": "/api/gate?name=embed&id=:id"
+    },
+    {
+      "source": "/clip/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely).*"
+        }
+      ],
+      "destination": "/api/gate?name=clip&id=:id&card=1"
+    },
+    {
+      "source": "/clip",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+        }
+      ],
+      "destination": "/api/gate?name=clip&card=1"
+    },
+    {
+      "source": "/lantern/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely).*"
+        }
+      ],
+      "destination": "/api/gate?name=embed&page=lantern&id=:id"
+    },
+    {
+      "source": "/lantern",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+        }
+      ],
+      "destination": "/api/gate?name=embed&page=lantern"
+    },
+    {
+      "source": "/:page/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely).*"
+        }
+      ],
+      "destination": "/api/gate?name=embed&page=:page&id=:id"
+    },
+    {
+      "source": "/:page",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+        }
+      ],
+      "destination": "/api/gate?name=embed&page=:page"
+    },
+    {
+      "source": "/oriel/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely).*"
+        }
+      ],
+      "destination": "/api/gate?name=oriel&id=:id&card=1"
+    },
+    {
+      "source": "/oriel",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely).*"
+        }
+      ],
+      "destination": "/api/gate?name=oriel&card=1"
+    },
+    {
+      "source": "/quillon/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely).*"
+        }
+      ],
+      "destination": "/api/gate?name=quillon&id=:id&card=1"
+    },
+    {
+      "source": "/quillon",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely).*"
+        }
+      ],
+      "destination": "/api/gate?name=quillon&card=1"
+    },
+    {
+      "source": "/((?!api/|assets/).*)",
+      "destination": "/index.html"
     }
   ]
 }

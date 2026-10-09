@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'architrave', href: '/architrave', body: 'a beam over the door, not a drawer. drop a local file into the share table, name who it carries, and leave a line. someone else can answer on /taenia without uploading. discord unfurls /architrave. large drops are warned, never refused. older desks stay.' },
+  { title: 'taenia', href: '/taenia', body: 'the public band of beams already set. open one to read the line, download the file, and leave a reply. no new upload on this page. discord unfurls /taenia. not a cabinet.' },
   { title: 'lantern', href: '/lantern', body: 'a reading room beside the vault. drop a local file into the share table, leave a margin, and hand over the link. discord unfurls /lantern. large drops are warned, never refused. older desks stay.' },
   { title: 'impost', href: '/impost', body: 'a line that stays quiet until a time you pick. an optional local file lands in the share table. discord unfurls /impost. large drops are warned, never refused. not a vault drawer. older desks stay.' },
   { title: 'scotia', href: '/scotia', body: 'where you listened, for how long, in what mood. an optional local file lands in the share table. discord unfurls /scotia. large drops are warned, never refused. not a cabinet.' },

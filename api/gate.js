@@ -8,7 +8,7 @@ import chock from '../lib/endpoints/chock.js';
 import crosstree from '../lib/endpoints/crosstree.js';
 import desk from '../lib/endpoints/desk.js';
 import embed from '../lib/endpoints/embed.js';
-import ferry from '../lib/endpoints/ferry.js';
+import ferry from '../lib/endpoints/forefoot.js';
 import forefoot from '../lib/endpoints/forefoot.js';
 import jackstay from '../lib/endpoints/jackstay.js';
 import ketch from '../lib/endpoints/ketch.js';
@@ -101,6 +101,8 @@ import scantling from '../lib/endpoints/scantling.js';
 import margent from '../lib/endpoints/margent.js';
 import oriel from '../lib/endpoints/oriel.js';
 import quillon from '../lib/endpoints/quillon.js';
+import soffit from '../lib/endpoints/soffit.js';
+import volute from '../lib/endpoints/volute.js';
 
 const routes = {
   atelier, beacon, card, cardfront, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -109,7 +111,7 @@ const routes = {
   spunyarn, eyelet: spunyarn,
   shelf, board: shelf, receipt: shelf, satchel: shelf,
   ashlar: shelf, tympanum: shelf, nosing: shelf,
-  sill: shelf, keepsake: shelf, lintel: shelf, oriel: shelf,
+  sill: shelf, keepsake: shelf, lintel: shelf,
   trundle: shelf, coping: shelf, springline: shelf,
   handoff, proof: handoff, quiet: handoff,
   wick,
@@ -225,6 +227,8 @@ const routes = {
   margent,
   oriel,
   quillon,
+  soffit,
+  volute,
 };
 
 export default function handler(req, res) {

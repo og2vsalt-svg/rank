@@ -1,6 +1,6 @@
 import atelier from '../lib/endpoints/atelier.js';
 import beacon from '../lib/endpoints/beacon.js';
-import card from '../lib/endpoints/card.js';
+import card from '../lib/endpoints/cardfront.js';
 import cardfront from '../lib/endpoints/cardfront.js';
 import catfall from '../lib/endpoints/catfall.js';
 import cathead from '../lib/endpoints/cathead.js';
@@ -105,6 +105,7 @@ import soffit from '../lib/endpoints/soffit.js';
 import volute from '../lib/endpoints/volute.js';
 import courier from '../lib/endpoints/courier.js';
 import tally from '../lib/endpoints/tally.js';
+import reticule from '../lib/endpoints/reticule.js';
 
 const routes = {
   atelier, beacon, card, cardfront, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -233,6 +234,8 @@ const routes = {
   volute,
   courier,
   tally,
+  reticule,
+  drawstring: reticule,
 };
 
 export default function handler(req, res) {

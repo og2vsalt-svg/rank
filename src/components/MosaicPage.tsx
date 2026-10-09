@@ -1,43 +1,52 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import Navbar from './Navbar';
-
-type Tile = { name: string; url: string; size: number };
+import { useVault } from './VaultContext';
+import { useRouter } from './Router';
 
 export default function MosaicPage() {
-  const [tiles, setTiles] = useState<Tile[]>([]);
+  const { addFiles } = useVault();
+  const { navigate } = useRouter();
+  const [files, setFiles] = useState<File[]>([]);
+  const [title, setTitle] = useState('untitled mosaic');
   const [warn, setWarn] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const onFiles = (list: FileList | null) => {
-    if (!list?.length) return;
-    const files = [...list].filter((f) => f.type.startsWith('image/'));
-    if (files.some((f) => f.size > 25 * 1024 * 1024)) setWarn('a few frames are heavy. previews may lag.');
-    else setWarn('');
-    setTiles(files.map((f) => ({ name: f.name, url: URL.createObjectURL(f), size: f.size })));
+  const onDrop = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const list = Array.from(e.target.files || []);
+    setFiles(list);
+    const big = list.some(f => f.size > 20 * 1024 * 1024);
+    setWarn(big ? 'large images may load slowly. no hard limit.' : '');
+  };
+
+  const share = async () => {
+    if (!files.length) return;
+    setLoading(true);
+    const res = await addFiles(files, 'mosaics');
+    setLoading(false);
+    if (res.ok && res.ids) {
+      // simulate DB share - in real, would call API
+      navigate('mosaic', res.ids[0]);
+    }
   };
 
   return (
-    <div className="mesh min-h-screen">
-      <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-4xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}>
-          <p className="text-[#0a84ff] text-sm mb-2">mosaic</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">lay images on a quiet board.</h1>
-          <p className="text-sm text-neutral-500 mb-6">local only. useful before you decide what belongs in the vault.</p>
-          <label className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-[#0a84ff]/50 p-8 text-center transition mb-6 glass">
-            <input type="file" accept="image/*" multiple className="hidden" onChange={(e) => onFiles(e.target.files)} />
-            <span className="text-sm text-neutral-300">add stills</span>
+    <div className="min-h-screen mesh pt-20 pb-12 px-5">
+      <div className="max-w-2xl mx-auto">
+        <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-3xl font-semibold tracking-tight mb-2">mosaic</motion.h1>
+        <p className="text-neutral-400 mb-6">arrange local images into a shareable collage. bytes land in the database. Discord cards on the link.</p>
+        <div className="glass rounded-3xl p-6 apple-card">
+          <input type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder="mosaic title" className="w-full bg-transparent border-b border-white/10 pb-2 mb-4 text-white outline-none" />
+          <label className="block border-2 border-dashed border-white/15 rounded-2xl p-8 text-center cursor-pointer hover:border-white/30 transition">
+            <input type="file" multiple accept="image/*" onChange={onDrop} className="hidden" />
+            <p className="text-neutral-300">drop images or click to select</p>
+            <p className="text-xs text-neutral-500 mt-1">{files.length} selected</p>
           </label>
-          {warn && <p className="text-amber-300/80 text-xs mb-4">{warn}</p>}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {tiles.map((t) => (
-              <motion.figure key={t.url} initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="overflow-hidden rounded-2xl bg-white/5 border border-white/10">
-                <img src={t.url} alt={t.name} className="w-full h-40 object-cover" />
-                <figcaption className="px-3 py-2 text-[12px] text-neutral-400 truncate">{t.name}</figcaption>
-              </motion.figure>
-            ))}
-          </div>
-        </motion.div>
+          {warn && <p className="text-amber-400 text-sm mt-3">{warn}</p>}
+          <button onClick={share} disabled={loading || !files.length} className="mt-6 w-full py-3 rounded-full bg-white text-black font-medium disabled:opacity-50">
+            {loading ? 'sharing…' : 'share mosaic'}
+          </button>
+        </div>
+        <button onClick={() => navigate('home')} className="mt-4 text-sm text-neutral-500 hover:text-white">back</button>
       </div>
     </div>
   );

@@ -54,6 +54,12 @@ button, a { -webkit-tap-highlight-color: transparent; }
     to { opacity: 1; transform: scale(1); }
   }
   .mesh { animation: apple-glow 1.1s cubic-bezier(0.22, 1, 0.36, 1); }
+
+  @keyframes subtle-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+  }
+  .apple-card { animation: subtle-float 6s ease-in-out infinite; }
 }
 
 @keyframes apple-in {

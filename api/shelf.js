@@ -15,6 +15,7 @@ const SUPABASE_KEY =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
 
 const COPY = {
+  crossette: ['Crossette — rankvault', 'A local file paired with a companion line. The file lands in the share table. Large drops are warned, never refused.'],
   plinth: ['Plinth — rankvault', 'A dedication under a local file. The file lands in the share table. Large drops are warned, never refused.'],
   corbel: ['Corbel — rankvault', 'A load note for a local file. Paste the link in Discord for a card.'],
   ashlar: ['Ashlar — rankvault', 'A letter with an optional local file. Large drops are warned, never refused.'],
@@ -52,6 +53,21 @@ export default async function handler(req, res) {
   let desc = (COPY[page] || COPY.home)[1];
   let image = 'https://og2vsalt-svg.github.io/rank/og.png';
 
+  if (id && page === 'crossette') {
+    const r = await fetch(SUPABASE_URL + '/rest/v1/crossettes?id=eq.' + encodeURIComponent(id) + '&select=title,companion,file_name,size,mime,file_url,author&limit=1', {
+      headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },
+    });
+    if (r.ok) {
+      const rows = await r.json();
+      const row = rows && rows[0];
+      if (row) {
+        title = row.title + ' — crossette';
+        desc = (row.companion || row.file_name || 'paired file') + ' · ' + prettySize(row.size) + (row.author ? ' · ' + row.author : '');
+        if (String(row.mime || '').indexOf('image/') === 0 && /^https?:/i.test(row.file_url || '')) image = row.file_url;
+      }
+    }
+  }
+
   if (id && (page === 'board' || page === 's' || page === 'shelf' || page === 'keepsake')) {
     const r = await fetch(SUPABASE_URL + '/rest/v1/public_shares?id=eq.' + encodeURIComponent(id) + '&select=name,caption,size,mime,file_url&limit=1', {
       headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },
@@ -63,178 +79,6 @@ export default async function handler(req, res) {
         title = row.name;
         desc = (row.caption || 'shared file') + ' · ' + prettySize(row.size);
         if (String(row.mime || '').indexOf('image/') === 0 && /^https?:/i.test(row.file_url || '')) image = row.file_url;
-      }
-    }
-  }
-
-  if (id && page === 'plinth') {
-    const r = await fetch(SUPABASE_URL + '/rest/v1/plinth_stones?id=eq.' + encodeURIComponent(id) + '&select=place,dedication,file_name,author&limit=1', {
-      headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },
-    });
-    if (r.ok) {
-      const rows = await r.json();
-      const row = rows && rows[0];
-      if (row) {
-        title = row.place + ' — plinth';
-        desc = (row.dedication || row.file_name || 'dedication') + (row.author ? ' · ' + row.author : '');
-      }
-    }
-  }
-
-  if (id && page === 'corbel') {
-    const r = await fetch(SUPABASE_URL + '/rest/v1/corbel_notes?id=eq.' + encodeURIComponent(id) + '&select=load_note,bearer,file_name,author&limit=1', {
-      headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },
-    });
-    if (r.ok) {
-      const rows = await r.json();
-      const row = rows && rows[0];
-      if (row) {
-        title = (row.bearer || row.file_name || 'load') + ' — corbel';
-        desc = (row.load_note || 'load note') + (row.author ? ' · ' + row.author : '');
-      }
-    }
-  }
-
-  if (id && page === 'trundle') {
-    const r = await fetch(SUPABASE_URL + '/rest/v1/trundle_slips?id=eq.' + encodeURIComponent(id) + '&select=to_name,note,file_name,author&limit=1', {
-      headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },
-    });
-    if (r.ok) {
-      const rows = await r.json();
-      const row = rows && rows[0];
-      if (row) {
-        title = 'for ' + row.to_name + ' — trundle';
-        desc = (row.note || row.file_name || 'handoff') + (row.author ? ' · ' + row.author : '');
-      }
-    }
-  }
-
-  if (id && page === 'coping') {
-    const r = await fetch(SUPABASE_URL + '/rest/v1/coping_lists?id=eq.' + encodeURIComponent(id) + '&select=title,items,author&limit=1', {
-      headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },
-    });
-    if (r.ok) {
-      const rows = await r.json();
-      const row = rows && rows[0];
-      if (row) {
-        const items = Array.isArray(row.items) ? row.items.slice(0, 4).join(', ') : '';
-        title = row.title + ' — coping';
-        desc = (items || 'a checklist') + (row.author ? ' · ' + row.author : '');
-      }
-    }
-  }
-
-  if (id && page === 'satchel') {
-    const r = await fetch(SUPABASE_URL + '/rest/v1/satchels?id=eq.' + encodeURIComponent(id) + '&select=title,note,file_name,size,mime,file_url&limit=1', {
-      headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },
-    });
-    if (r.ok) {
-      const rows = await r.json();
-      const row = rows[0];
-      if (row) {
-        title = row.title || row.file_name || 'Satchel';
-        desc = (row.note || 'packed file') + ' · ' + prettySize(row.size);
-        if (String(row.mime || '').indexOf('image/') === 0 && /^https?:/i.test(row.file_url || '')) image = row.file_url;
-      }
-    }
-  }
-
-  if (id && page === 'receipt') {
-    const r = await fetch(SUPABASE_URL + '/rest/v1/receipts?id=eq.' + encodeURIComponent(id) + '&select=name,note,author&limit=1', {
-      headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },
-    });
-    if (r.ok) {
-      const rows = await r.json();
-      const row = rows[0];
-      if (row) {
-        title = row.name + ' — receipt';
-        desc = row.note || 'a handoff note';
-      }
-    }
-  }
-
-  if (id && (page === 'sill' || page === 'lintel')) {
-    const r = await fetch(SUPABASE_URL + '/rest/v1/links?id=eq.' + encodeURIComponent(id) + '&select=url,note,author&limit=1', {
-      headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },
-    });
-    if (r.ok) {
-      const rows = await r.json();
-      const row = rows && rows[0];
-      if (row) {
-        title = (row.note || 'link') + ' — rankvault';
-        desc = row.url + (row.author ? ' · ' + row.author : '');
-      }
-    }
-  }
-
-  if (id && page === 'ashlar') {
-    const r = await fetch(SUPABASE_URL + '/rest/v1/ashlar_letters?id=eq.' + encodeURIComponent(id) + '&select=title,body,author,share_id&limit=1', {
-      headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },
-    });
-    if (r.ok) {
-      const rows = await r.json();
-      const row = rows && rows[0];
-      if (row) {
-        title = row.title + ' — ashlar';
-        desc = String(row.body || '').slice(0, 180) + (row.author ? ' · ' + row.author : '');
-      }
-    }
-  }
-
-  if (id && page === 'nosing') {
-    const r = await fetch(SUPABASE_URL + '/rest/v1/nosing_slips?id=eq.' + encodeURIComponent(id) + '&select=title,due_note,file_name,author&limit=1', {
-      headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },
-    });
-    if (r.ok) {
-      const rows = await r.json();
-      const row = rows && rows[0];
-      if (row) {
-        title = row.title + ' — nosing';
-        desc = (row.due_note || row.file_name || 'due slip') + (row.author ? ' · ' + row.author : '');
-      }
-    }
-  }
-
-  if (id && page === 'tympanum') {
-    const r = await fetch(SUPABASE_URL + '/rest/v1/public_shares?id=eq.' + encodeURIComponent(id) + '&select=name,caption,size,mime,file_url&limit=1', {
-      headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },
-    });
-    if (r.ok) {
-      const rows = await r.json();
-      const row = rows && rows[0];
-      if (row) {
-        title = (row.caption || row.name) + ' — tympanum';
-        desc = prettySize(row.size);
-        if (String(row.mime || '').indexOf('image/') === 0 && /^https?:/i.test(row.file_url || '')) image = row.file_url;
-      }
-    }
-  }
-
-  if (id && (page === 'outbox' || page === 'postbag')) {
-    const r = await fetch(SUPABASE_URL + '/rest/v1/outbox_drops?id=eq.' + encodeURIComponent(id) + '&select=name,note,size,mime,file_url,sent_to,author&limit=1', {
-      headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },
-    });
-    if (r.ok) {
-      const rows = await r.json();
-      const row = rows && rows[0];
-      if (row) {
-        title = row.name + ' — outbox';
-        desc = (row.note || 'a sent file') + (row.sent_to ? ' · for ' + row.sent_to : '') + (row.author ? ' · ' + row.author : '');
-        if (String(row.mime || '').indexOf('image/') === 0 && /^https?:/i.test(row.file_url || '')) image = row.file_url;
-      }
-    }
-  }
-
-  if (id && page === 'oriel') {
-    const r = await fetch(SUPABASE_URL + '/rest/v1/whispers?id=eq.' + encodeURIComponent(id) + '&select=body,author,kind&limit=1', {
-      headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },
-    });
-    if (r.ok) {
-      const rows = await r.json();
-      const row = rows && rows[0];
-      if (row) {
-        title = (row.kind || 'note') + ' — oriel';
-        desc = row.body + (row.author ? ' · ' + row.author : '');
       }
     }
   }

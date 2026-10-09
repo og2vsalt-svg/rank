@@ -1,117 +1,122 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishShare, shareUrls } from '../lib/cloudShare';
+import { useRouter } from './Router';
+import { sbRest } from '../lib/supabase';
 
-const SB_URL = 'https://tqfocdktvjuwoiyfgesb.supabase.co';
-const SB_KEY =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
-
-function uid() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-}
+type Row = {
+  id: string;
+  name: string;
+  caption: string | null;
+  author: string | null;
+  mime: string | null;
+  file_url: string | null;
+  size: number;
+  created_at: string;
+  meta?: { desk?: string; forWhom?: string; openBy?: string; courtesy?: string; acks?: string[] } | null;
+};
 
 function pretty(n: number) {
-  if (n < 1024) return n + ' b';
-  if (n < 1024 * 1024) return Math.round(n / 1024) + ' kb';
-  if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(1) + ' mb';
-  return (n / (1024 * 1024 * 1024)).toFixed(2) + ' gb';
-}
-
-function readAsDataUrl(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const r = new FileReader();
-    r.onload = () => resolve(String(r.result || ''));
-    r.onerror = () => reject(new Error('could not read that file'));
-    r.readAsDataURL(file);
-  });
+  if (n < 1024) return `${n} B`;
+  if (n < 1024 * 1024) return `${Math.round(n / 1024)} KB`;
+  if (n < 1024 * 1024 * 1024) return `${(n / (1024 * 1024)).toFixed(1)} MB`;
+  return `${(n / (1024 * 1024 * 1024)).toFixed(2)} GB`;
 }
 
 export default function AstragalPage() {
-  const [file, setFile] = useState<File | null>(null);
-  const [title, setTitle] = useState('');
+  const { shareId, navigate } = useRouter();
+  const [rows, setRows] = useState<Row[]>([]);
+  const [open, setOpen] = useState<Row | null>(null);
+  const [ack, setAck] = useState('');
   const [note, setNote] = useState('');
-  const [warn, setWarn] = useState('');
   const [err, setErr] = useState('');
-  const [link, setLink] = useState('');
-  const [busy, setBusy] = useState(false);
 
-  const pick = (f: File | null) => {
-    setFile(f);
-    setLink('');
-    setErr('');
-    setWarn(f && f.size > 12 * 1024 * 1024 ? 'large handoff. encoding may feel slow. nothing is refused for size.' : '');
+  const load = () => {
+    sbRest('public_shares?select=id,name,caption,author,mime,file_url,size,created_at,meta&is_public=eq.true&order=created_at.desc&limit=40')
+      .then((r) => r.json())
+      .then((data) => {
+        const all = Array.isArray(data) ? data : [];
+        setRows(all.filter((item) => item?.meta?.desk === 'lunette'));
+      })
+      .catch(() => setRows([]));
   };
 
-  const send = async () => {
-    if (!file) return;
-    const label = title.trim() || file.name;
-    setBusy(true);
-    setErr('');
-    try {
-      const dataUrl = await readAsDataUrl(file);
-      const id = uid();
-      const res = await publishShare({
-        id,
-        name: file.name,
-        type: file.type || 'application/octet-stream',
-        size: file.size,
-        dataUrl,
-        author: 'astragal',
-        caption: note.trim() || label,
-      });
-      if (!res.ok) throw new Error(res.error || 'the moulding did not seat');
-      await fetch(`${SB_URL}/rest/v1/handoffs`, {
-        method: 'POST',
-        headers: {
-          apikey: SB_KEY,
-          Authorization: `Bearer ${SB_KEY}`,
-          'Content-Type': 'application/json',
-          Prefer: 'return=minimal',
-        },
-        body: JSON.stringify({
-          id,
-          share_id: res.id || id,
-          title: label.slice(0, 140),
-          note: note.trim().slice(0, 2000),
-          author: 'astragal',
-        }),
-      });
-      const urls = shareUrls(res.id || id);
-      setLink(urls.embed);
-      if (res.warn) setWarn(res.warn);
-      try { await navigator.clipboard.writeText(urls.embed); } catch {}
-    } catch (e: any) {
-      setErr(e?.message || 'failed');
+  useEffect(() => { load(); }, []);
+
+  useEffect(() => {
+    if (!shareId) return;
+    const found = rows.find((item) => item.id === shareId);
+    if (found) setOpen(found);
+    else {
+      sbRest(`public_shares?id=eq.${encodeURIComponent(shareId)}&select=id,name,caption,author,mime,file_url,size,created_at,meta&limit=1`)
+        .then((r) => r.json())
+        .then((data) => setOpen(Array.isArray(data) ? data[0] || null : null))
+        .catch(() => setOpen(null));
     }
-    setBusy(false);
+  }, [shareId, rows]);
+
+  const leaveAck = async () => {
+    if (!open || !ack.trim()) return;
+    setErr('');
+    const acks = [...(open.meta?.acks || []), ack.trim().slice(0, 180)].slice(-8);
+    const res = await fetch('/api/share', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: open.id, meta: { acks } }),
+    });
+    if (!res.ok) {
+      setErr('the strip could not keep that line yet');
+      return;
+    }
+    const next = { ...open, meta: { ...(open.meta || {}), acks } };
+    setOpen(next);
+    setRows((prev) => prev.map((item) => (item.id === next.id ? next : item)));
+    setAck('');
+    setNote('kept on the strip');
   };
 
   return (
-    <div className="mesh min-h-screen">
+    <div className="min-h-screen bg-[#f5f5f7] text-[#1d1d1f]">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-7">
-          <p className="text-[#0a84ff] text-xs font-medium tracking-wide mb-2">astragal</p>
-          <h1 className="text-3xl font-semibold text-white tracking-tight mb-2">a file with a note attached</h1>
-          <p className="text-neutral-400 text-sm leading-relaxed mb-6">the bytes land in public shares. the sentence lands in handoffs. discord unfurls the share card. not another drawer in the vault.</p>
-          <label className="block rounded-2xl border border-dashed border-white/15 bg-white/[0.03] px-4 py-8 text-center cursor-pointer hover:-translate-y-0.5">
-            <input type="file" className="hidden" onChange={(e) => pick(e.target.files?.[0] || null)} />
-            <span className="text-white text-sm">{file ? file.name : 'choose a local file'}</span>
-            {file && <span className="block text-neutral-500 text-xs mt-1">{pretty(file.size)}</span>}
-          </label>
-          <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="handoff title" className="mt-4 w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 text-sm text-white outline-none focus:border-[#0a84ff]/60" />
-          <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="what should the next person know?" rows={4} className="mt-3 w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 text-sm text-white outline-none focus:border-[#0a84ff]/60 resize-none" />
-          {warn && <p className="text-amber-200/80 text-xs mt-3">{warn}</p>}
-          {err && <p className="text-red-300 text-xs mt-3">{err}</p>}
-          <button disabled={!file || busy} onClick={send} className="mt-5 w-full rounded-full bg-white text-black text-sm font-medium py-3 disabled:opacity-40 hover:scale-[1.01] active:scale-[0.99]">
-            {busy ? 'seating…' : 'seat the handoff'}
-          </button>
-          {link && (
-            <motion.a initial={{ opacity: 0 }} animate={{ opacity: 1 }} href={link} className="block mt-4 text-[#0a84ff] text-sm break-all">{link}</motion.a>
-          )}
-        </motion.div>
-      </div>
+      <main className="mx-auto max-w-3xl px-5 pb-24 pt-28">
+        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[13px] tracking-[0.16em] uppercase text-black/40">strip, not a cabinet</motion.p>
+        <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04, duration: 0.45, ease: [0.22, 1, 0.36, 1] }} className="mt-2 text-4xl font-semibold tracking-tight">Astragal</motion.h1>
+        <p className="mt-3 text-[15px] leading-relaxed text-black/60">No upload here. This is the public strip of lunette windows already filed. Open one, download the file, or leave a short acknowledgment. Paste /astragal in Discord for a card.</p>
+        <ul className="mt-8 space-y-2">
+          {rows.length === 0 && <li className="rounded-2xl bg-white px-4 py-6 text-sm text-black/45">no windows on the strip yet. open one from lunette.</li>}
+          {rows.map((item) => (
+            <li key={item.id}>
+              <button onClick={() => navigate('astragal', item.id)} className="flex w-full items-center justify-between rounded-2xl border border-black/8 bg-white px-4 py-3 text-left text-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(0,0,0,0.05)]">
+                <span>
+                  <span className="block font-medium">for {item.meta?.forWhom || item.name}</span>
+                  <span className="block text-black/45">{item.meta?.courtesy || item.caption || 'window'}</span>
+                </span>
+                <span className="shrink-0 text-black/40">{pretty(Number(item.size) || 0)}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+        {open && (
+          <motion.article initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mt-6 rounded-3xl border border-black/8 bg-white p-5 shadow-[0_12px_40px_rgba(0,0,0,0.04)]">
+            <p className="text-xs uppercase tracking-[0.14em] text-black/40">open window</p>
+            <h2 className="mt-1 text-2xl font-semibold tracking-tight">for {open.meta?.forWhom || open.name}</h2>
+            <p className="mt-3 text-[15px] leading-relaxed text-black/75">{open.meta?.courtesy || open.caption}</p>
+            {open.meta?.openBy && <p className="mt-2 text-sm text-black/45">might open by {open.meta.openBy.replace('T', ' ')}</p>}
+            {open.file_url && <a href={open.file_url} className="mt-3 inline-block text-sm text-[#0a84ff]">download {open.name}</a>}
+            <div className="mt-4 space-y-1">
+              {(open.meta?.acks || []).map((line, i) => (
+                <p key={`${line}-${i}`} className="text-sm text-black/60">— {line}</p>
+              ))}
+            </div>
+            <div className="mt-4 flex gap-2">
+              <input value={ack} onChange={(e) => setAck(e.target.value)} placeholder="a short acknowledgment" className="w-full rounded-2xl border border-black/10 bg-[#f5f5f7] px-4 py-3 text-sm outline-none transition focus:border-[#0a84ff]" />
+              <button onClick={leaveAck} className="rounded-full bg-[#1d1d1f] px-4 py-2 text-sm text-white">keep</button>
+            </div>
+            {err && <p className="mt-2 text-sm text-red-600">{err}</p>}
+            {note && <p className="mt-2 text-sm text-black/45">{note}</p>}
+          </motion.article>
+        )}
+      </main>
     </div>
   );
 }

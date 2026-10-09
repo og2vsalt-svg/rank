@@ -106,6 +106,7 @@ import volute from '../lib/endpoints/volute.js';
 import courier from '../lib/endpoints/courier.js';
 import tally from '../lib/endpoints/tally.js';
 import reticule from '../lib/endpoints/reticule.js';
+import lorgnette from '../lib/endpoints/lorgnette.js';
 
 const routes = {
   atelier, beacon, card, cardfront, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -236,6 +237,8 @@ const routes = {
   tally,
   reticule,
   drawstring: reticule,
+  lorgnette,
+  monocle: lorgnette,
 };
 
 export default function handler(req, res) {

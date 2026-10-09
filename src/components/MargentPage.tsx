@@ -1,0 +1,142 @@
+import { useEffect, useMemo, useState } from 'react';
+import { motion } from 'framer-motion';
+import Navbar from './Navbar';
+import Footer from './Footer';
+import { useRouter } from './Router';
+import { publishLocalFile } from '../lib/cloudShare';
+
+const SB_URL = 'https://tqfocdktvjuwoiyfgesb.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
+const SLOW = 12 * 1024 * 1024;
+
+type Row = {
+  id: string;
+  url: string;
+  gloss?: string | null;
+  author?: string | null;
+  file_name?: string | null;
+  file_url?: string | null;
+  size?: number | null;
+};
+
+function pretty(n: number) {
+  if (!n) return '';
+  if (n < 1024) return `${n} B`;
+  if (n < 1024 * 1024) return `${Math.max(1, Math.round(n / 1024))} KB`;
+  if (n < 1024 * 1024 * 1024) return `${(n / (1024 * 1024)).toFixed(1)} MB`;
+  return `${(n / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+}
+function headers() {
+  return { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}`, 'Content-Type': 'application/json', Prefer: 'return=representation' };
+}
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+
+export default function MargentPage() {
+  const { shareId, navigate } = useRouter();
+  const [url, setUrl] = useState('');
+  const [gloss, setGloss] = useState('');
+  const [author, setAuthor] = useState('');
+  const [file, setFile] = useState<File | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const [row, setRow] = useState<Row | null>(null);
+  const [copied, setCopied] = useState(false);
+  const slow = useMemo(() => (file && file.size > SLOW ? `about ${pretty(file.size)}. the tab may feel slow. nothing is refused.` : ''), [file]);
+
+  useEffect(() => {
+    if (!shareId) return;
+    fetch(`${SB_URL}/rest/v1/margent_marks?id=eq.${encodeURIComponent(shareId)}&select=*&limit=1`, { headers: headers() })
+      .then((r) => r.json())
+      .then((rows) => setRow(Array.isArray(rows) ? rows[0] || null : null))
+      .catch(() => setRow(null));
+  }, [shareId]);
+
+  async function mark() {
+    const target = url.trim();
+    if (!/^https?:\/\//i.test(target) || !gloss.trim()) {
+      setError('a real link and a gloss, both.');
+      return;
+    }
+    setBusy(true);
+    setError('');
+    try {
+      const id = uid();
+      let fileUrl: string | null = null;
+      let shareIdSaved: string | null = null;
+      if (file) {
+        const published = await publishLocalFile(file, { caption: gloss.trim(), author: author.trim(), cardTitle: gloss.trim().slice(0, 80) });
+        if (!published.ok) throw new Error(published.error || 'the file did not land');
+        fileUrl = published.url || null;
+        shareIdSaved = published.id || null;
+      }
+      const saved = await fetch(`${SB_URL}/rest/v1/margent_marks`, {
+        method: 'POST',
+        headers: headers(),
+        body: JSON.stringify({
+          id: shareIdSaved || id,
+          url: target,
+          gloss: gloss.trim(),
+          author: author.trim() || null,
+          file_name: file?.name || null,
+          file_url: fileUrl,
+          mime: file?.type || null,
+          size: file?.size || 0,
+          share_id: shareIdSaved,
+        }),
+      });
+      if (!saved.ok) throw new Error((await saved.text()).slice(0, 220) || 'the gloss did not save');
+      const rows = await saved.json();
+      setRow(rows[0]);
+      navigate('margent', rows[0].id);
+    } catch (err) {
+      setError(err instanceof Error ? err.message.slice(0, 220) : 'could not save the gloss');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const link = row ? `${window.location.origin}/margent/${row.id}` : '';
+
+  return (
+    <div className="min-h-screen bg-[#f5f5f7] text-[#1d1d1f]">
+      <Navbar />
+      <main className="mx-auto max-w-3xl px-5 pb-24 pt-28">
+        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[13px] tracking-wide text-[#6e6e73]">margent</motion.p>
+        <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 }} className="mt-2 text-4xl font-semibold tracking-tight">A note in the margin.</motion.h1>
+        <p className="mt-3 max-w-xl text-[17px] leading-relaxed text-[#6e6e73]">This is not a drawer. It is a gloss on a link, with a file only if you want one. Paste /margent in Discord for a card.</p>
+        {row ? (
+          <motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="mt-10 rounded-[28px] bg-white p-6 shadow-[0_12px_40px_rgba(0,0,0,0.06)]">
+            <p className="text-[17px] leading-relaxed">{row.gloss}</p>
+            <a href={row.url} className="mt-3 block truncate text-[15px] text-[#0A84FF] hover:underline">{row.url}</a>
+            {row.file_name && <p className="mt-3 text-[13px] text-[#6e6e73]">{row.file_name}{row.size ? ` · ${pretty(Number(row.size))}` : ''}</p>}
+            <div className="mt-5 flex flex-wrap gap-2">
+              <a href={row.url} className="rounded-full bg-[#1d1d1f] px-4 py-2 text-[14px] text-white">open link</a>
+              {row.file_url && <a href={row.file_url} className="rounded-full bg-[#f5f5f7] px-4 py-2 text-[14px]">open file</a>}
+              <button onClick={() => { navigator.clipboard.writeText(link); setCopied(true); setTimeout(() => setCopied(false), 1200); }} className="rounded-full bg-[#f5f5f7] px-4 py-2 text-[14px]">{copied ? 'copied' : 'copy card link'}</button>
+            </div>
+          </motion.section>
+        ) : (
+          <motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="mt-10 rounded-[28px] bg-white p-6 shadow-[0_12px_40px_rgba(0,0,0,0.06)]">
+            <label className="block text-[13px] text-[#6e6e73]">link</label>
+            <input value={url} onChange={(e) => setUrl(e.target.value)} className="mt-1 w-full rounded-2xl bg-[#f5f5f7] px-4 py-3 text-[16px] outline-none focus:bg-white focus:shadow-[0_0_0_1px_#d2d2d7]" placeholder="https://" />
+            <label className="mt-4 block text-[13px] text-[#6e6e73]">gloss</label>
+            <textarea value={gloss} onChange={(e) => setGloss(e.target.value)} rows={3} className="mt-1 w-full resize-none rounded-2xl bg-[#f5f5f7] px-4 py-3 text-[16px] outline-none focus:bg-white focus:shadow-[0_0_0_1px_#d2d2d7]" placeholder="why this is worth keeping" />
+            <label className="mt-4 block text-[13px] text-[#6e6e73]">signed</label>
+            <input value={author} onChange={(e) => setAuthor(e.target.value)} className="mt-1 w-full rounded-2xl bg-[#f5f5f7] px-4 py-3 text-[16px] outline-none focus:bg-white focus:shadow-[0_0_0_1px_#d2d2d7]" placeholder="optional" />
+            <label className="mt-5 flex cursor-pointer items-center justify-between rounded-2xl border border-dashed border-[#d2d2d7] px-4 py-4 text-[15px] hover:bg-[#fafafa]">
+              <span>{file ? file.name : 'optional local file'}</span>
+              <span className="text-[13px] text-[#6e6e73]">{file ? pretty(file.size) : 'any size'}</span>
+              <input type="file" className="hidden" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+            </label>
+            {slow && <p className="mt-2 text-[13px] text-[#a15c07]">{slow}</p>}
+            {error && <p className="mt-2 text-[13px] text-[#ff375f]">{error}</p>}
+            <button disabled={busy} onClick={mark} className="mt-5 rounded-full bg-[#0A84FF] px-5 py-2.5 text-[15px] font-medium text-white transition hover:bg-[#0071e3] disabled:opacity-60">{busy ? 'saving…' : 'keep the gloss'}</button>
+          </motion.section>
+        )}
+      </main>
+      <Footer />
+    </div>
+  );
+}

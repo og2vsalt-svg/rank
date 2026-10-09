@@ -1,171 +1,150 @@
 import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
+import Footer from './Footer';
+import { useRouter } from './Router';
 import { publishLocalFile } from '../lib/cloudShare';
+
+const SB_URL = 'https://tqfocdktvjuwoiyfgesb.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
+const SLOW = 12 * 1024 * 1024;
 
 type Row = {
   id: string;
-  label: string;
-  note: string | null;
-  width: number | null;
-  height: number | null;
-  bytes: number | null;
-  created_at: string;
+  title: string;
+  note?: string | null;
+  sha256?: string | null;
+  file_name?: string | null;
+  file_url?: string | null;
+  mime?: string | null;
+  size?: number | null;
+  author?: string | null;
 };
 
-const SB = 'https://tqfocdktvjuwoiyfgesb.supabase.co';
-const KEY =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
-
-function uid() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+function pretty(n: number) {
+  if (n < 1024) return `${n} B`;
+  if (n < 1024 * 1024) return `${Math.max(1, Math.round(n / 1024))} KB`;
+  if (n < 1024 * 1024 * 1024) return `${(n / (1024 * 1024)).toFixed(1)} MB`;
+  return `${(n / (1024 * 1024 * 1024)).toFixed(2)} GB`;
 }
 
-function pretty(n: number) {
-  if (n < 1024) return n + ' B';
-  if (n < 1024 * 1024) return Math.max(1, Math.round(n / 1024)) + ' KB';
-  return (n / (1024 * 1024)).toFixed(1) + ' MB';
+async function sha256(file: File) {
+  const buf = await file.arrayBuffer();
+  const digest = await crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+function headers() {
+  return {
+    apikey: SB_KEY,
+    Authorization: `Bearer ${SB_KEY}`,
+    'Content-Type': 'application/json',
+    Prefer: 'return=representation',
+  };
 }
 
 export default function ScantlingPage() {
-  const [label, setLabel] = useState('');
+  const { shareId, navigate } = useRouter();
+  const [title, setTitle] = useState('');
   const [note, setNote] = useState('');
+  const [author, setAuthor] = useState('');
   const [file, setFile] = useState<File | null>(null);
-  const [dims, setDims] = useState<{ w: number; h: number } | null>(null);
   const [busy, setBusy] = useState(false);
-  const [err, setErr] = useState('');
-  const [card, setCard] = useState('');
+  const [error, setError] = useState('');
+  const [row, setRow] = useState<Row | null>(null);
   const [copied, setCopied] = useState(false);
-  const [rows, setRows] = useState<Row[]>([]);
-
-  const slow = useMemo(() => {
-    if (!file) return null;
-    return file.size > 12 * 1024 * 1024 ? 'large piece. measuring is fine. sending may feel slow. it is not refused.' : null;
-  }, [file]);
-
-  const load = async () => {
-    const res = await fetch(
-      `${SB}/rest/v1/scantlings?select=id,label,note,width,height,bytes,created_at&order=created_at.desc&limit=10`,
-      { headers: { apikey: KEY, Authorization: `Bearer ${KEY}` } },
-    );
-    if (!res.ok) return;
-    const data = await res.json();
-    if (Array.isArray(data)) setRows(data);
-  };
+  const slow = useMemo(
+    () => (file && file.size > SLOW ? `about ${pretty(file.size)}. hashing and sending may feel slow. nothing is refused.` : ''),
+    [file],
+  );
 
   useEffect(() => {
-    load();
-  }, []);
+    if (!shareId) return;
+    fetch(`${SB_URL}/rest/v1/scantling_passes?id=eq.${encodeURIComponent(shareId)}&select=*&limit=1`, { headers: headers() })
+      .then((r) => r.json())
+      .then((rows) => setRow(Array.isArray(rows) ? rows[0] || null : null))
+      .catch(() => setRow(null));
+  }, [shareId]);
 
-  const onFile = (next: File | null) => {
-    setFile(next);
-    setDims(null);
-    if (!next || !next.type.startsWith('image/')) return;
-    const url = URL.createObjectURL(next);
-    const img = new Image();
-    img.onload = () => {
-      setDims({ w: img.naturalWidth, h: img.naturalHeight });
-      URL.revokeObjectURL(url);
-    };
-    img.onerror = () => URL.revokeObjectURL(url);
-    img.src = url;
-  };
-
-  const fileIt = async () => {
-    if (!label.trim() || !file) {
-      setErr('a name and a local file, then the measure can be filed');
+  async function measure() {
+    if (!file || !title.trim()) {
+      setError('a title and a local file, both.');
       return;
     }
     setBusy(true);
-    setErr('');
-    const filed = await publishLocalFile(file, {
-      caption: note.trim() || file.name + ' ' + pretty(file.size),
-      cardTitle: label.trim(),
-      author: 'scantling',
-      color: '#0A84FF',
-    });
-    if (!filed.ok || !filed.id) {
+    setError('');
+    try {
+      const hash = await sha256(file);
+      const published = await publishLocalFile(file, { caption: note.trim() || title.trim(), author: author.trim(), cardTitle: title.trim() });
+      if (!published.ok || !published.id) throw new Error(published.error || 'the file did not land');
+      const saved = await fetch(`${SB_URL}/rest/v1/scantling_passes`, {
+        method: 'POST',
+        headers: headers(),
+        body: JSON.stringify({
+          id: published.id,
+          title: title.trim(),
+          note: note.trim() || null,
+          sha256: hash,
+          file_name: file.name,
+          file_url: published.url,
+          mime: file.type || 'application/octet-stream',
+          size: file.size,
+          share_id: published.id,
+          author: author.trim() || null,
+        }),
+      });
+      if (!saved.ok) throw new Error((await saved.text()).slice(0, 220) || 'the measure did not save');
+      const rows = await saved.json();
+      setRow(rows[0]);
+      navigate('scantling', published.id);
+    } catch (err) {
+      setError(err instanceof Error ? err.message.slice(0, 220) : 'could not measure the file');
+    } finally {
       setBusy(false);
-      setErr(filed.error || 'the share table did not take the file');
-      return;
     }
-    const id = uid();
-    const res = await fetch(`${SB}/rest/v1/scantlings`, {
-      method: 'POST',
-      headers: {
-        apikey: KEY,
-        Authorization: `Bearer ${KEY}`,
-        'Content-Type': 'application/json',
-        Prefer: 'return=representation',
-      },
-      body: JSON.stringify({
-        id,
-        label: label.trim().slice(0, 120),
-        note: note.trim().slice(0, 400) || null,
-        share_id: filed.id,
-        width: dims?.w || null,
-        height: dims?.h || null,
-        bytes: file.size,
-        accent: '#0A84FF',
-      }),
-    });
-    setBusy(false);
-    if (!res.ok) {
-      setErr((await res.text()).slice(0, 180) || 'measure table refused the row');
-      return;
-    }
-    setCard(`${location.origin}/scantling/${id}`);
-    setFile(null);
-    setDims(null);
-    setNote('');
-    load();
-  };
+  }
 
-  const copy = async () => {
-    if (!card) return;
-    await navigator.clipboard.writeText(card);
-    setCopied(true);
-    window.setTimeout(() => setCopied(false), 1200);
-  };
+  const link = row ? `${window.location.origin}/scantling/${row.id}` : '';
 
   return (
-    <div className="mesh min-h-screen">
+    <div className="min-h-screen bg-[#f5f5f7] text-[#1d1d1f]">
       <Navbar />
-      <main className="max-w-3xl mx-auto px-5 pt-24 pb-20">
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}>
-          <p className="text-[12px] tracking-[0.16em] uppercase text-white/45">a measure, not a drawer</p>
-          <h1 className="mt-2 text-4xl sm:text-5xl font-semibold tracking-tight">scantling</h1>
-          <p className="mt-3 text-neutral-400 max-w-xl leading-relaxed">
-            Read a local file in the tab, then file the bytes and the measure. Discord unfurls the card. Nothing is cut for size.
-          </p>
-        </motion.div>
-        <motion.section initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08, duration: 0.6, ease: [0.22, 1, 0.36, 1] }} className="glass mt-8 rounded-3xl p-5 sm:p-6">
-          <input value={label} onChange={(e) => setLabel(e.target.value)} placeholder="what you are measuring" className="w-full rounded-2xl bg-white/5 border border-white/10 px-3.5 py-2.5 text-sm outline-none focus:border-white/25" />
-          <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="a note beside the measure" rows={3} className="mt-3 w-full rounded-2xl bg-white/5 border border-white/10 px-3.5 py-2.5 text-sm outline-none focus:border-white/25" />
-          <label className="mt-3 block rounded-2xl border border-dashed border-white/15 bg-white/[0.03] px-4 py-5 text-center cursor-pointer">
-            <input type="file" className="sr-only" onChange={(e) => onFile(e.target.files?.[0] || null)} />
-            <span className="text-sm text-neutral-200">{file ? file.name : 'local file'}</span>
-            <span className="block mt-1 text-xs text-white/40">{file ? pretty(file.size) + (dims ? ' / ' + dims.w + 'x' + dims.h : '') : 'no size cutoff. slow sends are only warned.'}</span>
-          </label>
-          {slow && <p className="mt-3 text-sm text-amber-200/90">{slow}</p>}
-          <button onClick={fileIt} disabled={busy} className="mt-5 rounded-full bg-white text-black px-5 py-2.5 text-sm font-medium disabled:opacity-40">{busy ? 'filing' : 'file the measure'}</button>
-          {err && <p className="mt-3 text-sm text-red-300">{err}</p>}
-        </motion.section>
-        {card && (
-          <motion.button initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} onClick={copy} className="glass mt-4 w-full text-left rounded-3xl px-5 py-4">
-            <span className="block text-sm text-white">{copied ? 'copied' : 'discord card'}</span>
-            <span className="block mt-1 text-xs text-white/50 break-all">{card}</span>
-          </motion.button>
+      <main className="mx-auto max-w-3xl px-5 pb-24 pt-28">
+        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[13px] tracking-wide text-[#6e6e73]">scantling</motion.p>
+        <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 }} className="mt-2 text-4xl font-semibold tracking-tight">Measure it, then hand it over.</motion.h1>
+        <p className="mt-3 max-w-xl text-[17px] leading-relaxed text-[#6e6e73]">The file goes into the share table. The hash and note stay beside it. Paste the link in Discord for a card. Older desks stay on their routes.</p>
+        {row ? (
+          <motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="mt-10 rounded-[28px] bg-white p-6 shadow-[0_12px_40px_rgba(0,0,0,0.06)]">
+            <h2 className="text-2xl font-semibold tracking-tight">{row.title}</h2>
+            {row.note && <p className="mt-2 text-[16px] leading-relaxed text-[#3a3a3c]">{row.note}</p>}
+            <p className="mt-4 text-[13px] text-[#6e6e73]">{row.file_name} · {pretty(Number(row.size) || 0)}{row.author ? ` · ${row.author}` : ''}</p>
+            {row.sha256 && <p className="mt-3 break-all rounded-2xl bg-[#f5f5f7] px-4 py-3 font-mono text-[12px] text-[#3a3a3c]">{row.sha256}</p>}
+            <div className="mt-5 flex flex-wrap gap-2">
+              {row.file_url && <a href={row.file_url} className="rounded-full bg-[#1d1d1f] px-4 py-2 text-[14px] text-white transition hover:bg-black">open file</a>}
+              <button onClick={() => { navigator.clipboard.writeText(link); setCopied(true); setTimeout(() => setCopied(false), 1200); }} className="rounded-full bg-[#f5f5f7] px-4 py-2 text-[14px] transition hover:bg-[#e8e8ed]">{copied ? 'copied' : 'copy link'}</button>
+              <button onClick={() => navigate('scantling')} className="rounded-full px-4 py-2 text-[14px] text-[#6e6e73]">measure another</button>
+            </div>
+          </motion.section>
+        ) : (
+          <motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="mt-10 rounded-[28px] bg-white p-6 shadow-[0_12px_40px_rgba(0,0,0,0.06)]">
+            <label className="block text-[13px] text-[#6e6e73]">title</label>
+            <input value={title} onChange={(e) => setTitle(e.target.value)} maxLength={80} className="mt-1 w-full rounded-2xl bg-[#f5f5f7] px-4 py-3 text-[16px] outline-none focus:bg-white focus:shadow-[0_0_0_1px_#d2d2d7]" placeholder="survey of the west wall" />
+            <label className="mt-4 block text-[13px] text-[#6e6e73]">note</label>
+            <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={3} className="mt-1 w-full resize-none rounded-2xl bg-[#f5f5f7] px-4 py-3 text-[16px] outline-none focus:bg-white focus:shadow-[0_0_0_1px_#d2d2d7]" placeholder="what the measure is for" />
+            <label className="mt-4 block text-[13px] text-[#6e6e73]">signed</label>
+            <input value={author} onChange={(e) => setAuthor(e.target.value)} className="mt-1 w-full rounded-2xl bg-[#f5f5f7] px-4 py-3 text-[16px] outline-none focus:bg-white focus:shadow-[0_0_0_1px_#d2d2d7]" placeholder="optional" />
+            <label className="mt-5 flex cursor-pointer items-center justify-between rounded-2xl border border-dashed border-[#d2d2d7] px-4 py-4 text-[15px] hover:bg-[#fafafa]">
+              <span>{file ? file.name : 'choose a local file'}</span>
+              <span className="text-[13px] text-[#6e6e73]">{file ? pretty(file.size) : 'any size'}</span>
+              <input type="file" className="hidden" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+            </label>
+            {slow && <p className="mt-2 text-[13px] text-[#a15c07]">{slow}</p>}
+            {error && <p className="mt-2 text-[13px] text-[#ff375f]">{error}</p>}
+            <button disabled={busy} onClick={measure} className="mt-5 rounded-full bg-[#0A84FF] px-5 py-2.5 text-[15px] font-medium text-white transition hover:bg-[#0071e3] disabled:opacity-60">{busy ? 'measuring…' : 'measure and file'}</button>
+          </motion.section>
         )}
-        <section className="mt-10 space-y-3">
-          {rows.map((row, i) => (
-            <motion.a key={row.id} href={`/scantling/${row.id}`} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i, 8) * 0.04 }} className="glass block rounded-2xl px-4 py-3 hover:-translate-y-0.5 transition">
-              <p className="text-sm text-white">{row.label}</p>
-              <p className="mt-1 text-xs text-white/50">{row.bytes ? pretty(Number(row.bytes)) : 'filed'}{row.width && row.height ? ' / ' + row.width + 'x' + row.height : ''}</p>
-            </motion.a>
-          ))}
-        </section>
       </main>
+      <Footer />
     </div>
   );
 }

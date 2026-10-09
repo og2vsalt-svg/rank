@@ -15,6 +15,7 @@ export type CloudMeta = {
   type: string;
   size: number;
   url: string;
+  fileUrl?: string;
   lockPass?: string;
   expiresAt?: string | null;
   createdAt?: string;
@@ -52,6 +53,7 @@ function rowToMeta(row: any): CloudMeta {
     type: row.mime || row.type || 'application/octet-stream',
     size: Number(row.size) || 0,
     url: row.file_url || row.url,
+    fileUrl: row.file_url || row.url,
     lockPass: row.lock_pass || row.lockPass || '',
     expiresAt: row.expires_at || row.expiresAt || null,
     createdAt: row.created_at || row.createdAt,
@@ -60,6 +62,25 @@ function rowToMeta(row: any): CloudMeta {
     caption: row.caption || row.meta?.caption || null,
     color: row.meta?.color || row.color || null,
     cardTitle: row.meta?.cardTitle || null,
+  };
+}
+
+function packed(id: string, url: string, warn?: string | null) {
+  const meta: CloudMeta = {
+    id,
+    name: '',
+    type: 'application/octet-stream',
+    size: 0,
+    url,
+    fileUrl: url,
+  };
+  return {
+    ok: true as const,
+    id,
+    url,
+    embed: `${typeof location !== 'undefined' ? location.origin : ''}/s/${id}`,
+    warn: warn || null,
+    meta,
   };
 }
 
@@ -106,13 +127,14 @@ async function publishViaApi(file: File, opts: ShareOpts, id: string) {
   const res = await fetch('/api/share', { method: 'POST', body });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) return { ok: false as const, error: data.error || `share api ${res.status}` };
-  return { ok: true as const, id: data.id || id, url: data.url, embed: `${location.origin}${data.embedPath || `/s/${id}`}`, warn: data.warn || null };
+  const url = data.url;
+  return { ...packed(data.id || id, url, data.warn || null), embed: `${location.origin}${data.embedPath || `/s/${id}`}` };
 }
 
 export async function publishLocalFile(
   file: File,
   opts: ShareOpts = {},
-): Promise<{ ok: boolean; id?: string; url?: string; embed?: string; warn?: string | null; error?: string }> {
+): Promise<{ ok: boolean; id?: string; url?: string; embed?: string; warn?: string | null; error?: string; meta?: CloudMeta }> {
   const id = uid();
   const safeName = (file.name || 'file').replace(/[^a-zA-Z0-9._-]+/g, '_').slice(0, 180) || 'file';
   const path = `${id}/${safeName}`;
@@ -159,7 +181,9 @@ export async function publishLocalFile(
       const text = await ins.text();
       return { ok: false, error: `shares table ${ins.status}: ${text.slice(0, 180)}` };
     }
-    return { ok: true, id, url: fileUrl, embed: `${location.origin}/s/${id}`, warn };
+    const done = packed(id, fileUrl, warn);
+    done.meta = { ...done.meta!, name: row.name, type: row.mime, size: file.size };
+    return done;
   } catch (e: any) {
     try {
       const viaApi = await publishViaApi(file, opts, id);
@@ -181,7 +205,7 @@ export async function publishShare(payload: {
   expiresAt?: string | null;
   author?: string;
   caption?: string;
-}): Promise<{ ok: boolean; id?: string; url?: string; error?: string; warn?: string }> {
+}): Promise<{ ok: boolean; id?: string; url?: string; error?: string; warn?: string; meta?: CloudMeta }> {
   try {
     const res = await fetch('/api/share', {
       method: 'POST',
@@ -190,7 +214,7 @@ export async function publishShare(payload: {
     });
     if (res.ok) {
       const data = await res.json();
-      return { ok: true, id: data.id || payload.id, url: data.url, warn: data.warn };
+      return packed(data.id || payload.id, data.url, data.warn);
     }
   } catch {
     // no api (static host) — fall through
@@ -220,7 +244,7 @@ export async function publishShare(payload: {
     body: JSON.stringify(row),
   });
   if (!res.ok) return { ok: false, error: (await res.text()) || `supabase ${res.status}`, warn };
-  return { ok: true, id: payload.id, url: payload.dataUrl, warn };
+  return packed(payload.id, payload.dataUrl, warn);
 }
 
 export async function fetchShare(id: string): Promise<CloudMeta | null> {

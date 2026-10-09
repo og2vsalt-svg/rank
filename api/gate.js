@@ -239,6 +239,9 @@ const routes = {
   drawstring: reticule,
   lorgnette,
   monocle: lorgnette,
+  gallipot: shelf,
+  catchword: shelf,
+  bookplate: shelf,
 };
 
 export default function handler(req, res) {

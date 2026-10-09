@@ -33,6 +33,9 @@ const COPY = {
   board: ['Board — rankvault', 'Public files people left out. Paste the link in Discord for a card.'],
   receipt: ['Receipt — rankvault', 'A short handoff note that travels with the link.'],
   satchel: ['Satchel — rankvault', 'A local file packed with a checklist. Paste the link in Discord for a card.'],
+  gallipot: ['Gallipot — rankvault', 'A local file dipped in a line. The file lands in the share table. Large drops are warned, never refused.'],
+  catchword: ['Catchword — rankvault', 'The word at the foot of the page. Paste the link in Discord for a card.'],
+  bookplate: ['Bookplate — rankvault', 'A name pasted on a local file. Large drops are warned, never refused.'],
   home: ['rankvault', 'Private file hosting. Share a file, keep the older desks, Discord cards on every link.'],
 };
 

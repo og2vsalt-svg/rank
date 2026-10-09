@@ -1,5 +1,6 @@
 const BOT = /discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|applebot|iframely|unfurl|pinterest|embedly|skype|slack-imgproxy|preview|bot|crawler|spider/i;
 const CARD_PAGES = new Set(['impost', 'reading', 's', 'share']);
+const DIRECT = { cartouche: 'cartouche', fillet: 'fillet' };
 
 export const config = {
   matcher: ['/((?!api/|assets/|og\\.png|favicon|robots).*)'],
@@ -7,9 +8,15 @@ export const config = {
 
 function card(request, page, id) {
   const url = new URL(request.url);
+  const direct = DIRECT[page];
   const useCard = CARD_PAGES.has(page);
   const dest = new URL(useCard ? '/api/card' : '/api/gate', request.url);
-  if (!useCard) dest.searchParams.set('name', 'embed');
+  if (direct) {
+    dest.searchParams.set('name', direct);
+    dest.searchParams.set('embed', '1');
+  } else if (!useCard) {
+    dest.searchParams.set('name', 'embed');
+  }
   dest.searchParams.set('page', page);
   if (id) dest.searchParams.set('id', id);
   const ua = request.headers.get('user-agent') || '';

@@ -278,18 +278,14 @@ export async function listPublicShares(limit = 24): Promise<CloudMeta[]> {
   }
 }
 
-
 export async function markArrival(id: string): Promise<{ ok: boolean; arrived?: number; error?: string }> {
   const current = await fetchShare(id);
-  if (!current) return { ok: false, error: 'slab not found' };
+  if (!current) return { ok: false, error: 'share not found' };
   const arrived = (current.downloads || 0) + 1;
   const res = await fetch(`${SB_URL}/rest/v1/public_shares?id=eq.${encodeURIComponent(id)}`, {
     method: 'PATCH',
     headers: sbHeaders(),
-    body: JSON.stringify({
-      download_count: arrived,
-      caption: `${current.caption || 'slab'} · arrived ${arrived}`,
-    }),
+    body: JSON.stringify({ download_count: arrived, updated_at: new Date().toISOString() }),
   });
   if (!res.ok) return { ok: false, error: 'could not stamp the arrival. the file is still filed.' };
   return { ok: true, arrived };

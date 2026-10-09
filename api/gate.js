@@ -107,6 +107,8 @@ import courier from '../lib/endpoints/courier.js';
 import tally from '../lib/endpoints/tally.js';
 import reticule from '../lib/endpoints/reticule.js';
 import lorgnette from '../lib/endpoints/lorgnette.js';
+import cartouche from '../lib/endpoints/cartouche.js';
+import fillet from '../lib/endpoints/fillet.js';
 
 const routes = {
   atelier, beacon, card, cardfront, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -242,6 +244,8 @@ const routes = {
   gallipot: shelf,
   catchword: shelf,
   bookplate: shelf,
+  cartouche,
+  fillet,
 };
 
 export default function handler(req, res) {

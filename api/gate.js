@@ -97,6 +97,8 @@ import spandrel from '../lib/endpoints/spandrel.js';
 import stringcourse from '../lib/endpoints/stringcourse.js';
 import plinth from '../lib/endpoints/plinth.js';
 import architrave from '../lib/endpoints/architrave.js';
+import scantling from '../lib/endpoints/scantling.js';
+import margent from '../lib/endpoints/margent.js';
 
 const routes = {
   atelier, beacon, card, cardfront, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -217,6 +219,8 @@ const routes = {
   inlet: plinth,
   architrave,
   taenia: architrave,
+  scantling,
+  margent,
 };
 
 export default function handler(req, res) {

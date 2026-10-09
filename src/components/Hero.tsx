@@ -16,6 +16,7 @@ export default function Hero() {
           Raise a glass, send a packet, or keep the older desks. Large drops get a warning, not a refusal.
         </motion.p>
         <div className="flex flex-wrap gap-3 mb-12">
+          <button onClick={() => navigate('tympanum')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">raise a field</button>
           <button onClick={() => navigate('lorgnette')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">raise a glass</button>
           <button onClick={() => navigate('monocle')} className="inline-flex px-5 py-2.5 rounded-full bg-[#0a84ff] text-white text-sm font-medium hover:bg-[#409cff] transition active:scale-[0.98]">open the board</button>
           <button onClick={() => navigate('reticule')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">file a reticule</button>

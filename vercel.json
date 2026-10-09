@@ -12,6 +12,39 @@
       "destination": "/api/gate?name=:name"
     },
     {
+      "source": "/tympanum/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"
+        }
+      ],
+      "destination": "/api/gate?name=embed&page=tympanum&id=:id&card=1"
+    },
+    {
+      "source": "/tympanum",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"
+        }
+      ],
+      "destination": "/api/gate?name=embed&page=tympanum&card=1"
+    },
+    {
+      "source": "/voussoir",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"
+        }
+      ],
+      "destination": "/api/gate?name=embed&page=voussoir&card=1"
+    },
+    {
       "source": "/lorgnette/:id",
       "has": [
         {

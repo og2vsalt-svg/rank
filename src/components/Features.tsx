@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'tympanum', href: '/tympanum', body: 'a semicircular field above a named doorway. one local file lands in the share table with a dedication. discord unfurls /tympanum. large drops are warned, never refused. not a vault drawer.' },
+  { title: 'voussoir', href: '/voussoir', body: 'the public arch of fields already raised. open one or mark that you passed under it. no upload on this page. discord unfurls /voussoir.' },
   { title: 'oriel', href: '/oriel', body: 'a bay window for one local file and a line under the glass. bytes land in the share table. discord unfurls /oriel. large drops are warned, never refused.' },
   { title: 'quillon', href: '/quillon', body: 'a guard slip: who the file is for, and the promise that travels with it. not a vault list. discord unfurls /quillon.' },
   { title: 'architrave', href: '/architrave', body: 'a beam over the door, not a drawer. drop a local file into the share table, name who it carries, and leave a line. someone else can answer on /taenia without uploading. discord unfurls /architrave. large drops are warned, never refused. older desks stay.' },

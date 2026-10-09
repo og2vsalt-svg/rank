@@ -1,6 +1,9 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'chevron', href: '/chevron', body: 'a bearing, not a drawer. one local file and the direction it travels. bytes land in the share table. discord unfurls /chevron. large drops are warned, never refused.' },
+  { title: 'patera', href: '/patera', body: 'a round disc for a motif and one local file. the public row is discs already set, not a cabinet. discord unfurls /patera.' },
+  { title: 'labelstop', href: '/labelstop', body: 'the carved stop at the end of a molding. name who the file is for. not a vault list. discord unfurls /labelstop.' },
   { title: 'tympanum', href: '/tympanum', body: 'a semicircular field above a named doorway. one local file lands in the share table with a dedication. discord unfurls /tympanum. large drops are warned, never refused. not a vault drawer.' },
   { title: 'voussoir', href: '/voussoir', body: 'the public arch of fields already raised. open one or mark that you passed under it. no upload on this page. discord unfurls /voussoir.' },
   { title: 'oriel', href: '/oriel', body: 'a bay window for one local file and a line under the glass. bytes land in the share table. discord unfurls /oriel. large drops are warned, never refused.' },

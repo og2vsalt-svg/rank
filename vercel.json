@@ -61,7 +61,7 @@
         {
           "type": "header",
           "key": "user-agent",
-          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"
         }
       ],
       "destination": "/api/gate?name=lorgnette&page=lorgnette&card=1"
@@ -72,7 +72,7 @@
         {
           "type": "header",
           "key": "user-agent",
-          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"
         }
       ],
       "destination": "/api/gate?name=lorgnette&page=monocle&card=1"
@@ -94,7 +94,7 @@
         {
           "type": "header",
           "key": "user-agent",
-          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"
         }
       ],
       "destination": "/api/gate?name=reticule&card=1"
@@ -105,7 +105,7 @@
         {
           "type": "header",
           "key": "user-agent",
-          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"
         }
       ],
       "destination": "/api/gate?name=reticule&card=1"
@@ -127,7 +127,7 @@
         {
           "type": "header",
           "key": "user-agent",
-          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"
         }
       ],
       "destination": "/api/gate?name=scantling&card=1"
@@ -149,7 +149,7 @@
         {
           "type": "header",
           "key": "user-agent",
-          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"
         }
       ],
       "destination": "/api/gate?name=margent&card=1"
@@ -171,7 +171,7 @@
         {
           "type": "header",
           "key": "user-agent",
-          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"
         }
       ],
       "destination": "/api/gate?name=plinth&page=plinth&card=1"
@@ -193,7 +193,7 @@
         {
           "type": "header",
           "key": "user-agent",
-          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"
         }
       ],
       "destination": "/api/gate?name=plinth&page=inlet&card=1"
@@ -215,7 +215,7 @@
         {
           "type": "header",
           "key": "user-agent",
-          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"
         }
       ],
       "destination": "/api/gate?name=embed&page=lintel"
@@ -237,7 +237,7 @@
         {
           "type": "header",
           "key": "user-agent",
-          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"
         }
       ],
       "destination": "/api/gate?name=embed&page=sill"
@@ -259,7 +259,7 @@
         {
           "type": "header",
           "key": "user-agent",
-          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"
         }
       ],
       "destination": "/api/gate?name=stringcourse&page=stringcourse"
@@ -281,7 +281,7 @@
         {
           "type": "header",
           "key": "user-agent",
-          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"
         }
       ],
       "destination": "/api/gate?name=stringcourse&page=beltcourse"
@@ -303,7 +303,7 @@
         {
           "type": "header",
           "key": "user-agent",
-          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"
         }
       ],
       "destination": "/api/gate?name=spandrel&card=1"
@@ -325,7 +325,7 @@
         {
           "type": "header",
           "key": "user-agent",
-          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"
         }
       ],
       "destination": "/api/gate?name=quittance&card=1"
@@ -347,7 +347,7 @@
         {
           "type": "header",
           "key": "user-agent",
-          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"
         }
       ],
       "destination": "/api/gate?name=quittance&card=1"
@@ -380,7 +380,7 @@
         {
           "type": "header",
           "key": "user-agent",
-          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"
         }
       ],
       "destination": "/api/gate?name=embed&id=:id"
@@ -391,7 +391,7 @@
         {
           "type": "header",
           "key": "user-agent",
-          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"
         }
       ],
       "destination": "/api/gate?name=embed&id=:id"
@@ -402,7 +402,7 @@
         {
           "type": "header",
           "key": "user-agent",
-          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"
         }
       ],
       "destination": "/api/gate?name=embed&id=:id"
@@ -413,7 +413,7 @@
         {
           "type": "header",
           "key": "user-agent",
-          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"
         }
       ],
       "destination": "/api/gate?name=embed&id=:id"
@@ -435,7 +435,7 @@
         {
           "type": "header",
           "key": "user-agent",
-          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"
         }
       ],
       "destination": "/api/gate?name=clip&card=1"
@@ -457,7 +457,7 @@
         {
           "type": "header",
           "key": "user-agent",
-          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"
         }
       ],
       "destination": "/api/gate?name=embed&page=lantern"
@@ -479,7 +479,7 @@
         {
           "type": "header",
           "key": "user-agent",
-          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot).*"
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"
         }
       ],
       "destination": "/api/gate?name=embed&page=:page"
@@ -527,6 +527,36 @@
         }
       ],
       "destination": "/api/gate?name=quillon&card=1"
+    },
+    {
+      "source": "/chevron/:id",
+      "has": [{"type": "header", "key": "user-agent", "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"}],
+      "destination": "/api/gate?name=embed&page=chevron&id=:id&card=1"
+    },
+    {
+      "source": "/chevron",
+      "has": [{"type": "header", "key": "user-agent", "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"}],
+      "destination": "/api/gate?name=embed&page=chevron&card=1"
+    },
+    {
+      "source": "/patera/:id",
+      "has": [{"type": "header", "key": "user-agent", "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"}],
+      "destination": "/api/gate?name=embed&page=patera&id=:id&card=1"
+    },
+    {
+      "source": "/patera",
+      "has": [{"type": "header", "key": "user-agent", "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"}],
+      "destination": "/api/gate?name=embed&page=patera&card=1"
+    },
+    {
+      "source": "/labelstop/:id",
+      "has": [{"type": "header", "key": "user-agent", "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"}],
+      "destination": "/api/gate?name=embed&page=labelstop&id=:id&card=1"
+    },
+    {
+      "source": "/labelstop",
+      "has": [{"type": "header", "key": "user-agent", "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"}],
+      "destination": "/api/gate?name=embed&page=labelstop&card=1"
     },
     {
       "source": "/((?!api/|assets/).*)",

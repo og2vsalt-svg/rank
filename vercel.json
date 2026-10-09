@@ -530,33 +530,135 @@
     },
     {
       "source": "/chevron/:id",
-      "has": [{"type": "header", "key": "user-agent", "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"}],
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"
+        }
+      ],
       "destination": "/api/gate?name=embed&page=chevron&id=:id&card=1"
     },
     {
       "source": "/chevron",
-      "has": [{"type": "header", "key": "user-agent", "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"}],
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"
+        }
+      ],
       "destination": "/api/gate?name=embed&page=chevron&card=1"
     },
     {
       "source": "/patera/:id",
-      "has": [{"type": "header", "key": "user-agent", "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"}],
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"
+        }
+      ],
       "destination": "/api/gate?name=embed&page=patera&id=:id&card=1"
     },
     {
       "source": "/patera",
-      "has": [{"type": "header", "key": "user-agent", "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"}],
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"
+        }
+      ],
       "destination": "/api/gate?name=embed&page=patera&card=1"
     },
     {
       "source": "/labelstop/:id",
-      "has": [{"type": "header", "key": "user-agent", "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"}],
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"
+        }
+      ],
       "destination": "/api/gate?name=embed&page=labelstop&id=:id&card=1"
     },
     {
       "source": "/labelstop",
-      "has": [{"type": "header", "key": "user-agent", "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"}],
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"
+        }
+      ],
       "destination": "/api/gate?name=embed&page=labelstop&card=1"
+    },
+    {
+      "source": "/modillion/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"
+        }
+      ],
+      "destination": "/api/gate?name=embed&page=modillion&id=:id&card=1"
+    },
+    {
+      "source": "/modillion",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"
+        }
+      ],
+      "destination": "/api/gate?name=embed&page=modillion&card=1"
+    },
+    {
+      "source": "/dentil/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"
+        }
+      ],
+      "destination": "/api/gate?name=embed&page=dentil&id=:id&card=1"
+    },
+    {
+      "source": "/dentil",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"
+        }
+      ],
+      "destination": "/api/gate?name=embed&page=dentil&card=1"
+    },
+    {
+      "source": "/:page/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"
+        }
+      ],
+      "destination": "/api/gate?name=embed&page=:page&id=:id&card=1"
+    },
+    {
+      "source": "/:page",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|embedly|iframely|applebot).*"
+        }
+      ],
+      "destination": "/api/gate?name=embed&page=:page&card=1"
     },
     {
       "source": "/((?!api/|assets/).*)",

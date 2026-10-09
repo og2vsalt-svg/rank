@@ -99,6 +99,8 @@ import plinth from '../lib/endpoints/plinth.js';
 import architrave from '../lib/endpoints/architrave.js';
 import scantling from '../lib/endpoints/scantling.js';
 import margent from '../lib/endpoints/margent.js';
+import oriel from '../lib/endpoints/oriel.js';
+import quillon from '../lib/endpoints/quillon.js';
 
 const routes = {
   atelier, beacon, card, cardfront, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -221,6 +223,8 @@ const routes = {
   taenia: architrave,
   scantling,
   margent,
+  oriel,
+  quillon,
 };
 
 export default function handler(req, res) {

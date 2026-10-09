@@ -13,23 +13,13 @@ export default function Hero() {
           drop a file.<br />share only if you want.
         </motion.h1>
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.12 }} className="text-neutral-400 text-lg leading-relaxed max-w-xl mb-8">
-          File a gathering, lay a deckle, or keep the older desks. Large drops get a warning, not a refusal.
+          Send a packet, stamp a receipt, or keep the older desks. Large drops get a warning, not a refusal.
         </motion.p>
         <div className="flex flex-wrap gap-3 mb-12">
-          <button onClick={() => navigate('gathering')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">file a gathering</button>
-          <button onClick={() => navigate('deckle')} className="inline-flex px-5 py-2.5 rounded-full bg-[#0a84ff] text-white text-sm font-medium hover:bg-[#409cff] transition active:scale-[0.98]">lay a deckle</button>
-          <button onClick={() => navigate('lantern')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">set a lantern</button>
-          <button onClick={() => navigate('stringcourse')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">set a stringcourse</button>
-          <button onClick={() => navigate('studio')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">open studio</button>
-          <button onClick={() => navigate('pulse')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">pulse</button>
-          <button onClick={() => navigate('haversack')} className="inline-flex px-5 py-2.5 rounded-full bg-[#ff9f0a] text-black text-sm font-medium hover:bg-[#ffb340] transition active:scale-[0.98]">hang a haversack</button>
-          <button onClick={() => navigate('pegboard')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">pegboard</button>
-          <button onClick={() => navigate('knocker')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">leave a knock</button>
-          <button onClick={() => navigate('commonplace')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">open commonplace</button>
-          <button onClick={() => navigate('transom')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">open a transom</button>
-          <button onClick={() => navigate('ledger', 'house')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">open the ledger</button>
-          <button onClick={() => navigate('casement')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">see open windows</button>
+          <button onClick={() => navigate('courier')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">send a packet</button>
+          <button onClick={() => navigate('tally')} className="inline-flex px-5 py-2.5 rounded-full bg-[#0a84ff] text-white text-sm font-medium hover:bg-[#409cff] transition active:scale-[0.98]">stamp a receipt</button>
           <button onClick={() => navigate('vault')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">open vault</button>
+          <button onClick={() => navigate('lantern')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">set a lantern</button>
           <a href="#features" className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">see features</a>
         </div>
       </div>

@@ -5,16 +5,16 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
-  { to: 'tympanum', label: 'tympanum' }, { to: 'voussoir', label: 'voussoir' }, { to: 'lorgnette', label: 'lorgnette' }, { to: 'monocle', label: 'monocle' }, { to: 'reticule', label: 'reticule' }, { to: 'drawstring', label: 'drawstring' }, { to: 'oriel', label: 'oriel' }, { to: 'quillon', label: 'quillon' }, { to: 'scantling', label: 'scantling' },
+  { to: 'crossette', label: 'crossette' }, { to: 'tympanum', label: 'tympanum' }, { to: 'voussoir', label: 'voussoir' }, { to: 'lorgnette', label: 'lorgnette' }, { to: 'monocle', label: 'monocle' }, { to: 'reticule', label: 'reticule' }, { to: 'drawstring', label: 'drawstring' }, { to: 'oriel', label: 'oriel' }, { to: 'quillon', label: 'quillon' }, { to: 'scantling', label: 'scantling' },
   { to: 'margent', label: 'margent' },
   { to: 'lantern', label: 'lantern' }, { to: 'vault', label: 'vault' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [
-  { title: 'new', items: [{ to: 'tympanum', label: 'tympanum' }, { to: 'voussoir', label: 'voussoir' }, { to: 'tympanum', label: 'tympanum' }, { to: 'voussoir', label: 'voussoir' }, { to: 'lorgnette', label: 'lorgnette' }, { to: 'monocle', label: 'monocle' }, { to: 'reticule', label: 'reticule' }, { to: 'drawstring', label: 'drawstring' }, { to: 'oriel', label: 'oriel' }, { to: 'quillon', label: 'quillon' }, { to: 'scantling', label: 'scantling' }, { to: 'margent', label: 'margent' }, { to: 'ovolo', label: 'ovolo' }, { to: 'mutule', label: 'mutule' }, { to: 'plinth', label: 'plinth' }, { to: 'inlet', label: 'inlet' }, { to: 'cyma', label: 'cyma' }, { to: 'annulet', label: 'annulet' }, { to: 'reglet', label: 'reglet' }, { to: 'hoodmold', label: 'hoodmold' }, { to: 'gutta', label: 'gutta' }, { to: 'echinus', label: 'echinus' }, { to: 'cavetto', label: 'cavetto' }, { to: 'etui', label: 'etui' }, { to: 'bandbox', label: 'bandbox' }, { to: 'fascia', label: 'fascia' }, { to: 'finial', label: 'finial' }, { to: 'quirk', label: 'quirk' }, { to: 'mailslot', label: 'mailslot' }, { to: 'footnote', label: 'footnote' }, { to: 'quittance', label: 'quittance' }, { to: 'clip', label: 'clip' }, { to: 'studio', label: 'studio' }, { to: 'pulse', label: 'pulse' }, { to: 'rooms', label: 'rooms' }, { to: 'loft', label: 'loft' }, { to: 'witness', label: 'witness' }, { to: 'indent', label: 'indent' }, { to: 'haversack', label: 'haversack' }, { to: 'vault', label: 'vault' }] },
-  { title: 'hosting', items: [{ to: 'tympanum', label: 'tympanum' }, { to: 'lorgnette', label: 'lorgnette' }, { to: 'scantling', label: 'scantling' }, { to: 'lantern', label: 'lantern' }, { to: 'ovolo', label: 'ovolo' }, { to: 'plinth', label: 'plinth' }, { to: 'cyma', label: 'cyma' }, { to: 'reglet', label: 'reglet' }, { to: 'etui', label: 'etui' }, { to: 'bandbox', label: 'bandbox' }, { to: 'mailslot', label: 'mailslot' }, { to: 'quittance', label: 'quittance' }, { to: 'clip', label: 'clip' }, { to: 'haversack', label: 'haversack' }, { to: 'handover', label: 'handover' }, { to: 'vault', label: 'vault' }] },
+  { title: 'new', items: [{ to: 'crossette', label: 'crossette' }, { to: 'tympanum', label: 'tympanum' }, { to: 'voussoir', label: 'voussoir' }, { to: 'lorgnette', label: 'lorgnette' }, { to: 'monocle', label: 'monocle' }, { to: 'reticule', label: 'reticule' }, { to: 'drawstring', label: 'drawstring' }, { to: 'oriel', label: 'oriel' }, { to: 'quillon', label: 'quillon' }, { to: 'scantling', label: 'scantling' }, { to: 'margent', label: 'margent' }, { to: 'ovolo', label: 'ovolo' }, { to: 'mutule', label: 'mutule' }, { to: 'plinth', label: 'plinth' }, { to: 'inlet', label: 'inlet' }, { to: 'cyma', label: 'cyma' }, { to: 'annulet', label: 'annulet' }, { to: 'reglet', label: 'reglet' }, { to: 'hoodmold', label: 'hoodmold' }, { to: 'gutta', label: 'gutta' }, { to: 'echinus', label: 'echinus' }, { to: 'cavetto', label: 'cavetto' }, { to: 'etui', label: 'etui' }, { to: 'bandbox', label: 'bandbox' }, { to: 'fascia', label: 'fascia' }, { to: 'finial', label: 'finial' }, { to: 'quirk', label: 'quirk' }, { to: 'mailslot', label: 'mailslot' }, { to: 'footnote', label: 'footnote' }, { to: 'quittance', label: 'quittance' }, { to: 'clip', label: 'clip' }, { to: 'studio', label: 'studio' }, { to: 'pulse', label: 'pulse' }, { to: 'rooms', label: 'rooms' }, { to: 'loft', label: 'loft' }, { to: 'witness', label: 'witness' }, { to: 'indent', label: 'indent' }, { to: 'haversack', label: 'haversack' }, { to: 'vault', label: 'vault' }] },
+  { title: 'hosting', items: [{ to: 'crossette', label: 'crossette' }, { to: 'tympanum', label: 'tympanum' }, { to: 'lorgnette', label: 'lorgnette' }, { to: 'scantling', label: 'scantling' }, { to: 'lantern', label: 'lantern' }, { to: 'ovolo', label: 'ovolo' }, { to: 'plinth', label: 'plinth' }, { to: 'cyma', label: 'cyma' }, { to: 'reglet', label: 'reglet' }, { to: 'etui', label: 'etui' }, { to: 'bandbox', label: 'bandbox' }, { to: 'mailslot', label: 'mailslot' }, { to: 'quittance', label: 'quittance' }, { to: 'clip', label: 'clip' }, { to: 'haversack', label: 'haversack' }, { to: 'handover', label: 'handover' }, { to: 'vault', label: 'vault' }] },
   { title: 'notes', items: [{ to: 'monocle', label: 'monocle' }, { to: 'margent', label: 'margent' }, { to: 'inlet', label: 'inlet' }, { to: 'footnote', label: 'footnote' }, { to: 'letterpress', label: 'letterpress' }, { to: 'commonplace', label: 'commonplace' }, { to: 'ledger', label: 'ledger' }, { to: 'hearth', label: 'hearth' }] },
-  { title: 'share', items: [{ to: 'tympanum', label: 'tympanum' }, { to: 'voussoir', label: 'voussoir' }, { to: 'lorgnette', label: 'lorgnette' }, { to: 'reticule', label: 'reticule' }, { to: 'drawstring', label: 'drawstring' }, { to: 'scantling', label: 'scantling' }, { to: 'margent', label: 'margent' }, { to: 'lantern', label: 'lantern' }, { to: 'ovolo', label: 'ovolo' }, { to: 'mutule', label: 'mutule' }, { to: 'plinth', label: 'plinth' }, { to: 'annulet', label: 'annulet' }, { to: 'mailslot', label: 'mailslot' }, { to: 'quittance', label: 'quittance' }, { to: 'clip', label: 'clip' }, { to: 'handover', label: 'handover' }, { to: 'parcel', label: 'parcel' }] },
+  { title: 'share', items: [{ to: 'crossette', label: 'crossette' }, { to: 'tympanum', label: 'tympanum' }, { to: 'voussoir', label: 'voussoir' }, { to: 'lorgnette', label: 'lorgnette' }, { to: 'reticule', label: 'reticule' }, { to: 'drawstring', label: 'drawstring' }, { to: 'scantling', label: 'scantling' }, { to: 'margent', label: 'margent' }, { to: 'lantern', label: 'lantern' }, { to: 'ovolo', label: 'ovolo' }, { to: 'mutule', label: 'mutule' }, { to: 'plinth', label: 'plinth' }, { to: 'annulet', label: 'annulet' }, { to: 'mailslot', label: 'mailslot' }, { to: 'quittance', label: 'quittance' }, { to: 'clip', label: 'clip' }, { to: 'handover', label: 'handover' }, { to: 'parcel', label: 'parcel' }] },
 ];
 
 export default function Navbar() {
@@ -50,8 +50,8 @@ export default function Navbar() {
       <div className="max-w-6xl mx-auto px-4 sm:px-5 h-14 flex items-center justify-between gap-3">
         <button onClick={() => navigate('home')} className="text-lg font-semibold tracking-tight text-white shrink-0">rank<span className="text-[#0a84ff]">vault</span></button>
         <div className="hidden xl:flex items-center gap-1 min-w-0 overflow-x-auto">
-          {primary.map((l) => (
-            <button key={l.to} onClick={() => navigate(l.to)} className="text-[13px] text-neutral-400 hover:text-white px-2.5 py-1.5 rounded-full hover:bg-white/5 transition-colors duration-200">{l.label}</button>
+          {primary.map((l, i) => (
+            <button key={`${l.to}-${i}`} onClick={() => navigate(l.to)} className="text-[13px] text-neutral-400 hover:text-white px-2.5 py-1.5 rounded-full hover:bg-white/5 transition-colors duration-200">{l.label}</button>
           ))}
         </div>
         <div className="flex items-center gap-1.5 shrink-0">
@@ -92,8 +92,8 @@ export default function Navbar() {
                   </button>
                   {open && (
                     <div className="px-2 pb-2.5 grid grid-cols-2 sm:grid-cols-3 gap-0.5">
-                      {g.items.map((l) => (
-                        <button key={l.to + l.label} onClick={() => go(l.to)} className="text-left text-[13px] text-neutral-400 hover:text-white hover:bg-white/5 rounded-xl px-2.5 py-2">{l.label}</button>
+                      {g.items.map((l, i) => (
+                        <button key={`${g.title}-${l.to}-${i}`} onClick={() => go(l.to)} className="text-left text-[13px] text-neutral-400 hover:text-white hover:bg-white/5 rounded-xl px-2.5 py-2">{l.label}</button>
                       ))}
                     </div>
                   )}
@@ -101,7 +101,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <p className="px-1 pt-3 text-[12px] text-white/35">older desks stay on their routes. paste /lorgnette/id or /s/id in Discord for a card.</p>
+          <p className="px-1 pt-3 text-[12px] text-white/35">older desks stay on their routes. paste /crossette/id or /s/id in Discord for a card.</p>
         </div>
       </div>
     </nav>

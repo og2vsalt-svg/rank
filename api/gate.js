@@ -8,7 +8,7 @@ import chock from '../lib/endpoints/chock.js';
 import crosstree from '../lib/endpoints/crosstree.js';
 import desk from '../lib/endpoints/desk.js';
 import embed from '../lib/endpoints/embed.js';
-import ferry from '../lib/endpoints/forefoot.js';
+import ferry from '../lib/endpoints/ferry.js';
 import forefoot from '../lib/endpoints/forefoot.js';
 import jackstay from '../lib/endpoints/jackstay.js';
 import ketch from '../lib/endpoints/ketch.js';

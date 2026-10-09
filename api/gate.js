@@ -1,6 +1,6 @@
 import atelier from '../lib/endpoints/atelier.js';
 import beacon from '../lib/endpoints/beacon.js';
-import card from '../lib/endpoints/cardfront.js';
+import card from '../lib/endpoints/card.js';
 import cardfront from '../lib/endpoints/cardfront.js';
 import catfall from '../lib/endpoints/catfall.js';
 import cathead from '../lib/endpoints/cathead.js';

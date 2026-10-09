@@ -182,7 +182,7 @@ export async function publishLocalFile(
       return { ok: false, error: `shares table ${ins.status}: ${text.slice(0, 180)}` };
     }
     const done = packed(id, fileUrl, warn);
-    done.meta = { ...done.meta!, name: row.name, type: row.mime, size: file.size };
+    done.meta = { ...done.meta!, name: file.name || row.name, type: row.mime, size: file.size, caption: opts.caption || null, author: opts.author || null, color: opts.color || null, cardTitle: opts.cardTitle || null };
     return done;
   } catch (e: any) {
     try {
@@ -264,7 +264,7 @@ export async function fetchShare(id: string): Promise<CloudMeta | null> {
 export async function listPublicShares(limit = 24): Promise<CloudMeta[]> {
   try {
     const res = await fetch(
-      `${SB_URL}/rest/v1/public_shares?is_public=eq.true&select=id,name,mime,size,file_url,expires_at,created_at,download_count,author,caption,lock_pass&order=created_at.desc&limit=${limit}`,
+      `${SB_URL}/rest/v1/public_shares?is_public=eq.true&select=id,name,mime,size,file_url,expires_at,created_at,download_count,author,caption,lock_pass,meta&order=created_at.desc&limit=${limit}`,
       { headers: sbHeaders() },
     );
     if (!res.ok) return [];
@@ -276,4 +276,21 @@ export async function listPublicShares(limit = 24): Promise<CloudMeta[]> {
   } catch {
     return [];
   }
+}
+
+
+export async function markArrival(id: string): Promise<{ ok: boolean; arrived?: number; error?: string }> {
+  const current = await fetchShare(id);
+  if (!current) return { ok: false, error: 'slab not found' };
+  const arrived = (current.downloads || 0) + 1;
+  const res = await fetch(`${SB_URL}/rest/v1/public_shares?id=eq.${encodeURIComponent(id)}`, {
+    method: 'PATCH',
+    headers: sbHeaders(),
+    body: JSON.stringify({
+      download_count: arrived,
+      caption: `${current.caption || 'slab'} · arrived ${arrived}`,
+    }),
+  });
+  if (!res.ok) return { ok: false, error: 'could not stamp the arrival. the file is still filed.' };
+  return { ok: true, arrived };
 }

@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'abacus', href: '/abacus', body: 'lay one local file on a counting slab and name how many arrivals you expect. bytes land in storage and the share table. discord unfurls /abacus. large drops are warned, never refused. not a vault drawer. older desks stay.' },
+  { title: 'campanile', href: '/campanile', body: 'the public tower of slabs already laid. open one, download the file, and mark an arrival. no new upload. discord unfurls /campanile. not a cabinet.' },
   { title: 'gallipot', href: '/gallipot', body: 'dip one local file in a short line and an ink colour. bytes land in storage and the gallipots table. discord unfurls /gallipot. large drops are warned, never refused. not a vault drawer. older desks stay.' },
   { title: 'catchword', href: '/catchword', body: 'the word at the foot of a page, pointing at the next line. an optional local file lands in the share table. discord unfurls /catchword. not a cabinet.' },
   { title: 'bookplate', href: '/bookplate', body: 'paste a name and a motto onto one local file. bytes land in storage and the bookplates table. discord unfurls /bookplate. large drops are warned, never refused. older desks stay.' },

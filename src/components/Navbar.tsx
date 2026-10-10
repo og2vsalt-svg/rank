@@ -5,7 +5,7 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
-  { to: 'nimbus', label: 'nimbus' }, { to: 'dresser', label: 'dresser' }, { to: 'conduit', label: 'conduit' }, { to: 'studio', label: 'studio' }, { to: 'atelier', label: 'atelier' }, { to: 'gallery', label: 'gallery' }, { to: 'aether', label: 'aether' }, { to: 'sharehub', label: 'sharehub' }, { to: 'vault', label: 'vault' },
+  { to: 'lumen', label: 'lumen' }, { to: 'nimbus', label: 'nimbus' }, { to: 'dresser', label: 'dresser' }, { to: 'conduit', label: 'conduit' }, { to: 'studio', label: 'studio' }, { to: 'atelier', label: 'atelier' }, { to: 'gallery', label: 'gallery' }, { to: 'aether', label: 'aether' }, { to: 'sharehub', label: 'sharehub' }, { to: 'vault', label: 'vault' },
 ];
 
 const groups: { title: string; items: NavItem[] }[] = [

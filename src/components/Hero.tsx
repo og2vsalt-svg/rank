@@ -35,7 +35,7 @@ export default function Hero() {
         <div className="flex flex-wrap gap-3 justify-center sm:justify-start mb-10">
           <button onClick={() => navigate('harbor')} className="inline-flex px-5 py-2.5 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#409CFF] transition active:scale-[0.98]">harbor</button>
           <button onClick={() => navigate('quay')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">quay</button>
-          <button onClick={() => navigate('aether')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">aether</button>
+          <button onClick={() => navigate('catalog')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">catalog</button>
           <button onClick={() => navigate('gallery')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">gallery</button>
           <button onClick={() => navigate('vault')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">vault</button>
           <a href="#features" className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">features</a>

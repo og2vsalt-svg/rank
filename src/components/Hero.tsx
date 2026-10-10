@@ -16,7 +16,8 @@ export default function Hero() {
           Browse the gallery, draw on canvas, send a packet, or keep the older desks. Large drops get a warning, not a refusal.
         </motion.p>
         <div className="flex flex-wrap gap-3 mb-12">
-          <button onClick={() => navigate('gallery')} className="inline-flex px-5 py-2.5 rounded-full bg-[#0a84ff] text-white text-sm font-medium hover:bg-[#409cff] transition active:scale-[0.98]">open gallery</button>
+          <button onClick={() => navigate('dropzone')} className="inline-flex px-5 py-2.5 rounded-full bg-[#0a84ff] text-white text-sm font-medium hover:bg-[#409cff] transition active:scale-[0.98]">open dropzone</button>
+          <button onClick={() => navigate('gallery')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">open gallery</button>
           <button onClick={() => navigate('sharehub')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">share hub</button>
           <button onClick={() => navigate('canvas')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">open canvas</button>
           <button onClick={() => navigate('abacus')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">lay a slab</button>

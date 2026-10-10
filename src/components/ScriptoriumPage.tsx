@@ -1,69 +1,88 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { shareUrls } from '../lib/cloudShare';
+import { publishLocalFile, shareUrls } from '../lib/cloudShare';
 
 export default function ScriptoriumPage() {
-  const [text, setText] = useState('');
-  const [name, setName] = useState('letter.txt');
+  const [note, setNote] = useState('');
+  const [file, setFile] = useState<File | null>(null);
+  const [warn, setWarn] = useState('');
   const [busy, setBusy] = useState(false);
-  const [err, setErr] = useState('');
-  const [embed, setEmbed] = useState('');
-  const [link, setLink] = useState('');
+  const [share, setShare] = useState<{id: string; url: string} | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
 
-  const send = async () => {
-    const body = text.trim();
-    if (!body) return;
+  const onFile = (list: FileList | null) => {
+    const f = list?.[0];
+    if (!f) return;
+    setFile(f);
+    setWarn(f.size > 50 * 1024 * 1024 ? 'Large attachment — it will upload, but the browser may feel slow.' : '');
+  };
+
+  const save = async () => {
+    if (!note.trim() && !file) return;
     setBusy(true);
-    setErr('');
-    try {
-      const blob = new Blob([body], { type: 'text/plain;charset=utf-8' });
-      const file = new File([blob], name.replace(/\s+/g, '-') || 'letter.txt', { type: 'text/plain' });
-      const dataUrl = await new Promise((resolve, reject) => {
-        const r = new FileReader();
-        r.onload = () => resolve(String(r.result || ''));
-        r.onerror = () => reject(new Error('encode failed'));
-        r.readAsDataURL(file);
-      });
-      const r = await fetch('/api/share', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: file.name, type: 'text/plain', size: file.size, dataUrl, author: 'scriptorium' }),
-      });
-      const json = await r.json();
-      if (!r.ok || !json?.ok) throw new Error(json?.error || 'share failed');
-      const urls = shareUrls(json.id);
-      setLink(urls.app);
-      setEmbed(urls.embed);
-      try { await navigator.clipboard.writeText(urls.embed); } catch {}
-    } catch (e) {
-      setErr(e?.message || 'scriptorium failed');
-    } finally {
-      setBusy(false);
+    let id = '';
+    if (file) {
+      const res = await publishLocalFile(file, { caption: note.slice(0, 200), cardTitle: 'scriptorium note' });
+      if (res.ok && res.id) id = res.id;
+    }
+    // For pure notes we could post to a notes table, but for now share if file or just local
+    setBusy(false);
+    if (id) {
+      setShare({ id, url: shareUrls(id).embed });
+    } else {
+      setShare({ id: 'local', url: window.location.origin + '/scriptorium' });
     }
   };
 
   return (
-    <div className="mesh min-h-screen">
+    <div className="mesh min-h-screen text-white">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-8">
-          <p className="text-[#0a84ff] text-sm mb-2">scriptorium</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">write a letter. publish the page.</h1>
-          <p className="text-neutral-400 text-sm mb-6">not a vault dump — a short note that becomes a public text drop with a discord card.</p>
-          <input value={name} onChange={(e) => setName(e.target.value)} className="w-full mb-3 rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/50" placeholder="filename" />
-          <textarea value={text} onChange={(e) => setText(e.target.value)} rows={10} className="w-full rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#0a84ff]/50 resize-y" placeholder="ink goes here" />
-          <button onClick={send} disabled={busy || !text.trim()} className="mt-4 rounded-full bg-[#0a84ff] text-white text-sm px-5 py-2.5 disabled:opacity-40 transition hover:brightness-110">
-            {busy ? 'setting type…' : 'publish letter'}
-          </button>
-          {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
-          {embed && (
-            <div className="mt-6 space-y-2">
-              <p className="text-xs text-neutral-400 break-all">discord: {embed}</p>
-              <p className="text-xs text-neutral-500 break-all">app: {link}</p>
-            </div>
-          )}
+      <div className="pt-28 pb-20 px-5 max-w-3xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}>
+          <p className="text-[#0A84FF] text-sm font-medium mb-3 tracking-wide">scriptorium</p>
+          <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight mb-4">write freely.<br />attach if it helps.</h1>
+          <p className="text-neutral-400 text-lg mb-10">A quiet desk for notes. Optional local file lands in the share table with a Discord card. No size limits, only a gentle warning. Older vaults stay untouched.</p>
         </motion.div>
+
+        <div className="space-y-6">
+          <textarea
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="the thought, the margin, the thing you wanted to keep…"
+            rows={8}
+            className="w-full bg-white/[0.04] border border-white/10 rounded-3xl px-5 py-4 text-sm focus:outline-none focus:border-[#0A84FF]/40 transition resize-y"
+          />
+
+          <div
+            onClick={() => fileRef.current?.click()}
+            className="rounded-3xl border border-dashed border-white/15 bg-white/[0.02] p-6 text-center cursor-pointer hover:border-white/25 transition"
+          >
+            <p className="text-sm">{file ? file.name : 'optional attachment'}</p>
+            <p className="text-xs text-neutral-500 mt-1">{file ? `${(file.size / 1024 / 1024).toFixed(1)} MB` : 'any file, warned if heavy'}</p>
+            <input ref={fileRef} type="file" className="hidden" onChange={(e) => onFile(e.target.files)} />
+          </div>
+
+          {warn && <p className="text-amber-300 text-sm text-center">{warn}</p>}
+
+          <button
+            onClick={save}
+            disabled={busy || (!note.trim() && !file)}
+            className="w-full py-3.5 rounded-full bg-[#0A84FF] text-white font-medium text-sm hover:bg-[#409CFF] active:scale-[0.98] transition disabled:opacity-40"
+          >
+            {busy ? 'filing…' : 'keep the note'}
+          </button>
+
+          {share && (
+            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="p-4 rounded-2xl bg-white/[0.04] border border-white/10">
+              <p className="text-sm mb-2">filed</p>
+              <div className="flex gap-2">
+                <input readOnly value={share.url} className="flex-1 bg-black/40 rounded-xl px-3 py-2 text-xs font-mono" />
+                <button onClick={() => navigator.clipboard.writeText(share.url)} className="px-4 py-2 rounded-xl bg-white text-black text-xs font-medium">copy</button>
+              </div>
+            </motion.div>
+          )}
+        </div>
       </div>
     </div>
   );

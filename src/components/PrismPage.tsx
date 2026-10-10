@@ -18,12 +18,18 @@ export default function PrismPage() {
     e.preventDefault();
     setDragging(false);
     const f = e.dataTransfer.files?.[0];
-    if (f) setFile(f);
+    if (f) {
+      setFile(f);
+      setResult(null);
+    }
   }, []);
 
   const onSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
-    if (f) setFile(f);
+    if (f) {
+      setFile(f);
+      setResult(null);
+    }
   };
 
   const share = async () => {
@@ -49,23 +55,32 @@ export default function PrismPage() {
       <Navbar />
       <main className="pt-28 pb-20 px-4 max-w-2xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 100, damping: 20 }}
+          transition={{ type: 'spring', stiffness: 110, damping: 20 }}
           className="glass rounded-3xl p-8 md:p-10"
         >
-          <h1 className="text-3xl font-semibold tracking-tight mb-2">Prism</h1>
+          <motion.h1
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.05 }}
+            className="text-3xl font-semibold tracking-tight mb-2"
+          >
+            Prism
+          </motion.h1>
           <p className="text-neutral-400 mb-8 leading-relaxed">
-            Drop a local file. It lands in the share table with a color accent. Discord unfurls the card. Large files are warned, never refused.
+            Drop a local file. It lands in the share table with a color accent. Discord unfurls a clean card on the link. Large files are warned, never refused.
           </p>
 
-          <div
+          <motion.div
             onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
             onDragLeave={() => setDragging(false)}
             onDrop={onDrop}
             className={`relative border-2 border-dashed rounded-2xl p-12 text-center transition-all duration-300 ${
-              dragging ? 'border-white/40 bg-white/5' : 'border-white/10'
+              dragging ? 'border-white/40 bg-white/5 scale-[1.01]' : 'border-white/10'
             }`}
+            animate={{ scale: dragging ? 1.01 : 1 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
           >
             <input type="file" onChange={onSelect} className="absolute inset-0 opacity-0 cursor-pointer" />
             <div className="pointer-events-none">
@@ -73,19 +88,20 @@ export default function PrismPage() {
                 <div>
                   <div className="text-lg font-medium">{file.name}</div>
                   <div className="text-sm text-neutral-500 mt-1">{(file.size / 1024 / 1024).toFixed(2)} MB</div>
+                  {file.size > 40 * 1024 * 1024 && <div className="text-xs text-amber-400 mt-2">large drop — may feel slow</div>}
                 </div>
               ) : (
                 <div className="text-neutral-400">drop a file or click</div>
               )}
             </div>
-          </div>
+          </motion.div>
 
           <div className="mt-6 space-y-4">
             <input
               value={caption}
               onChange={(e) => setCaption(e.target.value)}
-              placeholder="optional caption"
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:border-white/30"
+              placeholder="optional caption for the Discord card"
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:border-white/30 transition"
             />
             <div className="flex items-center gap-3">
               <label className="text-sm text-neutral-400">accent</label>
@@ -93,31 +109,34 @@ export default function PrismPage() {
             </div>
           </div>
 
-          <button
+          <motion.button
             onClick={share}
             disabled={!file || uploading}
-            className="mt-8 w-full py-3.5 rounded-full bg-white text-black font-medium disabled:opacity-40 transition active:scale-[0.98]"
+            className="mt-8 w-full py-3.5 rounded-full bg-white text-black font-medium disabled:opacity-40"
+            whileTap={{ scale: 0.98 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 25 }}
           >
             {uploading ? 'publishing…' : 'publish prism'}
-          </button>
+          </motion.button>
 
           {error && <p className="mt-4 text-red-400 text-sm">{error}</p>}
 
           <AnimatePresence>
             {result && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.96 }}
-                animate={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0, scale: 0.96, y: 8 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0 }}
+                transition={{ type: 'spring', stiffness: 160, damping: 20 }}
                 className="mt-8 p-6 rounded-2xl bg-white/5 border border-white/10"
               >
-                <div className="text-sm text-neutral-400 mb-2">shared</div>
-                <a href={shareUrls(result.id).app} className="text-white underline break-all">
+                <div className="text-sm text-neutral-400 mb-2">Discord-ready link</div>
+                <a href={shareUrls(result.id).app} className="text-white underline break-all" target="_blank" rel="noreferrer">
                   {shareUrls(result.id).app}
                 </a>
                 {result.warn && <p className="mt-3 text-amber-400 text-sm">{result.warn}</p>}
                 <div className="mt-4 flex gap-2">
-                  <button onClick={() => navigate('share', result.id)} className="text-xs px-4 py-2 rounded-full bg-white/10 hover:bg-white/15">
+                  <button onClick={() => navigate('share', result.id)} className="text-xs px-4 py-2 rounded-full bg-white/10 hover:bg-white/15 transition">
                     open share
                   </button>
                 </div>

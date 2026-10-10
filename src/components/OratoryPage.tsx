@@ -50,7 +50,7 @@ export default function OratoryPage() {
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}>
           <p className="text-[#0A84FF] text-sm font-medium tracking-wide mb-3">oratory</p>
           <h1 className="text-4xl font-semibold tracking-tight leading-tight mb-3">a quiet word, left open.</h1>
-          <p className="text-neutral-400 leading-relaxed mb-8">Short notes beside the files. No boosts, no limits. Just words people chose to leave. The vault and studio stay exactly as they were.</p>
+          <p className="text-neutral-400 leading-relaxed mb-8">Short notes beside the files. Just words people chose to leave. The vault and studio stay exactly as they were.</p>
         </motion.div>
 
         <div className="space-y-3 mb-8">

@@ -4,33 +4,41 @@ import { useRouter } from './Router';
 export default function Hero() {
   const { navigate } = useRouter();
   return (
-    <section className="relative pt-28 pb-20 px-5 overflow-hidden">
-      <div className="absolute top-20 left-1/4 w-72 h-72 bg-[#0a84ff]/[0.12] rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#af52de]/[0.08] rounded-full blur-[120px] pointer-events-none" />
-      <div className="relative max-w-3xl mx-auto">
-        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-[#0a84ff] text-sm font-medium mb-4 tracking-wide">private file hosting</motion.p>
-        <motion.h1 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05, duration: 0.55, ease: [0.22, 1, 0.36, 1] }} className="text-4xl sm:text-5xl font-semibold text-white leading-[1.08] tracking-tight mb-5">
+    <section className="relative pt-28 pb-24 px-5 overflow-hidden">
+      <div className="absolute top-16 left-1/3 w-80 h-80 bg-[#0A84FF]/[0.14] rounded-full blur-[110px] pointer-events-none" />
+      <div className="absolute bottom-10 right-1/4 w-[28rem] h-[28rem] bg-[#AF52DE]/[0.07] rounded-full blur-[130px] pointer-events-none" />
+      <div className="relative max-w-3xl mx-auto text-center sm:text-left">
+        <motion.p
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="text-[#0A84FF] text-sm font-medium mb-4 tracking-wide"
+        >
+          private file hosting
+        </motion.p>
+        <motion.h1
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.06, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="text-4xl sm:text-6xl font-semibold text-white leading-[1.05] tracking-tight mb-5"
+        >
           drop a file.<br />share only if you want.
         </motion.h1>
-        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.12 }} className="text-neutral-400 text-lg leading-relaxed max-w-xl mb-8">
-          Batch drop in aether, browse the gallery, frame a vignette, leave a word in the oratory, arrange a collection in the atelier, or keep the older desks. Large drops get a warning, not a refusal. Discord cards on every share.
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.14 }}
+          className="text-neutral-400 text-lg leading-relaxed max-w-xl mb-9 mx-auto sm:mx-0"
+        >
+          Batch drops, quiet galleries, framed notes, and dozens of specialized desks. Files land in the database. Discord cards on every share. Large drops get a warning, never a refusal. Human-crafted, Apple-smooth motion.
         </motion.p>
-        <div className="flex flex-wrap gap-3 mb-12">
-          <button onClick={() => navigate('nimbus')} className="inline-flex px-5 py-2.5 rounded-full bg-[#0a84ff] text-white text-sm font-medium hover:bg-[#409cff] transition active:scale-[0.98]">nimbus</button>
+        <div className="flex flex-wrap gap-3 justify-center sm:justify-start mb-10">
+          <button onClick={() => navigate('harbor')} className="inline-flex px-5 py-2.5 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#409CFF] transition active:scale-[0.98]">harbor</button>
+          <button onClick={() => navigate('quay')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">quay</button>
           <button onClick={() => navigate('aether')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">aether</button>
-          <button onClick={() => navigate('dresser')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">dresser</button>
-          <button onClick={() => navigate('conduit')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">conduit</button>
-          <button onClick={() => navigate('studio')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">open studio</button>
-          <button onClick={() => navigate('atelier')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">atelier</button>
-          <button onClick={() => navigate('vignette')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">vignette</button>
-          <button onClick={() => navigate('oratory')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">oratory</button>
-          <button onClick={() => navigate('gallery')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">open gallery</button>
-          <button onClick={() => navigate('prism')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">prism</button>
-          <button onClick={() => navigate('sharehub')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">share hub</button>
-          <button onClick={() => navigate('canvas')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">open canvas</button>
-          <button onClick={() => navigate('reliquary')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">reliquary</button>
-          <button onClick={() => navigate('vault')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">open vault</button>
-          <a href="#features" className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">see features</a>
+          <button onClick={() => navigate('gallery')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">gallery</button>
+          <button onClick={() => navigate('vault')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">vault</button>
+          <a href="#features" className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">features</a>
         </div>
       </div>
     </section>

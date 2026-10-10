@@ -36,6 +36,7 @@ const COPY = {
   gallipot: ['Gallipot — rankvault', 'A local file dipped in a line. The file lands in the share table. Large drops are warned, never refused.'],
   catchword: ['Catchword — rankvault', 'The word at the foot of the page. Paste the link in Discord for a card.'],
   bookplate: ['Bookplate — rankvault', 'A name pasted on a local file. Large drops are warned, never refused.'],
+  vignette: ['Vignette — rankvault', 'A quiet frame for a local file. Preview, caption, share. Discord gets a pro card. Large drops warned, never refused.'],
   home: ['rankvault', 'Private file hosting. Share a file, keep the older desks, Discord cards on every link.'],
 };
 
@@ -71,7 +72,7 @@ export default async function handler(req, res) {
     }
   }
 
-  if (id && (page === 'board' || page === 's' || page === 'shelf' || page === 'keepsake')) {
+  if (id && (page === 'board' || page === 's' || page === 'shelf' || page === 'keepsake' || page === 'vignette')) {
     const r = await fetch(SUPABASE_URL + '/rest/v1/public_shares?id=eq.' + encodeURIComponent(id) + '&select=name,caption,size,mime,file_url&limit=1', {
       headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },
     });

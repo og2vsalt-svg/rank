@@ -13,10 +13,11 @@ export default function Hero() {
           drop a file.<br />share only if you want.
         </motion.h1>
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.12 }} className="text-neutral-400 text-lg leading-relaxed max-w-xl mb-8">
-          Raise a glass, send a packet, or keep the older desks. Large drops get a warning, not a refusal.
+          Raise a glass, draw on canvas, send a packet, or keep the older desks. Large drops get a warning, not a refusal.
         </motion.p>
         <div className="flex flex-wrap gap-3 mb-12">
           <button onClick={() => navigate('sharehub')} className="inline-flex px-5 py-2.5 rounded-full bg-[#0a84ff] text-white text-sm font-medium hover:bg-[#409cff] transition active:scale-[0.98]">share hub</button>
+          <button onClick={() => navigate('canvas')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">open canvas</button>
           <button onClick={() => navigate('abacus')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">lay a slab</button>
           <button onClick={() => navigate('campanile')} className="inline-flex px-5 py-2.5 rounded-full bg-[#0a84ff] text-white text-sm font-medium hover:bg-[#409cff] transition active:scale-[0.98]">open the tower</button>
           <button onClick={() => navigate('reliquary')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">file a receipt</button>

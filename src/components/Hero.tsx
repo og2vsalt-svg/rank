@@ -16,7 +16,8 @@ export default function Hero() {
           Batch drop in aether, browse the gallery, frame a vignette, leave a word in the oratory, arrange a collection in the atelier, or keep the older desks. Large drops get a warning, not a refusal. Discord cards on every share.
         </motion.p>
         <div className="flex flex-wrap gap-3 mb-12">
-          <button onClick={() => navigate('aether')} className="inline-flex px-5 py-2.5 rounded-full bg-[#0a84ff] text-white text-sm font-medium hover:bg-[#409cff] transition active:scale-[0.98]">aether</button>
+          <button onClick={() => navigate('nimbus')} className="inline-flex px-5 py-2.5 rounded-full bg-[#0a84ff] text-white text-sm font-medium hover:bg-[#409cff] transition active:scale-[0.98]">nimbus</button>
+          <button onClick={() => navigate('aether')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">aether</button>
           <button onClick={() => navigate('dresser')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">dresser</button>
           <button onClick={() => navigate('conduit')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">conduit</button>
           <button onClick={() => navigate('studio')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition active:scale-[0.98]">open studio</button>

@@ -1,120 +1,172 @@
-import { useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { publishLocalFile, shareUrls } from '../lib/cloudShare';
 import Navbar from './Navbar';
 import { useRouter } from './Router';
 
-type Row = { id: string; name: string; mime?: string; size: number; note?: string };
-
-function pretty(n: number) {
-  if (n < 1024) return n + ' b';
-  if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' kb';
-  if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(2) + ' mb';
-  return (n / (1024 * 1024 * 1024)).toFixed(2) + ' gb';
-}
-
-async function fileToBase64(file: File) {
-  const buf = await file.arrayBuffer();
-  let binary = '';
-  const bytes = new Uint8Array(buf);
-  const chunk = 0x8000;
-  for (let i = 0; i < bytes.length; i += chunk) binary += String.fromCharCode(...bytes.subarray(i, i + chunk));
-  return btoa(binary);
-}
+const COLORS = ['#0A84FF', '#30D158', '#FF9F0A', '#FF453A', '#BF5AF2', '#64D2FF', '#1D1D1F'];
 
 export default function AtelierPage() {
-  const { shareId, navigate } = useRouter();
-  const input = useRef<HTMLInputElement>(null);
-  const [rows, setRows] = useState<Row[]>([]);
-  const [note, setNote] = useState('');
-  const [author, setAuthor] = useState('');
-  const [busy, setBusy] = useState(false);
+  const { navigate } = useRouter();
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [files, setFiles] = useState<File[]>([]);
+  const [title, setTitle] = useState('');
+  const [caption, setCaption] = useState('');
+  const [color, setColor] = useState('#0A84FF');
+  const [uploading, setUploading] = useState(false);
   const [warn, setWarn] = useState('');
-  const [err, setErr] = useState('');
-  const [link, setLink] = useState('');
-  const [copied, setCopied] = useState(false);
-  const [focus, setFocus] = useState<Row | null>(null);
+  const [results, setResults] = useState<{ id: string; name: string; embed: string }[]>([]);
 
-  const load = async () => {
-    const r = await fetch('/api/atelier');
-    const data = await r.json();
-    setRows(Array.isArray(data.rows) ? data.rows : []);
+  const totalSize = files.reduce((n, f) => n + f.size, 0);
+
+  const onSelect = (list: FileList | null) => {
+    const arr = Array.from(list || []);
+    if (!arr.length) return;
+    setFiles((prev) => [...prev, ...arr].slice(0, 12));
+    setWarn(totalSize + arr.reduce((n, f) => n + f.size, 0) > 40 * 1024 * 1024 ? 'Large collection. Upload may feel slow in the browser — no hard limit.' : '');
+    setResults([]);
   };
 
-  useEffect(() => { load().catch(() => setErr('the desk could not reach the database.')); }, []);
+  const remove = (i: number) => setFiles((prev) => prev.filter((_, idx) => idx !== i));
 
-  useEffect(() => {
-    if (!shareId) { setFocus(null); return; }
-    fetch('/api/atelier?id=' + encodeURIComponent(shareId)).then((r) => r.json()).then((data) => setFocus(data.row || null)).catch(() => setFocus(null));
-  }, [shareId]);
-
-  const onFile = async (file: File | undefined) => {
-    if (!file) return;
-    setErr('');
-    setLink('');
-    setWarn(file.size > 2.5 * 1024 * 1024 ? pretty(file.size) + ' will feel slow. nothing is refused — the database just takes longer to write.' : '');
-    setBusy(true);
-    try {
-      const data = await fileToBase64(file);
-      const r = await fetch('/api/atelier', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: file.name, mime: file.type || 'application/octet-stream', note, author, data }) });
-      const body = await r.json();
-      if (!r.ok) throw new Error(body.error || 'upload failed');
-      setLink(body.url);
-      await load();
-      navigate('atelier', body.id);
-    } catch (e) {
-      setErr(e instanceof Error ? e.message : 'upload failed');
-    } finally {
-      setBusy(false);
+  const shareAll = async () => {
+    if (!files.length) return;
+    setUploading(true);
+    const out: { id: string; name: string; embed: string }[] = [];
+    for (const file of files) {
+      const res = await publishLocalFile(file, {
+        caption: caption || title,
+        cardTitle: title || file.name,
+        color,
+      });
+      if (res.ok && res.id) {
+        out.push({ id: res.id, name: file.name, embed: shareUrls(res.id).embed });
+      }
     }
+    setResults(out);
+    setUploading(false);
+  };
+
+  const copy = async (text: string) => {
+    try { await navigator.clipboard.writeText(text); } catch {}
   };
 
   return (
-    <div className="min-h-screen bg-[#07080b] text-white">
+    <div className="mesh min-h-screen text-white">
       <Navbar />
-      <main className="mx-auto max-w-5xl px-5 pb-24 pt-10">
-        <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-xs tracking-[0.22em] uppercase text-white/45">atelier</motion.p>
-        <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="mt-2 text-4xl font-semibold tracking-tight">A quiet desk for a local file.</motion.h1>
-        <p className="mt-3 max-w-xl text-white/60">Bytes land in the database, not a drawer of the vault. Paste the link in Discord and the card follows. Large files are warned, never refused.</p>
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 180, damping: 22 }} className="mt-8 rounded-[28px] border border-white/10 bg-white/[0.04] p-5 shadow-[0_30px_80px_rgba(0,0,0,0.35)] backdrop-blur-xl">
-          <div className="grid gap-3 sm:grid-cols-2">
-            <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="your name, optional" className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none transition focus:border-[#0A84FF]" />
-            <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="a short note for the card" className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm outline-none transition focus:border-[#0A84FF]" />
-          </div>
-          <button onClick={() => input.current?.click()} onDragOver={(e) => e.preventDefault()} onDrop={(e) => { e.preventDefault(); onFile(e.dataTransfer.files?.[0]); }} className="mt-4 flex w-full flex-col items-center justify-center rounded-[22px] border border-dashed border-white/15 bg-black/20 px-6 py-12 transition hover:border-[#0A84FF]/70 hover:bg-white/[0.03]">
-            <span className="text-lg font-medium">{busy ? 'writing to the database…' : 'drop a file, or choose one'}</span>
-            <span className="mt-1 text-sm text-white/45">no size cap. over a couple of megabytes, expect a pause.</span>
-          </button>
-          <input ref={input} type="file" className="hidden" onChange={(e) => onFile(e.target.files?.[0])} />
-          {warn && <p className="mt-3 text-sm text-amber-200/90">{warn}</p>}
-          {err && <p className="mt-3 text-sm text-red-300">{err}</p>}
-          {link && (
-            <div className="mt-4 flex flex-wrap items-center gap-3">
-              <code className="rounded-full bg-black/40 px-3 py-1 text-xs text-white/80">{link}</code>
-              <button onClick={async () => { await navigator.clipboard.writeText(link); setCopied(true); setTimeout(() => setCopied(false), 1200); }} className="rounded-full bg-[#0A84FF] px-4 py-1.5 text-sm font-medium text-white transition active:scale-95">{copied ? 'copied' : 'copy link'}</button>
-            </div>
-          )}
+      <div className="pt-28 pb-20 px-5 sm:px-8 max-w-6xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <p className="text-[#0A84FF] text-sm font-medium tracking-wide mb-3">atelier</p>
+          <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight leading-[1.05] mb-4">
+            arrange a collection.
+          </h1>
+          <p className="text-neutral-400 text-lg max-w-2xl mb-10 leading-relaxed">
+            Drop several local files. Shape one Discord card for the set. Each file lands in the share table. Large collections get a warning, never a refusal.
+          </p>
         </motion.div>
-        {focus && (
-          <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-8 rounded-[28px] border border-white/10 bg-white/[0.03] p-5">
-            <p className="text-xs uppercase tracking-[0.18em] text-white/40">open drop</p>
-            <h2 className="mt-1 text-2xl font-semibold">{focus.name}</h2>
-            <p className="mt-1 text-sm text-white/55">{pretty(Number(focus.size) || 0)} · {focus.mime || 'file'} {focus.note ? `· ${focus.note}` : ''}</p>
-            <a className="mt-4 inline-flex rounded-full bg-white px-4 py-2 text-sm font-medium text-black" href={'/api/atelier?id=' + encodeURIComponent(focus.id) + '&download=1'}>open file</a>
-          </motion.section>
-        )}
-        <section className="mt-10">
-          <h2 className="text-sm uppercase tracking-[0.18em] text-white/40">recent on the desk</h2>
-          <div className="mt-3 divide-y divide-white/10 overflow-hidden rounded-[24px] border border-white/10">
-            {rows.length === 0 && <p className="px-4 py-6 text-sm text-white/45">nothing here yet.</p>}
-            {rows.map((row) => (
-              <button key={row.id} onClick={() => navigate('atelier', row.id)} className="flex w-full items-center justify-between gap-4 px-4 py-3 text-left transition hover:bg-white/[0.04]">
-                <span><span className="block font-medium">{row.name}</span><span className="text-xs text-white/45">{row.note || 'no note'}</span></span>
-                <span className="text-xs text-white/50">{pretty(Number(row.size) || 0)}</span>
-              </button>
-            ))}
+
+        <div className="grid lg:grid-cols-5 gap-8">
+          <div className="lg:col-span-3 space-y-6">
+            <div
+              onClick={() => fileRef.current?.click()}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => { e.preventDefault(); onSelect(e.dataTransfer.files); }}
+              className="rounded-3xl border border-dashed border-white/15 bg-white/[0.03] backdrop-blur-xl p-10 text-center cursor-pointer hover:border-white/25 transition-all active:scale-[0.995]"
+            >
+              <div className="text-5xl mb-4 opacity-70">✦</div>
+              <p className="font-medium mb-1">drop files or click to browse</p>
+              <p className="text-sm text-neutral-500">up to 12 · any type · any size</p>
+              <input ref={fileRef} type="file" multiple className="hidden" onChange={(e) => onSelect(e.target.files)} />
+            </div>
+
+            {warn && (
+              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-amber-300 text-sm text-center">
+                {warn}
+              </motion.p>
+            )}
+
+            {files.length > 0 && (
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <AnimatePresence>
+                  {files.map((f, i) => (
+                    <motion.div
+                      key={f.name + i}
+                      initial={{ opacity: 0, scale: 0.96 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.96 }}
+                      className="rounded-2xl bg-white/[0.04] border border-white/10 p-3 relative group"
+                    >
+                      <p className="text-xs font-medium truncate pr-6">{f.name}</p>
+                      <p className="text-[10px] text-neutral-500 mt-1">{(f.size / 1024 / 1024).toFixed(1)} MB</p>
+                      <button onClick={() => remove(i)} className="absolute top-2 right-2 w-5 h-5 rounded-full bg-white/10 text-xs opacity-0 group-hover:opacity-100 transition">×</button>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </div>
+            )}
+
+            <div className="space-y-4">
+              <label className="block">
+                <span className="text-xs uppercase tracking-wider text-neutral-500 mb-1.5 block">collection title</span>
+                <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="what the set is called" className="w-full bg-white/[0.04] border border-white/10 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-[#0A84FF]/50 transition" />
+              </label>
+              <label className="block">
+                <span className="text-xs uppercase tracking-wider text-neutral-500 mb-1.5 block">shared caption</span>
+                <textarea value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="a note that travels with every file" rows={2} className="w-full bg-white/[0.04] border border-white/10 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-[#0A84FF]/50 transition resize-none" />
+              </label>
+              <div>
+                <span className="text-xs uppercase tracking-wider text-neutral-500 mb-2 block">accent</span>
+                <div className="flex gap-2 flex-wrap">
+                  {COLORS.map((c) => (
+                    <button key={c} onClick={() => setColor(c)} className={`w-8 h-8 rounded-full transition-all ${color === c ? 'ring-2 ring-white ring-offset-2 ring-offset-black scale-110' : 'hover:scale-105'}`} style={{ background: c }} />
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <button onClick={shareAll} disabled={!files.length || uploading} className="w-full py-3.5 rounded-full bg-[#0A84FF] text-white font-medium text-sm hover:bg-[#409CFF] active:scale-[0.98] transition disabled:opacity-50 disabled:pointer-events-none">
+              {uploading ? 'filing…' : `create ${files.length} share${files.length === 1 ? '' : 's'}`}
+            </button>
           </div>
-        </section>
-      </main>
+
+          <div className="lg:col-span-2">
+            <p className="text-xs uppercase tracking-wider text-neutral-500 mb-3">discord preview</p>
+            <div className="rounded-2xl overflow-hidden border border-white/10 bg-[#1c1c1e] shadow-2xl sticky top-28">
+              <div className="h-1.5" style={{ background: color }} />
+              <div className="p-4">
+                <div className="flex items-center gap-2 mb-2 text-xs text-neutral-400">
+                  <div className="w-5 h-5 rounded-full bg-white/10" />
+                  rankvault · atelier
+                </div>
+                <h3 className="font-semibold text-[15px] leading-snug mb-1">{title || 'untitled collection'}</h3>
+                <p className="text-[13px] text-neutral-400 line-clamp-2">{caption || 'a set of files shared from the atelier'}</p>
+                {files.length > 0 && <p className="text-[11px] text-neutral-500 mt-2">{files.length} file{files.length === 1 ? '' : 's'}</p>}
+              </div>
+            </div>
+
+            <AnimatePresence>
+              {results.length > 0 && (
+                <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mt-6 space-y-3">
+                  {results.map((r) => (
+                    <div key={r.id} className="p-3 rounded-2xl bg-white/[0.04] border border-white/10">
+                      <p className="text-xs font-medium truncate mb-2">{r.name}</p>
+                      <div className="flex gap-2">
+                        <input readOnly value={r.embed} className="flex-1 bg-black/40 rounded-xl px-2 py-1.5 text-[10px] font-mono" />
+                        <button onClick={() => copy(r.embed)} className="px-3 py-1.5 rounded-xl bg-white text-black text-xs font-medium hover:bg-neutral-200 active:scale-95">copy</button>
+                      </div>
+                      <button onClick={() => navigate('s', r.id)} className="mt-1.5 text-[11px] text-[#0A84FF] hover:underline">open →</button>
+                    </div>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

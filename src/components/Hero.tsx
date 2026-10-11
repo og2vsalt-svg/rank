@@ -33,6 +33,7 @@ export default function Hero() {
           Local drops into your vault, cloud shares with professional Discord embeds, galleries, notes, and specialized desks like horizon, nexus and apex. No hard size limits—only gentle warnings if a large file might feel slow. Sleek, human-crafted interface with Apple-smooth animations.
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center sm:justify-start mb-10">
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('studio')} className="inline-flex px-5 py-2.5 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#409CFF] transition">studio</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('dock')} className="inline-flex px-5 py-2.5 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#409CFF] transition">dock</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('horizon')} className="inline-flex px-5 py-2.5 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#409CFF] transition">horizon</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('drop')} className="inline-flex px-5 py-2.5 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#409CFF] transition">drop a file</motion.button>

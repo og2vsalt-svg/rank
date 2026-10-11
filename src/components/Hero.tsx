@@ -34,6 +34,7 @@ export default function Hero() {
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center sm:justify-start mb-10">
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('drop')} className="inline-flex px-5 py-2.5 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#409CFF] transition">drop a file</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('glimmer')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">glimmer</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('pulse')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">pulse</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('vault')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition">open vault</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('gallery')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">gallery</motion.button>

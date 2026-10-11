@@ -1,40 +1,68 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { useVault } from './VaultContext';
-import { shareUrls } from '../lib/cloudShare';
+import { publishLocalFile, shareUrls } from '../lib/cloudShare';
 
 export default function QuillPage() {
-  const { addFiles, togglePublic } = useVault();
-  const [title, setTitle] = useState('untitled note');
-  const [body, setBody] = useState('');
+  const [note, setNote] = useState('');
+  const [title, setTitle] = useState('');
+  const [file, setFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
-  const [link, setLink] = useState('');
   const [warn, setWarn] = useState('');
+  const [link, setLink] = useState('');
   const [err, setErr] = useState('');
 
+  const onDrop = (list: FileList | null) => {
+    const f = list?.[0] || null;
+    setFile(f);
+    if (f && f.size > 40 * 1024 * 1024) {
+      setWarn('chunky attachment. encoding may feel slow. no hard limit.');
+    } else {
+      setWarn('');
+    }
+  };
+
   const publish = async () => {
+    if (!note.trim() && !file) {
+      setErr('write a note or attach a file');
+      return;
+    }
+    setBusy(true);
     setErr('');
     setLink('');
-    const text = `# ${title.trim() || 'untitled'}\n\n${body}`;
-    if (text.length > 400_000) setWarn('long note. encoding may feel slow. no size cap.');
-    else setWarn('');
-    const file = new File([text], `${(title || 'note').replace(/[^\w.-]+/g, '_').slice(0, 48)}.md`, { type: 'text/markdown' });
-    setBusy(true);
     try {
-      const result = await addFiles([file] as unknown as FileList, 'notes');
-      if (!result.ok || !result.ids?.[0]) {
-        setErr(result.error || 'could not save note');
-        return;
+      let id: string | undefined;
+      if (file) {
+        const res = await publishLocalFile(file, {
+          caption: note.trim() || 'quill note',
+          cardTitle: title.trim() || file.name,
+          meta: { desk: 'quill', note: note.trim() },
+        });
+        if (!res.ok || !res.id) {
+          setErr(res.error || 'could not publish');
+          return;
+        }
+        if (res.warn) setWarn(res.warn);
+        id = res.id;
+      } else {
+        // text-only: create a tiny text file
+        const blob = new File([note.trim()], (title.trim() || 'note') + '.txt', { type: 'text/plain' });
+        const res = await publishLocalFile(blob, {
+          caption: note.trim(),
+          cardTitle: title.trim() || 'quill',
+          meta: { desk: 'quill' },
+        });
+        if (!res.ok || !res.id) {
+          setErr(res.error || 'could not publish note');
+          return;
+        }
+        id = res.id;
       }
-      const pub = await togglePublic(result.ids[0]);
-      if (!pub.ok) {
-        setErr(pub.error || 'saved, but publish failed');
-        return;
+      if (id) {
+        const urls = shareUrls(id);
+        setLink(urls.app);
+        try { await navigator.clipboard.writeText(urls.app); } catch {}
       }
-      const urls = shareUrls(result.ids[0]);
-      setLink(urls.app);
-      try { await navigator.clipboard.writeText(urls.app); } catch {}
     } catch (e: any) {
       setErr(e?.message || 'publish failed');
     } finally {
@@ -46,16 +74,53 @@ export default function QuillPage() {
     <div className="mesh min-h-screen">
       <Navbar />
       <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-8">
-          <p className="text-[#0a84ff] text-sm mb-2">quill</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">write a note. ship it as a drop.</h1>
-          <p className="text-sm text-neutral-500 mb-6">stays in your vault first. publish turns it into a public markdown file with a discord-ready link.</p>
-          <input value={title} onChange={(e) => setTitle(e.target.value)} className="w-full mb-3 px-4 py-2.5 rounded-2xl bg-white/5 border border-white/10 text-sm outline-none focus:border-[#0a84ff]/50" placeholder="title" />
-          <textarea value={body} onChange={(e) => setBody(e.target.value)} rows={12} className="w-full mb-4 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm outline-none resize-y focus:border-[#0a84ff]/50 leading-relaxed" placeholder="write anything" />
-          <button disabled={busy} onClick={publish} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-50">{busy ? 'publishing…' : 'publish note'}</button>
-          {warn && <p className="text-amber-300/80 text-xs mt-4">{warn}</p>}
-          {err && <p className="text-red-400 text-xs mt-4">{err}</p>}
-          {link && <p className="text-sm text-neutral-300 mt-4 break-all">{link}</p>}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: 'spring', stiffness: 120, damping: 18 }}
+          className="glass rounded-[32px] p-8"
+        >
+          <p className="text-[#0A84FF] text-sm mb-2 tracking-wide">quill</p>
+          <h1 className="text-3xl font-semibold mb-3 tracking-tight">ink a note. optional file.</h1>
+          <p className="text-neutral-400 text-sm mb-6 leading-relaxed">
+            Write a short line or attach a local file. Bytes land in storage and the share table. Discord unfurls the link with a clean card. Large files get a slowness warning, never refused. Human-crafted Apple-smooth motion.
+          </p>
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="optional title"
+            className="w-full mb-3 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm placeholder:text-neutral-500 focus:outline-none focus:border-[#0A84FF]/50 transition"
+          />
+          <textarea
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="the note..."
+            rows={4}
+            className="w-full mb-4 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm placeholder:text-neutral-500 focus:outline-none focus:border-[#0A84FF]/50 transition resize-none"
+          />
+          <label
+            className="block cursor-pointer rounded-2xl border border-dashed border-white/15 hover:border-[#0A84FF]/40 p-6 text-center transition mb-4"
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => { e.preventDefault(); onDrop(e.dataTransfer.files); }}
+          >
+            <input type="file" className="hidden" onChange={(e) => onDrop(e.target.files)} />
+            <p className="text-sm text-neutral-300">{file ? file.name : 'optional local file (click or drop)'}</p>
+          </label>
+          {warn && <p className="text-xs text-amber-300/80 mb-3">{warn}</p>}
+          {err && <p className="text-xs text-red-400 mb-3">{err}</p>}
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            onClick={publish}
+            disabled={busy}
+            className="w-full py-3 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#409CFF] disabled:opacity-50 transition"
+          >
+            {busy ? 'inking…' : 'publish quill'}
+          </motion.button>
+          {link && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-5 text-xs text-neutral-400 break-all">
+              share link (copied): {link}
+            </motion.div>
+          )}
         </motion.div>
       </div>
     </div>

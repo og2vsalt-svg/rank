@@ -30,13 +30,12 @@ export default function Hero() {
           transition={{ type: 'spring', stiffness: 90, damping: 20, delay: 0.1 }}
           className="text-neutral-400 text-lg leading-relaxed max-w-xl mb-9 mx-auto sm:mx-0"
         >
-          Local drops into your vault, cloud shares with professional Discord embeds, galleries, notes, and specialized desks. No hard size limits—only gentle warnings if a large file might feel slow. Sleek, human-crafted interface with Apple-smooth animations.
+          Local drops into your vault, cloud shares with professional Discord embeds, galleries, notes, and specialized desks like apex. No hard size limits—only gentle warnings if a large file might feel slow. Sleek, human-crafted interface with Apple-smooth animations.
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center sm:justify-start mb-10">
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('drop')} className="inline-flex px-5 py-2.5 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#409CFF] transition">drop a file</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('apex')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">apex</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quill')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">quill</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('glimmer')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">glimmer</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('pulse')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">pulse</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('vault')} className="inline-flex px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition">open vault</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('gallery')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">gallery</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('sharehub')} className="inline-flex px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">shares</motion.button>

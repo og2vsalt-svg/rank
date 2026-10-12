@@ -15,6 +15,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/halo` — quiet single-file drop with soft glow and polished embeds
+- `/quill` — ink a note with optional file attachment
 - `/scroll` — long-form notes or file attachments with spring animations and polished embeds
 - `/candela` — notes and file drops with spring animations
 - `/lumen` — public share gallery

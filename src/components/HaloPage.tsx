@@ -1,66 +1,46 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { shareUrls } from '../lib/cloudShare';
-
-function hueFromName(name: string) {
-  let h = 0;
-  for (let i = 0; i < name.length; i++) h = (h + name.charCodeAt(i) * 17) % 360;
-  return h;
-}
-
-function readAsDataUrl(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const r = new FileReader();
-    r.onload = () => resolve(String(r.result || ''));
-    r.onerror = () => reject(new Error('could not read file'));
-    r.readAsDataURL(file);
-  });
-}
+import { publishLocalFile, shareUrls } from '../lib/cloudShare';
 
 export default function HaloPage() {
   const [file, setFile] = useState<File | null>(null);
-  const [hue, setHue] = useState(210);
+  const [caption, setCaption] = useState('');
   const [busy, setBusy] = useState(false);
-  const [err, setErr] = useState('');
   const [warn, setWarn] = useState('');
-  const [embed, setEmbed] = useState('');
   const [link, setLink] = useState('');
+  const [err, setErr] = useState('');
 
-  const pick = (f?: File) => {
-    if (!f) return;
+  const onFile = (list: FileList | null) => {
+    const f = list?.[0] || null;
     setFile(f);
-    setHue(hueFromName(f.name + f.size));
-    setWarn(f.size > 40 * 1024 * 1024 ? 'no limit, just a heads up this encode can drag.' : '');
-    setEmbed('');
-    setErr('');
+    setWarn(f && f.size > 40 * 1024 * 1024 ? 'large file. browser may slow while sending. no hard limit.' : '');
   };
 
-  const send = async () => {
-    if (!file) return;
+  const publish = async () => {
+    if (!file) {
+      setErr('drop a file first');
+      return;
+    }
     setBusy(true);
     setErr('');
+    setLink('');
     try {
-      const dataUrl = await readAsDataUrl(file);
-      const r = await fetch('/api/share', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: file.name,
-          type: file.type || 'application/octet-stream',
-          size: file.size,
-          dataUrl,
-          author: `halo ${hue}`,
-        }),
+      const res = await publishLocalFile(file, {
+        caption: caption.trim() || 'halo drop',
+        cardTitle: file.name,
+        meta: { desk: 'halo' },
       });
-      const json = await r.json();
-      if (!r.ok || !json?.ok) throw new Error(json?.error || 'halo failed');
-      const urls = shareUrls(json.id);
+      if (!res.ok || !res.id) {
+        setErr(res.error || 'publish failed');
+        return;
+      }
+      if (res.warn) setWarn(res.warn);
+      const urls = shareUrls(res.id);
       setLink(urls.app);
-      setEmbed(urls.embed || `${window.location.origin}/s/${json.id}`);
-      try { await navigator.clipboard.writeText(urls.embed || urls.app); } catch {}
+      try { await navigator.clipboard.writeText(urls.app); } catch {}
     } catch (e: any) {
-      setErr(e?.message || 'halo failed');
+      setErr(e?.message || 'error');
     } finally {
       setBusy(false);
     }
@@ -73,39 +53,43 @@ export default function HaloPage() {
         <motion.div
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="glass rounded-[32px] p-8 overflow-hidden relative"
+          transition={{ type: 'spring', stiffness: 100, damping: 20 }}
+          className="glass rounded-[32px] p-8 relative overflow-hidden"
         >
-          <div
-            className="absolute -top-24 -right-16 w-64 h-64 rounded-full blur-3xl opacity-40 pointer-events-none"
-            style={{ background: `hsl(${hue} 90% 55%)` }}
+          <div className="absolute -top-20 -right-20 w-64 h-64 bg-[#0A84FF]/20 rounded-full blur-3xl pointer-events-none" />
+          <p className="text-[#0A84FF] text-sm mb-2 tracking-wide">halo</p>
+          <h1 className="text-3xl font-semibold mb-3 tracking-tight">a quiet drop with a soft glow.</h1>
+          <p className="text-neutral-400 text-sm mb-6 leading-relaxed">
+            Drop one local file. It lands in storage and the share table. Every link gets a polished Discord embed. Soft warning for large files only.
+          </p>
+          <input
+            value={caption}
+            onChange={(e) => setCaption(e.target.value)}
+            placeholder="optional caption"
+            className="w-full mb-4 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm placeholder:text-neutral-500 focus:outline-none focus:border-[#0A84FF]/50 transition"
           />
-          <p className="text-[#0a84ff] text-sm mb-2 relative">halo</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3 relative">give a file a color before it leaves.</h1>
-          <p className="text-neutral-400 text-sm mb-6 relative">pure vibe tool. hue is derived from the name so discord unfurls still look intentional.</p>
-          <label className="relative block cursor-pointer rounded-[24px] border border-dashed border-white/15 p-10 text-center">
-            <input type="file" className="hidden" onChange={(e) => pick(e.target.files?.[0])} />
-            <p className="text-white font-medium">{file ? file.name : 'pick a file'}</p>
+          <label
+            className="block cursor-pointer rounded-2xl border border-dashed border-white/15 hover:border-[#0A84FF]/40 p-8 text-center transition mb-4"
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => { e.preventDefault(); onFile(e.dataTransfer.files); }}
+          >
+            <input type="file" className="hidden" onChange={(e) => onFile(e.target.files)} />
+            <p className="text-sm text-neutral-300">{file ? file.name : 'drop or click for a file'}</p>
           </label>
-          {file && (
-            <div className="relative mt-6">
-              <input type="range" min={0} max={359} value={hue} onChange={(e) => setHue(Number(e.target.value))} className="w-full" />
-              <button
-                onClick={send}
-                disabled={busy}
-                className="mt-4 px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-50"
-              >
-                {busy ? 'glowing…' : 'share with halo'}
-              </button>
-            </div>
-          )}
-          {warn && <p className="text-xs text-amber-300/80 mt-3 relative">{warn}</p>}
-          {err && <p className="text-xs text-red-400 mt-3 relative">{err}</p>}
-          {embed && (
-            <div className="mt-6 space-y-2 relative">
-              <p className="text-xs text-neutral-400 break-all">discord: {embed}</p>
-              <p className="text-xs text-neutral-500 break-all">app: {link}</p>
-            </div>
+          {warn && <p className="text-xs text-amber-300/80 mb-3">{warn}</p>}
+          {err && <p className="text-xs text-red-400 mb-3">{err}</p>}
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            onClick={publish}
+            disabled={busy || !file}
+            className="w-full py-3 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#409CFF] disabled:opacity-50 transition"
+          >
+            {busy ? 'glowing…' : 'publish halo'}
+          </motion.button>
+          {link && (
+            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mt-5 text-xs text-neutral-400 break-all">
+              copied share link: {link}
+            </motion.div>
           )}
         </motion.div>
       </div>

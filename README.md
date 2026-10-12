@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/boreal` — northern lights themed single-file drop with soft glow, spring animations, and polished Discord embeds
 - `/solstice` — seasonal single-file drop with accent color picker, optional note, spring animations, and polished embeds
 - `/eclipse` — quiet dark covering drop with phase selector, spring animations, and polished embeds
 - `/halo` — quiet single-file drop with soft glow and polished embeds

@@ -80,7 +80,7 @@ export default async function handler(req, res) {
       headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },
     });
     if (r.ok) {
-      const rows = await res.json();
+      const rows = await r.json();
       const row = rows[0];
       if (row) {
         title = row.name;

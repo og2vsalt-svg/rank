@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/glimmer` — luminous multi-file drop with soft background glows, accent color, shared dedication, spring animations, and polished Discord embeds. Each file lands in the database. Large files warned, never refused.
 - `/murmur` — soft multi-file drop with breathing background orbs, accent color, shared note, spring animations, and polished Discord embeds. Each file lands in the database. Large files warned, never refused.
 - `/drift` — multi-file drop with softly drifting background orbs, accent color, shared note, spring animations, and polished Discord embeds. Each file lands in the database. Large files warned, never refused.
 - `/stillwater` — quiet single-file drop with a longer note, soft radial glow, spring animations, and polished Discord embeds. Lands in storage and the share table. Large files warned, never refused.

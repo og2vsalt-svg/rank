@@ -15,6 +15,7 @@ const SUPABASE_KEY =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
 
 const COPY = {
+  nebula: ['Nebula — rankvault', 'A quiet cosmic drop. One local file with soft accent. Lands in the share table. Discord unfurls a clean card. Large drops warned, never refused.'],
   nimbus: ['Nimbus — rankvault', 'A soft cloud for a note and an optional local file. Lands in the share table. Discord unfurls a clean card. Large drops warned, never refused.'],
   crossette: ['Crossette — rankvault', 'A local file paired with a companion line. The file lands in the share table. Large drops are warned, never refused.'],
   plinth: ['Plinth — rankvault', 'A dedication under a local file. The file lands in the share table. Large drops are warned, never refused.'],
@@ -73,7 +74,7 @@ export default async function handler(req, res) {
     }
   }
 
-  if (id && (page === 'board' || page === 's' || page === 'shelf' || page === 'keepsake' || page === 'vignette' || page === 'nimbus')) {
+  if (id && (page === 'board' || page === 's' || page === 'shelf' || page === 'keepsake' || page === 'vignette' || page === 'nimbus' || page === 'nebula')) {
     const r = await fetch(SUPABASE_URL + '/rest/v1/public_shares?id=eq.' + encodeURIComponent(id) + '&select=name,caption,size,mime,file_url&limit=1', {
       headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },
     });

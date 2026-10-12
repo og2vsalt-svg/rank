@@ -15,6 +15,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/drift` — multi-file drop with softly drifting background orbs, accent color, shared note, spring animations, and polished Discord embeds. Each file lands in the database. Large files warned, never refused.
+- `/stillwater` — quiet single-file drop with a longer note, soft radial glow, spring animations, and polished Discord embeds. Lands in storage and the share table. Large files warned, never refused.
 - `/tapestry` — weave multiple files into a shared narrative with individual captions and an overarching story. Each lands in the database with accent color, spring animations, and polished Discord embeds. Large files warned, never refused.
 - `/observatory` — animated public sky of recent shares. Filter by name or caption, spring hover lifts, polished Discord embed links. Different from a simple vault.
 - `/constellation` — starry multi-file drop with accent color picker, shared note, spring animations, and polished Discord embeds. Each file lands in the database. Large files warned, never refused.

@@ -15,6 +15,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/tapestry` — weave multiple files into a shared narrative with individual captions and an overarching story. Each lands in the database with accent color, spring animations, and polished Discord embeds. Large files warned, never refused.
+- `/observatory` — animated public sky of recent shares. Filter by name or caption, spring hover lifts, polished Discord embed links. Different from a simple vault.
 - `/constellation` — starry multi-file drop with accent color picker, shared note, spring animations, and polished Discord embeds. Each file lands in the database. Large files warned, never refused.
 - `/solaris` — sunlit multi-file drop with accent color picker, shared note, spring animations, and polished Discord embeds. Each file lands in the database. Large files warned, never refused.
 - `/helios` — sunlit multi-file drop with solar accent, shared note, live recent public shares gallery, spring animations, and polished Discord embeds. Each file lands in the database. Large files warned, never refused.
@@ -34,4 +36,4 @@ Live: https://rank-six-iota.vercel.app/
 - `/meridian` — one quiet drop with a time note
 - `/nexus`, `/horizon`, `/dock` and many more — each keeps prior features intact
 
-Every new desk keeps the older ones. File sharing always writes to the database. Embeds stay polished. Large files are warned, never refused.
+Every new desk keeps the older ones. File sharing always writes to the database. Embeds stay polished. Large files are warned, never refused. No traces of boosting.

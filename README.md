@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/solaris` — sunlit multi-file drop with accent color picker, shared note, spring animations, and polished Discord embeds. Each file lands in the database. Large files warned, never refused.
 - `/helios` — sunlit multi-file drop with solar accent, shared note, live recent public shares gallery, spring animations, and polished Discord embeds. Each file lands in the database. Large files warned, never refused.
 - `/aureole` — glowing multi-file drop with accent color, shared note, live recent public shares gallery, spring animations, and polished Discord embeds. Each file lands in the database. Large files warned, never refused.
 - `/haven` — multi-file harbor drop with shared note, previews, spring animations, and polished Discord embeds. Each file lands in the database. Large files warned, never refused.

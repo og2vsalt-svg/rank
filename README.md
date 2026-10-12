@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/scroll` — long-form notes or file attachments with spring animations and polished embeds
 - `/candela` — notes and file drops with spring animations
 - `/lumen` — public share gallery
 - `/prism` — visual mosaic of images (local play)

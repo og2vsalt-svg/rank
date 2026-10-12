@@ -13,4 +13,5 @@ Live: https://rank-six-iota.vercel.app/
 
 ## New
 
+- `/candela` — quiet desk for notes and file drops, with spring animations and Discord embeds
 - `/lumen` — public share gallery with smooth cards

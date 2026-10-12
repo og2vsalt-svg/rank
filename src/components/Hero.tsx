@@ -35,6 +35,7 @@ export default function Hero() {
         <div className="flex flex-wrap gap-3 justify-center">
           <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('vault')} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition">open vault</motion.button>
           <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('drop')} className="px-5 py-2.5 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#409CFF] transition">drop a file</motion.button>
+          <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('haven')} className="px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">haven</motion.button>
           <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('meridian')} className="px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">meridian</motion.button>
           <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('lumen')} className="px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">lumen</motion.button>
           <a href="#features" className="px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">all desks</a>

@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/lumenveil` — soft luminous multi-file drop with pulsing veil orbs, accent color, shared dedication, spring animations, and polished Discord embeds. Each file lands in the database. Large files warned, never refused.
 - `/lumina` — soft luminous multi-file drop with pulsing light orbs, accent color, shared dedication, spring animations, and polished Discord embeds. Each file lands in the database. Large files warned, never refused.
 - `/ember` — warm glowing multi-file drop with pulsing ember orbs, accent color, shared note, spring animations, and polished Discord embeds. Each file lands in the database. Large files warned, never refused.
 - `/glimmer` — luminous multi-file drop with soft background glows, accent color, shared dedication, spring animations, and polished Discord embeds. Each file lands in the database. Large files warned, never refused.

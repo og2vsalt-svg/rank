@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/haven` — multi-file harbor drop with shared note, previews, spring animations, and polished Discord embeds. Each file lands in the database. Large files warned, never refused.
 - `/nebula` — cosmic single-file drop with floating accents, color picker, spring animations, and polished Discord embeds
 - `/boreal` — northern lights themed single-file drop with soft glow, spring animations, and polished Discord embeds
 - `/solstice` — seasonal single-file drop with accent color picker, optional note, spring animations, and polished embeds

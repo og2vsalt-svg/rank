@@ -1,137 +1,129 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishShare, shareUrls } from '../lib/cloudShare';
+import { publishLocalFile, shareUrls } from '../lib/cloudShare';
 
-function uid() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-}
-
-async function digest(file: File) {
-  const buf = await file.arrayBuffer();
-  const hash = await crypto.subtle.digest('SHA-256', buf);
-  return Array.from(new Uint8Array(hash))
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('');
-}
-
-function readAsDataUrl(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const r = new FileReader();
-    r.onload = () => resolve(String(r.result || ''));
-    r.onerror = () => reject(new Error('could not read file'));
-    r.readAsDataURL(file);
-  });
-}
-
-type Slot = { file: File; hash: string } | null;
+const ACCENTS = [
+  { id: 'amber', hex: '#FF9F0A', label: 'amber' },
+  { id: 'blue', hex: '#0A84FF', label: 'blue' },
+  { id: 'purple', hex: '#BF5AF2', label: 'purple' },
+  { id: 'green', hex: '#30D158', label: 'green' },
+];
 
 export default function SolsticePage() {
-  const [a, setA] = useState<Slot>(null);
-  const [b, setB] = useState<Slot>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const [caption, setCaption] = useState('');
+  const [note, setNote] = useState('');
+  const [accent, setAccent] = useState(ACCENTS[0]);
   const [busy, setBusy] = useState(false);
   const [warn, setWarn] = useState('');
-  const [err, setErr] = useState('');
   const [link, setLink] = useState('');
-  const [embed, setEmbed] = useState('');
+  const [err, setErr] = useState('');
 
-  const load = async (which: 'a' | 'b', list: FileList | null) => {
-    const f = list?.[0];
-    if (!f) return;
-    setErr('');
-    setLink('');
-    if (f.size > 20 * 1024 * 1024) setWarn('large file. hashing then publishing may feel slow.');
-    const hash = await digest(f);
-    const slot = { file: f, hash };
-    if (which === 'a') setA(slot);
-    else setB(slot);
+  const onFile = (list: FileList | null) => {
+    const f = list?.[0] || null;
+    setFile(f);
+    setWarn(f && f.size > 40 * 1024 * 1024 ? 'large file. the browser may slow while sending. no hard limit — just a heads-up.' : '');
   };
 
-  const ship = async (slot: Slot) => {
-    if (!slot) return;
+  const publish = async () => {
+    if (!file) {
+      setErr('drop a file first');
+      return;
+    }
     setBusy(true);
     setErr('');
+    setLink('');
     try {
-      const dataUrl = await readAsDataUrl(slot.file);
-      const id = uid();
-      const pub = await publishShare({
-        id,
-        name: slot.file.name,
-        type: slot.file.type || 'application/octet-stream',
-        size: slot.file.size,
-        dataUrl,
-        author: slot.hash.slice(0, 12),
+      const res = await publishLocalFile(file, {
+        caption: caption.trim() || `solstice · ${accent.label}`,
+        color: accent.hex,
+        cardTitle: file.name,
+        meta: { desk: 'solstice', accent: accent.id, note: note.trim() || null },
       });
-      if (!pub.ok) {
-        setErr(pub.error || 'could not publish');
+      if (!res.ok || !res.id) {
+        setErr(res.error || 'publish failed');
         return;
       }
-      if (pub.warn) setWarn(pub.warn);
-      const urls = shareUrls(id);
+      if (res.warn) setWarn(res.warn);
+      const urls = shareUrls(res.id);
       setLink(urls.app);
-      setEmbed(urls.embed);
-      try {
-        await navigator.clipboard.writeText(urls.embed);
-      } catch {}
+      try { await navigator.clipboard.writeText(urls.app); } catch {}
     } catch (e: any) {
-      setErr(e?.message || 'solstice failed');
+      setErr(e?.message || 'error');
     } finally {
       setBusy(false);
     }
   };
-
-  const same = a && b && a.hash === b.hash;
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
       <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 18 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          className="glass rounded-[32px] p-8"
+          transition={{ type: 'spring', stiffness: 90, damping: 18 }}
+          className="glass rounded-[32px] p-8 relative overflow-hidden"
         >
-          <p className="text-[#0a84ff] text-sm mb-2">solstice</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">hash two locals. ship the one you keep.</h1>
-          <p className="text-neutral-400 text-sm mb-6">
-            sha-256 both sides so you can tell twins apart. then publish only the chosen file to the share db.
+          <motion.div
+            className="absolute -top-24 -right-24 w-72 h-72 rounded-full blur-3xl pointer-events-none"
+            style={{ background: accent.hex }}
+            animate={{ scale: [1, 1.05, 1], opacity: [0.15, 0.25, 0.15] }}
+            transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+          />
+          <p className="text-sm mb-2 tracking-wide" style={{ color: accent.hex }}>solstice</p>
+          <h1 className="text-3xl font-semibold mb-3 tracking-tight">a quiet turning for one file.</h1>
+          <p className="text-neutral-400 text-sm mb-6 leading-relaxed">
+            Drop a local file under a soft solstice glow. Pick an accent, add a short note if you like. It lands in storage and the share table. Every link receives a polished Discord embed. Large files get a gentle warning only.
           </p>
-          <div className="grid sm:grid-cols-2 gap-3 mb-5">
-            {(['a', 'b'] as const).map((side) => {
-              const slot = side === 'a' ? a : b;
-              return (
-                <label key={side} className="rounded-3xl border border-dashed border-white/15 p-5 cursor-pointer hover:border-[#0a84ff]/40 transition">
-                  <input type="file" className="hidden" onChange={(e) => load(side, e.target.files)} />
-                  <p className="text-xs text-neutral-500 mb-1">side {side}</p>
-                  {slot ? (
-                    <>
-                      <p className="text-sm text-white truncate">{slot.file.name}</p>
-                      <p className="text-[11px] text-neutral-500 mt-1 font-mono break-all">{slot.hash.slice(0, 24)}…</p>
-                    </>
-                  ) : (
-                    <p className="text-sm text-neutral-400">drop a file</p>
-                  )}
-                </label>
-              );
-            })}
+          <div className="flex gap-2 mb-4">
+            {ACCENTS.map((a) => (
+              <button
+                key={a.id}
+                onClick={() => setAccent(a)}
+                className={`w-8 h-8 rounded-full transition ring-2 ${accent.id === a.id ? 'ring-white' : 'ring-transparent hover:ring-white/30'}`}
+                style={{ background: a.hex }}
+                aria-label={a.label}
+              />
+            ))}
           </div>
-          {same && <p className="text-xs text-emerald-300/80 mb-4">same hash — these two are twins.</p>}
-          <div className="flex flex-wrap gap-2">
-            <button disabled={!a || busy} onClick={() => ship(a)} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40">
-              ship side a
-            </button>
-            <button disabled={!b || busy} onClick={() => ship(b)} className="px-5 py-2.5 rounded-full bg-white/10 text-sm disabled:opacity-40">
-              ship side b
-            </button>
-          </div>
-          {warn && <p className="text-amber-300/90 text-xs mt-3">{warn}</p>}
-          {err && <p className="text-red-400 text-xs mt-3">{err}</p>}
+          <input
+            value={caption}
+            onChange={(e) => setCaption(e.target.value)}
+            placeholder="optional caption"
+            className="w-full mb-3 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm placeholder:text-neutral-500 focus:outline-none focus:border-white/30 transition"
+          />
+          <textarea
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="optional longer note"
+            rows={2}
+            className="w-full mb-4 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm placeholder:text-neutral-500 focus:outline-none focus:border-white/30 transition resize-none"
+          />
+          <label
+            className="block cursor-pointer rounded-2xl border border-dashed border-white/15 hover:border-white/40 p-8 text-center transition mb-4"
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => { e.preventDefault(); onFile(e.dataTransfer.files); }}
+          >
+            <input type="file" className="hidden" onChange={(e) => onFile(e.target.files)} />
+            <p className="text-sm text-neutral-300">{file ? file.name : 'drop or click for a file'}</p>
+          </label>
+          {warn && <p className="text-xs text-amber-300/80 mb-3">{warn}</p>}
+          {err && <p className="text-xs text-red-400 mb-3">{err}</p>}
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            onClick={publish}
+            disabled={busy || !file}
+            className="w-full py-3 rounded-full text-black text-sm font-medium hover:opacity-90 disabled:opacity-50 transition"
+            style={{ background: accent.hex }}
+          >
+            {busy ? 'turning…' : 'publish solstice'}
+          </motion.button>
           {link && (
-            <div className="mt-6 space-y-2 text-xs text-neutral-400 break-all">
-              <p>app: {link}</p>
-              <p>discord embed (copied): {embed}</p>
-            </div>
+            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mt-5 text-xs text-neutral-400 break-all">
+              copied share link: {link}
+            </motion.div>
           )}
         </motion.div>
       </div>

@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/solstice` — seasonal single-file drop with accent color picker, optional note, spring animations, and polished embeds
 - `/eclipse` — quiet dark covering drop with phase selector, spring animations, and polished embeds
 - `/halo` — quiet single-file drop with soft glow and polished embeds
 - `/quill` — ink a note with optional file attachment

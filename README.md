@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/echoes` — what returns after it leaves. Multi-file drop with expanding ripple animations, accent color, shared dedication, spring animations, and polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved.
 - `/zenith` — the highest point. Multi-file drop with rising glows, accent color, shared peak note, spring animations, and polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved.
 - `/celestial` — chart files among the stars. Multi-file drop with orbiting celestial orbs, accent color, shared dedication, spring animations, and polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved.
 - `/tidepool` — let files settle in still water. Multi-file drop with soft rippling animations, accent color, shared reflection, spring animations, and polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved.

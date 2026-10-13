@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/nocturne` — night writing desk. Local note and dimmer stay on-device. Optional multi-file drop uploads each file to storage and the public share table with your note as caption, accent color, spring animations, and polished Discord embeds. Large files warned, never refused. Prior local writing preserved.
 - `/crescent` — moonlit multi-file drop with soft crescent glows, accent color, shared note, spring animations, and polished Discord embeds. Each file lands in the database. Large files warned, never refused.
 - `/nightfall` — dusk multi-file drop with soft floating orbs, accent color, shared note, spring animations, and polished Discord embeds. Each file lands in the database. Large files warned, never refused.
 - `/eventide` — the quiet hour multi-file drop with per-file reflections or shared reflection, accent color, spring animations, and polished Discord embeds. Each file lands in the database. Large files warned, never refused.

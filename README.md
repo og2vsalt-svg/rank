@@ -15,6 +15,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/zephyr` — light breezy multi-file drop with soft floating orbs, accent color, shared note, spring animations, and polished Discord embeds. Each file lands in the database. Large files warned, never refused.
+- `/serenity` — quiet calm page for longer notes with optional multi-file attachments, soft radial glow, accent, spring animations, and polished Discord embeds. Lands in storage and the share table. Large files warned, never refused.
 - `/lumenveil` — soft luminous multi-file drop with pulsing veil orbs, accent color, shared dedication, spring animations, and polished Discord embeds. Each file lands in the database. Large files warned, never refused.
 - `/lumina` — soft luminous multi-file drop with pulsing light orbs, accent color, shared dedication, spring animations, and polished Discord embeds. Each file lands in the database. Large files warned, never refused.
 - `/ember` — warm glowing multi-file drop with pulsing ember orbs, accent color, shared note, spring animations, and polished Discord embeds. Each file lands in the database. Large files warned, never refused.

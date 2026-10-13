@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/grok` — curious multi-file drop with sleek Apple-style spring animations, accent color picker, shared dedication, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/capsule` — seal files until a chosen hour. Multi-file drop uploads each to storage and the public_shares table with dedication, accent color, and unlock timestamp stored in meta. Share page shows a live countdown until unlock. Local note capsules remain on-device. Spring animations, polished Discord embeds. Large files warned, never refused. Prior features preserved.
 - `/prismwell` — a well of refracted light. Multi-file drop where each file carries its own caption, shared dedication persists locally, prismatic rotating glows, accent color, spring animations, and polished Discord embeds. Each file lands in the database. Large files warned, never refused. Prior local writing preserved.
 - `/echochamber` — what returns after it leaves. Multi-file or note drop with echoing phrase, expanding ripple animations, accent color, spring animations, and polished Discord embeds. Each file lands in the database. Large files warned, never refused. Prior echoes remain on-device.

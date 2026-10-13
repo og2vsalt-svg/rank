@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/nightfall` — dusk multi-file drop with soft floating orbs, accent color, shared note, spring animations, and polished Discord embeds. Each file lands in the database. Large files warned, never refused.
 - `/eventide` — the quiet hour multi-file drop with per-file reflections or shared reflection, accent color, spring animations, and polished Discord embeds. Each file lands in the database. Large files warned, never refused.
 - `/vesper` — dusk-themed multi-file drop with per-file captions or shared dedication, accent color, spring animations, and polished Discord embeds. Each file lands in the database. Large files warned, never refused.
 - `/aurora` — northern lights multi-file drop with pulsing aurora orbs, accent color, shared note, spring animations, and polished Discord embeds. Each file lands in the database. Large files warned, never refused.

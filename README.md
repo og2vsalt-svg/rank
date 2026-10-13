@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/vesper` — dusk-themed multi-file drop with per-file captions or shared dedication, accent color, spring animations, and polished Discord embeds. Each file lands in the database. Large files warned, never refused.
 - `/aurora` — northern lights multi-file drop with pulsing aurora orbs, accent color, shared note, spring animations, and polished Discord embeds. Each file lands in the database. Large files warned, never refused.
 - `/zephyr` — light breezy multi-file drop with soft floating orbs, accent color, shared note, spring animations, and polished Discord embeds. Each file lands in the database. Large files warned, never refused.
 - `/serenity` — quiet calm page for longer notes with optional multi-file attachments, soft radial glow, accent, spring animations, and polished Discord embeds. Lands in storage and the share table. Large files warned, never refused.

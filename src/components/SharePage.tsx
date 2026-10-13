@@ -22,6 +22,12 @@ export default function SharePage() {
   const [pass, setPass] = useState('');
   const [ok, setOk] = useState(false);
   const [copied, setCopied] = useState('');
+  const [now, setNow] = useState(Date.now());
+
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -59,6 +65,7 @@ export default function SharePage() {
         lockPass: cloud.lockPass || '',
         expiresAt: cloud.expiresAt || null,
         downloads: cloud.downloads || 0,
+        unlockAt: cloud.unlockAt || null,
         isLocal: false as const,
       }
     : local
@@ -71,11 +78,13 @@ export default function SharePage() {
           lockPass: local.lockPass,
           expiresAt: local.expiresAt,
           downloads: local.downloads,
+          unlockAt: null,
           isLocal: true as const,
         }
       : null;
 
   const locked = !!(file && file.lockPass && !ok);
+  const sealed = !!(file && file.unlockAt && new Date(file.unlockAt).getTime() > now);
 
   const copyEmbed = async () => {
     if (!file) return;
@@ -83,6 +92,11 @@ export default function SharePage() {
     await navigator.clipboard.writeText(url);
     setCopied(url);
   };
+
+  const remaining = sealed && file?.unlockAt ? Math.max(0, new Date(file.unlockAt).getTime() - now) : 0;
+  const hours = Math.floor(remaining / 3600000);
+  const mins = Math.floor((remaining % 3600000) / 60000);
+  const secs = Math.floor((remaining % 60000) / 1000);
 
   return (
     <div className="mesh min-h-screen">
@@ -97,6 +111,14 @@ export default function SharePage() {
               <h1 className="text-3xl font-semibold tracking-tight mb-3">nothing here</h1>
               <p className="text-sm text-neutral-500 mb-6">{err || 'this link does not point to a live public drop.'}</p>
               <button onClick={() => navigate('home')} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium">back home</button>
+            </>
+          ) : sealed ? (
+            <>
+              <p className="text-[#AF52DE] text-sm mb-2">sealed capsule</p>
+              <h1 className="text-3xl font-semibold tracking-tight mb-3">{file.name}</h1>
+              <p className="text-sm text-neutral-500 mb-5">this drop stays quiet until {new Date(file.unlockAt!).toLocaleString()}.</p>
+              <p className="text-2xl font-mono text-neutral-300 mb-6">{hours}h {mins}m {secs}s</p>
+              <p className="text-xs text-neutral-500">the link is live for embeds. the file opens when the hour arrives.</p>
             </>
           ) : locked ? (
             <>
@@ -118,7 +140,7 @@ export default function SharePage() {
             <>
               <p className="text-[#0a84ff] text-sm mb-2">{file.isLocal ? 'local public drop' : 'cloud public drop'}</p>
               <h1 className="text-3xl font-semibold tracking-tight mb-2">{file.name}</h1>
-              <p className="text-sm text-neutral-500 mb-6">{formatBytes(file.size)} · {file.type || 'file'}{file.expiresAt ? ' · expires ' + new Date(file.expiresAt).toLocaleString() : ''}</p>
+              <p className="text-sm text-neutral-500 mb-6">{formatBytes(file.size)} · {file.type || 'file'}{file.expiresAt ? ' · expires ' + new Date(file.expiresAt).toLocaleString() : ''}{file.unlockAt ? ' · unlocked' : ''}</p>
               {file.type.startsWith('image/') && <img src={file.url} alt="" className="w-full rounded-2xl mb-6" />}
               {file.type.startsWith('video/') && <video src={file.url} controls className="w-full rounded-2xl mb-6" />}
               {file.type.startsWith('audio/') && <audio src={file.url} controls className="w-full mb-6" />}

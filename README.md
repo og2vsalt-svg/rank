@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/luster` — iridescent light on every drop. Multi-file drop with shifting color particles, accent color, shared dedication, spring animations, and polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/gleam` — soft light on every drop. Multi-file drop with floating gleam particles that follow your accent color, shared dedication, spring animations, and polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/orion` — chart files among the stars. Multi-file drop with twinkling constellation stars, accent color, shared dedication, spring animations, and polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved.
 - `/mirage` — what shimmers on the horizon. Multi-file drop with shimmering heat-haze orbs, accent color, shared dedication, spring animations, and polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved.

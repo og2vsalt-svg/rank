@@ -15,6 +15,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/prismwell` — a well of refracted light. Multi-file drop where each file carries its own caption, shared dedication persists locally, prismatic rotating glows, accent color, spring animations, and polished Discord embeds. Each file lands in the database. Large files warned, never refused. Prior local writing preserved.
+- `/echochamber` — what returns after it leaves. Multi-file or note drop with echoing phrase, expanding ripple animations, accent color, spring animations, and polished Discord embeds. Each file lands in the database. Large files warned, never refused. Prior echoes remain on-device.
 - `/gossamer` — ethereal multi-file drop with floating silk filaments, shared whisper note that persists locally, accent color, spring animations, and polished Discord embeds. Each file lands in the database. Large files warned, never refused. Prior local writing preserved.
 - `/velum` — parchment desk. Shared dedication stays on-device until you publish. Multi-file drop uploads each file to storage and the public share table with your dedication as caption, parchment accent, floating dust particles, spring animations, and polished Discord embeds. Large files warned, never refused. Prior local writing preserved.
 - `/nocturne` — night writing desk. Local note and dimmer stay on-device. Optional multi-file drop uploads each file to storage and the public share table with your note as caption, accent color, spring animations, and polished Discord embeds. Large files warned, never refused. Prior local writing preserved.

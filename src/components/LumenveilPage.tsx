@@ -219,7 +219,7 @@ export default function LumenveilPage() {
                   </p>
                 </a>
               ))}
-            </motion.div>
+            </div>
           </motion.div>
         )}
       </div>

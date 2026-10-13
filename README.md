@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/mirage` — what shimmers on the horizon. Multi-file drop with shimmering heat-haze orbs, accent color, shared dedication, spring animations, and polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved.
 - `/canvas` — arrange what you carry. Multi-file drop with per-file captions, shared story thread, accent-driven floating orbs, spring animations, and polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved.
 - `/echoes` — what returns after it leaves. Multi-file drop with expanding ripple animations, accent color, shared dedication, spring animations, and polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved.
 - `/zenith` — the highest point. Multi-file drop with rising glows, accent color, shared peak note, spring animations, and polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved.

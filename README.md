@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/liminal` — in-between spaces for what you carry. Multi-file drop with per-file notes or a shared dedication, soft threshold lines that pulse with your accent color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/softfold` — soft folds for what you carry. Multi-file drop with per-file notes or a shared dedication, soft cascading folds that drift with your accent color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/moonveil` — soft veils for what you carry. Multi-file drop with per-file notes or a shared dedication, soft drifting moonveils with your accent color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/lullaby` — soft notes for what you carry. Multi-file drop with per-file notes or a shared dedication, soft drifting notes with your accent color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.

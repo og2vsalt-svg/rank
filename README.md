@@ -15,6 +15,9 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/ripple` — what expands when it touches water. Multi-file drop with per-file notes or shared reflection, expanding ripple animations on interaction, accent color, spring animations, and polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved.
+- `/veil` — soft coverings that shift. Multi-file drop with drifting translucent layers, accent color, shared whisper, spring animations, and polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved.
+- `/pulse` — a quiet rhythm under everything. Multi-file drop with rhythmic pulsing glows, accent color, shared beat, spring animations, and polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved.
 - `/spark` — small lights that travel. Multi-file drop with per-file notes or shared spark, reactive glow particles that follow your accent, spring animations, and polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/grok` — curious multi-file drop with per-file captions, shared dedication, accent color, richer spring animations, and polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/iridescence` — play of color. Multi-file drop with shifting pearlescent orbs, accent color, shared dedication, spring animations, and polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.

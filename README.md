@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/silkveil` — soft layers for what you carry. Multi-file drop with per-file silk notes or shared dedication, floating silk filaments that drift with your accent, spring animations, and polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/moonbeam` — soft light that drifts. Multi-file drop with per-file notes or shared dedication, soft horizontal moonbeams that drift across with your accent, spring animations, and polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/lumenfall` — soft light that settles. Multi-file drop with per-file notes or shared dedication, soft falling light particles that drift with your accent, spring animations, and polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/quietude` — stillness for what you carry. Multi-file drop with per-file notes or shared quiet, soft breathing ambient orbs that follow your accent, spring animations, and polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.

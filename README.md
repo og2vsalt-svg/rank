@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/spectrum` — break light across your files. Multi-file drop with per-file notes or shared dedication, spectral glows that drift with spring motion, accent color, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/aurora` — soft northern light. Multi-file drop with notes, drifting aurora glows, spring animations, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/stillpoint` — a quiet place to set something down. Minimal multi-file drop with one shared note, soft spring motion, glass surfaces, polished Discord embeds. Lands in the database. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/lumenfield` — a soft field of light. Multi-file drop with per-file notes or shared dedication, accent color picker, field density control that shapes floating glows, spring animations, and polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.

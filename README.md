@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/lull` — a quiet rest for files. Multi-file drop with per-file notes or shared lull, soft drifting particles that follow your accent, spring animations, and polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/emberglow` — warm light that rises. Multi-file drop with per-file notes or shared glow, rising ember particles that follow your accent, spring animations, and polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/ripple` — what expands when it touches water. Multi-file drop with per-file notes or shared reflection, expanding ripple animations on interaction, accent color, spring animations, and polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved.
 - `/veil` — soft coverings that shift. Multi-file drop with drifting translucent layers, accent color, shared whisper, spring animations, and polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved.

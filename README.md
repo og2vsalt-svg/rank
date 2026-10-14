@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/cairn` — stones stacked for what you carry. Multi-file drop with per-file notes or shared dedication, soft stacked stone markers that gently lift with your accent, spring animations, and polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/quietude` — stillness for what you carry. Multi-file drop with per-file notes or shared quiet, soft breathing ambient orbs that follow your accent, spring animations, and polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/lull` — a quiet rest for files. Multi-file drop with per-file notes or shared lull, soft drifting particles that follow your accent, spring animations, and polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/emberglow` — warm light that rises. Multi-file drop with per-file notes or shared glow, rising ember particles that follow your accent, spring animations, and polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.

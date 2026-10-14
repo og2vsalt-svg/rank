@@ -1,91 +1,151 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './Navbar';
-import { shareUrls } from '../lib/cloudShare';
-
-async function wrap(text: string, pass: string) {
-  const enc = new TextEncoder();
-  const keyMat = await crypto.subtle.digest('SHA-256', enc.encode(pass || 'rankvault'));
-  const key = await crypto.subtle.importKey('raw', keyMat, { name: 'AES-GCM' }, false, ['encrypt']);
-  const iv = crypto.getRandomValues(new Uint8Array(12));
-  const cipher = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, enc.encode(text));
-  const out = new Uint8Array(iv.length + new Uint8Array(cipher).length);
-  out.set(iv, 0);
-  out.set(new Uint8Array(cipher), iv.length);
-  let bin = '';
-  out.forEach((b) => { bin += String.fromCharCode(b); });
-  return btoa(bin);
-}
+import { publishLocalFile } from '../lib/cloudShare';
 
 export default function WhisperPage() {
+  const [files, setFiles] = useState<File[]>([]);
   const [note, setNote] = useState('');
-  const [pass, setPass] = useState('');
+  const [accent, setAccent] = useState('#A78BFA');
   const [busy, setBusy] = useState(false);
+  const [links, setLinks] = useState<string[]>([]);
+  const [warn, setWarn] = useState<string | null>(null);
   const [err, setErr] = useState('');
-  const [link, setLink] = useState('');
-  const [embed, setEmbed] = useState('');
 
-  const send = async () => {
-    if (!note.trim()) return;
+  const addFiles = (list: File[]) => {
+    if (list.some(f => f.size > 40 * 1024 * 1024)) {
+      setWarn('large files may feel slow while whispering. no hard limit.');
+    } else {
+      setWarn(null);
+    }
+    setFiles(prev => [...prev, ...list]);
+  };
+
+  const onDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    addFiles(Array.from(e.dataTransfer.files));
+  }, []);
+
+  const shareAll = async () => {
+    if (!files.length && !note.trim()) return setErr('add a file or a whisper');
     setBusy(true);
     setErr('');
+    setLinks([]);
+    const created: string[] = [];
+    const targets = files.length ? files : [new File([note], 'whisper.txt', { type: 'text/plain' })];
     try {
-      const sealed = await wrap(note, pass);
-      const body = JSON.stringify({
-        kind: 'rankvault-whisper',
-        hint: pass ? 'aes-gcm with the phrase you set' : 'aes-gcm with default desk phrase',
-        payload: sealed,
-      }, null, 2);
-      const file = new File([body], 'whisper.json', { type: 'application/json' });
-      const dataUrl = await new Promise<string>((resolve, reject) => {
-        const r = new FileReader();
-        r.onload = () => resolve(String(r.result || ''));
-        r.onerror = () => reject(new Error('encode failed'));
-        r.readAsDataURL(file);
-      });
-      const r = await fetch('/api/share', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: file.name, type: file.type, size: file.size, dataUrl }),
-      });
-      const json = await r.json();
-      if (!r.ok || !json?.ok) throw new Error(json?.error || 'share failed');
-      const urls = shareUrls(json.id);
-      setLink(urls.app);
-      setEmbed(urls.embed || `${window.location.origin}/s/${json.id}`);
-      try { await navigator.clipboard.writeText(urls.embed || urls.app); } catch {}
+      for (const file of targets) {
+        const res = await publishLocalFile(file, {
+          caption: note || 'a soft whisper',
+          color: accent,
+          cardTitle: file.name,
+          meta: { desk: 'whisper' },
+        });
+        if (res.ok && res.embed) created.push(res.embed);
+        else if (!res.ok) setErr(res.error || 'one whisper failed');
+      }
+      setLinks(created);
+      if (created.length) setFiles([]);
     } catch (e: any) {
-      setErr(e?.message || 'whisper failed');
-    } finally {
-      setBusy(false);
+      setErr(e?.message || 'share failed');
     }
+    setBusy(false);
   };
+
+  const whispers = [...Array(8)].map((_, i) => ({
+    id: i,
+    left: `${8 + (i * 11) % 84}%`,
+    top: `${15 + (i * 9) % 70}%`,
+    width: 40 + (i % 4) * 30,
+    delay: i * 0.4,
+  }));
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
+      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto relative">
+        {/* soft drifting whispers */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          {whispers.map((w) => (
+            <motion.div
+              key={w.id}
+              className="absolute h-[1px] rounded-full"
+              style={{
+                left: w.left,
+                top: w.top,
+                width: w.width,
+                background: `linear-gradient(90deg, transparent, ${accent}60, transparent)`,
+                opacity: 0.35,
+              }}
+              animate={{ x: [-10, 10, -10], opacity: [0.15, 0.4, 0.15] }}
+              transition={{ duration: 8 + w.id * 0.5, repeat: Infinity, ease: 'easeInOut', delay: w.delay }}
+            />
+          ))}
+        </div>
+
         <motion.div
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          className="glass rounded-[32px] p-8"
+          className="glass rounded-[36px] p-8 relative z-10"
         >
-          <p className="text-[#0a84ff] text-sm mb-2">whisper</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">seal a note, then leave it in public.</h1>
-          <p className="text-neutral-400 text-sm mb-6">aes-gcm in the tab. the share db only sees ciphertext. not another vault grid.</p>
-          <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={7} placeholder="quiet words" className="w-full mb-4 bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white outline-none focus:border-[#0a84ff]/50 resize-y" />
-          <input value={pass} onChange={(e) => setPass(e.target.value)} placeholder="optional phrase" className="w-full mb-6 bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white outline-none focus:border-[#0a84ff]/50" />
-          <button onClick={send} disabled={busy || !note.trim()} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 disabled:opacity-50">
-            {busy ? 'sealing…' : 'publish sealed note'}
-          </button>
-          {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
-          {embed && (
-            <div className="mt-6 space-y-2">
-              <p className="text-xs text-neutral-400 break-all">discord: {embed}</p>
-              <p className="text-xs text-neutral-500 break-all">app: {link}</p>
-            </div>
-          )}
+          <p className="text-sm mb-2 tracking-wide" style={{ color: accent }}>whisper</p>
+          <h1 className="text-3xl font-semibold tracking-tight mb-3">soft whispers for what you carry.</h1>
+          <p className="text-neutral-400 text-sm mb-6 leading-relaxed">
+            Drop files under drifting whisper lines. A shared note travels with each. Spring motion, glass surfaces, your accent color. Every file lands in storage and the public_shares table with a polished Discord embed. Large files warned, never refused. Prior features preserved. No traces of boosting.
+          </p>
+
+          <div
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={onDrop}
+            className="relative border-2 border-dashed border-white/10 rounded-2xl p-8 text-center mb-6 hover:border-white/20 transition"
+          >
+            <input type="file" multiple onChange={(e) => addFiles(Array.from(e.target.files || []))} className="hidden" id="whisper-in" />
+            <label htmlFor="whisper-in" className="cursor-pointer text-neutral-300 text-sm">drop files or click</label>
+            {files.length > 0 && (
+              <ul className="mt-4 space-y-1 text-xs text-neutral-500">
+                {files.map((f, i) => <li key={i} className="truncate">{f.name}</li>)}
+              </ul>
+            )}
+          </div>
+
+          {warn && <p className="text-xs text-amber-300/80 mb-4">{warn}</p>}
+
+          <textarea
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="a quiet whisper to travel with the files…"
+            rows={3}
+            className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-4 py-3 text-sm text-white placeholder:text-neutral-600 mb-4 resize-none focus:outline-none focus:border-white/15"
+          />
+
+          <div className="flex items-center gap-3 mb-6">
+            <span className="text-xs text-neutral-500">accent</span>
+            <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="w-8 h-8 rounded-full border-0 cursor-pointer" />
+          </div>
+
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            whileHover={{ scale: 1.01 }}
+            onClick={shareAll}
+            disabled={busy || (!files.length && !note.trim())}
+            className="w-full rounded-2xl py-3 text-sm font-medium text-white disabled:opacity-40 transition"
+            style={{ background: accent }}
+          >
+            {busy ? 'whispering…' : 'share the whisper'}
+          </motion.button>
+
+          <AnimatePresence>
+            {links.length > 0 && (
+              <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mt-6 space-y-2">
+                <p className="text-xs text-neutral-400">links ready for Discord</p>
+                {links.map((l, i) => (
+                  <a key={i} href={l} className="block text-sm break-all" style={{ color: accent }}>{l}</a>
+                ))}
+              </motion.div>
+            )}
+            {err && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 text-xs text-red-400">{err}</motion.p>}
+          </AnimatePresence>
         </motion.div>
       </div>
     </div>

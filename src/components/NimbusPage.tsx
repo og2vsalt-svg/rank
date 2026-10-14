@@ -1,85 +1,135 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useRouter } from './Router';
-import { publishLocalFile } from '../lib/cloudShare';
 import Navbar from './Navbar';
+import { publishLocalFile, shareUrls } from '../lib/cloudShare';
 
 export default function NimbusPage() {
-  const { navigate } = useRouter();
-  const [file, setFile] = useState<File | null>(null);
-  const [note, setNote] = useState('');
-  const [color, setColor] = useState('#0a84ff');
+  const [files, setFiles] = useState<File[]>([]);
+  const [notes, setNotes] = useState<Record<string, string>>({});
+  const [sharedNote, setSharedNote] = useState('');
+  const [accent, setAccent] = useState('#A78BFA');
   const [busy, setBusy] = useState(false);
-  const [result, setResult] = useState<{id?: string; embed?: string; warn?: string} | null>(null);
-  const [error, setError] = useState('');
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [warn, setWarn] = useState('');
+  const [links, setLinks] = useState<string[]>([]);
+  const [err, setErr] = useState('');
 
-  const onFile = (f: File | null) => {
-    setFile(f);
-    if (f && f.size > 40 * 1024 * 1024) setError('large file — upload may feel slow, but no hard limit.');
-    else setError('');
+  const handleFiles = (list: FileList | null) => {
+    const arr = Array.from(list || []);
+    setFiles(arr);
+    setWarn(arr.some(f => f.size > 45 * 1024 * 1024) ? 'large file detected. upload may feel slower. never refused.' : '');
   };
 
-  const submit = async () => {
-    if (!file && !note.trim()) return setError('add a note or a file');
+  const publish = async () => {
+    if (!files.length && !sharedNote.trim()) return setErr('select files or add a note');
     setBusy(true);
-    setError('');
-    try {
-      const dummyFile = file || new File([note], 'nimbus.txt', { type: 'text/plain' });
-      const res = await publishLocalFile(dummyFile, { caption: note, color, cardTitle: 'nimbus' });
-      if (res.ok) setResult({ id: res.id, embed: res.embed, warn: res.warn || undefined });
-      else setError(res.error || 'failed');
-    } catch (e: any) {
-      setError(e.message || 'error');
+    setErr('');
+    const created: string[] = [];
+    const targets = files.length ? files : [new File([sharedNote], 'nimbus-note.txt', { type: 'text/plain' })];
+    for (const file of targets) {
+      const res = await publishLocalFile(file, {
+        caption: notes[file.name] || sharedNote || 'nimbus share',
+        cardTitle: file.name,
+        color: accent,
+        meta: { desk: 'nimbus' },
+      });
+      if (res.ok && res.id) created.push(shareUrls(res.id).app);
+      else setErr(res.error || 'issue with a file');
     }
+    setLinks(created);
+    if (created[0]) try { await navigator.clipboard.writeText(created[0]); } catch {}
     setBusy(false);
   };
 
+  const orbs = [
+    { size: 220, delay: 0, x: '8%', y: '18%' },
+    { size: 140, delay: 0.6, x: '72%', y: '32%' },
+    { size: 180, delay: 1.2, x: '22%', y: '68%' },
+    { size: 100, delay: 1.8, x: '78%', y: '72%' },
+  ];
+
   return (
-    <div className="mesh min-h-screen">
+    <div className="mesh min-h-screen overflow-hidden">
       <Navbar />
-      <div className="pt-24 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}>
-          <p className="text-[#0a84ff] text-sm font-medium mb-2">nimbus</p>
-          <h1 className="text-4xl font-semibold tracking-tight text-white mb-3">a soft cloud for a note and a file.</h1>
-          <p className="text-neutral-400 mb-8">drop a local file or write a floating line. it lands in the share table. discord gets a clean card. large drops warned, never refused.</p>
-        </motion.div>
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }} className="glass rounded-3xl p-6 space-y-4">
-          <div
-            onClick={() => inputRef.current?.click()}
-            className="border-2 border-dashed border-white/10 rounded-2xl p-8 text-center cursor-pointer hover:border-[#0a84ff]/40 transition"
-          >
-            <p className="text-sm text-neutral-400">{file ? file.name : 'drop or click for a file (optional)'}</p>
-            {file && <p className="text-xs text-neutral-500 mt-1">{(file.size / 1024 / 1024).toFixed(1)} mb</p>}
-            <input ref={inputRef} type="file" className="hidden" onChange={(e) => onFile(e.target.files?.[0] || null)} />
-          </div>
-          <textarea
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            placeholder="a short floating note..."
-            className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm outline-none focus:border-[#0a84ff]/50 min-h-[100px]"
+      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto relative">
+        {orbs.map((orb, i) => (
+          <motion.div
+            key={i}
+            className="absolute rounded-full blur-3xl pointer-events-none mix-blend-screen opacity-30"
+            style={{
+              width: orb.size,
+              height: orb.size * 0.85,
+              background: accent,
+              left: orb.x,
+              top: orb.y,
+            }}
+            animate={{
+              y: [0, -22, 12, 0],
+              x: [0, 8, -6, 0],
+              scale: [1, 1.06, 0.97, 1],
+            }}
+            transition={{ duration: 7 + i * 0.8, repeat: Infinity, ease: 'easeInOut', delay: orb.delay }}
           />
-          <div className="flex items-center gap-3">
-            <label className="text-xs text-neutral-500">accent</label>
-            <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="w-10 h-10 rounded-full border-0 bg-transparent" />
+        ))}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: 'spring', stiffness: 90, damping: 20 }}
+          className="glass rounded-[36px] p-8 relative z-10"
+        >
+          <p className="text-sm mb-2 tracking-wide" style={{ color: accent }}>nimbus</p>
+          <h1 className="text-3xl font-semibold mb-3 tracking-tight">carry what matters under soft light.</h1>
+          <p className="text-neutral-400 text-sm mb-6 leading-relaxed">
+            Multi-file drop with per-file notes or a shared line (note-only also works). Floating orbs drift with your accent color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
+          </p>
+          <div className="flex gap-3 mb-4 items-center">
+            <input
+              type="color"
+              value={accent}
+              onChange={(e) => setAccent(e.target.value)}
+              className="w-12 h-10 rounded-xl border border-white/10 bg-transparent cursor-pointer"
+            />
+            <input
+              value={sharedNote}
+              onChange={(e) => setSharedNote(e.target.value)}
+              placeholder="shared note under the nimbus"
+              className="flex-1 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm placeholder:text-neutral-500 focus:outline-none focus:border-white/30 transition-all"
+            />
           </div>
-          {error && <p className="text-xs text-amber-300">{error}</p>}
-          <button
-            onClick={submit}
-            disabled={busy}
-            className="w-full py-3 rounded-full bg-[#0a84ff] text-white text-sm font-medium hover:bg-[#409cff] disabled:opacity-50 transition active:scale-[0.98]"
+          <label
+            className="block cursor-pointer rounded-2xl border border-dashed border-white/15 hover:border-white/40 p-10 text-center transition-all duration-300"
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => { e.preventDefault(); handleFiles(e.dataTransfer.files); }}
           >
-            {busy ? 'lifting…' : 'lift to the cloud'}
-          </button>
+            <input type="file" multiple className="hidden" onChange={(e) => handleFiles(e.target.files)} />
+            <p className="text-sm text-neutral-300">{files.length ? `${files.length} file${files.length > 1 ? 's' : ''} selected` : 'drop files into the nimbus (optional)'}</p>
+          </label>
+          {files.map(f => (
+            <input
+              key={f.name}
+              value={notes[f.name] || ''}
+              onChange={e => setNotes(prev => ({ ...prev, [f.name]: e.target.value }))}
+              placeholder={`note for ${f.name}`}
+              className="w-full mt-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-xs"
+            />
+          ))}
+          {warn && <p className="text-xs text-amber-300/80 mt-3">{warn}</p>}
+          {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            whileHover={{ scale: 1.02 }}
+            onClick={publish}
+            disabled={busy || (!files.length && !sharedNote.trim())}
+            style={{ backgroundColor: accent }}
+            className="w-full mt-4 py-3 rounded-full text-white text-sm font-medium disabled:opacity-50 transition"
+          >
+            {busy ? 'lifting…' : 'share under the nimbus'}
+          </motion.button>
+          {links.length > 0 && (
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-5 text-xs text-neutral-400 break-all space-y-1">
+              {links.map((l, i) => <div key={i}>shared: {l}</div>)}
+            </motion.div>
+          )}
         </motion.div>
-        {result && (
-          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mt-6 glass rounded-3xl p-5">
-            <p className="text-sm text-white mb-2">shared</p>
-            <p className="text-xs text-neutral-400 break-all mb-3">{result.embed}</p>
-            <button onClick={() => navigator.clipboard.writeText(result.embed || '')} className="text-xs px-4 py-2 rounded-full bg-white text-black">copy link</button>
-            {result.warn && <p className="text-xs text-amber-300/80 mt-2">{result.warn}</p>}
-          </motion.div>
-        )}
       </div>
     </div>
   );

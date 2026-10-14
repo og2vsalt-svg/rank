@@ -1,88 +1,207 @@
-import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './Navbar';
-import { useRouter } from './Router';
-import { listPublicShares, type CloudMeta } from '../lib/cloudShare';
+import { publishLocalFile, shareUrls } from '../lib/cloudShare';
+import { supabaseConfig } from '../lib/supabase';
 
-function formatBytes(n: number) {
-  if (!n) return 'unknown';
-  if (n < 1024) return n + ' b';
-  if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' kb';
-  if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(2) + ' mb';
-  return (n / (1024 * 1024 * 1024)).toFixed(2) + ' gb';
-}
-
-function timeAgo(iso?: string) {
-  if (!iso) return '';
-  const diff = Date.now() - +new Date(iso);
-  const m = Math.floor(diff / 60000);
-  if (m < 1) return 'just now';
-  if (m < 60) return m + 'm ago';
-  const h = Math.floor(m / 60);
-  if (h < 24) return h + 'h ago';
-  const d = Math.floor(h / 24);
-  return d + 'd ago';
-}
+type Recent = { id: string; name: string; caption: string | null; created_at: string };
 
 export default function PulsePage() {
-  const { navigate } = useRouter();
-  const [shares, setShares] = useState<CloudMeta[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [files, setFiles] = useState<File[]>([]);
+  const [notes, setNotes] = useState<string[]>([]);
+  const [shared, setShared] = useState('');
+  const [accent, setAccent] = useState('#FF375F');
+  const [busy, setBusy] = useState(false);
+  const [warn, setWarn] = useState('');
+  const [links, setLinks] = useState<string[]>([]);
+  const [err, setErr] = useState('');
+  const [recent, setRecent] = useState<Recent[]>([]);
 
   useEffect(() => {
-    let cancelled = false;
     (async () => {
-      const list = await listPublicShares(36);
-      if (!cancelled) {
-        setShares(list);
-        setLoading(false);
-      }
+      try {
+        const res = await fetch(
+          `${supabaseConfig.url}/rest/v1/public_shares?is_public=eq.true&select=id,name,caption,created_at&order=created_at.desc&limit=6`,
+          {
+            headers: {
+              apikey: supabaseConfig.anonKey,
+              Authorization: `Bearer ${supabaseConfig.anonKey}`,
+            },
+          },
+        );
+        if (res.ok) {
+          const rows = await res.json();
+          setRecent(Array.isArray(rows) ? rows : []);
+        }
+      } catch {}
     })();
-    return () => { cancelled = true; };
   }, []);
+
+  const onFiles = (list: FileList | null) => {
+    const arr = list ? Array.from(list) : [];
+    setFiles(arr);
+    setNotes(arr.map(() => ''));
+    const big = arr.some((f) => f.size > 40 * 1024 * 1024);
+    setWarn(
+      big
+        ? 'one or more large files. the browser may feel slow while sending. no hard limit — only a gentle warning.'
+        : '',
+    );
+  };
+
+  const setNote = (i: number, v: string) => {
+    setNotes((prev) => {
+      const next = [...prev];
+      next[i] = v;
+      return next;
+    });
+  };
+
+  const publish = async () => {
+    if (!files.length) {
+      setErr('drop at least one file');
+      return;
+    }
+    setBusy(true);
+    setErr('');
+    setLinks([]);
+    const newLinks: string[] = [];
+    try {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const caption = notes[i]?.trim() || shared.trim() || 'pulse';
+        const res = await publishLocalFile(file, {
+          caption,
+          cardTitle: file.name,
+          color: accent,
+          meta: { desk: 'pulse', accent, shared: shared.trim() || null },
+        });
+        if (!res.ok || !res.id) {
+          setErr(res.error || 'publish failed for ' + file.name);
+          return;
+        }
+        if (res.warn) setWarn(res.warn);
+        newLinks.push(shareUrls(res.id).app);
+      }
+      setLinks(newLinks);
+      try { await navigator.clipboard.writeText(newLinks.join('\n')); } catch {}
+    } catch (e: any) {
+      setErr(e?.message || 'error');
+    } finally {
+      setBusy(false);
+    }
+  };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-24 px-5 max-w-5xl mx-auto">
+      <div className="pt-28 pb-20 px-5 max-w-3xl mx-auto space-y-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 100, damping: 20 }}
-          className="mb-10 text-center sm:text-left"
+          transition={{ type: 'spring', stiffness: 90, damping: 16 }}
+          className="glass rounded-[36px] p-8 relative overflow-hidden"
         >
-          <p className="text-[#0A84FF] text-sm font-medium mb-2 tracking-wide">public pulse</p>
-          <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight mb-3">recent drops.</h1>
-          <p className="text-neutral-400 text-lg max-w-2xl">Live feed of public shares stored in the database. Every link unfurls with a professional Discord embed. No file size limits — only a gentle note if something might load slowly.</p>
+          {[0, 1, 2].map((n) => (
+            <motion.div
+              key={n}
+              className="absolute rounded-full blur-3xl pointer-events-none"
+              style={{
+                background: accent,
+                width: 160 + n * 50,
+                height: 160 + n * 50,
+                left: `${25 + n * 15}%`,
+                top: `${20 + n * 10}%`,
+                opacity: 0.12,
+              }}
+              animate={{
+                scale: [1, 1.15, 1],
+                opacity: [0.12, 0.22, 0.12],
+              }}
+              transition={{ duration: 2.2 + n * 0.4, repeat: Infinity, ease: 'easeInOut' }}
+            />
+          ))}
+          <p className="text-sm mb-2 tracking-wide" style={{ color: accent }}>
+            pulse
+          </p>
+          <h1 className="text-3xl font-semibold mb-3 tracking-tight">a quiet rhythm under everything.</h1>
+          <p className="text-neutral-400 text-sm mb-6 leading-relaxed">
+            Drop files with individual notes or a shared beat. Rhythmic pulsing glows follow your accent. Each lands in storage and the public share table. Links carry polished Discord embeds. Large files warned, never refused. Different from a plain vault.
+          </p>
+
+          <div className="flex items-center gap-3 mb-4">
+            <label className="text-xs text-neutral-400">accent</label>
+            <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="w-10 h-10 rounded-xl border border-white/10 bg-transparent cursor-pointer" />
+            <span className="text-xs text-neutral-500 font-mono">{accent}</span>
+          </div>
+
+          <textarea
+            value={shared}
+            onChange={(e) => setShared(e.target.value)}
+            placeholder="optional shared beat"
+            rows={2}
+            className="w-full mb-4 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm placeholder:text-neutral-500 focus:outline-none transition resize-none"
+          />
+
+          <label
+            className="block cursor-pointer rounded-2xl border border-dashed border-white/15 hover:border-white/30 p-8 text-center transition mb-4"
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => { e.preventDefault(); onFiles(e.dataTransfer.files); }}
+          >
+            <input type="file" multiple className="hidden" onChange={(e) => onFiles(e.target.files)} />
+            <p className="text-sm text-neutral-300">
+              {files.length ? `${files.length} file${files.length > 1 ? 's' : ''} ready` : 'drop or click for files'}
+            </p>
+          </label>
+
+          <AnimatePresence>
+            {files.length > 0 && (
+              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="mb-4 space-y-2">
+                {files.map((f, i) => (
+                  <div key={i} className="flex items-center gap-2 text-xs text-neutral-400">
+                    <span className="truncate flex-1">{f.name} · {(f.size / 1024 / 1024).toFixed(1)} MB</span>
+                    <input value={notes[i] || ''} onChange={(e) => setNote(i, e.target.value)} placeholder="note" className="w-40 px-2 py-1 rounded-lg bg-white/5 border border-white/10 text-xs" />
+                  </div>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {warn && <p className="text-xs text-amber-300/80 mb-3">{warn}</p>}
+          {err && <p className="text-xs text-red-400 mb-3">{err}</p>}
+
+          <motion.button
+            whileTap={{ scale: 0.96 }}
+            whileHover={{ scale: 1.02 }}
+            onClick={publish}
+            disabled={busy || !files.length}
+            className="w-full py-3 rounded-full text-white text-sm font-medium disabled:opacity-50 transition"
+            style={{ background: accent }}
+          >
+            {busy ? 'pulsing…' : 'pulse'}
+          </motion.button>
+
+          {links.length > 0 && (
+            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mt-5 text-xs text-neutral-400 space-y-1">
+              <p>copied share links:</p>
+              {links.map((l, i) => <p key={i} className="break-all">{l}</p>)}
+            </motion.div>
+          )}
         </motion.div>
 
-        {loading ? (
-          <p className="text-neutral-500 text-sm text-center sm:text-left">listening for drops…</p>
-        ) : shares.length === 0 ? (
-          <div className="glass rounded-3xl p-8 text-center">
-            <p className="text-neutral-400 mb-4">quiet for now.</p>
-            <button onClick={() => navigate('drop')} className="px-5 py-2.5 rounded-full bg-[#0A84FF] text-white text-sm font-medium">drop the first file</button>
-          </div>
-        ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {shares.map((s, i) => (
-              <motion.button
-                key={s.id}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.025, type: 'spring', stiffness: 140, damping: 18 }}
-                whileHover={{ y: -6 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => navigate('share', s.id)}
-                className="apple-card glass rounded-[28px] p-5 text-left group overflow-hidden"
-              >
-                <p className="text-[11px] text-neutral-500 mb-1.5">{timeAgo(s.createdAt)} · {formatBytes(s.size)}</p>
-                <h2 className="font-medium text-white truncate mb-1 group-hover:text-[#0A84FF] transition-colors">{s.name || 'untitled'}</h2>
-                {s.caption && <p className="text-xs text-neutral-400 line-clamp-2 mb-2">{s.caption}</p>}
-                <p className="text-[11px] text-neutral-600">{s.type || 'file'}</p>
-              </motion.button>
-            ))}
-          </div>
+        {recent.length > 0 && (
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+            <h2 className="text-sm text-neutral-400 mb-4 tracking-wide">recent pulses</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {recent.map((r) => (
+                <a key={r.id} href={`/s/${r.id}`} className="glass rounded-2xl p-4 block hover:scale-[1.02] transition-transform">
+                  <p className="text-sm font-medium truncate">{r.name}</p>
+                  {r.caption && <p className="text-xs text-neutral-500 mt-1 line-clamp-2">{r.caption}</p>}
+                  <p className="text-[10px] text-neutral-600 mt-2">{new Date(r.created_at).toLocaleDateString()}</p>
+                </a>
+              ))}
+            </div>
+          </motion.div>
         )}
       </div>
     </div>

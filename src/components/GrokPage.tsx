@@ -8,6 +8,7 @@ type Recent = { id: string; name: string; caption: string | null; created_at: st
 
 export default function GrokPage() {
   const [files, setFiles] = useState<File[]>([]);
+  const [captions, setCaptions] = useState<string[]>([]);
   const [note, setNote] = useState('');
   const [accent, setAccent] = useState('#0A84FF');
   const [busy, setBusy] = useState(false);
@@ -39,12 +40,21 @@ export default function GrokPage() {
   const onFiles = (list: FileList | null) => {
     const arr = list ? Array.from(list) : [];
     setFiles(arr);
+    setCaptions(arr.map(() => ''));
     const big = arr.some((f) => f.size > 40 * 1024 * 1024);
     setWarn(
       big
         ? 'one or more large files. the browser may feel slow while sending. no hard limit — only a gentle warning.'
         : '',
     );
+  };
+
+  const setCaption = (i: number, v: string) => {
+    setCaptions((prev) => {
+      const next = [...prev];
+      next[i] = v;
+      return next;
+    });
   };
 
   const publish = async () => {
@@ -57,12 +67,14 @@ export default function GrokPage() {
     setLinks([]);
     const newLinks: string[] = [];
     try {
-      for (const file of files) {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const fileCaption = captions[i]?.trim() || note.trim() || 'grok drop';
         const res = await publishLocalFile(file, {
-          caption: note.trim() || 'grok drop',
+          caption: fileCaption,
           cardTitle: file.name,
           color: accent,
-          meta: { desk: 'grok', accent, dedication: note.trim() || null },
+          meta: { desk: 'grok', accent, dedication: note.trim() || null, fileCaption },
         });
         if (!res.ok || !res.id) {
           setErr(res.error || 'publish failed for ' + file.name);
@@ -93,9 +105,11 @@ export default function GrokPage() {
           transition={{ type: 'spring', stiffness: 100, damping: 18 }}
           className="glass rounded-[36px] p-8 relative overflow-hidden"
         >
-          <div
+          <motion.div
             className="absolute -bottom-32 -left-32 w-80 h-80 rounded-full blur-3xl pointer-events-none opacity-40"
             style={{ background: accent }}
+            animate={{ scale: [1, 1.08, 1], opacity: [0.35, 0.5, 0.35] }}
+            transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
           />
           <div className="absolute -top-24 -right-24 w-64 h-64 bg-white/5 rounded-full blur-3xl pointer-events-none" />
           <p className="text-sm mb-2 tracking-wide" style={{ color: accent }}>
@@ -103,7 +117,7 @@ export default function GrokPage() {
           </p>
           <h1 className="text-3xl font-semibold mb-3 tracking-tight">curious drops, human-crafted.</h1>
           <p className="text-neutral-400 text-sm mb-6 leading-relaxed">
-            Drop one or more local files. Each lands in storage and the public share table with your dedication and accent. Share links carry polished Discord embeds. Large files are warned, never refused. Prior features preserved. No traces of boosting.
+            Drop one or more local files. Each can carry its own caption. Lands in storage and the public share table with your dedication and accent. Share links carry polished Discord embeds. Large files are warned, never refused. Prior features preserved. No traces of boosting.
           </p>
 
           <div className="flex items-center gap-3 mb-4">
@@ -120,7 +134,7 @@ export default function GrokPage() {
           <textarea
             value={note}
             onChange={(e) => setNote(e.target.value)}
-            placeholder="optional dedication that travels with every drop"
+            placeholder="optional shared dedication that travels with every drop"
             rows={3}
             className="w-full mb-4 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm placeholder:text-neutral-500 focus:outline-none transition resize-none"
           />
@@ -143,18 +157,26 @@ export default function GrokPage() {
 
           <AnimatePresence>
             {files.length > 0 && (
-              <motion.ul
+              <motion.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="mb-4 space-y-1 text-xs text-neutral-400"
+                className="mb-4 space-y-2"
               >
                 {files.map((f, i) => (
-                  <li key={i} className="truncate">
-                    {f.name} · {(f.size / 1024 / 1024).toFixed(1)} MB
-                  </li>
+                  <div key={i} className="flex items-center gap-2 text-xs text-neutral-400">
+                    <span className="truncate flex-1">
+                      {f.name} · {(f.size / 1024 / 1024).toFixed(1)} MB
+                    </span>
+                    <input
+                      value={captions[i] || ''}
+                      onChange={(e) => setCaption(i, e.target.value)}
+                      placeholder="caption"
+                      className="w-40 px-2 py-1 rounded-lg bg-white/5 border border-white/10 text-xs"
+                    />
+                  </div>
                 ))}
-              </motion.ul>
+              </motion.div>
             )}
           </AnimatePresence>
 

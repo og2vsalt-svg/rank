@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/constellation` — soft stars for what you carry. Multi-file drop with a shared note, tiny stars that twinkle and breathe with your accent, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/lumenmist` — soft mist for what you carry. Multi-file drop with a shared note, gentle drifting mist orbs that rise with your accent, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/vault` — the quiet center. Recent public shares from every desk, each with polished Discord embeds. Files stay in the database. Large files warned, never refused. All prior desks remain.
 - `/glimmer` — soft sparks for what you carry. Multi-file drop with a shared note, tiny lights that breathe with your accent, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.

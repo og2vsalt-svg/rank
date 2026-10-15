@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/lumenline` — vertical light for what you carry. Multi-file drop with a shared note and accent color picker, soft vertical lines that drift with your accent, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/lumenveil` — soft veils of light for what you carry. Multi-file drop with a shared note and accent color picker, drifting translucent veils that follow your accent, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/softveil` — soft veils for what you carry. Multi-file drop with per-file notes or a shared note, drifting translucent layers that move with your accent color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/driftline` — soft drifting lines for what you carry. Multi-file drop with a shared note (or note-only), quiet horizontal lines that drift with your accent color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.

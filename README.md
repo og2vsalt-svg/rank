@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/helix` — soft spiraling light for what you carry. Multi-file drop with optional notes or a shared dedication, soft helix of light orbs that spiral and breathe with your accent color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/lumenspire` — soft rising spires for what you carry. Multi-file drop with optional notes or a shared dedication, soft vertical light spires that rise and breathe with your accent, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/constellation` — soft stars for what you carry. Multi-file drop with a shared note, tiny stars that twinkle and breathe with your accent, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/lumenmist` — soft mist for what you carry. Multi-file drop with a shared note, gentle drifting mist orbs that rise with your accent, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.

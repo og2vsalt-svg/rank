@@ -33,11 +33,13 @@ export default function Hero() {
           Local vault. Cloud shares that land in the database with professional Discord embeds on every link. Galleries, notes, and dozens of specialized desks. Large files warned, never refused. Human-crafted Apple-smooth animations.
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center">
+          <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('vault')} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition">open vault</motion.button>
+          <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('glimmer')} className="px-5 py-2.5 rounded-full bg-[#FFD60A] text-black text-sm font-medium hover:bg-[#ffe066] transition">glimmer</motion.button>
+          <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('cascade')} className="px-5 py-2.5 rounded-full bg-[#30D158] text-black text-sm font-medium hover:bg-[#4adb6c] transition">cascade</motion.button>
           <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('ripple')} className="px-5 py-2.5 rounded-full bg-[#64D2FF] text-black text-sm font-medium hover:bg-[#7ad8ff] transition">ripple</motion.button>
           <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('veil')} className="px-5 py-2.5 rounded-full bg-[#AF52DE] text-white text-sm font-medium hover:bg-[#c06ae8] transition">veil</motion.button>
           <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('pulse')} className="px-5 py-2.5 rounded-full bg-[#FF375F] text-white text-sm font-medium hover:bg-[#ff4d72] transition">pulse</motion.button>
           <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('luster')} className="px-5 py-2.5 rounded-full bg-[#A78BFA] text-white text-sm font-medium hover:bg-[#b79bfc] transition">luster</motion.button>
-          <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('vault')} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition">open vault</motion.button>
           <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('mirage')} className="px-5 py-2.5 rounded-full bg-[#FF9F0A] text-black text-sm font-medium hover:bg-[#ffb340] transition">mirage</motion.button>
           <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('canvas')} className="px-5 py-2.5 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#409CFF] transition">canvas</motion.button>
           <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('nocturne')} className="px-5 py-2.5 rounded-full bg-[#BF5AF2] text-white text-sm font-medium hover:bg-[#c86bf5] transition">nocturne</motion.button>

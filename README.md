@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/ripple` — soft expanding ripples for what you carry. Multi-file drop with a shared note, mouse-driven concentric ripples that breathe with your accent color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/softprism` — soft prismatic shards for what you carry. Multi-file drop with a shared note, rotating prism shards that refract light with your accent color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/softecho` — soft echoing rings for what you carry. Multi-file drop with a shared note, concentric rings that breathe and expand with your accent color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/helix` — soft spiraling light for what you carry. Multi-file drop with optional notes or a shared dedication, soft helix of light orbs that spiral and breathe with your accent color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.

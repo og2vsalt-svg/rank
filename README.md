@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/velvet` — soft drapes for what you carry. Multi-file drop with per-file notes or a shared dedication, soft undulating velvet drapes that follow your accent, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/softcascade` — cascade what you carry. Multi-file drop with a shared note and accent color, soft cascading light falls that drift with your accent, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/orbitglow` — soft orbiting glows for what you carry. Multi-file drop with a shared note and accent color, rotating light rings that follow your accent, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/lumenorbit` — orbit what you carry. Multi-file drop with a shared note and accent color, soft orbiting lights that follow your accent, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.

@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/driftline` — soft drifting lines for what you carry. Multi-file drop with a shared note (or note-only), quiet horizontal lines that drift with your accent color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/whisper` — soft whispers for what you carry. Multi-file drop with a shared note (or note-only), drifting whisper lines that fade with your accent color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/softglow` — soft drifting glows for what you carry. Multi-file drop with a shared note, floating orbs that pulse with your accent color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/liminal` — in-between spaces for what you carry. Multi-file drop with per-file notes or a shared dedication, soft threshold lines that pulse with your accent color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.

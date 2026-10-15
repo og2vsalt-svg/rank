@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/lumenorbit` — orbit what you carry. Multi-file drop with a shared note and accent color, soft orbiting lights that follow your accent, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/lumenprism` — refract what you carry. Multi-file drop with optional notes or shared dedication, soft prismatic light rays that shift with your accent color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/softspiral` — a soft spiral of light for what you carry. Multi-file drop with per-file notes or a shared dedication, soft spiraling orbs that rotate with your accent color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/lumenline` — vertical light for what you carry. Multi-file drop with a shared note and accent color picker, soft vertical lines that drift with your accent, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.

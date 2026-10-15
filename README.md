@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/glowring` — soft expanding light rings for what you carry. Multi-file drop with a shared note, gentle glowing rings that expand and fade with your accent color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/softpetal` — soft falling petals for what you carry. Multi-file drop with a shared note, delicate petals that drift and fall in your accent color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/ripple` — soft expanding ripples for what you carry. Multi-file drop with a shared note, mouse-driven concentric ripples that breathe with your accent color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/softprism` — soft prismatic shards for what you carry. Multi-file drop with a shared note, rotating prism shards that refract light with your accent color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.

@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softveil` — soft drifting light veils for what you carry. Multi-file drop with a shared note and accent color, gentle overlapping veils that drift and breathe with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/nimbus` — soft expanding nimbus rings for what you carry. Multi-file drop with a shared note and accent color, gentle concentric halos that breathe and pulse with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/softlumen` — soft pulsing lumen rings for what you carry. Multi-file drop with a shared note and accent color, gentle expanding rings that breathe with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/softripple` — soft expanding rings for what you carry. Multi-file drop with a shared note and accent color, quiet rippling circles that expand outward with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.

@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/appleglow` — quiet blooming glows for what you carry. Multi-file drop with a shared note and accent color, soft breathing blooms that expand and fade with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/springapple` — soft springing light orbs for what you carry. Multi-file drop with a shared note and accent color, gentle orbiting orbs that spring and breathe with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/softapple` — refined human-crafted multi-file drop with shared note and accent color, soft Apple-style spring animations, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/lattice` — soft weaving lattice for what you carry. Multi-file drop with a shared note and accent color, soft lattice of horizontal and vertical light lines that weave and shift with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.

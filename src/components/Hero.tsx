@@ -34,6 +34,7 @@ export default function Hero() {
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center">
           <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('vault')} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition">open vault</motion.button>
+          <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('cosmos')} className="px-5 py-2.5 rounded-full bg-[#5B21B6] text-white text-sm font-medium hover:bg-[#6D28D9] transition">cosmos</motion.button>
           <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('mistveil')} className="px-5 py-2.5 rounded-full bg-[#A5B4FC] text-black text-sm font-medium hover:bg-[#b8c5fd] transition">mistveil</motion.button>
           <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('softtide')} className="px-5 py-2.5 rounded-full bg-[#5EEAD4] text-black text-sm font-medium hover:bg-[#6ef0dc] transition">softtide</motion.button>
           <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('softprism')} className="px-5 py-2.5 rounded-full bg-[#BF5AF2] text-white text-sm font-medium hover:bg-[#c86bf5] transition">soft prism</motion.button>

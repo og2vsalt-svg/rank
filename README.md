@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/ember` — warm rising embers for what you carry. Multi-file drop with a shared note and accent color, soft glowing embers that rise and fade with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/softaura` — soft drifting aura for what you carry. Multi-file drop with a shared note and accent color, gentle aura orbs that breathe and drift with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/glowdrift` — soft drifting glows for what you carry. Multi-file drop with a shared note and accent color, floating orbs that drift and pulse with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/mistveil` — soft veils of mist for what you carry. Multi-file drop with a shared note, drifting translucent mist layers that fade and shift with your accent color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.

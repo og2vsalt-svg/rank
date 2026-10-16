@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softapple` — refined human-crafted multi-file drop with shared note and accent color, soft Apple-style spring animations, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/lattice` — soft weaving lattice for what you carry. Multi-file drop with a shared note and accent color, soft lattice of horizontal and vertical light lines that weave and shift with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/softcurrent` — soft drifting currents for what you carry. Multi-file drop with a shared note and accent color, gentle horizontal current lines that flow and shift with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/cosmos` — soft drifting cosmic clouds for what you carry. Multi-file drop with a shared note and accent color, soft expanding nebula-like glows that drift and breathe with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.

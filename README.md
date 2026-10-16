@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softtide` — soft rising tides for what you carry. Multi-file drop with a shared note, gentle horizontal tide lines that rise and fade with your accent color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/dewfall` — soft falling dew for what you carry. Multi-file drop with a shared note, gentle dew drops that fall and catch light with your accent color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/petaldrift` — soft drifting petals for what you carry. Multi-file drop with a shared note, delicate petals that tumble and drift with your accent color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/lumenbloom` — soft blooming light for what you carry. Multi-file drop with a shared note, gentle expanding blooms that open and fade with your accent color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.

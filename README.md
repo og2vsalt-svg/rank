@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/lunarlumen` — soft lunar glows for what you carry. Multi-file drop with a shared note and accent color, gentle breathing lunar orbs and crescent light that shift with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/quietbloom` — soft blooming orbs for what you carry. Multi-file drop with a shared note and accent color, gentle blooming light orbs that rise and fade with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/lumenhalo` — soft rotating halo rings for what you carry. Multi-file drop with a shared note and accent color, gentle spinning concentric rings that breathe with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/quietcurrent` — soft flowing light currents for what you carry. Multi-file drop with a shared note and accent color, gentle horizontal currents that flow and breathe with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.

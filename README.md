@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/starveil` — soft drifting star glints for what you carry. Multi-file drop with a shared note and accent color, gentle rising star points that breathe and shimmer with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/lumenribbon` — soft flowing light ribbons for what you carry. Multi-file drop with a shared note and accent color, gentle undulating ribbons of light that flow and shimmer with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/softmeadow` — soft meadow light fields for what you carry. Multi-file drop with a shared note and accent color, gentle breathing green fields that shift with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/gallery` — browse recent public shares already filed. Image previews, open any card to view or download. No new upload on this page. Discord embeds on every link. Prior features preserved.

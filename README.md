@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/silkfield` — soft flowing silk ribbons for what you carry. Multi-file drop with a shared note and accent color, gentle undulating silk ribbons of light that flow and breathe with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/softfield` — overlapping soft light fields for what you carry. Multi-file drop with a shared note and accent color, gentle breathing fields that shift with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/lunarlumen` — soft lunar glows for what you carry. Multi-file drop with a shared note and accent color, gentle breathing lunar orbs and crescent light that shift with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/quietbloom` — soft blooming orbs for what you carry. Multi-file drop with a shared note and accent color, gentle blooming light orbs that rise and fade with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.

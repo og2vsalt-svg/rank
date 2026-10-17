@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/moonriver` — soft moonlit flowing rivers for what you carry. Multi-file drop with a shared note and accent color, gentle horizontal moonlit streams that flow under breathing star glints with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/riverlight` — soft flowing river lights for what you carry. Multi-file drop with a shared note and accent color, gentle horizontal streams that flow and shimmer with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/dawnveil` — soft rising dawn light veils for what you carry. Multi-file drop with a shared note and accent color, gentle rising veils that lift and fade with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/softmist` — soft drifting mist for what you carry. Multi-file drop with a shared note and accent color, gentle layered mist that drifts and breathes with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.

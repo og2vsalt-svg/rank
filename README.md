@@ -15,6 +15,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/gallery` — browse recent public shares already filed. Image previews, open any card to view or download. No new upload on this page. Discord embeds on every link. Prior features preserved.
+- `/quietnote` — a pure text note that travels alone. Write any length of text (no file required). Lands in the public_shares table with polished Discord embeds. Soft Apple-style spring animations and glass surfaces. Prior features preserved. No traces of boosting.
 - `/moonriver` — soft moonlit flowing rivers for what you carry. Multi-file drop with a shared note and accent color, gentle horizontal moonlit streams that flow under breathing star glints with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/riverlight` — soft flowing river lights for what you carry. Multi-file drop with a shared note and accent color, gentle horizontal streams that flow and shimmer with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/dawnveil` — soft rising dawn light veils for what you carry. Multi-file drop with a shared note and accent color, gentle rising veils that lift and fade with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.

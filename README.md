@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/lumenribbon` — soft flowing light ribbons for what you carry. Multi-file drop with a shared note and accent color, gentle undulating ribbons of light that flow and shimmer with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/softmeadow` — soft meadow light fields for what you carry. Multi-file drop with a shared note and accent color, gentle breathing green fields that shift with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/gallery` — browse recent public shares already filed. Image previews, open any card to view or download. No new upload on this page. Discord embeds on every link. Prior features preserved.
 - `/quietnote` — a pure text note that travels alone. Write any length of text (no file required). Lands in the public_shares table with polished Discord embeds. Soft Apple-style spring animations and glass surfaces. Prior features preserved. No traces of boosting.

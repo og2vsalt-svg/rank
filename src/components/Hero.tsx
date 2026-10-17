@@ -1,4 +1,4 @@
-import { motion } from 'react';
+import { motion } from 'framer-motion';
 import { useRouter } from './Router';
 
 export default function Hero() {

@@ -1,118 +1,167 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
 import { publishLocalFile, shareUrls } from '../lib/cloudShare';
 
+type Row = {
+  name: string;
+  size: number;
+  id?: string;
+  embed?: string;
+  error?: string;
+  warn?: string | null;
+};
+
 export default function SoftcascadePage() {
   const [files, setFiles] = useState<File[]>([]);
-  const [note, setNote] = useState('');
-  const [accent, setAccent] = useState('#0A84FF');
+  const [author, setAuthor] = useState('');
+  const [caption, setCaption] = useState('');
+  const [color, setColor] = useState('#0A84FF');
   const [busy, setBusy] = useState(false);
-  const [warn, setWarn] = useState('');
-  const [links, setLinks] = useState<string[]>([]);
-  const [err, setErr] = useState('');
+  const [rows, setRows] = useState<Row[]>([]);
+  const [copied, setCopied] = useState('');
 
-  const handleFiles = (list: FileList | null) => {
-    const arr = Array.from(list || []);
-    setFiles(arr);
-    setWarn(arr.some(f => f.size > 45 * 1024 * 1024) ? 'large file detected. upload may feel slower in the browser. never refused.' : '');
+  const heavy = useMemo(() => files.reduce((n, f) => n + f.size, 0) > 40 * 1024 * 1024, [files]);
+
+  const randomize = () => {
+    const hues = [200, 210, 220, 190, 180, 170, 160];
+    const h = hues[Math.floor(Math.random() * hues.length)];
+    setColor(`hsl(${h}, 65%, 58%)`);
   };
 
-  const publish = async () => {
-    if (!files.length) return setErr('select files to share');
+  const send = async () => {
+    if (!files.length) return;
     setBusy(true);
-    setErr('');
-    const created: string[] = [];
+    const next: Row[] = [];
     for (const file of files) {
       const res = await publishLocalFile(file, {
-        caption: note || 'softcascade share',
-        cardTitle: file.name,
-        color: accent,
-        meta: { desk: 'softcascade', accent },
+        author,
+        caption: caption ? `${caption} · ${file.name}` : file.name,
+        color,
+        cardTitle: caption || file.name,
+        meta: { accent: color, source: 'softcascade' },
       });
-      if (res.ok && res.id) created.push(shareUrls(res.id).app);
-      else setErr(res.error || 'issue with a file');
+      next.push({
+        name: file.name,
+        size: file.size,
+        id: res.id,
+        embed: res.id ? shareUrls(res.id).embed : undefined,
+        error: res.ok ? undefined : res.error,
+        warn: res.warn,
+      });
+      setRows([...next]);
     }
-    setLinks(created);
-    if (created[0]) try { await navigator.clipboard.writeText(created[0]); } catch {}
     setBusy(false);
+  };
+
+  const copy = async (value: string) => {
+    await navigator.clipboard.writeText(value);
+    setCopied(value);
+    setTimeout(() => setCopied(''), 1200);
   };
 
   return (
     <div className="mesh min-h-screen relative overflow-hidden">
       <Navbar />
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {[...Array(8)].map((_, i) => (
+      {/* soft falling cascade droplets */}
+      <div className="pointer-events-none absolute inset-0 opacity-50 overflow-hidden">
+        {Array.from({ length: 24 }).map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-1 h-16 rounded-full blur-[1px] opacity-60"
+            className="absolute rounded-full blur-[1px]"
             style={{ 
-              background: `linear-gradient(to bottom, ${accent}, transparent)`,
-              left: `${10 + i * 10}%`,
-              top: '-20%'
+              background: color, 
+              width: 3 + (i % 6), 
+              height: 8 + (i % 12), 
+              left: `${(i * 4.2) % 100}%`,
+              borderRadius: '50% 50% 50% 50% / 60% 60% 40% 40%'
             }}
+            initial={{ y: '-10%', opacity: 0 }}
             animate={{
-              y: ['0%', '120%'],
-              opacity: [0.2, 0.8, 0.2]
+              y: ['-10%', '110%'],
+              opacity: [0, 0.7, 0.4, 0],
+              x: [0, (i % 2 === 0 ? 15 : -12), 0]
             }}
-            transition={{
-              duration: 6 + i * 0.4,
-              repeat: Infinity,
-              ease: 'easeInOut',
-              delay: i * 0.3
+            transition={{ 
+              duration: 6 + (i % 5), 
+              repeat: Infinity, 
+              ease: 'easeIn', 
+              delay: i * 0.25,
+              repeatDelay: 0.5
             }}
           />
         ))}
       </div>
-      <div className="pt-28 pb-20 px-5 max-w-xl mx-auto relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 100, damping: 20 }}
-          className="glass rounded-[32px] p-8"
-        >
-          <p className="text-sm mb-2 tracking-wide" style={{ color: accent }}>softcascade</p>
-          <h1 className="text-2xl font-semibold mb-3 tracking-tight">cascade what you carry.</h1>
-          <p className="text-neutral-500 text-sm mb-6 leading-relaxed">
-            Multi-file drop with a shared note and accent color. Soft cascading light falls that drift with your accent, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
+
+      <main className="relative mx-auto max-w-2xl px-5 pb-24 pt-10">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 110, damping: 20 }}>
+          <p className="text-[12px] uppercase tracking-[0.16em] text-white/45">softcascade</p>
+          <h1 className="mt-2 text-[34px] font-semibold tracking-[-0.04em]">soft falling light droplets</h1>
+          <p className="mt-3 text-[15px] leading-relaxed text-white/60">
+            Gentle cascading light droplets that fall and drift with your accent color. Multi-file drop with a shared note, spring motion, glass surfaces, polished Discord embeds on every link. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
           </p>
-          <input
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            placeholder="a quiet dedication"
-            className="w-full mb-3 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm placeholder:text-neutral-500 focus:outline-none focus:border-white/30 transition-all"
-          />
-          <div className="flex items-center gap-3 mb-4">
-            <label className="text-xs text-neutral-400">accent</label>
-            <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="w-8 h-8 rounded-full border-0 bg-transparent cursor-pointer" />
-          </div>
-          <label
-            className="block cursor-pointer rounded-2xl border border-dashed border-white/10 hover:border-white/30 p-12 text-center transition-all duration-300"
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => { e.preventDefault(); handleFiles(e.dataTransfer.files); }}
-          >
-            <input type="file" multiple className="hidden" onChange={(e) => handleFiles(e.target.files)} />
-            <p className="text-sm text-neutral-400">{files.length ? `${files.length} file${files.length > 1 ? 's' : ''} selected` : 'drop here'}</p>
-          </label>
-          {warn && <p className="text-xs text-amber-300/80 mt-3">{warn}</p>}
-          {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
-          <motion.button
-            whileTap={{ scale: 0.98 }}
-            whileHover={{ scale: 1.01 }}
-            onClick={publish}
-            disabled={busy || !files.length}
-            className="w-full mt-5 py-3 rounded-full text-white text-sm font-medium disabled:opacity-50 transition"
-            style={{ background: `${accent}33`, border: `1px solid ${accent}55` }}
-          >
-            {busy ? 'cascading…' : 'let it fall'}
-          </motion.button>
-          {links.length > 0 && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-5 text-xs text-neutral-500 break-all space-y-1">
-              {links.map((l, i) => <div key={i}>{l}</div>)}
-            </motion.div>
-          )}
         </motion.div>
-      </div>
+
+        <label className="glass mt-8 block cursor-pointer rounded-3xl p-8 text-center">
+          <input className="hidden" type="file" multiple onChange={(e) => setFiles(Array.from(e.target.files || []))} />
+          <div className="text-[15px] text-white/80">{files.length ? `${files.length} files ready` : 'choose files from this machine'}</div>
+          <div className="mt-1 text-[12px] text-white/40">any type · no hard cap · soft warning only</div>
+        </label>
+
+        {!!files.length && (
+          <ul className="mt-4 space-y-1.5">
+            {files.map((f) => (
+              <li key={f.name + f.size} className="flex items-center justify-between rounded-2xl bg-white/[0.04] px-4 py-2.5 text-[13px]">
+                <span className="truncate pr-3">{f.name}</span>
+                <span className="shrink-0 text-white/40">{(f.size / 1024).toFixed(0)} kb</span>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        <div className="mt-4 grid gap-3">
+          <input value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="shared note that rides every card" className="glass rounded-2xl px-4 py-3 text-[14px] outline-none" />
+          <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="name, optional" className="glass rounded-2xl px-4 py-3 text-[14px] outline-none" />
+          <div className="flex items-center gap-3">
+            <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="h-10 w-14 cursor-pointer rounded-xl border border-white/10 bg-transparent" />
+            <span className="text-[13px] text-white/50">accent for cards and droplet glow</span>
+            <button type="button" onClick={randomize} className="ml-auto rounded-full bg-white/10 px-3 py-1.5 text-[12px]">randomize</button>
+          </div>
+        </div>
+
+        {heavy && <p className="mt-3 text-[13px] text-amber-200/80">large batch. sending may feel slow. nothing is refused.</p>}
+
+        <motion.button
+          whileTap={{ scale: 0.96 }}
+          onClick={send}
+          disabled={!files.length || busy}
+          className="mt-4 w-full rounded-full px-4 py-3 text-[15px] font-medium text-white disabled:opacity-40"
+          style={{ background: color }}
+        >
+          {busy ? 'sending one by one…' : 'share the soft cascade'}
+        </motion.button>
+
+        {!!rows.length && (
+          <div className="mt-6 space-y-2">
+            {rows.map((r) => (
+              <div key={r.name + r.size} className="glass rounded-2xl px-4 py-3">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="truncate text-[14px]">{r.name}</p>
+                  {r.embed ? (
+                    <button onClick={() => copy(r.embed!)} className="shrink-0 rounded-full bg-white/10 px-3 py-1 text-[12px]">
+                      {copied === r.embed ? 'copied' : 'copy /s'}
+                    </button>
+                  ) : (
+                    <span className="text-[12px] text-red-300">{r.error || 'failed'}</span>
+                  )}
+                </div>
+                {r.embed && <p className="mt-1 break-all text-[12px] text-white/45">{r.embed}</p>}
+                {r.warn && <p className="mt-1 text-[12px] text-amber-200/80">{r.warn}</p>}
+              </div>
+            ))}
+          </div>
+        )}
+      </main>
     </div>
   );
 }

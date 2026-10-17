@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softpulse` — gentle pulsing light orbs for what you carry. Multi-file drop with a shared note and accent color, soft pulsing orbs that breathe and drift with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/softorbit` — soft orbiting light orbs for what you carry. Multi-file drop with a shared note and accent color, gentle circling orbs that drift in quiet orbits with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/velvetdusk` — soft falling dusk veils for what you carry. Multi-file drop with a shared note and accent color, gentle falling orbs that drift and fade with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/prismglass` — refracting glass prisms for what you carry. Multi-file drop with a shared note and accent color, gentle diamond shards that rotate and shimmer with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.

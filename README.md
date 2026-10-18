@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/starfield` — quiet stars for what you carry. Multi-file drop with a shared note and accent color, a soft field of twinkling stars that breathe with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/softhalo` — soft expanding light halos for what you carry. Multi-file drop with a shared note and accent color, quiet circular rings that expand and fade with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/softgrove` — soft grove of light trees for what you carry. Multi-file drop with a shared note and accent color, quiet trees of light that grow and breathe with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/softlattice` — soft glowing lattice nodes for what you carry. Multi-file drop with a shared note and accent color, quiet pulsing nodes of light connected by faint lines that breathe with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.

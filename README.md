@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/quietfloat` — quiet floating orbs for what you carry. Multi-file drop with a shared note and accent color, soft orbs that gently rise, bob, and breathe with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/softveil` — quiet drifting light mist for what you carry. Multi-file drop with a shared note and accent color, soft translucent veils that drift and breathe with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/quietpulse` — quiet expanding pulses for what you carry. Multi-file drop with a shared note and accent color, soft rings that grow and fade from a steady center in your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/lumenpath` — quiet paths of light for what you carry. Multi-file drop with a shared note and accent color, soft horizontal trails that drift and breathe with your color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.

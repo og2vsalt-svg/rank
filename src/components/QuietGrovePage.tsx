@@ -14,7 +14,7 @@ export default function QuietGrovePage() {
   const { navigate } = useRouter();
   const [files, setFiles] = useState<File[]>([]);
   const [caption, setCaption] = useState('');
-  const [color, setColor] = useState('#34c759');
+  const [color, setColor] = useState('#30D158');
   const [busy, setBusy] = useState(false);
   const [warn, setWarn] = useState('');
   const [err, setErr] = useState('');
@@ -72,24 +72,27 @@ export default function QuietGrovePage() {
           transition={{ type: 'spring', stiffness: 90, damping: 20 }}
           className="glass rounded-[36px] p-8 md:p-10 relative overflow-hidden"
         >
-          {/* quiet grove of light trees */}
-          <div className="absolute inset-0 pointer-events-none opacity-40">
+          {/* soft vertical stems of light */}
+          <div className="absolute inset-0 pointer-events-none opacity-45">
             {[0, 1, 2, 3, 4].map((i) => (
               <motion.div
                 key={i}
-                className="absolute bottom-0 w-px origin-bottom"
+                className="absolute bottom-0"
                 style={{
-                  left: `${15 + i * 17}%`,
-                  height: '55%',
-                  background: `linear-gradient(to top, ${color}00, ${color}88, ${color})`,
-                  boxShadow: `0 0 24px ${color}55`,
+                  width: 4 + i * 2,
+                  left: `${12 + i * 16}%`,
+                  height: '70%',
+                  background: `linear-gradient(to top, ${color}55, transparent)`,
+                  borderRadius: '999px',
+                  filter: 'blur(1px)',
                 }}
                 animate={{
-                  scaleY: [0.7, 1, 0.85, 1],
-                  opacity: [0.4, 0.9, 0.6, 0.85],
+                  scaleY: [0.6, 1, 0.75, 1],
+                  x: [0, 3, -2, 0],
+                  opacity: [0.4, 0.8, 0.5, 0.4],
                 }}
                 transition={{
-                  duration: 6 + i * 0.8,
+                  duration: 7 + i * 1.2,
                   repeat: Infinity,
                   ease: 'easeInOut',
                   delay: i * 0.4,
@@ -99,9 +102,9 @@ export default function QuietGrovePage() {
           </div>
 
           <p className="text-sm font-medium tracking-wide mb-2" style={{ color }}>quiet grove</p>
-          <h1 className="text-4xl font-semibold tracking-tight mb-3">soft growing light for what you carry</h1>
+          <h1 className="text-4xl font-semibold tracking-tight mb-3">quiet growing light trees for what you carry</h1>
           <p className="text-neutral-400 text-sm mb-8 max-w-md">
-            Drop files. They land in storage and the public shares table. A quiet grove of light trees grows and breathes in your color. Spring motion, glass surfaces. Large files warned, never refused.
+            Drop files. They land in storage and the public shares table. Soft vertical stems of light gently grow, sway, and breathe upward in your color, like a quiet grove. Spring motion, glass surfaces. Large files warned, never refused.
           </p>
 
           <div className="space-y-5 relative z-10">
@@ -150,7 +153,7 @@ export default function QuietGrovePage() {
               onClick={publishAll}
               className="w-full py-3.5 rounded-full bg-white text-black font-medium disabled:opacity-40 transition"
             >
-              {busy ? 'planting…' : 'plant & share'}
+              {busy ? 'growing the grove…' : 'set & share'}
             </button>
 
             {warn && <p className="text-xs text-amber-300/80">{warn}</p>}
@@ -163,7 +166,7 @@ export default function QuietGrovePage() {
                   animate={{ opacity: 1, y: 0 }}
                   className="space-y-3 pt-2"
                 >
-                  <p className="text-sm text-neutral-300">planted. first link copied.</p>
+                  <p className="text-sm text-neutral-300">grove set. first link copied.</p>
                   {results.map((r) => (
                     <div key={r.id} className="flex items-center gap-2 text-xs">
                       <span className="truncate flex-1 text-neutral-400">{r.name}</span>

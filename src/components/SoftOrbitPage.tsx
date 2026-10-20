@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
 import { publishLocalFile, shareUrls } from '../lib/cloudShare';
@@ -6,103 +6,123 @@ import { publishLocalFile, shareUrls } from '../lib/cloudShare';
 export default function SoftOrbitPage() {
   const [files, setFiles] = useState<File[]>([]);
   const [note, setNote] = useState('');
-  const [accent, setAccent] = useState('#BF5AF2');
-  const [busy, setBusy] = useState(false);
-  const [warn, setWarn] = useState('');
-  const [links, setLinks] = useState<string[]>([]);
-  const [err, setErr] = useState('');
+  const [color, setColor] = useState('#0A84FF');
+  const [uploading, setUploading] = useState(false);
+  const [results, setResults] = useState<any[]>([]);
+  const [warn, setWarn] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleFiles = (list: FileList | null) => {
-    const arr = Array.from(list || []);
-    setFiles(arr);
-    setWarn(arr.some(f => f.size > 40 * 1024 * 1024) ? 'large file. the browser may pause while it sends. never refused.' : '');
+  const orbits = useMemo(() => Array.from({ length: 8 }, (_, i) => i), []);
+
+  const onSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const list = Array.from(e.target.files || []);
+    const big = list.some(f => f.size > 40 * 1024 * 1024);
+    setWarn(big ? 'large drop. the browser may feel slow while sending. no hard limit — only a gentle warning.' : null);
+    setFiles(list);
   };
 
-  const publish = async () => {
-    if (!files.length) return setErr('choose files');
-    setBusy(true);
-    setErr('');
-    const created: string[] = [];
-    for (const file of files) {
-      const res = await publishLocalFile(file, {
-        caption: note || 'soft orbit share',
-        cardTitle: file.name,
-        color: accent,
-        meta: { desk: 'softorbit' },
+  const share = async () => {
+    if (!files.length && !note.trim()) return;
+    setUploading(true);
+    const outs: any[] = [];
+    const targets = files.length ? files : [new File([note || 'quiet note'], 'note.txt', { type: 'text/plain' })];
+    for (const f of targets) {
+      const res = await publishLocalFile(f, {
+        caption: note,
+        color,
+        meta: { desk: 'softorbit', orbit: true },
       });
-      if (res.ok && res.id) created.push(shareUrls(res.id).app);
-      else setErr(res.error || 'one file paused');
+      if (res.ok) outs.push(res);
     }
-    setLinks(created);
-    if (created[0]) try { await navigator.clipboard.writeText(created[0]); } catch {}
-    setBusy(false);
+    setResults(outs);
+    setUploading(false);
   };
 
   return (
-    <div className="mesh min-h-screen overflow-hidden">
+    <div className="mesh min-h-screen relative overflow-hidden">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto relative">
-        {[0, 1, 2, 3, 4, 5].map(i => {
-          const radius = 90 + i * 18;
-          return (
-            <motion.div
-              key={i}
-              className="absolute rounded-full pointer-events-none"
-              style={{
-                width: '10px',
-                height: '10px',
-                background: accent,
-                boxShadow: `0 0 12px ${accent}`,
-                left: '50%',
-                top: '42%',
-                marginLeft: '-5px',
-                marginTop: '-5px',
-              }}
-              animate={{
-                x: [0, radius, 0, -radius, 0],
-                y: [-radius, 0, radius, 0, -radius],
-                opacity: [0.4, 0.9, 0.4],
-              }}
-              transition={{
-                duration: 8 + i * 1.2,
-                repeat: Infinity,
-                ease: 'linear',
-                delay: i * 0.6,
-              }}
-            />
-          );
-        })}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 90, damping: 16 }}
-          className="glass rounded-[32px] p-8 relative z-10"
-        >
-          <p className="text-sm mb-2 tracking-wide" style={{ color: accent }}>soft orbit</p>
-          <h1 className="text-3xl font-semibold mb-3 tracking-tight">quiet orbiting points of light for what you carry.</h1>
-          <p className="text-neutral-400 text-sm mb-6 leading-relaxed">
-            Multi-file drop with a shared note. Soft points of light that orbit a quiet center, pulsing and breathing with your accent color. Spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
-          </p>
-          <div className="flex gap-3 mb-4">
-            <input type="color" value={accent} onChange={e => setAccent(e.target.value)} className="w-12 h-10 rounded-xl border border-white/10 bg-transparent cursor-pointer" />
-            <input value={note} onChange={e => setNote(e.target.value)} placeholder="a quiet line under the orbit" className="flex-1 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm placeholder:text-neutral-500 focus:outline-none focus:border-white/30" />
-          </div>
-          <label className="block cursor-pointer rounded-2xl border border-dashed border-white/15 hover:border-white/40 p-10 text-center transition-all duration-300" onDragOver={e => e.preventDefault()} onDrop={e => { e.preventDefault(); handleFiles(e.dataTransfer.files); }}>
-            <input type="file" multiple className="hidden" onChange={e => handleFiles(e.target.files)} />
-            <p className="text-sm text-neutral-300">{files.length ? `${files.length} file${files.length > 1 ? 's' : ''} ready` : 'drop files into the soft orbit'}</p>
-          </label>
-          {warn && <p className="text-xs text-amber-300/80 mt-3">{warn}</p>}
-          {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
-          <motion.button whileTap={{ scale: 0.975 }} whileHover={{ scale: 1.015 }} onClick={publish} disabled={busy || !files.length} style={{ backgroundColor: accent }} className="w-full mt-4 py-3 rounded-full text-black text-sm font-medium disabled:opacity-50">
-            {busy ? 'sharing…' : 'share into the soft orbit'}
-          </motion.button>
-          {links.length > 0 && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-5 text-xs text-neutral-400 break-all space-y-1">
-              {links.map((l, i) => <div key={i}>shared: {l}</div>)}
-            </motion.div>
-          )}
-        </motion.div>
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+        {orbits.map(i => (
+          <motion.div
+            key={i}
+            className="absolute rounded-full"
+            style={{ width: 6 + (i % 3) * 4, height: 6 + (i % 3) * 4, background: color, boxShadow: `0 0 12px ${color}` }}
+            animate={{
+              rotate: 360,
+              scale: [1, 1.15, 1],
+            }}
+            transition={{
+              rotate: { duration: 18 + i * 2, repeat: Infinity, ease: 'linear' },
+              scale: { duration: 3 + i * 0.3, repeat: Infinity, ease: 'easeInOut' },
+            }}
+            initial={{ x: Math.cos(i) * 120, y: Math.sin(i) * 80 }}
+          />
+        ))}
       </div>
+      <main className="relative max-w-2xl mx-auto px-5 pt-28 pb-20">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: 'spring', stiffness: 90, damping: 18 }}
+          className="glass rounded-[28px] p-8 mb-6 backdrop-blur-xl"
+        >
+          <p className="text-xs uppercase tracking-[0.18em] text-[#0A84FF] mb-2">softorbit</p>
+          <h1 className="text-3xl font-semibold tracking-tight mb-2">quiet orbiting light for what you carry</h1>
+          <p className="text-sm text-neutral-400 leading-relaxed">
+            Drop one or more files. Add a quiet note and choose an accent. Soft particles orbit gently in your color, breathing with spring motion. Lands in storage and the public_shares table with polished Discord embeds. Large files warned, never refused. Prior desks remain fully intact.
+          </p>
+        </motion.div>
+
+        <textarea
+          value={note}
+          onChange={e => setNote(e.target.value)}
+          placeholder="optional quiet note…"
+          className="glass w-full rounded-2xl px-4 py-4 text-sm outline-none min-h-[100px] mb-4"
+        />
+
+        <div className="flex items-center gap-3 mb-4">
+          <button
+            onClick={() => inputRef.current?.click()}
+            className="glass rounded-2xl px-4 py-2.5 text-sm hover:bg-white/5 transition"
+          >
+            {files.length ? `${files.length} file${files.length > 1 ? 's' : ''}` : 'choose files'}
+          </button>
+          <input ref={inputRef} type="file" multiple className="hidden" onChange={onSelect} />
+          <input
+            type="color"
+            value={color}
+            onChange={e => setColor(e.target.value)}
+            className="w-12 h-10 rounded-xl cursor-pointer bg-transparent"
+          />
+        </div>
+
+        {warn && <p className="text-xs text-amber-400/90 mb-4">{warn}</p>}
+
+        <button
+          onClick={share}
+          disabled={(!files.length && !note.trim()) || uploading}
+          className="w-full glass rounded-2xl py-3.5 text-sm font-medium disabled:opacity-40 hover:bg-white/10 active:scale-[0.98] transition"
+        >
+          {uploading ? 'sending into orbit…' : 'share'}
+        </button>
+
+        {results.length > 0 && (
+          <div className="mt-6 space-y-3">
+            {results.map(r => (
+              <motion.a
+                key={r.id}
+                href={shareUrls(r.id).app}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="glass rounded-2xl p-4 block hover:bg-white/[0.06] transition"
+              >
+                <p className="text-sm font-medium">shared</p>
+                <p className="text-xs text-neutral-500 mt-1 truncate">{r.embed}</p>
+              </motion.a>
+            ))}
+          </div>
+        )}
+      </main>
     </div>
   );
 }

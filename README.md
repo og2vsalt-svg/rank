@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softbloom` — quiet blooming petals of light for what you carry. Multi-file drop with a shared note and accent color, soft petals that gently bloom, rotate, and breathe outward in your color. Spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/quietnotes` — quiet notes first, file optional. Write a note, optionally attach a file. Lands in the database with polished Discord embeds. Different from a plain file vault — notes are the heart. Spring motion, glass surfaces. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/sharetimeline` — a quiet chronological timeline of public shares from every desk, grouped by day. Soft glass rows with spring motion. Discord embeds on every link. Files live in the database. Different from a plain vault or ledger. Prior features preserved. No traces of boosting.
 - `/softdrift` — quiet drifting light points for what you carry. Multi-file drop with a shared note and accent color, soft points of light that gently wander, pulse, and breathe in your color. Spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.

@@ -16,7 +16,7 @@ export default function QuietHarborPage() {
   const [files, setFiles] = useState<File[]>([]);
   const [author, setAuthor] = useState('');
   const [caption, setCaption] = useState('');
-  const [color, setColor] = useState('#5AC8FA');
+  const [color, setColor] = useState('#67E8F9');
   const [busy, setBusy] = useState(false);
   const [rows, setRows] = useState<Row[]>([]);
   const [copied, setCopied] = useState('');
@@ -24,10 +24,11 @@ export default function QuietHarborPage() {
   const heavy = useMemo(() => files.reduce((n, f) => n + f.size, 0) > 40 * 1024 * 1024, [files]);
 
   const send = async () => {
-    if (!files.length) return;
+    if (!files.length && !caption.trim()) return;
     setBusy(true);
     const next: Row[] = [];
-    for (const file of files) {
+    const toSend = files.length ? files : [new File([caption || 'note'], 'note.txt', { type: 'text/plain' })];
+    for (const file of toSend) {
       const res = await publishLocalFile(file, {
         author,
         caption: caption ? `${caption} · ${file.name}` : file.name,
@@ -63,44 +64,51 @@ export default function QuietHarborPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
-          {[...Array(6)].map((_, i) => (
+          {[...Array(8)].map((_, i) => (
             <motion.div
               key={i}
-              className="absolute rounded-full blur-2xl"
+              className="absolute rounded-full"
               style={{
-                width: 80 + i * 20,
-                height: 80 + i * 20,
+                left: `${15 + (i * 10) % 70}%`,
+                bottom: `${5 + (i * 4) % 20}%`,
+                width: 8 + (i % 3) * 3,
+                height: 8 + (i % 3) * 3,
                 background: color,
-                opacity: 0.1,
-                left: `${10 + i * 14}%`,
-                bottom: `${10 + (i % 3) * 15}%`,
+                boxShadow: `0 0 16px ${color}80`,
+                opacity: 0.6,
               }}
               animate={{
-                y: [0, -20, 0],
-                opacity: [0.06, 0.15, 0.06],
-                scale: [1, 1.08, 1],
+                y: [0, -8, 0],
+                opacity: [0.4, 0.9, 0.4],
+                scale: [0.9, 1.15, 0.9],
               }}
               transition={{
-                duration: 8 + i * 1.5,
+                duration: 4 + (i % 3),
                 repeat: Infinity,
                 ease: 'easeInOut',
-                delay: i * 0.4,
+                delay: i * 0.5,
               }}
             />
           ))}
+          <motion.div
+            className="absolute left-1/2 top-1/3 h-32 w-32 -translate-x-1/2 rounded-full border border-white/10"
+            style={{ borderColor: color + '40' }}
+            animate={{ rotate: 360 }}
+            transition={{ duration: 40, repeat: Infinity, ease: 'linear' }}
+          />
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 110, damping: 20 }} className="relative">
-          <p className="text-[12px] uppercase tracking-[0.16em] text-white/45">quiet harbor</p>
-          <h1 className="mt-2 text-[34px] font-semibold tracking-[-0.04em]">soft lights for what you carry</h1>
+          <p className="text-[12px] uppercase tracking-[0.16em] text-white/45">quietharbor</p>
+          <h1 className="mt-2 text-[34px] font-semibold tracking-[-0.04em]">quiet docking lights for what you carry</h1>
           <p className="mt-3 text-[15px] leading-relaxed text-white/60">
-            Multi-file drop with shared note and accent. Gentle floating harbor lights that rise and breathe with your color, spring motion, glass surfaces. Each file uploads to storage and the public_shares table. Professional Discord embeds on every link. Large files receive only a gentle slowness warning — never refused. All prior desks remain intact. No traces of boosting.
+            Drop files or leave a note. Soft docking lights gently pulse and breathe along the lower edge in your color, with a slow circling ring above, like a quiet harbor at rest. Spring motion, glass surfaces. Each item lands in storage and the public_shares table. Professional Discord embeds on every link. Large files receive only a gentle slowness warning — never refused. All prior desks remain intact.
           </p>
         </motion.div>
 
         <label className="glass mt-8 block cursor-pointer rounded-3xl p-8 text-center relative">
           <input className="hidden" type="file" multiple onChange={(e) => setFiles(Array.from(e.target.files || []))} />
-          <div className="text-[15px] text-white/80">{files.length ? `${files.length} files ready` : 'drop or choose files from this machine'}</div>
+          <div className="text-[15px] text-white/80">{files.length ? `${files.length} files ready` : 'drop or choose files, or just leave a note'}</div>
           <div className="mt-1 text-[12px] text-white/40">any type · soft warning only · no hard limits</div>
         </label>
 
@@ -116,11 +124,11 @@ export default function QuietHarborPage() {
         )}
 
         <div className="mt-4 grid gap-3">
-          <input value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="shared note that rides every card" className="glass rounded-2xl px-4 py-3 text-[14px] outline-none" />
+          <textarea value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="shared note that rides every card (or stand alone)" rows={3} className="glass rounded-2xl px-4 py-3 text-[14px] outline-none resize-none" />
           <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="name, optional" className="glass rounded-2xl px-4 py-3 text-[14px] outline-none" />
           <div className="flex items-center gap-3">
             <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="h-10 w-14 cursor-pointer rounded-xl border border-white/10 bg-transparent" />
-            <span className="text-[13px] text-white/50">accent for cards and floating lights</span>
+            <span className="text-[13px] text-white/50">accent for the harbor lights</span>
           </div>
         </div>
 
@@ -130,11 +138,11 @@ export default function QuietHarborPage() {
           whileTap={{ scale: 0.97 }}
           whileHover={{ scale: 1.01 }}
           onClick={send}
-          disabled={!files.length || busy}
+          disabled={(!files.length && !caption.trim()) || busy}
           className="mt-4 w-full rounded-full px-4 py-3 text-[15px] font-medium text-white disabled:opacity-40"
           style={{ background: color }}
         >
-          {busy ? 'sending…' : 'share the lights'}
+          {busy ? 'sending…' : 'dock in the harbor'}
         </motion.button>
 
         {!!rows.length && (

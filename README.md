@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softhelix` — quiet helical paths of light for what you carry. Multi-file drop with a shared note and accent color, soft points that spiral and breathe in your color. Spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/softmirror` — quiet reflections of what you carry. Multi-file drop with a shared note and accent color, soft mirrored shards that gently float, tilt, and catch light in your color. Spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/softprism` — light refracted through what you carry. Multi-file drop with a shared note and accent color, soft prismatic beams that fan, breathe, and shift in your color. Spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/quietledger` — a quiet searchable record of public shares from every desk. Soft glass rows with spring motion, filter by name, note, or size. Discord embeds on every link. Files live in the database. Different from a plain vault drawer. Prior features preserved. No traces of boosting.

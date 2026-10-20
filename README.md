@@ -15,6 +15,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softcomet` — drifting comet tails of light for what you carry. Multi-file drop with a shared note and accent color, soft trailing streaks that drift across and fade in your color. Spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/publicgallery` — recent public shares listed from the public_shares table. Quiet glass cards with copyable links, spring motion. Different from the local vault. Discord embeds on every link. Large files warned only. Prior features preserved. No traces of boosting.
 - `/softaurora` — soft flowing aurora curtains for what you carry. Multi-file drop with a shared note and accent color, soft horizontal ribbons of light that drift, breathe, and gently wave across the space in your color. Spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/softlumenveil` — soft rising lumen veils for what you carry. Multi-file drop with a shared note and accent color, quiet horizontal veils of light that rise, breathe, and fade in your color. Spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.

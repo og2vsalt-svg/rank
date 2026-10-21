@@ -1,39 +1,35 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishLocalFile, shareUrls } from '../lib/cloudShare';
-
-type Row = {
-  name: string;
-  size: number;
-  id?: string;
-  embed?: string;
-  error?: string;
-  warn?: string | null;
-};
-
-const curtains = Array.from({ length: 5 }, (_, i) => ({
-  id: i,
-  offset: i * 18,
-  delay: i * 0.4,
-  duration: 6 + i * 0.8,
-}));
+import { listPublicShares, publishLocalFile, shareUrls, type CloudMeta } from '../lib/cloudShare';
 
 export default function SoftAuroraPage() {
+  const [shares, setShares] = useState<CloudMeta[]>([]);
+  const [loading, setLoading] = useState(true);
   const [files, setFiles] = useState<File[]>([]);
   const [author, setAuthor] = useState('');
   const [caption, setCaption] = useState('');
-  const [color, setColor] = useState('#A78BFA');
+  const [color, setColor] = useState('#5EEAD4');
   const [busy, setBusy] = useState(false);
-  const [rows, setRows] = useState<Row[]>([]);
-  const [copied, setCopied] = useState('');
+  const [status, setStatus] = useState('');
 
   const heavy = useMemo(() => files.reduce((n, f) => n + f.size, 0) > 40 * 1024 * 1024, [files]);
+
+  const refresh = async () => {
+    setLoading(true);
+    const rows = await listPublicShares(24);
+    setShares(rows);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    refresh();
+  }, []);
 
   const send = async () => {
     if (!files.length) return;
     setBusy(true);
-    const next: Row[] = [];
+    setStatus('');
     for (const file of files) {
       const res = await publishLocalFile(file, {
         author,
@@ -42,119 +38,112 @@ export default function SoftAuroraPage() {
         cardTitle: caption || file.name,
         meta: { accent: color, source: 'softaurora' },
       });
-      next.push({
-        name: file.name,
-        size: file.size,
-        id: res.id,
-        embed: res.id ? shareUrls(res.id).embed : undefined,
-        error: res.ok ? undefined : res.error,
-        warn: res.warn,
-      });
-      setRows([...next]);
+      if (!res.ok) {
+        setStatus(res.error || 'upload failed');
+        break;
+      }
     }
+    setFiles([]);
     setBusy(false);
-  };
-
-  const copy = async (value: string) => {
-    await navigator.clipboard.writeText(value);
-    setCopied(value);
-    setTimeout(() => setCopied(''), 1200);
+    await refresh();
   };
 
   return (
     <div className="mesh min-h-screen relative overflow-hidden">
-      <Navbar />
+      {/* quiet flowing aurora */}
       <div className="pointer-events-none absolute inset-0">
-        {curtains.map((c) => (
-          <motion.div
-            key={c.id}
-            className="absolute inset-y-0 w-[22%] blur-2xl opacity-40"
-            style={{
-              left: `${c.offset}%`,
-              background: `linear-gradient(180deg, transparent, ${color}55, transparent)`,
-            }}
-            animate={{
-              x: ['-8%', '8%', '-5%'],
-              opacity: [0.25, 0.55, 0.3],
-              scaleY: [0.9, 1.05, 0.95],
-            }}
-            transition={{
-              duration: c.duration,
-              delay: c.delay,
-              repeat: Infinity,
-              ease: 'easeInOut',
-            }}
-          />
-        ))}
+        <motion.div
+          className="absolute -left-1/4 top-0 h-[140%] w-[70%] rounded-full opacity-40 blur-[100px]"
+          style={{ background: `radial-gradient(circle, ${color}55, transparent 70%)` }}
+          animate={{ x: [0, 40, -20, 0], y: [0, -30, 20, 0], scale: [1, 1.05, 0.98, 1] }}
+          transition={{ duration: 28, repeat: Infinity, ease: 'easeInOut' }}
+        />
+        <motion.div
+          className="absolute -right-1/4 top-1/4 h-[120%] w-[60%] rounded-full opacity-30 blur-[120px]"
+          style={{ background: `radial-gradient(circle, ${color}33, transparent 65%)` }}
+          animate={{ x: [0, -50, 30, 0], y: [0, 40, -15, 0], scale: [1, 0.95, 1.08, 1] }}
+          transition={{ duration: 34, repeat: Infinity, ease: 'easeInOut' }}
+        />
+        <motion.div
+          className="absolute left-1/3 bottom-0 h-[90%] w-[50%] rounded-full opacity-25 blur-[90px]"
+          style={{ background: `radial-gradient(circle, ${color}44, transparent 60%)` }}
+          animate={{ x: [0, 25, -35, 0], y: [0, -20, 10, 0] }}
+          transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut' }}
+        />
       </div>
-      <main className="mx-auto max-w-2xl px-5 pb-24 pt-10 relative">
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 110, damping: 24 }}>
-          <p className="text-[12px] uppercase tracking-[0.18em] text-white/40">softaurora</p>
-          <h1 className="mt-2 text-[36px] font-semibold tracking-[-0.045em]">quiet aurora curtains for what you carry</h1>
-          <p className="mt-3 text-[15.5px] leading-relaxed text-white/65">
-            Soft waving curtains of light that drift and breathe with your accent color. Multi-file drop, shared note, spring-loaded glass surfaces. Every file lands in storage and the public_shares table. Professional Discord embeds on every link. Large batches only warned for possible slowness. No hard limits. Prior desks preserved. No traces of boosting.
+
+      <Navbar />
+      <main className="relative mx-auto max-w-5xl px-5 pb-24 pt-10">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 110, damping: 20 }}>
+          <p className="text-[12px] uppercase tracking-[0.16em] text-white/45">softaurora</p>
+          <h1 className="mt-2 text-[34px] font-semibold tracking-[-0.04em]">quiet flowing lights for what you carry</h1>
+          <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-white/60">
+            Soft drifting bands of light that gently pulse and breathe in your accent color, like a quiet aurora over still water. Multi-file drop with a shared note. Each file lands in storage and the public_shares table with a polished Discord embed. Large files warned, never refused. Spring motion, glass surfaces. Prior desks remain untouched.
           </p>
         </motion.div>
 
-        <label className="glass mt-8 block cursor-pointer rounded-[28px] p-9 text-center transition hover:bg-white/[0.03]">
-          <input className="hidden" type="file" multiple onChange={(e) => setFiles(Array.from(e.target.files || []))} />
-          <div className="text-[15px] text-white/85">{files.length ? `${files.length} files ready` : 'choose files from this machine'}</div>
-          <div className="mt-1.5 text-[12px] text-white/40">any type · no hard cap · soft warning only</div>
-        </label>
-
-        {!!files.length && (
-          <ul className="mt-4 space-y-1.5">
-            {files.map((f) => (
-              <li key={f.name + f.size} className="flex items-center justify-between rounded-2xl bg-white/[0.035] px-4 py-2.5 text-[13px]">
-                <span className="truncate pr-3">{f.name}</span>
-                <span className="shrink-0 text-white/40">{(f.size / 1024).toFixed(0)} kb</span>
-              </li>
-            ))}
-          </ul>
-        )}
-
-        <div className="mt-5 grid gap-3">
-          <input value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="shared note that rides every card" className="glass rounded-2xl px-4 py-3.5 text-[14px] outline-none" />
-          <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="name, optional" className="glass rounded-2xl px-4 py-3.5 text-[14px] outline-none" />
-          <div className="flex items-center gap-3">
-            <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="h-11 w-16 cursor-pointer rounded-xl border border-white/10 bg-transparent" />
-            <span className="text-[13px] text-white/50">accent for aurora and cards</span>
-          </div>
-        </div>
-
-        {heavy && <p className="mt-3 text-[13px] text-amber-200/85">large batch. sending may feel slow. nothing is refused.</p>}
-
-        <motion.button
-          whileTap={{ scale: 0.965 }}
-          whileHover={{ scale: 1.015 }}
-          onClick={send}
-          disabled={!files.length || busy}
-          className="mt-5 w-full rounded-full px-4 py-3.5 text-[15px] font-medium text-black disabled:opacity-40"
-          style={{ background: color }}
-        >
-          {busy ? 'sending one by one…' : 'share the curtains'}
-        </motion.button>
-
-        {!!rows.length && (
-          <div className="mt-7 space-y-2.5">
-            {rows.map((r) => (
-              <div key={r.name + r.size} className="glass rounded-2xl px-4 py-3.5">
-                <div className="flex items-center justify-between gap-3">
-                  <p className="truncate text-[14px]">{r.name}</p>
-                  {r.embed ? (
-                    <button onClick={() => copy(r.embed!)} className="shrink-0 rounded-full bg-white/10 px-3 py-1 text-[12px]">
-                      {copied === r.embed ? 'copied' : 'copy /s'}
-                    </button>
-                  ) : (
-                    <span className="text-[12px] text-red-300">{r.error || 'failed'}</span>
-                  )}
-                </div>
-                {r.embed && <p className="mt-1.5 break-all text-[12px] text-white/45">{r.embed}</p>}
-                {r.warn && <p className="mt-1 text-[12px] text-amber-200/80">{r.warn}</p>}
+        <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_320px]">
+          <section>
+            {loading ? (
+              <p className="text-sm text-white/40">opening the lights…</p>
+            ) : !shares.length ? (
+              <p className="text-sm text-white/40">nothing shared yet. the first drop will appear in the glow.</p>
+            ) : (
+              <div className="grid gap-3 sm:grid-cols-2">
+                {shares.map((s, i) => (
+                  <motion.a
+                    key={s.id}
+                    href={shareUrls(s.id).embed}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.02, type: 'spring', stiffness: 120, damping: 18 }}
+                    className="glass block rounded-2xl p-4 hover:bg-white/[0.06] transition"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <p className="truncate text-[14px] font-medium">{s.name || s.id}</p>
+                      <span className="shrink-0 text-[11px] text-white/40">{((s.size || 0) / 1024).toFixed(0)} kb</span>
+                    </div>
+                    {s.caption && <p className="mt-1 line-clamp-2 text-[12px] text-white/50">{s.caption}</p>}
+                    <p className="mt-2 text-[11px] text-white/30">{s.author || 'anonymous'} · {s.createdAt ? new Date(s.createdAt).toLocaleDateString() : 'recent'}</p>
+                  </motion.a>
+                ))}
               </div>
-            ))}
-          </div>
-        )}
+            )}
+          </section>
+
+          <aside className="glass h-fit rounded-3xl p-5">
+            <p className="text-[13px] font-medium">add to the aurora</p>
+            <label className="mt-3 block cursor-pointer rounded-2xl bg-white/[0.04] p-6 text-center">
+              <input className="hidden" type="file" multiple onChange={(e) => setFiles(Array.from(e.target.files || []))} />
+              <div className="text-[14px] text-white/80">{files.length ? `${files.length} files ready` : 'drop or choose local files'}</div>
+              <div className="mt-1 text-[11px] text-white/40">any type · soft warning only</div>
+            </label>
+            {!!files.length && (
+              <ul className="mt-3 space-y-1 text-[12px] text-white/60">
+                {files.map((f) => (
+                  <li key={f.name + f.size} className="truncate">{f.name}</li>
+                ))}
+              </ul>
+            )}
+            <input value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="shared note" className="mt-3 w-full rounded-2xl bg-white/[0.04] px-3 py-2.5 text-[13px] outline-none" />
+            <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="name, optional" className="mt-2 w-full rounded-2xl bg-white/[0.04] px-3 py-2.5 text-[13px] outline-none" />
+            <div className="mt-2 flex items-center gap-2">
+              <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="h-9 w-12 cursor-pointer rounded-lg border border-white/10 bg-transparent" />
+              <span className="text-[12px] text-white/45">accent</span>
+            </div>
+            {heavy && <p className="mt-2 text-[12px] text-amber-200/80">large batch. sending may feel slow. nothing is refused.</p>}
+            <motion.button
+              whileTap={{ scale: 0.97 }}
+              onClick={send}
+              disabled={!files.length || busy}
+              className="mt-3 w-full rounded-full px-4 py-2.5 text-[14px] font-medium text-black disabled:opacity-40"
+              style={{ background: color }}
+            >
+              {busy ? 'filing…' : 'share into the aurora'}
+            </motion.button>
+            {status && <p className="mt-2 text-[12px] text-red-300">{status}</p>}
+          </aside>
+        </div>
       </main>
     </div>
   );

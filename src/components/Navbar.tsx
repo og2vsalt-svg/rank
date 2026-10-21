@@ -5,6 +5,7 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'softlumenorb', label: 'softlumenorb' },
   { to: 'softcascade', label: 'softcascade' },
   { to: 'auroraweave', label: 'auroraweave' },
   { to: 'softpetal', label: 'softpetal' },
@@ -62,6 +63,7 @@ const groups = [
   {
     title: 'light desks',
     items: [
+      { to: 'softlumenorb' as Route, label: 'softlumenorb' },
       { to: 'softcascade' as Route, label: 'softcascade' },
       { to: 'lumendrift' as Route, label: 'lumendrift' },
       { to: 'softflare' as Route, label: 'softflare' },

@@ -54,15 +54,6 @@ export default function SoftveilPage() {
     setTimeout(() => setCopied(''), 1200);
   };
 
-  const veils = useMemo(() => 
-    Array.from({ length: 8 }, (_, i) => ({
-      id: i,
-      left: 10 + (i * 10),
-      delay: i * 0.4,
-      duration: 6 + (i % 3),
-      opacity: 0.15 + (i % 4) * 0.05,
-    })), []);
-
   return (
     <div className="mesh min-h-screen">
       <Navbar />
@@ -72,25 +63,27 @@ export default function SoftveilPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
-          {veils.map((veil) => (
+          {[...Array(4)].map((_, i) => (
             <motion.div
-              key={veil.id}
-              className="absolute w-32 h-[120%] rounded-full"
+              key={i}
+              className="absolute rounded-[40px] blur-2xl"
               style={{
-                left: `${veil.left}%`,
-                background: `linear-gradient(to top, transparent, ${color}40, transparent)`,
-                filter: 'blur(20px)',
-                opacity: veil.opacity,
+                width: '120%',
+                height: 80 + i * 20,
+                background: `linear-gradient(90deg, transparent, ${color}22, transparent)`,
+                left: '-10%',
+                top: `${10 + i * 18}%`,
+                opacity: 0.4,
               }}
               animate={{
-                y: ['100%', '-120%'],
-                opacity: [veil.opacity * 0.5, veil.opacity, veil.opacity * 0.5],
+                x: ['-20%', '10%', '-20%'],
+                opacity: [0.25, 0.45, 0.25],
               }}
               transition={{
-                duration: veil.duration,
+                duration: 18 + i * 3,
                 repeat: Infinity,
                 ease: 'easeInOut',
-                delay: veil.delay,
+                delay: i * 1.2,
               }}
             />
           ))}
@@ -98,9 +91,9 @@ export default function SoftveilPage() {
 
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 110, damping: 20 }} className="relative">
           <p className="text-[12px] uppercase tracking-[0.16em] text-white/45">softveil</p>
-          <h1 className="mt-2 text-[34px] font-semibold tracking-[-0.04em]">quiet rising veils of light for what you carry</h1>
+          <h1 className="mt-2 text-[34px] font-semibold tracking-[-0.04em]">quiet veils of light for what you carry</h1>
           <p className="mt-3 text-[15px] leading-relaxed text-white/60">
-            Multi-file drop with a shared note and accent color. Soft translucent veils that gently rise, breathe, and fade upward in your color, like a quiet curtain of light. Spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned for possible slowness, never refused. Prior features and desks preserved. No traces of boosting.
+            Multi-file drop with shared note and accent. Soft horizontal veils of light that gently drift and breathe in your color, like quiet curtains of luminescence. Spring motion, glass surfaces. Each file uploads to storage and the public_shares table. Professional Discord embeds on every link. Large files receive only a gentle slowness warning — never refused. All prior desks remain intact. No traces of boosting.
           </p>
         </motion.div>
 
@@ -126,7 +119,7 @@ export default function SoftveilPage() {
           <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="name, optional" className="glass rounded-2xl px-4 py-3 text-[14px] outline-none" />
           <div className="flex items-center gap-3">
             <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="h-10 w-14 cursor-pointer rounded-xl border border-white/10 bg-transparent" />
-            <span className="text-[13px] text-white/50">accent for cards and rising veils</span>
+            <span className="text-[13px] text-white/50">accent for cards and drifting veils</span>
           </div>
         </div>
 
@@ -140,7 +133,7 @@ export default function SoftveilPage() {
           className="mt-4 w-full rounded-full px-4 py-3 text-[15px] font-medium text-white disabled:opacity-40"
           style={{ background: color }}
         >
-          {busy ? 'sending…' : 'share the quiet veil'}
+          {busy ? 'sending…' : 'share the veil'}
         </motion.button>
 
         {!!rows.length && (

@@ -16,7 +16,8 @@ export default function SoftconstellationPage() {
   const [files, setFiles] = useState<File[]>([]);
   const [author, setAuthor] = useState('');
   const [caption, setCaption] = useState('');
-  const [color, setColor] = useState('#64D2FF');
+  const [color, setColor] = useState('#60A5FA');
+  const [expiresHours, setExpiresHours] = useState('');
   const [busy, setBusy] = useState(false);
   const [rows, setRows] = useState<Row[]>([]);
   const [copied, setCopied] = useState('');
@@ -27,13 +28,15 @@ export default function SoftconstellationPage() {
     if (!files.length) return;
     setBusy(true);
     const next: Row[] = [];
+    const expiresAt = expiresHours ? new Date(Date.now() + Number(expiresHours) * 3600000).toISOString() : null;
     for (const file of files) {
       const res = await publishLocalFile(file, {
         author,
         caption: caption ? `${caption} · ${file.name}` : file.name,
         color,
         cardTitle: caption || file.name,
-        meta: { accent: color, source: 'softconstellation' },
+        expiresAt,
+        meta: { accent: color, source: 'softconstellation', expiresHours: expiresHours || null },
       });
       next.push({
         name: file.name,
@@ -54,14 +57,11 @@ export default function SoftconstellationPage() {
     setTimeout(() => setCopied(''), 1200);
   };
 
-  const stars = useMemo(() => 
-    Array.from({ length: 12 }, (_, i) => ({
-      id: i,
-      x: 15 + (i * 7) % 70,
-      y: 20 + (i * 13) % 60,
-      size: 4 + (i % 3) * 2,
-      delay: i * 0.3,
-    })), []);
+  const stars = useMemo(() => Array.from({ length: 12 }, (_, i) => ({
+    x: 20 + Math.random() * 60,
+    y: 15 + Math.random() * 70,
+    delay: i * 0.3,
+  })), []);
 
   return (
     <div className="mesh min-h-screen">
@@ -72,46 +72,46 @@ export default function SoftconstellationPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
-          {stars.map((star) => (
+          {/* Soft constellation stars */}
+          {stars.map((s, i) => (
             <motion.div
-              key={star.id}
+              key={i}
               className="absolute rounded-full"
               style={{
-                width: star.size,
-                height: star.size,
+                left: `${s.x}%`,
+                top: `${s.y}%`,
+                width: 4,
+                height: 4,
                 background: color,
-                left: `${star.x}%`,
-                top: `${star.y}%`,
-                boxShadow: `0 0 ${star.size * 2}px ${color}`,
-                filter: 'blur(0.5px)',
+                boxShadow: `0 0 8px ${color}80`,
               }}
               animate={{
-                opacity: [0.3, 1, 0.3],
-                scale: [0.8, 1.2, 0.8],
+                opacity: [0.2, 1, 0.2],
+                scale: [0.8, 1.3, 0.8],
               }}
               transition={{
-                duration: 3 + star.delay,
+                duration: 3 + (i % 3),
+                delay: s.delay,
                 repeat: Infinity,
                 ease: 'easeInOut',
-                delay: star.delay,
               }}
             />
           ))}
           {/* Connecting lines */}
-          <svg className="absolute inset-0 w-full h-full" style={{ opacity: 0.15 }}>
-            {stars.slice(0, -1).map((star, i) => {
-              const next = stars[i + 1];
+          <svg className="absolute inset-0 w-full h-full opacity-30" style={{ filter: 'blur(0.5px)' }}>
+            {stars.slice(0, 6).map((s, i) => {
+              const next = stars[(i + 2) % stars.length];
               return (
                 <motion.line
-                  key={`line-${i}`}
-                  x1={`${star.x}%`}
-                  y1={`${star.y}%`}
+                  key={i}
+                  x1={`${s.x}%`}
+                  y1={`${s.y}%`}
                   x2={`${next.x}%`}
                   y2={`${next.y}%`}
                   stroke={color}
                   strokeWidth="0.5"
-                  animate={{ opacity: [0.1, 0.4, 0.1] }}
-                  transition={{ duration: 4 + i * 0.2, repeat: Infinity, ease: 'easeInOut' }}
+                  animate={{ opacity: [0.1, 0.6, 0.1] }}
+                  transition={{ duration: 4 + i, repeat: Infinity, ease: 'easeInOut' }}
                 />
               );
             })}
@@ -120,9 +120,9 @@ export default function SoftconstellationPage() {
 
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 110, damping: 20 }} className="relative">
           <p className="text-[12px] uppercase tracking-[0.16em] text-white/45">softconstellation</p>
-          <h1 className="mt-2 text-[34px] font-semibold tracking-[-0.04em]">quiet connecting light stars for what you carry</h1>
+          <h1 className="mt-2 text-[34px] font-semibold tracking-[-0.04em]">quiet stellar constellation for what you carry</h1>
           <p className="mt-3 text-[15px] leading-relaxed text-white/60">
-            Multi-file drop with a shared note and accent color. Soft twinkling stars that breathe and connect with faint lines in your color, forming a quiet constellation. Spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned for possible slowness, never refused. Prior features and desks preserved. No traces of boosting.
+            Multi-file drop with shared note, accent color, and optional expiration. Soft twinkling stars that gently connect and breathe in your color, like a quiet constellation settling in still night. Spring motion, glass surfaces. Each file lands in storage and the public_shares table. Professional Discord embeds on every link. Large files receive only a gentle slowness warning — never refused. All prior desks remain intact. No traces of boosting.
           </p>
         </motion.div>
 
@@ -146,9 +146,10 @@ export default function SoftconstellationPage() {
         <div className="mt-4 grid gap-3">
           <input value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="shared note that rides every card" className="glass rounded-2xl px-4 py-3 text-[14px] outline-none" />
           <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="name, optional" className="glass rounded-2xl px-4 py-3 text-[14px] outline-none" />
+          <input value={expiresHours} onChange={(e) => setExpiresHours(e.target.value.replace(/[^0-9]/g, ''))} placeholder="expires in hours, optional" className="glass rounded-2xl px-4 py-3 text-[14px] outline-none" />
           <div className="flex items-center gap-3">
             <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="h-10 w-14 cursor-pointer rounded-xl border border-white/10 bg-transparent" />
-            <span className="text-[13px] text-white/50">accent for cards and constellation stars</span>
+            <span className="text-[13px] text-white/50">accent for constellation stars</span>
           </div>
         </div>
 
@@ -162,7 +163,7 @@ export default function SoftconstellationPage() {
           className="mt-4 w-full rounded-full px-4 py-3 text-[15px] font-medium text-white disabled:opacity-40"
           style={{ background: color }}
         >
-          {busy ? 'sending…' : 'share the quiet constellation'}
+          {busy ? 'constellating…' : 'cast into the constellation'}
         </motion.button>
 
         {!!rows.length && (

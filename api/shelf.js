@@ -15,6 +15,7 @@ const SUPABASE_KEY =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
 
 const COPY = {
+  quietmosaic: ['Quietmosaic — rankvault', 'A quiet mosaic of shared light. Multi-file drops with note, accent, and optional expiration. Images settle in a glass grid. Discord unfurls a clean card. Large drops warned, never refused.'],
   softveil: ['Softveil — rankvault', 'Quiet rising veils of light for shared files. Multi-file drop with note and accent. Lands in the share table. Discord unfurls a clean card. Large drops warned, never refused.'],
   lumina: ['Lumina — rankvault', 'Soft light for shared files. Multi-file drops with dedication and accent. Each lands in the share table. Discord unfurls a clean card. Large drops warned, never refused.'],
   nebula: ['Nebula — rankvault', 'A quiet cosmic drop. One local file with soft accent. Lands in the share table. Discord unfurls a clean card. Large drops warned, never refused.'],

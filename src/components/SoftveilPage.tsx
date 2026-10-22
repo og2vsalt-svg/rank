@@ -3,159 +3,140 @@ import { motion } from 'framer-motion';
 import Navbar from './Navbar';
 import { publishLocalFile, shareUrls } from '../lib/cloudShare';
 
-type Row = {
-  name: string;
-  size: number;
-  id?: string;
-  embed?: string;
-  error?: string;
-  warn?: string | null;
-};
-
 export default function SoftveilPage() {
   const [files, setFiles] = useState<File[]>([]);
   const [author, setAuthor] = useState('');
   const [caption, setCaption] = useState('');
-  const [color, setColor] = useState('#A78BFA');
+  const [color, setColor] = useState('#0A84FF');
   const [busy, setBusy] = useState(false);
-  const [rows, setRows] = useState<Row[]>([]);
-  const [copied, setCopied] = useState('');
+  const [status, setStatus] = useState('');
+  const [lastEmbed, setLastEmbed] = useState('');
 
   const heavy = useMemo(() => files.reduce((n, f) => n + f.size, 0) > 40 * 1024 * 1024, [files]);
 
   const send = async () => {
     if (!files.length) return;
     setBusy(true);
-    const next: Row[] = [];
+    setStatus('');
+    setLastEmbed('');
     for (const file of files) {
       const res = await publishLocalFile(file, {
         author,
         caption: caption ? `${caption} · ${file.name}` : file.name,
         color,
         cardTitle: caption || file.name,
-        meta: { accent: color, source: 'softveil' },
+        meta: { accent: color, source: 'softveil', veil: true },
       });
-      next.push({
-        name: file.name,
-        size: file.size,
-        id: res.id,
-        embed: res.id ? shareUrls(res.id).embed : undefined,
-        error: res.ok ? undefined : res.error,
-        warn: res.warn,
-      });
-      setRows([...next]);
+      if (!res.ok) {
+        setStatus(res.error || 'upload failed');
+        break;
+      }
+      if (res.embed) setLastEmbed(res.embed);
     }
+    setFiles([]);
     setBusy(false);
-  };
-
-  const copy = async (value: string) => {
-    await navigator.clipboard.writeText(value);
-    setCopied(value);
-    setTimeout(() => setCopied(''), 1200);
+    if (!status) setStatus('filed under the veil');
   };
 
   return (
-    <div className="mesh min-h-screen">
-      <Navbar />
-      <main className="mx-auto max-w-2xl px-5 pb-24 pt-10 relative">
-        <motion.div
-          className="absolute inset-0 pointer-events-none overflow-hidden"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-        >
-          {[...Array(4)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute rounded-[40px] blur-2xl"
-              style={{
-                width: '120%',
-                height: 80 + i * 20,
-                background: `linear-gradient(90deg, transparent, ${color}22, transparent)`,
-                left: '-10%',
-                top: `${10 + i * 18}%`,
-                opacity: 0.4,
-              }}
-              animate={{
-                x: ['-20%', '10%', '-20%'],
-                opacity: [0.25, 0.45, 0.25],
-              }}
-              transition={{
-                duration: 18 + i * 3,
-                repeat: Infinity,
-                ease: 'easeInOut',
-                delay: i * 1.2,
-              }}
-            />
-          ))}
-        </motion.div>
+    <div className="mesh min-h-screen relative overflow-hidden">
+      {/* soft layered veils */}
+      <div className="pointer-events-none absolute inset-0">
+        {[0, 1, 2, 3].map((i) => (
+          <motion.div
+            key={i}
+            className="absolute inset-0 opacity-30"
+            style={{
+              background: `radial-gradient(ellipse at ${30 + i * 15}% ${40 + i * 10}%, ${color}22, transparent 60%)`,
+              filter: 'blur(40px)',
+            }}
+            animate={{
+              y: [0, -30 + i * 10, 0],
+              x: [0, 20 - i * 8, 0],
+              opacity: [0.2, 0.4, 0.2],
+            }}
+            transition={{
+              duration: 12 + i * 3,
+              repeat: Infinity,
+              ease: 'easeInOut',
+            }}
+          />
+        ))}
+      </div>
 
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 110, damping: 20 }} className="relative">
+      <Navbar />
+      <main className="relative z-10 mx-auto max-w-3xl px-5 pb-24 pt-10">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: 'spring', stiffness: 110, damping: 20 }}
+        >
           <p className="text-[12px] uppercase tracking-[0.16em] text-white/45">softveil</p>
-          <h1 className="mt-2 text-[34px] font-semibold tracking-[-0.04em]">quiet veils of light for what you carry</h1>
-          <p className="mt-3 text-[15px] leading-relaxed text-white/60">
-            Multi-file drop with shared note and accent. Soft horizontal veils of light that gently drift and breathe in your color, like quiet curtains of luminescence. Spring motion, glass surfaces. Each file uploads to storage and the public_shares table. Professional Discord embeds on every link. Large files receive only a gentle slowness warning — never refused. All prior desks remain intact. No traces of boosting.
+          <h1 className="mt-2 text-[34px] font-semibold tracking-[-0.04em]">quiet layered veils for what you carry</h1>
+          <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-white/60">
+            Drop local files behind soft translucent layers that gently drift and breathe in your color, like quiet veils of light settling over still water. Multi-file with shared note and accent. Spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior desks remain untouched. No traces of boosting.
           </p>
         </motion.div>
 
-        <label className="glass mt-8 block cursor-pointer rounded-3xl p-8 text-center relative">
-          <input className="hidden" type="file" multiple onChange={(e) => setFiles(Array.from(e.target.files || []))} />
-          <div className="text-[15px] text-white/80">{files.length ? `${files.length} files ready` : 'drop or choose files from this machine'}</div>
-          <div className="mt-1 text-[12px] text-white/40">any type · soft warning only · no hard limits</div>
-        </label>
-
-        {!!files.length && (
-          <ul className="mt-4 space-y-1.5">
-            {files.map((f) => (
-              <li key={f.name + f.size} className="flex items-center justify-between rounded-2xl bg-white/[0.04] px-4 py-2.5 text-[13px]">
-                <span className="truncate pr-3">{f.name}</span>
-                <span className="shrink-0 text-white/40">{(f.size / 1024).toFixed(0)} kb</span>
-              </li>
-            ))}
-          </ul>
-        )}
-
-        <div className="mt-4 grid gap-3">
-          <input value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="shared note that rides every card" className="glass rounded-2xl px-4 py-3 text-[14px] outline-none" />
-          <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="name, optional" className="glass rounded-2xl px-4 py-3 text-[14px] outline-none" />
-          <div className="flex items-center gap-3">
-            <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="h-10 w-14 cursor-pointer rounded-xl border border-white/10 bg-transparent" />
-            <span className="text-[13px] text-white/50">accent for cards and drifting veils</span>
-          </div>
-        </div>
-
-        {heavy && <p className="mt-3 text-[13px] text-amber-200/80">large batch. sending may feel slow. nothing is refused.</p>}
-
-        <motion.button
-          whileTap={{ scale: 0.97 }}
-          whileHover={{ scale: 1.01 }}
-          onClick={send}
-          disabled={!files.length || busy}
-          className="mt-4 w-full rounded-full px-4 py-3 text-[15px] font-medium text-white disabled:opacity-40"
-          style={{ background: color }}
+        <motion.aside
+          className="glass mt-8 rounded-3xl p-6"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05, type: 'spring', stiffness: 120, damping: 18 }}
         >
-          {busy ? 'sending…' : 'share the veil'}
-        </motion.button>
-
-        {!!rows.length && (
-          <div className="mt-6 space-y-2">
-            {rows.map((r) => (
-              <div key={r.name + r.size} className="glass rounded-2xl px-4 py-3">
-                <div className="flex items-center justify-between gap-3">
-                  <p className="truncate text-[14px]">{r.name}</p>
-                  {r.embed ? (
-                    <button onClick={() => copy(r.embed!)} className="shrink-0 rounded-full bg-white/10 px-3 py-1 text-[12px]">
-                      {copied === r.embed ? 'copied' : 'copy link'}
-                    </button>
-                  ) : (
-                    <span className="text-[12px] text-red-300">{r.error || 'failed'}</span>
-                  )}
-                </div>
-                {r.embed && <p className="mt-1 break-all text-[12px] text-white/45">{r.embed}</p>}
-                {r.warn && <p className="mt-1 text-[12px] text-amber-200/80">{r.warn}</p>}
-              </div>
-            ))}
+          <p className="text-[13px] font-medium">let something settle behind the veil</p>
+          <label className="mt-4 block cursor-pointer rounded-2xl bg-white/[0.04] p-8 text-center">
+            <input className="hidden" type="file" multiple onChange={(e) => setFiles(Array.from(e.target.files || []))} />
+            <div className="text-[15px] text-white/85">{files.length ? `${files.length} files ready` : 'drop or choose local files'}</div>
+            <div className="mt-1 text-[11px] text-white/40">any type · soft warning only</div>
+          </label>
+          {!!files.length && (
+            <ul className="mt-3 space-y-1 text-[12px] text-white/60">
+              {files.map((f) => (
+                <li key={f.name + f.size} className="truncate">{f.name}</li>
+              ))}
+            </ul>
+          )}
+          <input
+            value={caption}
+            onChange={(e) => setCaption(e.target.value)}
+            placeholder="shared note"
+            className="mt-4 w-full rounded-2xl bg-white/[0.04] px-3 py-2.5 text-[13px] outline-none"
+          />
+          <input
+            value={author}
+            onChange={(e) => setAuthor(e.target.value)}
+            placeholder="name, optional"
+            className="mt-2 w-full rounded-2xl bg-white/[0.04] px-3 py-2.5 text-[13px] outline-none"
+          />
+          <div className="mt-3 flex items-center gap-2">
+            <input
+              type="color"
+              value={color}
+              onChange={(e) => setColor(e.target.value)}
+              className="h-9 w-12 cursor-pointer rounded-lg border border-white/10 bg-transparent"
+            />
+            <span className="text-[12px] text-white/45">accent</span>
           </div>
-        )}
+          {heavy && (
+            <p className="mt-2 text-[12px] text-amber-200/80">large batch. sending may feel slow. nothing is refused.</p>
+          )}
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            onClick={send}
+            disabled={!files.length || busy}
+            className="mt-4 w-full rounded-full px-4 py-2.5 text-[14px] font-medium text-white disabled:opacity-40"
+            style={{ background: color }}
+          >
+            {busy ? 'settling…' : 'share behind the veil'}
+          </motion.button>
+          {status && <p className="mt-3 text-[12px] text-white/50">{status}</p>}
+          {lastEmbed && (
+            <a href={lastEmbed} className="mt-2 block text-[12px] text-white/60 underline-offset-2 hover:underline">
+              open the share link
+            </a>
+          )}
+        </motion.aside>
       </main>
     </div>
   );

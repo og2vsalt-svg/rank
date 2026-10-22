@@ -6,6 +6,7 @@ type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
   { to: 'chronicle', label: 'chronicle' },
+  { to: 'softhalo', label: 'softhalo' },
   { to: 'softlumenhearth', label: 'softlumenhearth' },
   { to: 'softripple', label: 'softripple' },
   { to: 'softecho', label: 'softecho' },
@@ -43,9 +44,9 @@ export default function Navbar() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="mt-3 flex items-center justify-between rounded-2xl glass px-3 py-2 sm:px-4">
           <button onClick={() => go('home')} className="text-sm font-semibold tracking-tight">rankvault</button>
-          <div className="hidden md:flex items-center gap-1 text-sm">
+          <div className="hidden md:flex items-center gap-1 text-sm overflow-x-auto">
             {primary.map((item) => (
-              <button key={item.to} onClick={() => go(item.to)} className={`px-3 py-1.5 rounded-full transition ${route === item.to ? 'bg-white text-black' : 'text-neutral-300 hover:text-white hover:bg-white/10'}`}>
+              <button key={item.to} onClick={() => go(item.to)} className={`px-3 py-1.5 rounded-full transition whitespace-nowrap ${route === item.to ? 'bg-white text-black' : 'text-neutral-300 hover:text-white hover:bg-white/10'}`}>
                 {item.label}
               </button>
             ))}

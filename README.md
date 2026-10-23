@@ -16,6 +16,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softbasin` — quiet circular basin of shared light. Soft cards that gently orbit and bob in a still basin. Drop local files with shared note, accent, and optional hours until the light fades. Each file settles into storage and the public_shares table. Soft spring motion, glass surfaces, polished Discord embeds on every link. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/softcove` — quiet cove of shared light. Soft floating cards that gently bob on still water. Drop local files with shared note, accent, and optional hours until the light fades. Each file settles into storage and the public_shares table. Soft spring motion, glass surfaces, polished Discord embeds on every link. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/softvault` — quiet central vault of shared light. A still list of public shares with multi-file drop. Soft spring motion, glass surfaces, polished Discord embeds on every link. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/softstream` — quiet flowing stream of shared light. A gentle horizontal stream of public shares. Drop local files to let them drift into storage and the public_shares table. Soft spring motion, glass cards that settle as you scroll, professional Discord embeds on every link. Large files warned, never refused. Prior features preserved. No traces of boosting.

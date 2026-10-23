@@ -1,102 +1,145 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishLocalFile, shareUrls } from '../lib/cloudShare';
+import { listPublicShares, publishLocalFile, shareUrls, type CloudMeta } from '../lib/cloudShare';
 
 export default function QuietledgerPage() {
+  const [shares, setShares] = useState<CloudMeta[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [query, setQuery] = useState('');
   const [files, setFiles] = useState<File[]>([]);
-  const [entry, setEntry] = useState('');
+  const [note, setNote] = useState('');
+  const [color, setColor] = useState('#0A84FF');
   const [busy, setBusy] = useState(false);
-  const [warn, setWarn] = useState('');
-  const [links, setLinks] = useState<string[]>([]);
-  const [err, setErr] = useState('');
+  const [status, setStatus] = useState('');
 
-  const handleFiles = (list: FileList | null) => {
-    const arr = Array.from(list || []);
-    setFiles(arr);
-    setWarn(arr.some(f => f.size > 45 * 1024 * 1024) ? 'large attachment. the send may feel slower. never refused.' : '');
+  const heavy = useMemo(() => files.reduce((n, f) => n + f.size, 0) > 40 * 1024 * 1024, [files]);
+
+  const filtered = useMemo(() => {
+    const q = query.toLowerCase().trim();
+    if (!q) return shares;
+    return shares.filter(s =>
+      (s.name || '').toLowerCase().includes(q) ||
+      (s.caption || '').toLowerCase().includes(q) ||
+      (s.author || '').toLowerCase().includes(q)
+    );
+  }, [shares, query]);
+
+  const refresh = async () => {
+    setLoading(true);
+    const rows = await listPublicShares(48);
+    setShares(rows);
+    setLoading(false);
   };
 
-  const publish = async () => {
-    if (!entry.trim() && !files.length) return setErr('write an entry or attach a file');
+  useEffect(() => {
+    refresh();
+  }, []);
+
+  const send = async () => {
+    if (!files.length) return;
     setBusy(true);
-    setErr('');
-    const created: string[] = [];
-    if (files.length) {
-      for (const file of files) {
-        const res = await publishLocalFile(file, {
-          caption: entry || 'quiet ledger entry',
-          cardTitle: file.name,
-          meta: { desk: 'quietledger', hasEntry: !!entry.trim() },
-        });
-        if (res.ok && res.id) created.push(shareUrls(res.id).app);
-        else setErr(res.error || 'issue with a file');
-      }
-    } else {
-      // pure note share via a tiny placeholder if needed — fall back to caption-only by publishing a text blob
-      const blob = new Blob([entry], { type: 'text/plain' });
-      const file = new File([blob], 'ledger.txt', { type: 'text/plain' });
+    setStatus('');
+    for (const file of files) {
       const res = await publishLocalFile(file, {
-        caption: entry,
-        cardTitle: 'quiet ledger',
-        meta: { desk: 'quietledger', noteOnly: true },
+        caption: note ? `${note} · ${file.name}` : file.name,
+        color,
+        cardTitle: note || file.name,
+        meta: { accent: color, source: 'quietledger' },
       });
-      if (res.ok && res.id) created.push(shareUrls(res.id).app);
-      else setErr(res.error || 'could not file the entry');
+      if (!res.ok) {
+        setStatus(res.error || 'upload failed');
+        break;
+      }
     }
-    setLinks(created);
-    if (created[0]) try { await navigator.clipboard.writeText(created[0]); } catch {}
+    setFiles([]);
     setBusy(false);
+    await refresh();
   };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 105, damping: 19 }}
-          className="glass rounded-[32px] p-8"
-        >
-          <p className="text-[#0A84FF] text-sm mb-2 tracking-wide">quietledger</p>
-          <h1 className="text-3xl font-semibold mb-3 tracking-tight">write first. attach if you wish.</h1>
-          <p className="text-neutral-400 text-sm mb-6 leading-relaxed">
-            A longer entry that travels with optional files. Soft spring animations, glass surfaces, polished Discord embeds on every link. Everything lands in the database. Large files warned, never refused.
+      <main className="mx-auto max-w-5xl px-5 pb-24 pt-10">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 110, damping: 20 }}>
+          <p className="text-[12px] uppercase tracking-[0.16em] text-white/45">quietledger</p>
+          <h1 className="mt-2 text-[34px] font-semibold tracking-[-0.04em]">a quiet ledger of shared light</h1>
+          <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-white/60">
+            Search the public record of what has been shared across every desk, or drop local files into the ledger. Soft glass rows that settle gently. Each file lands in storage and the public_shares table with a polished Discord embed. Large files warned, never refused. Prior features preserved.
           </p>
-          <textarea
-            value={entry}
-            onChange={(e) => setEntry(e.target.value)}
-            placeholder="write the ledger entry…"
-            rows={6}
-            className="w-full mb-4 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm placeholder:text-neutral-500 focus:outline-none focus:border-[#0A84FF]/40 transition-all resize-none"
-          />
-          <label
-            className="block cursor-pointer rounded-2xl border border-dashed border-white/15 hover:border-[#0A84FF]/40 p-6 text-center transition-all duration-300"
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => { e.preventDefault(); handleFiles(e.dataTransfer.files); }}
-          >
-            <input type="file" multiple className="hidden" onChange={(e) => handleFiles(e.target.files)} />
-            <p className="text-sm text-neutral-300">{files.length ? `${files.length} attachment${files.length > 1 ? 's' : ''}` : 'optional files (or leave empty for note only)'}</p>
-          </label>
-          {warn && <p className="text-xs text-amber-300/80 mt-3">{warn}</p>}
-          {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
-          <motion.button
-            whileTap={{ scale: 0.975 }}
-            whileHover={{ scale: 1.01 }}
-            onClick={publish}
-            disabled={busy || (!entry.trim() && !files.length)}
-            className="w-full mt-4 py-3 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#409CFF] disabled:opacity-50 transition"
-          >
-            {busy ? 'filing…' : 'file the entry'}
-          </motion.button>
-          {links.length > 0 && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-5 text-xs text-neutral-400 break-all space-y-1">
-              {links.map((l, i) => <div key={i}>filed: {l}</div>)}
-            </motion.div>
-          )}
         </motion.div>
-      </div>
+
+        <div className="mt-6">
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="search names, notes, authors…"
+            className="w-full rounded-2xl bg-white/[0.04] px-4 py-3 text-[14px] outline-none focus:bg-white/[0.06]"
+          />
+        </div>
+
+        <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_320px]">
+          <section>
+            {loading ? (
+              <p className="text-sm text-white/40">opening the ledger…</p>
+            ) : !filtered.length ? (
+              <p className="text-sm text-white/40">nothing matches. the first drop will appear here.</p>
+            ) : (
+              <div className="space-y-2">
+                {filtered.map((s, i) => (
+                  <motion.a
+                    key={s.id}
+                    href={shareUrls(s.id).embed}
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.015, type: 'spring', stiffness: 140, damping: 20 }}
+                    className="glass flex items-center justify-between gap-4 rounded-2xl p-4 hover:bg-white/[0.06] transition block"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-[14px] font-medium">{s.name || s.id}</p>
+                      {s.caption && <p className="mt-0.5 truncate text-[12px] text-white/50">{s.caption}</p>}
+                      <p className="mt-1 text-[11px] text-white/30">{s.author || 'anonymous'} · {s.createdAt ? new Date(s.createdAt).toLocaleDateString() : 'recent'}</p>
+                    </div>
+                    <span className="shrink-0 text-[11px] text-white/40">{((s.size || 0) / 1024).toFixed(0)} kb</span>
+                  </motion.a>
+                ))}
+              </div>
+            )}
+          </section>
+
+          <aside className="glass h-fit rounded-3xl p-5">
+            <p className="text-[13px] font-medium">add to the ledger</p>
+            <label className="mt-3 block cursor-pointer rounded-2xl bg-white/[0.04] p-6 text-center">
+              <input className="hidden" type="file" multiple onChange={(e) => setFiles(Array.from(e.target.files || []))} />
+              <div className="text-[14px] text-white/80">{files.length ? `${files.length} files ready` : 'drop or choose local files'}</div>
+              <div className="mt-1 text-[11px] text-white/40">any type · soft warning only</div>
+            </label>
+            {!!files.length && (
+              <ul className="mt-3 space-y-1 text-[12px] text-white/60">
+                {files.map((f) => (
+                  <li key={f.name + f.size} className="truncate">{f.name}</li>
+                ))}
+              </ul>
+            )}
+            <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="shared note" className="mt-3 w-full rounded-2xl bg-white/[0.04] px-3 py-2.5 text-[13px] outline-none" />
+            <div className="mt-2 flex items-center gap-2">
+              <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="h-9 w-12 cursor-pointer rounded-lg border border-white/10 bg-transparent" />
+              <span className="text-[12px] text-white/45">accent</span>
+            </div>
+            {heavy && <p className="mt-2 text-[12px] text-amber-200/80">large batch. sending may feel slow. nothing is refused.</p>}
+            <motion.button
+              whileTap={{ scale: 0.97 }}
+              onClick={send}
+              disabled={!files.length || busy}
+              className="mt-3 w-full rounded-full px-4 py-2.5 text-[14px] font-medium text-white disabled:opacity-40"
+              style={{ background: color }}
+            >
+              {busy ? 'filing…' : 'share into the ledger'}
+            </motion.button>
+            {status && <p className="mt-2 text-[12px] text-red-300">{status}</p>}
+          </aside>
+        </div>
+      </main>
     </div>
   );
 }

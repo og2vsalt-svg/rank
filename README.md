@@ -16,6 +16,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softauroracanvas` — quiet aurora canvas of shared light. Multi-file drop with shared note and soft accent. Gentle flowing bands of aurora light that undulate, breathe, and settle in your color. Spring motion, glass surfaces, polished Discord embeds on every link. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
+
 - `/quiettimeline` — quiet chronological timeline of public shares. Soft vertical thread of settled files and notes. Browse recent drops in order. Spring motion, glass surfaces, polished Discord embeds on every link. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 
 - `/whisperwall` — short public notes wall. Leave a 280-character whisper. Independent of file desks. Spring motion, glass surfaces. Discord embeds on share links from other desks. Prior features preserved. No traces of boosting.

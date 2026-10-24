@@ -16,6 +16,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softstillroom` — quiet still room for settling light. Soft floating shelves that gently breathe and settle in your color. Multi-file drop with shared note and accent color. Spring motion, glass surfaces, polished Discord embeds on every link. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
+
 - `/quietnexus` — quiet nexus of shared light. Soft points of public shares gently orbit a still center. Multi-file drop with shared note and accent color. Spring motion, glass surfaces, polished Discord embeds on every link. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 
 - `/softlumendrift` — quiet drift of shared light. Soft orbs that gently drift and breathe across a still field. Multi-file drop with shared note, accent color, and optional hours until the light fades. Soft spring motion, glass surfaces, polished Discord embeds on every link. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.

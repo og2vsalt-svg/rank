@@ -15,6 +15,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softlumengrove` — a quiet grove of shared light. Shares settle into soft organic clusters among the trees, gently breathing as you scroll. Multi-file drop with shared note, accent color, and optional hours until the light fades. Spring motion, glass surfaces, polished Discord embeds on every link. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
+
 - `/softlumenpath` — a quiet drifting path of shared light. Shares settle along a soft vertical path with connecting points. Multi-file drop with shared note, accent color, and optional hours until the light fades. Spring motion, glass surfaces, polished Discord embeds on every link. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 
 - `/quietlibrary` — a still shelf of shared things. Searchable, filterable library of public shares. Drop local files to settle them into storage and the public_shares table. Soft spring motion, glass surfaces, polished Discord embeds on every link. Large files warned, never refused. Prior features preserved. No traces of boosting.

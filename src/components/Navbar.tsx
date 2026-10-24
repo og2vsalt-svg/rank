@@ -5,6 +5,8 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'softlumenpool', label: 'softlumenpool' },
+  { to: 'softstillroom', label: 'softstillroom' },
   { to: 'softhelix', label: 'softhelix' },
   { to: 'quietprism', label: 'quietprism' },
   { to: 'lumenring', label: 'lumenring' },
@@ -68,11 +70,6 @@ export default function Navbar() {
                 {item.label}
               </button>
             ))}
-          </div>
-          <div className="flex items-center gap-2">
-            {user ? (
-              <button onClick={signOut} className="text-xs text-neutral-400 hover:text-white px-2">out</button>
-            ) : null}
           </div>
         </div>
       </div>

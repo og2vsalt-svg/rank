@@ -16,6 +16,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softlumendrift` — quiet drift of shared light. Soft orbs that gently drift and breathe across a still field. Multi-file drop with shared note, accent color, and optional hours until the light fades. Soft spring motion, glass surfaces, polished Discord embeds on every link. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
+
 - `/softhelix` — quiet helical stream of shared light. Soft points orbit and rise in spring motion. Multi-file drop with shared note and accent color. Soft spring motion, glass surfaces, polished Discord embeds on every link. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/softribbon` — quiet vertical ribbon of shared light. A still list of public shares with multi-file drop and accent. Soft spring motion, glass surfaces, polished Discord embeds on every link. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/softlumenweave` — quiet woven threads of shared light. Multi-file drop with shared note and accent color. Soft luminous threads that gently weave, breathe, and settle in your color, like quiet light stitching through still air. Spring motion, glass surfaces, polished Discord embeds on every link. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.

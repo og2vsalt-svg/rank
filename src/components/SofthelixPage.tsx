@@ -1,173 +1,154 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
 import { publishLocalFile, shareUrls } from '../lib/cloudShare';
 
-type Row = {
-  name: string;
-  size: number;
-  id?: string;
-  embed?: string;
-  error?: string;
-  warn?: string | null;
-};
-
-const helices = Array.from({ length: 8 }, (_, i) => ({
-  id: i,
-  offset: i * 0.4,
-  radius: 60 + i * 12,
-}));
+const HELIX_COLORS = ['#0A84FF', '#5E5CE6', '#BF5AF2', '#FF375F', '#FF9F0A', '#30D158'];
 
 export default function SofthelixPage() {
   const [files, setFiles] = useState<File[]>([]);
-  const [author, setAuthor] = useState('');
-  const [caption, setCaption] = useState('');
-  const [color, setColor] = useState('#BF5AF2');
+  const [note, setNote] = useState('');
+  const [color, setColor] = useState('#0A84FF');
   const [busy, setBusy] = useState(false);
-  const [rows, setRows] = useState<Row[]>([]);
-  const [copied, setCopied] = useState('');
+  const [warn, setWarn] = useState('');
+  const [links, setLinks] = useState<string[]>([]);
+  const [err, setErr] = useState('');
 
-  const heavy = useMemo(() => files.reduce((n, f) => n + f.size, 0) > 40 * 1024 * 1024, [files]);
-
-  const send = async () => {
-    if (!files.length) return;
-    setBusy(true);
-    const next: Row[] = [];
-    for (const file of files) {
-      const res = await publishLocalFile(file, {
-        author,
-        caption: caption ? `${caption} · ${file.name}` : file.name,
-        color,
-        cardTitle: caption || file.name,
-        meta: { accent: color, source: 'softhelix' },
-      });
-      next.push({
-        name: file.name,
-        size: file.size,
-        id: res.id,
-        embed: res.id ? shareUrls(res.id).embed : undefined,
-        error: res.ok ? undefined : res.error,
-        warn: res.warn,
-      });
-      setRows([...next]);
-    }
-    setBusy(false);
+  const onDrop = (list: FileList | null) => {
+    if (!list?.length) return;
+    const arr = Array.from(list);
+    setFiles(arr);
+    const big = arr.some((f) => f.size > 40 * 1024 * 1024);
+    setWarn(big ? 'large drop. the browser may feel slow while it sends. no hard limit.' : '');
+    setErr('');
+    setLinks([]);
   };
 
-  const copy = async (value: string) => {
-    await navigator.clipboard.writeText(value);
-    setCopied(value);
-    setTimeout(() => setCopied(''), 1200);
+  const publish = async () => {
+    if (!files.length) return;
+    setBusy(true);
+    setErr('');
+    const newLinks: string[] = [];
+    try {
+      for (const file of files) {
+        const res = await publishLocalFile(file, {
+          caption: note || 'quiet helical light',
+          color,
+          cardTitle: file.name,
+          meta: { desk: 'softhelix' },
+        });
+        if (res.ok && res.id) {
+          newLinks.push(shareUrls(res.id).app);
+          if (res.warn) setWarn(res.warn);
+        } else {
+          setErr(res.error || 'failed to land one file');
+        }
+      }
+      setLinks(newLinks);
+      if (newLinks.length) {
+        try { await navigator.clipboard.writeText(newLinks.join('\n')); } catch {}
+      }
+    } catch (e: any) {
+      setErr(e?.message || 'publish failed');
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
     <div className="mesh min-h-screen relative overflow-hidden">
       <Navbar />
-      <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-        {helices.map((h) => (
-          <motion.div
-            key={h.id}
-            className="absolute rounded-full"
-            style={{
-              width: 6,
-              height: 6,
-              background: color,
-              boxShadow: `0 0 12px ${color}`,
-            }}
-            animate={{
-              rotate: 360,
-              x: [
-                Math.cos(h.offset) * h.radius,
-                Math.cos(h.offset + Math.PI) * h.radius,
-                Math.cos(h.offset + Math.PI * 2) * h.radius,
-              ],
-              y: [
-                Math.sin(h.offset) * h.radius * 0.4,
-                Math.sin(h.offset + Math.PI) * h.radius * 0.4,
-                Math.sin(h.offset + Math.PI * 2) * h.radius * 0.4,
-              ],
-            }}
-            transition={{
-              duration: 16 + h.id * 2,
-              repeat: Infinity,
-              ease: 'linear',
-            }}
-          />
-        ))}
-      </div>
-
-      <main className="relative z-10 max-w-xl mx-auto px-5 pt-28 pb-20">
+      <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
         <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 100, damping: 20 }}
+          className="relative w-64 h-64"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 40, repeat: Infinity, ease: 'linear' }}
         >
-          <p className="text-[12px] uppercase tracking-[0.16em] text-white/45">softhelix</p>
-          <h1 className="mt-2 text-[34px] font-semibold tracking-[-0.04em] text-white">gentle helical light</h1>
-          <p className="mt-3 text-[15px] leading-relaxed text-white/60">
-            Quiet helical paths of light for what you carry. Multi-file drop with a shared note and accent color. Soft points that spiral and breathe in your color. Spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved.
-          </p>
+          {Array.from({ length: 8 }).map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-3 h-3 rounded-full"
+              style={{
+                background: HELIX_COLORS[i % HELIX_COLORS.length],
+                left: '50%',
+                top: '50%',
+                opacity: 0.8,
+              }}
+              animate={{
+                x: Math.cos((i / 8) * Math.PI * 2) * (80 + i * 4),
+                y: Math.sin((i / 8) * Math.PI * 2) * (40 + i * 2) + (i - 4) * 12,
+                scale: [0.6, 1.1, 0.6],
+              }}
+              transition={{
+                duration: 6 + i * 0.3,
+                repeat: Infinity,
+                ease: 'easeInOut',
+                delay: i * 0.1,
+              }}
+            />
+          ))}
+          <div
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-1 h-32 rounded-full"
+            style={{ background: `${color}66`, transform: 'translateX(-50%) translateY(-50%)' }}
+          />
         </motion.div>
-
-        <label className="glass mt-8 block cursor-pointer rounded-3xl p-8 text-center">
-          <input className="hidden" type="file" multiple onChange={(e) => setFiles(Array.from(e.target.files || []))} />
-          <div className="text-[15px] text-white/80">{files.length ? `${files.length} files ready` : 'choose files from this machine'}</div>
-          <div className="mt-1 text-[12px] text-white/40">any type · no hard cap · soft warning only</div>
-        </label>
-
-        {!!files.length && (
-          <ul className="mt-4 space-y-1.5">
-            {files.map((f) => (
-              <li key={f.name + f.size} className="flex items-center justify-between rounded-2xl bg-white/[0.04] px-4 py-2.5 text-[13px]">
-                <span className="truncate pr-3">{f.name}</span>
-                <span className="shrink-0 text-white/40">{(f.size / 1024).toFixed(0)} kb</span>
-              </li>
-            ))}
-          </ul>
-        )}
-
-        <div className="mt-4 grid gap-3">
-          <input value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="shared note that rides every card" className="glass rounded-2xl px-4 py-3 text-[14px] outline-none" />
-          <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="name, optional" className="glass rounded-2xl px-4 py-3 text-[14px] outline-none" />
-          <div className="flex items-center gap-3">
-            <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="h-10 w-14 cursor-pointer rounded-xl border border-white/10 bg-transparent" />
-            <span className="text-[13px] text-white/50">accent for helix and cards</span>
-          </div>
-        </div>
-
-        {heavy && <p className="mt-3 text-[13px] text-amber-200/80">large batch. sending may feel slow. nothing is refused.</p>}
-
-        <motion.button
-          whileTap={{ scale: 0.96 }}
-          onClick={send}
-          disabled={!files.length || busy}
-          className="mt-4 w-full rounded-full px-4 py-3 text-[15px] font-medium text-white disabled:opacity-40"
-          style={{ background: color }}
+      </div>
+      <div className="relative pt-28 pb-20 px-5 max-w-2xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: 'spring', stiffness: 120, damping: 22 }}
+          className="glass rounded-[32px] p-8"
         >
-          {busy ? 'sending one by one…' : 'share the helix'}
-        </motion.button>
-
-        {!!rows.length && (
-          <div className="mt-6 space-y-2">
-            {rows.map((r) => (
-              <div key={r.name + r.size} className="glass rounded-2xl px-4 py-3">
-                <div className="flex items-center justify-between gap-3">
-                  <p className="truncate text-[14px]">{r.name}</p>
-                  {r.embed ? (
-                    <button onClick={() => copy(r.embed!)} className="shrink-0 rounded-full bg-white/10 px-3 py-1 text-[12px]">
-                      {copied === r.embed ? 'copied' : 'copy /s'}
-                    </button>
-                  ) : (
-                    <span className="text-[12px] text-red-300">{r.error || 'failed'}</span>
-                  )}
-                </div>
-                {r.embed && <p className="mt-1 break-all text-[12px] text-white/45">{r.embed}</p>}
-                {r.warn && <p className="mt-1 text-[12px] text-amber-200/80">{r.warn}</p>}
-              </div>
-            ))}
+          <p className="text-sm mb-2 tracking-wide" style={{ color }}>softhelix</p>
+          <h1 className="text-3xl font-semibold mb-3 tracking-tight">quiet helical stream of shared light.</h1>
+          <p className="text-neutral-400 text-sm leading-relaxed mb-6">
+            Drop files into a gentle helix. Soft points of light orbit and rise in spring motion, settling in your accent color. Each lands in storage and the public_shares table with a polished Discord embed. Large files warned, never refused. Prior desks remain untouched.
+          </p>
+          <div className="space-y-4 mb-6">
+            <input
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="shared note (optional)"
+              className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-white/20"
+            />
+            <div className="flex items-center gap-3">
+              <label className="text-xs text-neutral-500">accent</label>
+              <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="w-10 h-10 rounded-full cursor-pointer border-0" />
+              <span className="text-xs text-neutral-400">{color}</span>
+            </div>
           </div>
-        )}
-      </main>
+          <label
+            className="block cursor-pointer rounded-[24px] border border-dashed border-white/15 hover:border-white/30 p-10 text-center transition"
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => { e.preventDefault(); onDrop(e.dataTransfer.files); }}
+          >
+            <input type="file" multiple className="hidden" onChange={(e) => onDrop(e.target.files)} />
+            <p className="text-white font-medium">{files.length ? `${files.length} file${files.length > 1 ? 's' : ''} ready` : 'click or drop files'}</p>
+            <p className="text-xs text-neutral-500 mt-2">no hard limits — only gentle warnings</p>
+          </label>
+          {warn && <p className="text-xs text-amber-300/80 mt-4">{warn}</p>}
+          {err && <p className="text-xs text-red-400 mt-4">{err}</p>}
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            whileHover={{ scale: 1.02 }}
+            disabled={busy || !files.length}
+            onClick={publish}
+            className="mt-6 w-full py-3 rounded-full text-sm font-medium disabled:opacity-40"
+            style={{ background: color, color: '#000' }}
+          >
+            {busy ? 'winding…' : 'share through the helix'}
+          </motion.button>
+          {links.length > 0 && (
+            <div className="mt-6 space-y-2">
+              <p className="text-xs text-neutral-400">links copied:</p>
+              {links.map((l) => (
+                <p key={l} className="text-xs text-neutral-300 break-all">{l}</p>
+              ))}
+            </div>
+          )}
+        </motion.div>
+      </div>
     </div>
   );
 }

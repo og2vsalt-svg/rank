@@ -16,6 +16,7 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/quietprism` — quiet prism of shared light. Multi-file drop with shared note and accent color. Soft spectral bands refract, breathe, and settle in your color, like quiet light splitting through a still prism. Spring motion, glass surfaces, polished Discord embeds on every link. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/softrefract` — quiet refracted bands of shared light. Horizontal soft strips of public shares. Drop local files to settle them into storage and the public_shares table. Gentle spring motion, glass surfaces, polished Discord embeds on every link. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/lumenring` — quiet glowing ring of shared light. Drop local files with shared note and accent color. Soft spring motion, glass surfaces, polished Discord embeds on every link. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 - `/softbasin` — quiet circular basin of shared light. Soft cards that gently orbit and bob in a still basin. Drop local files with shared note, accent, and optional hours until the light fades. Each file settles into storage and the public_shares table. Soft spring motion, glass surfaces, polished Discord embeds on every link. Large files warned, never refused. Prior features preserved. No traces of boosting.

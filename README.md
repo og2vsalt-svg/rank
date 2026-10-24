@@ -16,6 +16,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softlumenmist` — quiet mist of shared light. Multi-file drop with shared note and soft accent. Gentle layers of luminous mist that drift, breathe, and settle in your color, like quiet fog catching light over still water. Spring motion, glass surfaces, polished Discord embeds on every link. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
+
 - `/softglimmer` — quiet glimmer of shared light. Multi-file drop with shared note and soft accent. Soft points of light that gently sparkle, breathe, and settle in your color, like quiet glimmers of starlight keeping watch over what you set down. Spring motion, glass surfaces, polished Discord embeds on every link. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 
 - `/softaurora` — quiet aurora of shared light. Multi-file drop with shared note and soft accent. Gentle flowing bands of aurora light that undulate, breathe, and settle in your color, like quiet northern lights keeping watch over what you set down. Spring motion, glass surfaces, polished Discord embeds on every link. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.

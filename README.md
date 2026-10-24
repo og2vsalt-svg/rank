@@ -16,6 +16,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/quiethearth` — quiet hearth of shared light. Multi-file drop with shared note and warm accent. Soft embers of light that gently rise, pulse, and settle in your color, like a quiet hearth keeping watch over what you set down. Spring motion, glass surfaces, polished Discord embeds on every link. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
+
 - `/quietveil` — quiet veiled light for what you carry. Multi-file drop with shared note and soft accent. Gentle layered veils of light that softly diffuse and settle in your color, like quiet mist drawing a veil across still air. Spring motion, glass surfaces, polished Discord embeds on every link. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 
 - `/quietfog` — quiet fog of shared light. Soft layers of public shares that gently drift and settle like quiet fog in your accent color. Multi-file drop with shared note. Spring motion, glass surfaces, polished Discord embeds on every link. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.

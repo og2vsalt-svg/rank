@@ -16,6 +16,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softbloom` — quiet blooming petals of shared light. Soft petals that gently unfurl, breathe, and settle in your accent color, like quiet blossoms opening in still air. Multi-file drop with shared note and optional hours until the bloom fades. Spring motion, glass surfaces, polished Discord embeds on every link. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
+
 - `/softlumenpool` — quiet still pool of floating light. Soft orbs that gently bob and drift across a still pool in your accent color. Multi-file drop with shared note and optional hours until the light fades. Spring motion, glass surfaces, polished Discord embeds on every link. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
 
 - `/softstillroom` — quiet still room for settling light. Soft floating shelves that gently breathe and settle in your color. Multi-file drop with shared note and accent color. Spring motion, glass surfaces, polished Discord embeds on every link. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.

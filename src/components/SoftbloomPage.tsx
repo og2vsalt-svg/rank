@@ -16,7 +16,8 @@ export default function SoftbloomPage() {
   const [files, setFiles] = useState<File[]>([]);
   const [author, setAuthor] = useState('');
   const [caption, setCaption] = useState('');
-  const [color, setColor] = useState('#F472B6');
+  const [color, setColor] = useState('#F9A8D4');
+  const [hours, setHours] = useState('');
   const [busy, setBusy] = useState(false);
   const [rows, setRows] = useState<Row[]>([]);
   const [copied, setCopied] = useState('');
@@ -27,13 +28,15 @@ export default function SoftbloomPage() {
     if (!files.length) return;
     setBusy(true);
     const next: Row[] = [];
+    const expiresAt = hours ? new Date(Date.now() + Number(hours) * 3600 * 1000).toISOString() : null;
     for (const file of files) {
       const res = await publishLocalFile(file, {
         author,
         caption: caption ? `${caption} · ${file.name}` : file.name,
         color,
         cardTitle: caption || file.name,
-        meta: { accent: color, source: 'softbloom' },
+        expiresAt,
+        meta: { accent: color, source: 'softbloom', hours: hours || null },
       });
       next.push({
         name: file.name,
@@ -63,44 +66,41 @@ export default function SoftbloomPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
-          {[...Array(12)].map((_, i) => {
-            const angle = (i / 12) * Math.PI * 2;
-            const radius = 25 + (i % 4) * 10;
-            return (
-              <motion.div
-                key={i}
-                className="absolute rounded-full"
-                style={{
-                  width: 12,
-                  height: 24,
-                  background: color,
-                  left: `calc(50% + ${Math.cos(angle) * radius}px)`,
-                  top: `calc(40% + ${Math.sin(angle) * radius}px)`,
-                  borderRadius: '50% 50% 50% 0',
-                  transformOrigin: 'center',
-                  opacity: 0.6,
-                }}
-                animate={{
-                  scale: [0.5, 1.2, 0.8, 1],
-                  rotate: [0, 15, -10, 0],
-                  opacity: [0.3, 0.8, 0.4, 0.6],
-                }}
-                transition={{
-                  duration: 5 + (i % 3),
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                  delay: i * 0.25,
-                }}
-              />
-            );
-          })}
+          {[...Array(8)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute rounded-full origin-bottom"
+              style={{
+                width: `${32 + (i % 4) * 12}px`,
+                height: `${48 + (i % 3) * 16}px`,
+                left: `${15 + (i * 9) % 70}%`,
+                top: `${35 + (i * 7) % 40}%`,
+                background: `radial-gradient(ellipse at 50% 80%, ${color}66, ${color}22 60%, transparent)`,
+                borderRadius: '50% 50% 50% 50% / 60% 60% 40% 40%',
+                boxShadow: `0 6px 24px ${color}33`,
+                transformOrigin: 'center bottom',
+              }}
+              animate={{
+                scaleY: [0.6, 1.15, 0.85, 1],
+                scaleX: [0.8, 1.05, 0.9, 1],
+                rotate: [0, (i % 2 ? 8 : -8), 0],
+                y: [0, -4, 0],
+              }}
+              transition={{
+                duration: 4.5 + i * 0.3,
+                repeat: Infinity,
+                ease: 'easeInOut',
+                delay: i * 0.25,
+              }}
+            />
+          ))}
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 110, damping: 20 }} className="relative">
           <p className="text-[12px] uppercase tracking-[0.16em] text-white/45">softbloom</p>
-          <h1 className="mt-2 text-[34px] font-semibold tracking-[-0.04em]">quiet blooming petals of light for what you carry</h1>
+          <h1 className="mt-2 text-[34px] font-semibold tracking-[-0.04em]">quiet blooming petals of shared light</h1>
           <p className="mt-3 text-[15px] leading-relaxed text-white/60">
-            Multi-file drop with shared note and accent. Soft petals that gently bloom, rotate, and breathe outward in your color. Spring motion, glass surfaces. Each file uploads to storage and the public_shares table. Professional Discord embeds on every link. Large files receive only a gentle slowness warning — never refused. All prior desks remain intact.
+            Soft petals that gently unfurl, breathe, and settle in your accent color, like quiet blossoms opening in still air. Multi-file drop with shared note and optional hours until the bloom fades. Spring motion, glass surfaces, polished Discord embeds on every link. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
           </p>
         </motion.div>
 
@@ -124,9 +124,10 @@ export default function SoftbloomPage() {
         <div className="mt-4 grid gap-3">
           <input value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="shared note that rides every card" className="glass rounded-2xl px-4 py-3 text-[14px] outline-none" />
           <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="name, optional" className="glass rounded-2xl px-4 py-3 text-[14px] outline-none" />
+          <input value={hours} onChange={(e) => setHours(e.target.value.replace(/[^0-9.]/g, ''))} placeholder="hours until the bloom fades (optional)" className="glass rounded-2xl px-4 py-3 text-[14px] outline-none" />
           <div className="flex items-center gap-3">
             <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="h-10 w-14 cursor-pointer rounded-xl border border-white/10 bg-transparent" />
-            <span className="text-[13px] text-white/50">accent for the bloom</span>
+            <span className="text-[13px] text-white/50">accent for petals and cards</span>
           </div>
         </div>
 
@@ -137,10 +138,10 @@ export default function SoftbloomPage() {
           whileHover={{ scale: 1.01 }}
           onClick={send}
           disabled={!files.length || busy}
-          className="mt-4 w-full rounded-full px-4 py-3 text-[15px] font-medium text-white disabled:opacity-40"
+          className="mt-4 w-full rounded-full px-4 py-3 text-[15px] font-medium text-black disabled:opacity-40"
           style={{ background: color }}
         >
-          {busy ? 'sending…' : 'let it bloom'}
+          {busy ? 'blooming into the light…' : 'let it bloom'}
         </motion.button>
 
         {!!rows.length && (

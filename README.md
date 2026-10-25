@@ -15,6 +15,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/lumenmeridian` — quiet line of shared light. Multi-file drop with shared note and accent. Soft cards that settle along the meridian in your color. Files upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/softlumengallery` — quiet wall of shared light. Soft gallery cards that gently breathe. Multi-file drop (images preferred) with shared note and accent. Files upload to storage and public_shares. Polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/quiethorizonboard` — still horizontal board of shared things. Pins of public shares. Multi-file drop with note and accent. Each file settles into storage and public_shares. Professional Discord embeds on every link. Soft spring animations, glass surfaces. Large files warned, never refused. Prior features preserved. No traces of boosting.

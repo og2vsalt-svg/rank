@@ -15,6 +15,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softlumenstudio` — a quiet studio for composing shared light. Multi-file drop with shared note and accent. Soft cards that settle on the studio floor in your color. Files upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/softlumennote` — a quiet vertical thread of shared light. Leave short notes or drop local files into a still timeline. Soft cards settle along the line in your accent color. Files and notes upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/softtidepool` — a quiet pool of shared things. Multi-file drop with shared note and accent. Files float and settle gently into storage and public_shares. Soft bobbing cards. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

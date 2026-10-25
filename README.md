@@ -15,6 +15,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/quietdrift` — a quiet drifting current of shared light. Multi-file drop with shared note and accent. Soft cards that gently drift, breathe, and settle in your color, like light carried by a still stream. Files upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/lumenquay` — a still quay of shared light. Multi-file drop with shared note and accent. Soft cards that settle along the quay in your color, like vessels tying up in calm light. Files upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/softechochamber` — quiet echoing chambers of shared light. Multi-file drop with shared note and accent. Soft cards that gently echo, fade, and breathe in your color, like quiet sounds returning through still air. Files upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

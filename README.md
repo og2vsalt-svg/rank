@@ -15,6 +15,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softlumencascade` — quiet cascading falls of shared light. Multi-file drop with shared note and accent color. Soft cards that gently fall, breathe, and settle in your color, like quiet light cascading through still air. Files upload to storage and the public_shares table. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/quietatlas` — a still map of shared things. Browse and search the public record of shares. Drop local files to place them on the atlas. Each lands in storage and the public_shares table. Share links carry polished Discord embeds. Soft spring motion and frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain. No traces of boosting.
 
 - `/quietsanctuary` — a still sanctuary of shared light. Multi-file drop with shared note and accent color. Soft floating cards that gently settle. Files upload to storage and the public_shares table. Polished Discord embeds on every link. Soft spring animations, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

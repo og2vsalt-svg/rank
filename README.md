@@ -15,6 +15,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softtidepool` — a quiet pool of shared things. Multi-file drop with shared note and accent. Files float and settle gently into storage and public_shares. Soft bobbing cards. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/lumenforge` — a quiet forge for shared light. Multi-file drop with shared note and accent heat. Soft cards that settle like tempered metal finding its form in your color. Files upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/quiethearth` — a warm place for shared light. Multi-file drop with shared note and accent. Soft cards that settle by the hearth in your color, like embers finding a still place to rest. Files upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

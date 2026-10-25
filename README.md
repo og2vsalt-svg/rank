@@ -15,6 +15,10 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/quietsanctuary` — a still sanctuary of shared light. Multi-file drop with shared note and accent color. Soft floating cards that gently settle. Files upload to storage and the public_shares table. Polished Discord embeds on every link. Soft spring animations, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
+- `/softcanvas` — quiet canvas for painting with files. Multi-file local drops with caption and accent. Files settle into storage and public_shares. Share links carry professional Discord embeds. Soft spring motion, glass surfaces. Large files warned of possible slowness, never refused. Prior features preserved.
+
 - `/softatelier` — a refined quiet studio for multi-file drops. Shared note and accent color settle with each local file into storage and the public_shares table. Soft spring animations, frosted glass surfaces, polished Discord embeds on every link. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/softledger` — a quiet ledger of public shares. Totals for entries, size, and downloads. Searchable list of recent drops. Multi-file drop with shared note and accent color. Soft spring motion, frosted glass surfaces, polished Discord embeds on every link. Each file lands in storage and the public_shares table. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

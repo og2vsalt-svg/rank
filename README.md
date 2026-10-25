@@ -15,6 +15,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softatelier` — a refined quiet studio for multi-file drops. Shared note and accent color settle with each local file into storage and the public_shares table. Soft spring animations, frosted glass surfaces, polished Discord embeds on every link. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/softledger` — a quiet ledger of public shares. Totals for entries, size, and downloads. Searchable list of recent drops. Multi-file drop with shared note and accent color. Soft spring motion, frosted glass surfaces, polished Discord embeds on every link. Each file lands in storage and the public_shares table. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/appledesk` — a sleek Apple-style still desk for short notes and optional file attachments. Notes settle into the whispers table. Files upload to storage and the public_shares table. Every share link carries a polished Discord embed. Soft spring animations, frosted glass surfaces, your accent color. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

@@ -15,6 +15,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softstillfield` — a quiet still field of shared light. Multi-file drop with shared note and accent. Soft cards that settle into the field in your color, like light resting on still ground. Files upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/softlumenhaven` — a quiet haven of shared light. Multi-file drop with shared note and accent. Soft cards that gently settle in your color, like light finding a still place to rest. Files upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/quietdrift` — a quiet drifting current of shared light. Multi-file drop with shared note and accent. Soft cards that gently drift, breathe, and settle in your color, like light carried by a still stream. Files upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

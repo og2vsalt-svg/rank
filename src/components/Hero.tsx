@@ -33,6 +33,8 @@ export default function Hero() {
           Local vault. Cloud shares that land in the database with professional Discord embeds on every link. Galleries, notes, and dozens of specialized desks. Large files warned, never refused. Human-crafted Apple-smooth animations.
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center">
+          <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('softlumenmosaic')} className="px-5 py-2.5 rounded-full bg-[#64D2FF] text-black text-sm font-medium hover:bg-[#7ad8ff] transition">softlumenmosaic</motion.button>
+          <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('quietworkshop')} className="px-5 py-2.5 rounded-full bg-[#FF9F0A] text-black text-sm font-medium hover:bg-[#ffb340] transition">quietworkshop</motion.button>
           <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('quietconstellation')} className="px-5 py-2.5 rounded-full bg-[#BF5AF2] text-white text-sm font-medium hover:bg-[#c86bf5] transition">quietconstellation</motion.button>
           <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('softlumenstudio')} className="px-5 py-2.5 rounded-full bg-[#A78BFA] text-white text-sm font-medium hover:bg-[#b79bfc] transition">softlumenstudio</motion.button>
           <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('softlumennote')} className="px-5 py-2.5 rounded-full bg-[#A78BFA] text-white text-sm font-medium hover:bg-[#b79bfc] transition">softlumennote</motion.button>

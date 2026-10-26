@@ -16,6 +16,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softquietledger` — a still ledger of shared light. Enter notes and optional local files into a chronological ledger. Soft entry cards settle by date in your accent. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/softnotevault` — a quiet vault for notes and light. Leave a note, attach optional local files. Soft cards settle in your accent. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/softlumenframes` — a quiet gallery of shared light. Multi-file drop with shared note and accent. Soft framed cards that settle in your color, like light held in still glass. Files upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

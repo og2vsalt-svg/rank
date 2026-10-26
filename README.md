@@ -16,6 +16,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softstillwater` — quiet reflections on still water. Multi-file drop with shared note and accent. Soft ripples of light gently expand and fade in your color, like reflections settling on calm water. Files upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/softquietledger` — a still ledger of shared light. Enter notes and optional local files into a chronological ledger. Soft entry cards settle by date in your accent. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/softnotevault` — a quiet vault for notes and light. Leave a note, attach optional local files. Soft cards settle in your accent. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
@@ -44,4 +46,4 @@ Live: https://rank-six-iota.vercel.app/
 
 - `/softlumenatrium` — an open court of shared light. Multi-file drop with shared note and fresh accent. Soft cards that gently breathe and settle around the open court in your color, like light pooling in a still courtyard. Files upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
-(All earlier desks remain available and unchanged. Features continue to be added while preserving prior functionality.)
+(All earlier desks remain available and unchanged. Features continue to be added while preserving prior functionality. No traces of boosting.)

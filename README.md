@@ -15,6 +15,10 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softlumenatrium` — an open court of shared light. Multi-file drop with shared note and fresh accent. Soft cards that gently breathe and settle around the open court in your color, like light pooling in a still courtyard. Files upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
+- `/quietledger` — a still record of shared things. Multi-file drop with shared note and warm accent. Soft rows that gently settle into the record in your color, like careful entries in a still book. Files upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/softlumencanopy` — a quiet canopy of shared light. Multi-file drop with shared note and fresh accent. Soft cards that gently sway and breathe in your color, like light filtering through still foliage. Files upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/softlumenorchard` — a quiet orchard of hanging light. Multi-file drop with shared note and warm accent. Soft orbs that gently sway and breathe in your color, like light ripening in still air. Files upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

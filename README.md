@@ -16,6 +16,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softmoonwell` — a still well of shared light. Drop a local file or leave a quiet note. Soft ripples of your accent color gently expand and settle, like moonlight finding still water. Files upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/softstillwater` — quiet reflections on still water. Multi-file drop with shared note and accent. Soft ripples of light gently expand and fade in your color, like reflections settling on calm water. Files upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/softquietledger` — a still ledger of shared light. Enter notes and optional local files into a chronological ledger. Soft entry cards settle by date in your accent. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

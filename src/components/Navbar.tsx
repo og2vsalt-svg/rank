@@ -5,6 +5,7 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'softlumenvault', label: 'softlumenvault' },
   { to: 'softfilegrove', label: 'softfilegrove' },
   { to: 'softlumenorchard', label: 'softlumenorchard' },
   { to: 'softlumenlanterns', label: 'softlumenlanterns' },
@@ -105,6 +106,18 @@ export default function Navbar() {
                 {item.label}
               </button>
             ))}
+          </div>
+          <div className="md:hidden" ref={ref}>
+            <button onClick={() => setOpen((o) => !o)} className="px-3 py-1.5 text-sm rounded-full hover:bg-white/10">menu</button>
+            {open && (
+              <div className="absolute right-4 top-16 glass rounded-2xl p-2 max-h-[70vh] overflow-y-auto w-48">
+                {primary.map((item) => (
+                  <button key={item.to} onClick={() => go(item.to)} className={`block w-full text-left px-3 py-2 text-sm rounded-xl ${route === item.to ? 'bg-white text-black' : 'hover:bg-white/10'}`}>
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

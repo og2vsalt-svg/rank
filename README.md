@@ -16,6 +16,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softlumenatelier` — a quiet atelier of shared light. Soft floating tools and cards that gently settle in your accent, like careful work finding its place on a still bench. Multi-file drop or quiet note. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/softlumenripple` — quiet ripples of shared light. Multi-file drop that expands soft ripples of your accent, like light finding still water. Shared note. Files upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/softnotegarden` — a quiet garden of notes and light. Leave a note that grows like a soft plant, or plant optional local files as seeds. Everything uploads to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

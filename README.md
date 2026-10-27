@@ -16,6 +16,12 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softlumenfield` — light drifting across an open field. Multi-file drop or quiet note with fresh green accent. Soft cards that gently float and settle in your color, like sunlight drifting across still grass. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
+- `/quietlumennest` — nested rings of shared light. Multi-file drop with shared note and warm accent. Soft concentric cards that gently pulse and nest in your color, like a quiet nest holding what you set down. Files upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
+- `/softauroraveil` — flowing veils of shared light. Multi-file drop with shared note and cool purple accent. Soft flowing cards that gently undulate and settle in your color, like quiet aurora veils drifting across still night. Files upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/softlumenmeadow` — a quiet meadow of shared light. Multi-file drop or quiet note with fresh green accent. Soft cards that gently float and settle in your color, like light drifting across open grass. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/softlumenecho` — light echoing through still space. Multi-file drop with shared note and accent. Soft cards of light gently appear in staggered echoes, settling in your color like sound finding quiet walls. Files upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

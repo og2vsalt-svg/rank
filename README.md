@@ -16,6 +16,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softmotes` — light motes that gently settle. Multi-file drop or quiet note with accent. Soft cards of light gently appear as drifting motes that settle in your color, like quiet particles of light finding still air. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/softlumenbreeze` — light carried on a quiet breeze. Multi-file drop or quiet note with cool accent. Soft cards of light gently drift and settle in your color, like cool air moving through still leaves. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/softlumenfield` — light drifting across an open field. Multi-file drop or quiet note with fresh green accent. Soft cards that gently float and settle in your color, like sunlight drifting across still grass. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

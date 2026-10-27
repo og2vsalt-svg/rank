@@ -16,6 +16,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softlumenlattice` — a quiet lattice of shared light. Soft intersecting lines and breathing nodes that gently pulse in your accent, like quiet light finding connection points across still space. Multi-file drop or quiet note. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/softlumenconstellation` — a quiet constellation of shared light. Soft stars that gently pulse and connect in your accent, like quiet light finding its pattern across still night. Multi-file drop or quiet note. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/quietlumensphere` — a quiet sphere of shared light. Soft concentric spheres that gently orbit and breathe in your accent, like quiet light held in still glass. Multi-file drop or quiet note. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

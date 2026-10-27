@@ -5,6 +5,8 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'softsecurevault', label: 'softsecurevault' },
+  { to: 'softlumencollage', label: 'softlumencollage' },
   { to: 'softquietgallery', label: 'softquietgallery' },
   { to: 'softmotes', label: 'softmotes' },
   { to: 'softlumenfield', label: 'softlumenfield' },

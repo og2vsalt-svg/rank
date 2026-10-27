@@ -16,6 +16,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softlumendrift` — light that drifts and settles. Multi-file drop or quiet note with cool accent. Soft cards of light gently drift across the surface and settle in your color, like cool air moving through still water. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/softsecurevault` — a quiet vault with optional lock and fade. Multi-file drop or note with optional passcode and expiry days. Soft cards settle behind frosted glass in your accent. Files upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/softlumencollage` — a quiet collage of shared light. Image-focused multi-file drop with soft previews that settle into flowing masonry. Shared note and accent. Files upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

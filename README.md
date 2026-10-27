@@ -16,6 +16,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/quietlumendrift` — soft drifting light. Gentle orbs of your accent slowly wander across still space. Multi-file drop or quiet note. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/quietlumenbloom` — blooms of shared light. Soft petals of your accent gently expand from a quiet center. Multi-file drop or quiet note. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/softlumenorbit` — orbits of shared light. Soft orbs of your accent gently circle a quiet center. Multi-file drop or quiet note. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

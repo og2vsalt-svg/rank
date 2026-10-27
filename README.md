@@ -16,6 +16,10 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softsecurevault` — a quiet vault with optional lock and fade. Multi-file drop or note with optional passcode and expiry days. Soft cards settle behind frosted glass in your accent. Files upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
+- `/softlumencollage` — a quiet collage of shared light. Image-focused multi-file drop with soft previews that settle into flowing masonry. Shared note and accent. Files upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/softlumencabinet` — a quiet cabinet of shared light. Multi-file drop or quiet note with cool accent. Soft drawers and cards that gently open and settle in your color, like light finding its place in a still wooden cabinet. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/softquietgallery` — a still gallery of shared light. Multi-file drop or quiet note with fresh green accent. Soft mosaic cards that gently settle in your color, like light finding place in still glass. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

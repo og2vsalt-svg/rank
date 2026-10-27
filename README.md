@@ -16,6 +16,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softlumentide` — rising tides of shared light. Soft waves that gently rise and settle in your accent, like light finding the shore. Multi-file drop or quiet note. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/softlumenweave` — threads of shared light. Soft curving threads that gently draw across still space in your accent, like quiet light finding its weave. Multi-file drop or quiet note. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/softlumennexus` — a quiet nexus of shared light. Soft nodes that gently orbit and connect in your accent, like quiet light finding relation across still space. Multi-file drop or quiet note. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

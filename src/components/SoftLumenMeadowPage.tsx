@@ -1,203 +1,125 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
+import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishLocalFile, listPublicShares } from '../lib/cloudShare';
-
-type Share = {
-  id: string;
-  name: string;
-  size: number;
-  caption?: string | null;
-  color?: string | null;
-  createdAt?: string;
-  downloads?: number;
-  url?: string;
-  mime?: string;
-};
-
-function prettySize(n: number) {
-  if (!n) return '0 B';
-  if (n < 1024) return n + ' B';
-  if (n < 1048576) return Math.round(n / 1024) + ' KB';
-  if (n < 1073741824) return (n / 1048576).toFixed(1) + ' MB';
-  return (n / 1073741824).toFixed(2) + ' GB';
-}
+import { publishLocalFile, shareUrls } from '../lib/cloudShare';
 
 export default function SoftLumenMeadowPage() {
-  const [shares, setShares] = useState<Share[]>([]);
-  const [accent, setAccent] = useState('#34C759');
-  const [caption, setCaption] = useState('');
+  const [note, setNote] = useState('');
+  const [title, setTitle] = useState('');
   const [files, setFiles] = useState<File[]>([]);
   const [busy, setBusy] = useState(false);
-  const [warn, setWarn] = useState<string | null>(null);
-  const [err, setErr] = useState('');
+  const [warn, setWarn] = useState('');
   const [links, setLinks] = useState<string[]>([]);
-  const [q, setQ] = useState('');
+  const [err, setErr] = useState('');
 
-  const load = useCallback(async () => {
-    try {
-      const s = await listPublicShares(36);
-      setShares(s.map((m: any) => ({
-        id: m.id,
-        name: m.name || 'untitled',
-        size: m.size || 0,
-        caption: m.caption,
-        color: m.color,
-        createdAt: m.createdAt,
-        downloads: m.downloads,
-        url: m.url,
-        mime: m.type,
-      })));
-    } catch {}
-  }, []);
-
-  useEffect(() => { load(); }, [load]);
-
-  const onFiles = (list: FileList | null) => {
-    const arr = Array.from(list || []);
-    setFiles(arr);
-    const big = arr.find((f) => f.size > 40 * 1024 * 1024);
-    setWarn(big ? 'One or more files are large. The upload may feel slow. No hard limit — only a gentle note of patience.' : null);
+  const onDrop = (list: FileList | null) => {
+    const next = Array.from(list || []);
+    setFiles((prev) => [...prev, ...next].slice(0, 16));
+    const big = next.some((f) => f.size > 40 * 1024 * 1024);
+    setWarn(big ? 'some files are large. the meadow may settle slowly. no hard limit.' : '');
   };
 
-  const drop = async () => {
-    if (!files.length && !caption.trim()) return setErr('choose a local file or leave a quiet note');
+  const publish = async () => {
+    if (files.length === 0 && !note.trim()) {
+      setErr('drop a file or leave a quiet note');
+      return;
+    }
     setBusy(true);
     setErr('');
     setLinks([]);
     try {
-      const made: string[] = [];
-      if (files.length) {
-        for (const f of files) {
-          const res = await publishLocalFile(f, {
-            caption: caption.trim() || undefined,
-            color: accent,
-            cardTitle: f.name,
-            meta: { desk: 'softlumenmeadow' },
-          });
-          if (res.ok && res.embed) made.push(res.embed);
-          else if (!res.ok) setErr(res.error || 'upload slowed');
-        }
-      } else if (caption.trim()) {
-        // note-only as text file for sharing
-        const blob = new Blob([caption.trim()], { type: 'text/plain' });
-        const noteFile = new File([blob], 'meadow-note.txt', { type: 'text/plain' });
-        const res = await publishLocalFile(noteFile, {
-          caption: caption.trim(),
-          color: accent,
-          cardTitle: 'meadow note',
-          meta: { desk: 'softlumenmeadow', noteOnly: true },
+      const results: string[] = [];
+      const toPublish = files.length > 0 ? files : [new File([note.trim()], (title.trim() || 'meadow') + '.txt', { type: 'text/plain' })];
+      for (const file of toPublish) {
+        const res = await publishLocalFile(file, {
+          caption: note.trim() || title.trim() || 'soft lumen meadow',
+          cardTitle: title.trim() || file.name,
+          meta: { desk: 'softlumenmeadow', note: note.trim() },
         });
-        if (res.ok && res.embed) made.push(res.embed);
-        else if (!res.ok) setErr(res.error || 'note slowed');
+        if (!res.ok || !res.id) {
+          setErr(res.error || 'could not settle one of the files');
+          setBusy(false);
+          return;
+        }
+        if (res.warn) setWarn(res.warn);
+        const urls = shareUrls(res.id);
+        results.push(urls.app);
       }
-      setLinks(made);
-      setFiles([]);
-      setCaption('');
-      await load();
+      setLinks(results);
+      if (results[0]) {
+        try { await navigator.clipboard.writeText(results[0]); } catch {}
+      }
     } catch (e: any) {
-      setErr(e.message || 'something slowed');
+      setErr(e?.message || 'publish failed');
+    } finally {
+      setBusy(false);
     }
-    setBusy(false);
   };
 
-  const filtered = useMemo(() => shares.filter((s) =>
-    !q ||
-    s.name.toLowerCase().includes(q.toLowerCase()) ||
-    (s.caption || '').toLowerCase().includes(q.toLowerCase())
-  ), [shares, q]);
-
   return (
-    <div className="mesh min-h-screen bg-[#0b0b0d]">
+    <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-32 pb-24 px-6 max-w-5xl mx-auto">
+      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 12 }}
+          initial={{ opacity: 0, y: 28 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 110, damping: 22 }}
-          className="glass rounded-[32px] p-10 mb-12"
+          transition={{ type: 'spring', stiffness: 100, damping: 22 }}
+          className="glass rounded-[32px] p-8"
         >
-          <p className="text-[13px] font-medium tracking-wide mb-2" style={{ color: accent }}>Soft Lumen Meadow</p>
-          <h1 className="text-[34px] font-semibold tracking-tight mb-4">A quiet meadow of shared light.</h1>
-          <p className="text-neutral-400 text-[15.5px] leading-relaxed mb-8 max-w-2xl">
-            A still meadow desk. Drop local files or leave a quiet note with a fresh green accent. Soft cards gently float and settle in your color, like light drifting across open grass. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+          <p className="text-[#0A84FF] text-sm mb-2 tracking-wide">soft lumen meadow</p>
+          <h1 className="text-3xl font-semibold mb-3 tracking-tight">a soft meadow of shared light</h1>
+          <p className="text-neutral-400 text-sm mb-6 leading-relaxed">
+            Quiet light settles across a meadow of multi-file drops or a gentle note. Files land in storage and the share table. Share links unfurl with polished Discord cards. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
           </p>
-
           <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Filter the meadow…"
-            className="w-full bg-black/20 border border-white/10 rounded-[18px] px-5 py-3 text-[15px] text-white placeholder:text-neutral-500 mb-5 focus:outline-none focus:border-white/20"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="optional meadow title"
+            className="w-full mb-3 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm placeholder:text-neutral-500 focus:outline-none focus:border-[#0A84FF]/50 transition"
           />
-
           <textarea
-            value={caption}
-            onChange={(e) => setCaption(e.target.value)}
-            placeholder="Shared note for this meadow…"
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="optional quiet note..."
             rows={3}
-            className="w-full bg-black/20 border border-white/10 rounded-[18px] px-5 py-3.5 text-[15px] text-white placeholder:text-neutral-500 mb-5 resize-none focus:outline-none focus:border-white/20"
+            className="w-full mb-4 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm placeholder:text-neutral-500 focus:outline-none focus:border-[#0A84FF]/50 transition resize-none"
           />
-
-          <div className="flex items-center gap-5 mb-6">
-            <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="w-10 h-10 rounded-full cursor-pointer border-0" />
-            <label className="text-[14px] text-neutral-300 cursor-pointer hover:text-white transition">
-              {files.length ? `${files.length} file${files.length > 1 ? 's' : ''} ready` : 'Choose local files to place in the meadow'}
-              <input type="file" multiple className="hidden" onChange={(e) => onFiles(e.target.files)} />
-            </label>
-          </div>
-
-          {warn && <p className="text-[13px] text-amber-300/90 mb-4">{warn}</p>}
-
+          <label
+            className="block cursor-pointer rounded-2xl border border-dashed border-white/15 hover:border-[#0A84FF]/40 p-6 text-center transition mb-4"
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => { e.preventDefault(); onDrop(e.dataTransfer.files); }}
+          >
+            <input type="file" multiple className="hidden" onChange={(e) => onDrop(e.target.files)} />
+            <p className="text-sm text-neutral-300">
+              {files.length ? `${files.length} file${files.length > 1 ? 's' : ''} ready` : 'drop or click for local files (multiple ok)'}
+            </p>
+          </label>
+          {files.length > 0 && (
+            <ul className="text-xs text-neutral-500 mb-4 space-y-1">
+              {files.map((f, i) => (
+                <li key={i}>{f.name}</li>
+              ))}
+            </ul>
+          )}
+          {warn && <p className="text-xs text-amber-300/80 mb-3">{warn}</p>}
+          {err && <p className="text-xs text-red-400 mb-3">{err}</p>}
           <motion.button
             whileTap={{ scale: 0.97 }}
-            whileHover={{ scale: 1.02 }}
-            onClick={drop}
-            disabled={busy || (!files.length && !caption.trim())}
-            className="px-10 rounded-[20px] py-4 text-[16px] font-medium text-white disabled:opacity-40 transition"
-            style={{ background: accent }}
+            onClick={publish}
+            disabled={busy}
+            className="w-full py-3 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#409CFF] disabled:opacity-50 transition"
           >
-            {busy ? 'Placing…' : 'Place in the meadow'}
+            {busy ? 'settling in the meadow…' : 'publish meadow'}
           </motion.button>
-
-          <AnimatePresence>
-            {links.map((l) => (
-              <motion.a key={l} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} href={l} className="block mt-4 text-[14px] break-all" style={{ color: accent }}>
-                {l}
-              </motion.a>
-            ))}
-            {err && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 text-[13px] text-red-400">{err}</motion.p>}
-          </AnimatePresence>
+          {links.length > 0 && (
+            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mt-5 text-xs text-neutral-400 space-y-1">
+              <p>share links (first copied):</p>
+              {links.map((l, i) => (
+                <p key={i} className="break-all">{l}</p>
+              ))}
+            </motion.div>
+          )}
         </motion.div>
-
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((s, i) => (
-            <motion.a
-              key={s.id}
-              href={`/s/${s.id}`}
-              initial={{ opacity: 0, y: 16, scale: 0.97 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ delay: Math.min(i * 0.02, 0.4), type: 'spring', stiffness: 130, damping: 22 }}
-              className="glass rounded-[24px] p-6 block hover:bg-white/[0.04] transition group"
-              style={{ borderLeft: `4px solid ${s.color || accent}` }}
-            >
-              <div className="aspect-[16/10] rounded-2xl bg-black/30 mb-4 overflow-hidden flex items-center justify-center">
-                {s.mime?.startsWith('image/') && s.url ? (
-                  <img src={s.url} alt="" className="w-full h-full object-cover group-hover:scale-[1.03] transition duration-700" />
-                ) : (
-                  <span className="text-[12px] text-neutral-500 uppercase tracking-widest">{(s.mime || 'file').split('/')[1] || 'file'}</span>
-                )}
-              </div>
-              <p className="text-[15px] font-medium text-neutral-100 truncate">{s.name}</p>
-              {s.caption && <p className="text-[13px] text-neutral-400 mt-1.5 line-clamp-2">{s.caption}</p>}
-              <div className="flex items-center justify-between mt-4 text-[12px] text-neutral-500">
-                <span>{prettySize(s.size)}</span>
-                <span>{s.downloads || 0}</span>
-              </div>
-            </motion.a>
-          ))}
-        </div>
-
-        {!filtered.length && <p className="text-center text-neutral-500 text-sm mt-16">The meadow is open for now.</p>}
       </div>
     </div>
   );

@@ -16,6 +16,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/canopy` — a quiet canopy for what you carry. Drop several local files or write a short story. Each file finds its place under the canopy and lands in storage plus the share table. Share links unfurl with polished Discord cards. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/quill` — a quiet pen for notes with optional local file. Write a line or attach a drop. Files (or note-as-text) land in storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact.
 
 - `/forge` — a craft desk for forging shares with custom accent, title, and caption. Local file uploads to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact.

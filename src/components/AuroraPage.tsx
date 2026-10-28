@@ -1,124 +1,139 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './Navbar';
 import { publishLocalFile, shareUrls } from '../lib/cloudShare';
 
 export default function AuroraPage() {
   const [files, setFiles] = useState<File[]>([]);
-  const [notes, setNotes] = useState<Record<string, string>>({});
-  const [sharedNote, setSharedNote] = useState('');
-  const [accent, setAccent] = useState('#64D2FF');
+  const [accent, setAccent] = useState('#4ADE80');
+  const [title, setTitle] = useState('');
+  const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
   const [warn, setWarn] = useState('');
   const [links, setLinks] = useState<string[]>([]);
   const [err, setErr] = useState('');
 
-  const handleFiles = (list: FileList | null) => {
-    const arr = Array.from(list || []);
-    setFiles(arr);
-    setWarn(arr.some(f => f.size > 45 * 1024 * 1024) ? 'large file detected. upload may feel slower in the browser. never refused.' : '');
+  const onDrop = (list: FileList | null) => {
+    const next = Array.from(list || []);
+    setFiles((prev) => [...prev, ...next].slice(0, 16));
+    const big = next.some((f) => f.size > 40 * 1024 * 1024);
+    setWarn(big ? 'some files are chunky. encoding may feel slow. no hard limit.' : '');
   };
 
+  const remove = (i: number) => setFiles((prev) => prev.filter((_, idx) => idx !== i));
+
   const publish = async () => {
-    if (!files.length) return setErr('select files to share');
+    if (files.length === 0) {
+      setErr('drop at least one local file');
+      return;
+    }
     setBusy(true);
     setErr('');
-    const created: string[] = [];
-    for (const file of files) {
-      const res = await publishLocalFile(file, {
-        caption: notes[file.name] || sharedNote || 'aurora share',
-        cardTitle: file.name,
-        color: accent,
-        meta: { desk: 'aurora' },
-      });
-      if (res.ok && res.id) created.push(shareUrls(res.id).app);
-      else setErr(res.error || 'issue with a file');
+    setLinks([]);
+    const made: string[] = [];
+    try {
+      for (const file of files) {
+        const res = await publishLocalFile(file, {
+          caption: note.trim() || 'aurora glow',
+          cardTitle: title.trim() || file.name,
+          color: accent,
+          meta: { desk: 'aurora', note: note.trim(), title: title.trim() },
+        });
+        if (!res.ok || !res.id) {
+          setErr(res.error || `failed on ${file.name}`);
+          break;
+        }
+        if (res.warn) setWarn(res.warn);
+        made.push(shareUrls(res.id).app);
+      }
+      setLinks(made);
+      if (made[0]) {
+        try { await navigator.clipboard.writeText(made.join('\n')); } catch {}
+      }
+    } catch (e: any) {
+      setErr(e?.message || 'publish failed');
+    } finally {
+      setBusy(false);
     }
-    setLinks(created);
-    if (created[0]) try { await navigator.clipboard.writeText(created[0]); } catch {}
-    setBusy(false);
   };
 
   return (
-    <div className="mesh min-h-screen overflow-hidden">
+    <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto relative">
-        {[0, 1, 2].map((i) => (
-          <motion.div
-            key={i}
-            className="absolute rounded-full blur-3xl pointer-events-none mix-blend-screen"
-            style={{
-              width: 220 + i * 40,
-              height: 180 + i * 30,
-              background: i === 0 ? `${accent}33` : i === 1 ? '#A78BFA33' : '#34D39933',
-              left: `${15 + i * 20}%`,
-              top: `${25 + i * 10}%`,
-            }}
-            animate={{
-              x: [0, 30, -20, 0],
-              y: [0, -40, 20, 0],
-              opacity: [0.5, 0.8, 0.4, 0.5],
-            }}
-            transition={{ duration: 8 + i * 2, repeat: Infinity, ease: 'easeInOut' }}
-          />
-        ))}
+      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 90, damping: 16 }}
-          className="glass rounded-[32px] p-8 relative z-10"
+          transition={{ type: 'spring', stiffness: 110, damping: 16 }}
+          className="glass rounded-[32px] p-8"
         >
           <p className="text-sm mb-2 tracking-wide" style={{ color: accent }}>aurora</p>
-          <h1 className="text-3xl font-semibold mb-3 tracking-tight">soft northern light for your files.</h1>
+          <h1 className="text-3xl font-semibold mb-3 tracking-tight">northern lights. many files.</h1>
           <p className="text-neutral-400 text-sm mb-6 leading-relaxed">
-            Multi-file drop with optional notes. Drifting aurora glows, spring animations, glass surfaces, polished Discord embeds on every link. Uploads land in the database. Large files warned, never refused. Prior desks remain.
+            Drop several local files. Each becomes its own share in storage and the public table, lit with your cool accent and optional title. Share links unfurl with polished Discord cards. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact.
           </p>
-          <div className="flex gap-3 mb-4">
+          <div className="flex items-center gap-3 mb-4">
+            <label className="text-xs text-neutral-500">accent</label>
             <input
               type="color"
               value={accent}
               onChange={(e) => setAccent(e.target.value)}
-              className="w-12 h-10 rounded-xl border border-white/10 bg-transparent cursor-pointer"
+              className="w-10 h-10 rounded-full border border-white/10 bg-transparent cursor-pointer"
             />
-            <input
-              value={sharedNote}
-              onChange={(e) => setSharedNote(e.target.value)}
-              placeholder="shared dedication under the lights"
-              className="flex-1 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm placeholder:text-neutral-500 focus:outline-none focus:border-white/30 transition-all"
-            />
+            <span className="text-xs text-neutral-400">{accent}</span>
           </div>
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="optional shared title…"
+            className="w-full mb-3 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm placeholder:text-neutral-500 focus:outline-none focus:border-[#4ADE80]/50 transition"
+          />
+          <textarea
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="optional note for every aurora…"
+            rows={2}
+            className="w-full mb-4 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm placeholder:text-neutral-500 focus:outline-none focus:border-[#4ADE80]/50 transition resize-none"
+          />
           <label
-            className="block cursor-pointer rounded-2xl border border-dashed border-white/15 hover:border-white/40 p-10 text-center transition-all duration-300"
+            className="block cursor-pointer rounded-2xl border border-dashed border-white/15 hover:border-[#4ADE80]/40 p-8 text-center transition mb-4"
             onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => { e.preventDefault(); handleFiles(e.dataTransfer.files); }}
+            onDrop={(e) => { e.preventDefault(); onDrop(e.dataTransfer.files); }}
           >
-            <input type="file" multiple className="hidden" onChange={(e) => handleFiles(e.target.files)} />
-            <p className="text-sm text-neutral-300">{files.length ? `${files.length} file${files.length > 1 ? 's' : ''} selected` : 'drop files under the aurora'}</p>
+            <input type="file" multiple className="hidden" onChange={(e) => onDrop(e.target.files)} />
+            <p className="text-sm text-neutral-300">drop or click for local files (up to sixteen)</p>
           </label>
-          {files.map(f => (
-            <input
-              key={f.name}
-              value={notes[f.name] || ''}
-              onChange={e => setNotes(prev => ({ ...prev, [f.name]: e.target.value }))}
-              placeholder={`note for ${f.name}`}
-              className="w-full mt-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-xs"
-            />
-          ))}
-          {warn && <p className="text-xs text-amber-300/80 mt-3">{warn}</p>}
-          {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
+          <AnimatePresence>
+            {files.map((f, i) => (
+              <motion.div
+                key={f.name + i}
+                initial={{ opacity: 0, x: -8 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, height: 0 }}
+                className="flex items-center justify-between text-xs text-neutral-400 mb-1 px-1"
+              >
+                <span className="truncate max-w-[70%]">{f.name}</span>
+                <button type="button" onClick={() => remove(i)} className="text-neutral-500 hover:text-white">remove</button>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+          {warn && <p className="text-xs text-amber-300/80 mb-3 mt-2">{warn}</p>}
+          {err && <p className="text-xs text-red-400 mb-3">{err}</p>}
           <motion.button
-            whileTap={{ scale: 0.975 }}
-            whileHover={{ scale: 1.015 }}
+            whileTap={{ scale: 0.97 }}
             onClick={publish}
-            disabled={busy || !files.length}
-            style={{ backgroundColor: accent }}
-            className="w-full mt-4 py-3 rounded-full text-white text-sm font-medium disabled:opacity-50 transition"
+            disabled={busy || files.length === 0}
+            className="w-full py-3 rounded-full text-white text-sm font-medium disabled:opacity-50 transition mt-2"
+            style={{ background: accent }}
           >
-            {busy ? 'sharing…' : 'share into the aurora'}
+            {busy ? 'rising…' : 'publish aurora'}
           </motion.button>
           {links.length > 0 && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-5 text-xs text-neutral-400 break-all space-y-1">
-              {links.map((l, i) => <div key={i}>shared: {l}</div>)}
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-5 text-xs text-neutral-400 space-y-1">
+              <p>share links (copied):</p>
+              {links.map((l) => (
+                <div key={l} className="break-all">{l}</div>
+              ))}
             </motion.div>
           )}
         </motion.div>

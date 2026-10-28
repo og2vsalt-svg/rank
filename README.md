@@ -16,6 +16,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/aurora` — northern lights. Multi-file local drops, each becoming its own share lit with a cool accent and optional title. Files land in storage and the share table. Share links unfurl with polished Discord cards. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/ember` — warm glow. Multi-file local drops, each becoming its own share warmed with a custom accent and optional title. Files land in storage and the share table. Share links unfurl with polished Discord cards. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/prism` — facets of light. Multi-file local drops, each becoming its own share tinted with a custom accent color. Files land in storage and the share table. Share links unfurl with polished Discord cards. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

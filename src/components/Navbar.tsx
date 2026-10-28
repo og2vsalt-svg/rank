@@ -6,6 +6,7 @@ type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
   { to: 'ember', label: 'ember' },
+  { to: 'equinox', label: 'equinox' },
   { to: 'softlumenportico', label: 'softlumenportico' },
   { to: 'softlumenpavilion', label: 'softlumenpavilion' },
   { to: 'softlumenquay', label: 'softlumenquay' },

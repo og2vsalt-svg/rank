@@ -16,30 +16,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softlumenharbor` — a quiet harbor of shared light. Soft waves of your accent gently rise and settle while files find their berth. Multi-file drop or quiet note. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/softlumenkeepsake` — a quiet keepsake of shared light. Soft drifting orbs of your accent gently float while a single file and note find their place. File uploads to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
-
-- `/quietlumendrift` — soft drifting light. Gentle orbs of your accent slowly wander across still space. Multi-file drop or quiet note. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
-
-- `/quietlumenbloom` — blooms of shared light. Soft petals of your accent gently expand from a quiet center. Multi-file drop or quiet note. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
-
-- `/softlumenorbit` — orbits of shared light. Soft orbs of your accent gently circle a quiet center. Multi-file drop or quiet note. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
-
-- `/softlumentide` — rising tides of shared light. Soft waves that gently rise and settle in your accent, like light finding the shore. Multi-file drop or quiet note. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
-
-- `/softlumenweave` — threads of shared light. Soft curving threads that gently draw across still space in your accent, like quiet light finding its weave. Multi-file drop or quiet note. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
-
-- `/softlumennexus` — a quiet nexus of shared light. Soft nodes that gently orbit and connect in your accent, like quiet light finding relation across still space. Multi-file drop or quiet note. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
-
-- `/softlumenwell` — a quiet well of shared light. Soft ripples that gently expand and fade in your accent, like stones finding still water. Multi-file drop or quiet note. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
-
-- `/softlumenhelix` — a quiet helix of shared light. Soft spiraling coils that gently rotate and breathe in your accent, like quiet light winding through still space. Multi-file drop or quiet note. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
-
-- `/softlumenlattice` — a quiet lattice of shared light. Soft intersecting lines and breathing nodes that gently pulse in your accent, like quiet light finding connection points across still space. Multi-file drop or quiet note. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
-
-- `/softlumenconstellation` — a quiet constellation of shared light. Soft stars that gently pulse and connect in your accent, like quiet light finding its pattern across still night. Multi-file drop or quiet note. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
-
-- `/quietlumensphere` — a quiet sphere of shared light. Soft concentric spheres that gently orbit and breathe in your accent, like quiet light held in still glass. Multi-file drop or quiet note. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
-
-- `/softlumenatelier` — a quiet atelier of shared light. Soft floating tools and cards that gently settle in your accent, like careful work finding its place on a still bench. Multi-file drop or quiet note. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 (All earlier desks remain available and unchanged. Features continue to be added while preserving prior functionality. No traces of boosting.)

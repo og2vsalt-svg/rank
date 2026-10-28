@@ -16,6 +16,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softlumensanctum` — a quiet sanctum of shared light. Soft light gathers around multi-file drops or a quiet note. Files land in storage and the share table. Share links unfurl with polished Discord cards. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/softlumenglimmer` — a soft glimmer of shared light. Quiet light gathers around multi-file drops or a short note. Files land in storage and the share table. Share links unfurl with polished Discord cards. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact.
 
 - `/softlumenripple` — a soft ripple of shared light. Quiet ripples receive multi-file drops or a short note. Files land in storage and the share table. Share links unfurl with polished Discord cards. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact.

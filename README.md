@@ -16,6 +16,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/lumennexus` — a quiet nexus of shared light. Connect several local files into one constellation. Each lands in storage and the public table with your shared accent, title, and caption. Optional lock or timed unlock. Share links unfurl with polished Discord cards. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/apogee` — farthest point of the share. Multi-file local drops, each becoming its own share lit with a custom accent and optional title. Files land in storage and the share table. Share links unfurl with polished Discord cards. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/lumencascade` — a quiet cascade of shared light. Multi-file local drops or a note, each becoming its own share lit with a custom accent. Files land in storage and the share table. Share links unfurl with polished Discord cards. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

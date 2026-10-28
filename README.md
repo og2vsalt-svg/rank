@@ -16,6 +16,10 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softlumenglimmer` — a soft glimmer of shared light. Quiet light gathers around multi-file drops or a short note. Files land in storage and the share table. Share links unfurl with polished Discord cards. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact.
+
+- `/softlumenripple` — a soft ripple of shared light. Quiet ripples receive multi-file drops or a short note. Files land in storage and the share table. Share links unfurl with polished Discord cards. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact.
+
 - `/canopy` — a quiet canopy for what you carry. Drop several local files or write a short story. Each file finds its place under the canopy and lands in storage plus the share table. Share links unfurl with polished Discord cards. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/quill` — a quiet pen for notes with optional local file. Write a line or attach a drop. Files (or note-as-text) land in storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact.

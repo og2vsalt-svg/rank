@@ -16,12 +16,12 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softlumenportico` — a quiet portico of arched light. Soft arches of light gently curve and settle while files find shelter beneath. Multi-file drop or quiet note. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/softlumenpavilion` — a quiet pavilion of shared light. Soft columns of light gently rise and settle while files find their place beneath the canopy. Multi-file drop or quiet note. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/softlumenquay` — a still quay for what you carry. Soft pilings of light hold multi-file drops and optional notes. Files upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/softlumenharbor` — a quiet harbor of shared light. Soft waves of your accent gently rise and settle while files find their berth. Multi-file drop or quiet note. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
-
-- `/softlumenkeepsake` — a quiet keepsake of shared light. Soft drifting orbs of your accent gently float while a single file and note find their place. File uploads to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 (All earlier desks remain available and unchanged. Features continue to be added while preserving prior functionality. No traces of boosting.)

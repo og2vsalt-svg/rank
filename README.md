@@ -16,6 +16,10 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/quill` — a quiet pen for notes with optional local file. Write a line or attach a drop. Files (or note-as-text) land in storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact.
+
+- `/forge` — a craft desk for forging shares with custom accent, title, and caption. Local file uploads to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact.
+
 - `/softlumencove` — a quiet cove of shared light. Soft sheltered light gathers around multi-file drops or quiet notes. Files land in storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/softlumenportico` — a quiet portico of arched light. Soft arches of light gently curve and settle while files find shelter beneath. Multi-file drop or quiet note. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
@@ -26,4 +30,4 @@ Live: https://rank-six-iota.vercel.app/
 
 - `/softlumenharbor` — a quiet harbor of shared light. Soft waves of your accent gently rise and settle while files find their berth. Multi-file drop or quiet note. Files (or note-as-text) upload to storage and public_shares. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
-(All earlier desks remain available and unchanged. Features continue to be added while preserving prior functionality. No traces of boosting.)
+(All earlier desks remain available and unchanged. Features continue to be added while preserving prior functionality. No traces of boosting. Discord embeds on all links.)

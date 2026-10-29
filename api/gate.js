@@ -109,6 +109,7 @@ import reticule from '../lib/endpoints/reticule.js';
 import lorgnette from '../lib/endpoints/lorgnette.js';
 import cartouche from '../lib/endpoints/cartouche.js';
 import fillet from '../lib/endpoints/fillet.js';
+import quietshare from '../lib/endpoints/quietshare.js';
 
 const routes = {
   atelier, beacon, card, cardfront, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -246,6 +247,7 @@ const routes = {
   bookplate: shelf,
   cartouche,
   fillet,
+  quietshare,
 };
 
 export default function handler(req, res) {

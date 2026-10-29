@@ -114,6 +114,7 @@ import quietmirror from '../lib/endpoints/quietmirror.js';
 import flowshare from '../lib/endpoints/flowshare.js';
 import softdrift from '../lib/endpoints/softdrift.js';
 import softveil from '../lib/endpoints/softveil.js';
+import softlumen from '../lib/endpoints/softlumen.js';
 
 const routes = {
   atelier, beacon, card, cardfront, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -256,6 +257,7 @@ const routes = {
   flowshare,
   softdrift,
   softveil,
+  softlumen,
 };
 
 export default function handler(req, res) {

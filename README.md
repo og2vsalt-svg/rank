@@ -16,6 +16,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softlumen` — a soft lumen of light. Drop one or many local files with a title, caption, and accent color. Each settles into its own frosted glass card with soft spring motion and pulsing rings. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/softveil` — a soft veil of shares. Drop one or many local files with a title, caption, and accent color. Each settles into its own frosted glass card with soft spring motion. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/softgossamer` — a delicate gossamer of shares. Drop one or many local files with a title, caption, and accent color. Each settles into its own frosted glass card with soft spring motion. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

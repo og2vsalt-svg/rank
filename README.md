@@ -16,6 +16,12 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/quietink` — a quiet pen for notes and light. Write a note or drop one local file. The note (or file) lands in storage and the public_shares table with your accent, title, and optional expiry. Share links unfurl with polished Discord cards. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
+- `/softmosaic` — a soft mosaic of shared light. Multi-file local drops, each becoming its own share arranged as a quiet mosaic lit with your accent and shared caption. Files land in storage and the public table. Share links unfurl with polished Discord cards. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
+- `/lumenledger` — a quiet ledger of shared light. Browse the public record or drop local files into the ledger. Each lands in storage and the public_shares table. Share links unfurl with polished Discord cards. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/quietfold` — a quiet fold of shared light. Multi-file local drops, each becoming its own share lit with a custom accent and optional title. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/lumenforge` — forge quiet shares of light. Multi-file local drops, each becoming its own share lit with a custom accent and optional title/caption. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

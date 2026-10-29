@@ -16,6 +16,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softdrift` — a soft drift of shares. Drop one or many local files with a title, caption, and accent color. Each settles into its own frosted glass card with soft spring motion. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/flowshare` — a flowing cascade of shares. Drop one or many local files with a title, caption, and accent color. Each settles into its own frosted glass card with soft spring motion. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/quietlumenflow` — a quiet flow of light. Drop local files or leave a note with accent color. Each settles into the flow with soft spring motion and frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

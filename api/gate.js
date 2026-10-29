@@ -110,6 +110,7 @@ import lorgnette from '../lib/endpoints/lorgnette.js';
 import cartouche from '../lib/endpoints/cartouche.js';
 import fillet from '../lib/endpoints/fillet.js';
 import quietshare from '../lib/endpoints/quietshare.js';
+import quietmirror from '../lib/endpoints/quietmirror.js';
 
 const routes = {
   atelier, beacon, card, cardfront, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -248,6 +249,7 @@ const routes = {
   cartouche,
   fillet,
   quietshare,
+  quietmirror,
 };
 
 export default function handler(req, res) {

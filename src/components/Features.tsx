@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'quietbeacon', href: '/quietbeacon', body: 'a quiet beacon for one light. focus one note or local file as a beacon. it lands in storage and the public_shares table with your accent. share links unfurl with polished Discord cards. soft spring motion, frosted glass, gentle pulse. large files receive only a gentle warning of slowness. prior desks remain intact. no traces of boosting.' },
   { title: 'quietink', href: '/quietink', body: 'a quiet pen for notes and light. write a note or drop one local file. the note (or file) lands in storage and the public_shares table with your accent, title, and optional expiry. share links unfurl with polished Discord cards. soft spring motion, frosted glass. large files receive only a gentle warning of slowness. prior desks remain intact. no traces of boosting.' },
   { title: 'softmosaic', href: '/softmosaic', body: 'a soft mosaic of shared light. multi-file local drops, each becoming its own share arranged as a quiet mosaic lit with your accent and shared caption. files land in storage and the public table. share links unfurl with polished Discord cards. soft spring motion, frosted glass. large files receive only a gentle warning of slowness. prior desks remain intact. no traces of boosting.' },
   { title: 'lumenledger', href: '/lumenledger', body: 'a quiet ledger of shared light. browse the public record or drop local files into the ledger. each lands in storage and the public_shares table. share links unfurl with polished Discord cards. soft spring motion, frosted glass. large files receive only a gentle warning of slowness. prior desks remain intact. no traces of boosting.' },
@@ -58,11 +59,12 @@ export default function Features() {
               href={item.href}
               initial={{ opacity: 0, y: 8 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="glass rounded-2xl p-5 block hover:bg-white/[0.06] transition"
+              viewport={{ once: true, margin: '-40px' }}
+              transition={{ type: 'spring', stiffness: 100, damping: 20 }}
+              className="glass rounded-3xl p-5 block hover:bg-white/[0.04] transition"
             >
-              <h3 className="font-medium text-white mb-1">{item.title}</h3>
-              <p className="text-sm text-neutral-400 leading-relaxed">{item.body}</p>
+              <p className="text-sm font-medium mb-1.5">{item.title}</p>
+              <p className="text-xs text-neutral-400 leading-relaxed">{item.body}</p>
             </motion.a>
           ))}
         </div>

@@ -16,6 +16,9 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/quietlumenflow` — a quiet flow of light. Drop local files or leave a note with accent color. Each settles into the flow with soft spring motion and frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
+
 - `/quietcascade` — a cascading stream of file shares. Drop one or many local files. Each settles into its own glass card that cascades with soft spring motion. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/quietmirror` — a mirrored file share. Drop one local file with a title and short caption. It lands in storage and the public_shares table as a card that flips on hover with soft spring motion and frosted glass. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

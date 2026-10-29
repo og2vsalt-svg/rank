@@ -111,6 +111,7 @@ import cartouche from '../lib/endpoints/cartouche.js';
 import fillet from '../lib/endpoints/fillet.js';
 import quietshare from '../lib/endpoints/quietshare.js';
 import quietmirror from '../lib/endpoints/quietmirror.js';
+import flowshare from '../lib/endpoints/flowshare.js';
 
 const routes = {
   atelier, beacon, card, cardfront, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -250,6 +251,7 @@ const routes = {
   fillet,
   quietshare,
   quietmirror,
+  flowshare,
 };
 
 export default function handler(req, res) {

@@ -16,6 +16,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softlinen` — a soft linen drape. Drop one or many local files with a shared title and note. Each settles with a gentle fold animation and spring motion on a subtle linen texture. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/softquire` — a soft gathered share. Drop one or many local files with a shared title and note. Each settles into frosted glass with spring motion. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/softchamber` — a soft breathing chamber. Drop one or many local files with a shared title, chamber note, and accent light. Each settles behind expanding frosted glass walls with spring motion and a gentle breathing glow. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

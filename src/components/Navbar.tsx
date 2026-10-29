@@ -8,6 +8,7 @@ const primary: NavItem[] = [
   { to: 'quietink', label: 'quietink' },
   { to: 'softmosaic', label: 'softmosaic' },
   { to: 'lumenledger', label: 'lumenledger' },
+  { to: 'softlumenscroll', label: 'softlumenscroll' },
   { to: 'softlumengalaxy', label: 'softlumengalaxy' },
   { to: 'lumennexus', label: 'lumennexus' },
   { to: 'lumencascade', label: 'lumencascade' },

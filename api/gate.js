@@ -116,6 +116,7 @@ import softdrift from '../lib/endpoints/softdrift.js';
 import softveil from '../lib/endpoints/softveil.js';
 import softlumen from '../lib/endpoints/softlumen.js';
 import softglow from '../lib/endpoints/softglow.js';
+import resonance from '../lib/endpoints/resonance.js';
 
 const routes = {
   atelier, beacon, card, cardfront, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -260,6 +261,7 @@ const routes = {
   softveil,
   softlumen,
   softglow,
+  resonance,
 };
 
 export default function handler(req, res) {

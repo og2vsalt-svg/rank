@@ -16,6 +16,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/quietmirror` — a mirrored file share. Drop one local file with a title and short caption. It lands in storage and the public_shares table as a card that flips on hover with soft spring motion and frosted glass. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/quietshare` — a simple quiet share. Drop one local file with a title and short caption. It lands in storage and the public_shares table. Share links unfurl with polished Discord cards. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/softlumenvista` — a quiet vista of shared light. Drop local files or write a note. Each becomes its own share under a soft vista, tinted with your chosen accent. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

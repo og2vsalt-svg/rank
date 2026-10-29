@@ -16,6 +16,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/quietbeacon` — a quiet beacon for one light. Focus one note or local file as a beacon. It lands in storage and the public_shares table with your accent. Share links unfurl with polished Discord cards. Soft spring motion, frosted glass, gentle pulse. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/softlumenscroll` — a quiet vertical scroll of shared light. Add notes or drop local files into a still vertical scroll. Each entry lands in storage and the public_shares table with your accent and title. Share links unfurl with polished Discord cards. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/quietink` — a quiet pen for notes and light. Write a note or drop one local file. The note (or file) lands in storage and the public_shares table with your accent, title, and optional expiry. Share links unfurl with polished Discord cards. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

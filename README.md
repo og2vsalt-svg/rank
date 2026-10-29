@@ -16,6 +16,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softlumenscroll` — a quiet vertical scroll of shared light. Add notes or drop local files into a still vertical scroll. Each entry lands in storage and the public_shares table with your accent and title. Share links unfurl with polished Discord cards. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/quietink` — a quiet pen for notes and light. Write a note or drop one local file. The note (or file) lands in storage and the public_shares table with your accent, title, and optional expiry. Share links unfurl with polished Discord cards. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/softmosaic` — a soft mosaic of shared light. Multi-file local drops, each becoming its own share arranged as a quiet mosaic lit with your accent and shared caption. Files land in storage and the public table. Share links unfurl with polished Discord cards. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

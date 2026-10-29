@@ -16,6 +16,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/quietfold` — a quiet fold of shared light. Multi-file local drops, each becoming its own share lit with a custom accent and optional title. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/lumenforge` — forge quiet shares of light. Multi-file local drops, each becoming its own share lit with a custom accent and optional title/caption. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/softlumengalaxy` — a quiet galaxy of shared light. Multi-file local drops, each becoming its own share lit with a custom galaxy accent and optional title. Files land in storage and the share table. Share links unfurl with polished Discord cards. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

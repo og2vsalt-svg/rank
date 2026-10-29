@@ -5,6 +5,7 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'flowshare', label: 'flowshare' },
   { to: 'quietlumenflow', label: 'quietlumenflow' },
   { to: 'quietcascade', label: 'quietcascade' },
   { to: 'quietmirror', label: 'quietmirror' },

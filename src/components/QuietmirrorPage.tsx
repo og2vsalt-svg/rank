@@ -111,7 +111,8 @@ export default function QuietmirrorPage() {
           <p className="text-neutral-400 mt-3 max-w-xl">Drop a local file with a title and short caption. It lands in storage and the public_shares table as a mirrored card. Share links unfurl with polished Discord cards. Soft spring motion, frosted glass, subtle flip. Large files receive only a gentle warning of slowness. Prior desks remain intact.</p>
           {focus ? (
             <motion.div
-              className="mt-8 perspective-1000"
+              className="mt-8"
+              style={{ perspective: 1000 }}
               onHoverStart={() => setFlipped(true)}
               onHoverEnd={() => setFlipped(false)}
             >

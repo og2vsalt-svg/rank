@@ -1,103 +1,188 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishLocalFile, shareUrls } from '../lib/cloudShare';
+import Footer from './Footer';
+import { useRouter } from './Router';
+import { publishLocalFile, listPublicShares, type CloudMeta } from '../lib/cloudShare';
+
+const SLOW = 12 * 1024 * 1024;
+
+function prettySize(n: number) {
+  if (n < 1024) return n + ' B';
+  if (n < 1024 * 1024) return Math.max(1, Math.round(n / 1024)) + ' KB';
+  if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(1) + ' MB';
+  return (n / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
+}
 
 export default function SoftLumenPage() {
+  const { shareId, navigate } = useRouter();
+  const [shares, setShares] = useState<CloudMeta[]>([]);
+  const [focus, setFocus] = useState<CloudMeta | null>(null);
+  const [title, setTitle] = useState('');
+  const [caption, setCaption] = useState('');
+  const [author, setAuthor] = useState('');
+  const [color, setColor] = useState('#5AC8FA');
   const [files, setFiles] = useState<File[]>([]);
-  const [note, setNote] = useState('');
-  const [accent, setAccent] = useState('#64D2FF');
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
   const [warn, setWarn] = useState('');
   const [links, setLinks] = useState<string[]>([]);
-  const [err, setErr] = useState('');
 
-  const handleFiles = (list: FileList | null) => {
-    const arr = Array.from(list || []);
-    setFiles(arr);
-    setWarn(arr.some(f => f.size > 40 * 1024 * 1024) ? 'large file. the browser may pause while it sends. never refused.' : '');
-  };
+  async function load() {
+    const list = await listPublicShares(36);
+    setShares(list.filter(s => (s as any).meta?.source === 'softlumen' || !s)); // recent luminous
+  }
 
-  const publish = async () => {
-    if (!files.length) return setErr('choose files');
-    setBusy(true);
-    setErr('');
-    const created: string[] = [];
-    for (const file of files) {
-      const res = await publishLocalFile(file, {
-        caption: note || 'soft lumen share',
-        cardTitle: file.name,
-        color: accent,
-        meta: { desk: 'softlumen' },
-      });
-      if (res.ok && res.id) created.push(shareUrls(res.id).app);
-      else setErr(res.error || 'one file paused');
+  useEffect(() => {
+    load().catch(() => setError('lumen is quiet right now'));
+  }, []);
+
+  useEffect(() => {
+    if (!shareId) {
+      setFocus(null);
+      return;
     }
-    setLinks(created);
-    if (created[0]) try { await navigator.clipboard.writeText(created[0]); } catch {}
-    setBusy(false);
-  };
+    import('../lib/cloudShare').then(({ fetchShare }) => {
+      fetchShare(shareId).then(setFocus).catch(() => setFocus(null));
+    });
+  }, [shareId]);
+
+  async function share(e: React.FormEvent) {
+    e.preventDefault();
+    if (!files.length) {
+      setError('choose one or more files on this machine');
+      return;
+    }
+    setBusy(true);
+    setError('');
+    setWarn('');
+    setLinks([]);
+    try {
+      const newLinks: string[] = [];
+      for (const file of files) {
+        const res = await publishLocalFile(file, {
+          caption,
+          author,
+          color,
+          cardTitle: title || file.name,
+          meta: { source: 'softlumen', accent: color },
+        });
+        if (!res.ok) throw new Error(res.error || 'could not share');
+        if (res.warn) setWarn(res.warn);
+        const path = `/softlumen/${res.id}`;
+        newLinks.push(window.location.origin + path);
+        if (files.length === 1) navigate('softlumen', res.id);
+      }
+      setLinks(newLinks);
+      load().catch(() => {});
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'could not share');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const glow = { background: `radial-gradient(ellipse at 50% 0%, ${color}33, transparent 70%)` };
 
   return (
-    <div className="mesh min-h-screen overflow-hidden">
+    <div className="min-h-screen bg-[#0b0b0d] text-white">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto relative">
-        {[0, 1, 2, 3, 4].map(i => (
-          <motion.div
-            key={i}
-            className="absolute rounded-full pointer-events-none"
-            style={{
-              width: `${80 + i * 28}px`,
-              height: `${80 + i * 28}px`,
-              background: `radial-gradient(circle, ${accent}55, transparent 70%)`,
-              left: `${20 + (i * 15) % 60}%`,
-              top: `${30 + (i * 18) % 40}%`,
-              filter: 'blur(8px)',
-            }}
-            animate={{
-              y: [0, -20, 0],
-              scale: [1, 1.08, 1],
-              opacity: [0.35, 0.65, 0.35],
-            }}
-            transition={{
-              duration: 4 + i * 0.8,
-              repeat: Infinity,
-              ease: 'easeInOut',
-              delay: i * 0.4,
-            }}
-          />
-        ))}
+      <main className="pt-28 pb-20 px-5">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 90, damping: 16 }}
-          className="glass rounded-[32px] p-8 relative z-10"
+          transition={{ type: 'spring', stiffness: 90, damping: 22 }}
+          className="max-w-3xl mx-auto"
         >
-          <p className="text-sm mb-2 tracking-wide" style={{ color: accent }}>soft lumen</p>
-          <h1 className="text-3xl font-semibold mb-3 tracking-tight">soft glowing orbs for what you carry.</h1>
-          <p className="text-neutral-400 text-sm mb-6 leading-relaxed">
-            Multi-file drop with a shared note. Soft orbs of light that gently pulse, drift, and breathe with your accent color. Spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
-          </p>
-          <div className="flex gap-3 mb-4">
-            <input type="color" value={accent} onChange={e => setAccent(e.target.value)} className="w-12 h-10 rounded-xl border border-white/10 bg-transparent cursor-pointer" />
-            <input value={note} onChange={e => setNote(e.target.value)} placeholder="a quiet line under the lumen" className="flex-1 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm placeholder:text-neutral-500 focus:outline-none focus:border-white/30" />
-          </div>
-          <label className="block cursor-pointer rounded-2xl border border-dashed border-white/15 hover:border-white/40 p-10 text-center transition-all duration-300" onDragOver={e => e.preventDefault()} onDrop={e => { e.preventDefault(); handleFiles(e.dataTransfer.files); }}>
-            <input type="file" multiple className="hidden" onChange={e => handleFiles(e.target.files)} />
-            <p className="text-sm text-neutral-300">{files.length ? `${files.length} file${files.length > 1 ? 's' : ''} ready` : 'drop files into the soft lumen'}</p>
-          </label>
-          {warn && <p className="text-xs text-amber-300/80 mt-3">{warn}</p>}
-          {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
-          <motion.button whileTap={{ scale: 0.975 }} whileHover={{ scale: 1.015 }} onClick={publish} disabled={busy || !files.length} style={{ backgroundColor: accent }} className="w-full mt-4 py-3 rounded-full text-black text-sm font-medium disabled:opacity-50">
-            {busy ? 'sharing…' : 'share into the soft lumen'}
-          </motion.button>
-          {links.length > 0 && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-5 text-xs text-neutral-400 break-all space-y-1">
-              {links.map((l, i) => <div key={i}>shared: {l}</div>)}
-            </motion.div>
+          <p className="text-[11px] tracking-[0.22em] uppercase text-[#5AC8FA] mb-3">luminous field</p>
+          <h1 className="text-4xl font-semibold tracking-tight">softlumen</h1>
+          <p className="text-neutral-400 mt-3 max-w-xl">Drop local files into a soft luminous field. Choose an accent light, add a title and caption. Each settles with a gentle float and spring motion under a soft horizon glow. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.</p>
+          {focus ? (
+            <motion.article
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ type: 'spring', stiffness: 110, damping: 18 }}
+              className="glass rounded-[28px] p-6 mt-8 relative overflow-hidden"
+              style={glow}
+            >
+              <h2 className="text-2xl font-medium">{focus.name}</h2>
+              {focus.caption && <p className="text-neutral-300 mt-3 leading-relaxed">{focus.caption}</p>}
+              <p className="text-sm text-neutral-500 mt-3">{prettySize(Number(focus.size) || 0)}{focus.author ? ` · from ${focus.author}` : ''}</p>
+              {focus.fileUrl && (
+                <a href={focus.fileUrl} className="inline-flex mt-5 px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-100 active:scale-[0.98] transition" download>
+                  take the file
+                </a>
+              )}
+            </motion.article>
+          ) : (
+            <form onSubmit={share} className="glass rounded-[28px] p-6 mt-8 space-y-4 relative overflow-hidden" style={glow}>
+              <label className="block text-sm text-neutral-300">
+                title
+                <input
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="optional, defaults to filename"
+                  className="mt-1 w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 text-white outline-none focus:border-[#5AC8FA]/60 transition"
+                />
+              </label>
+              <label className="block text-sm text-neutral-300">
+                caption
+                <input
+                  value={caption}
+                  onChange={(e) => setCaption(e.target.value)}
+                  placeholder="a short note for the share"
+                  className="mt-1 w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 text-white outline-none focus:border-[#5AC8FA]/60 transition"
+                />
+              </label>
+              <label className="block text-sm text-neutral-300">
+                from
+                <input
+                  value={author}
+                  onChange={(e) => setAuthor(e.target.value)}
+                  placeholder="optional"
+                  className="mt-1 w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 text-white outline-none focus:border-[#5AC8FA]/60 transition"
+                />
+              </label>
+              <label className="block text-sm text-neutral-300">
+                accent light
+                <input
+                  type="color"
+                  value={color}
+                  onChange={(e) => setColor(e.target.value)}
+                  className="mt-1 w-12 h-12 rounded-xl border border-white/10 bg-transparent cursor-pointer"
+                />
+              </label>
+              <label className="block rounded-2xl border border-dashed border-white/15 px-4 py-8 text-center text-neutral-400 hover:border-white/30 transition cursor-pointer">
+                <input type="file" multiple className="hidden" onChange={(e) => setFiles(Array.from(e.target.files || []))} />
+                {files.length ? files.map(f => `${f.name} · ${prettySize(f.size)}`).join(', ') : 'choose one or more files on this machine'}
+              </label>
+              {files.some(f => f.size > SLOW) && <p className="text-amber-300/90 text-sm">large file(s). they will not be refused. preview clients may feel slow.</p>}
+              {warn && <p className="text-amber-300/90 text-sm">{warn}</p>}
+              {error && <p className="text-red-400 text-sm">{error}</p>}
+              {links.map((l, i) => <p key={i} className="text-sm text-[#5AC8FA] break-all">{l}</p>)}
+              <button disabled={busy} className="w-full rounded-full bg-white text-black py-3 text-sm font-medium disabled:opacity-60 active:scale-[0.99] transition">
+                {busy ? 'sharing…' : 'share in light'}
+              </button>
+            </form>
+          )}
+          {shares.length > 0 && !focus && (
+            <ul className="mt-8 space-y-2">
+              {shares.slice(0, 12).map((row) => (
+                <li key={row.id}>
+                  <button
+                    onClick={() => navigate('softlumen', row.id)}
+                    className="w-full text-left glass rounded-2xl px-4 py-3 hover:-translate-y-0.5 transition-transform"
+                  >
+                    <span className="text-white">{row.name}</span>
+                    {row.caption && <span className="text-neutral-500 text-sm"> · {row.caption.slice(0, 40)}</span>}
+                  </button>
+                </li>
+              ))}
+            </ul>
           )}
         </motion.div>
-      </div>
+      </main>
+      <Footer />
     </div>
   );
 }

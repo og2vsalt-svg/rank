@@ -16,6 +16,10 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softorbit` — quiet orbits for files. Drop one or many local files with a shared title, caption, and accent light. Soft lights gently orbit a still center with spring motion on frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
+- `/softconstellation` — quiet constellation of files. Drop one or many local files with a shared title, caption, and accent light. Stars connect with soft drawing lines and spring motion on frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/softgrove` — plant files in a quiet grove. Drop one or many local files with a shared title, caption, and accent light. Soft trees grow and breathe with spring motion on frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/softlumendusk` — files settle under a quiet dusk light. Drop one or many local files with a shared title, caption, and accent light. Soft fading glows breathe and settle across frosted glass with spring motion. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

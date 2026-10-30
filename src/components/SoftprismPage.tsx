@@ -16,8 +16,7 @@ export default function SoftprismPage() {
   const [files, setFiles] = useState<File[]>([]);
   const [author, setAuthor] = useState('');
   const [caption, setCaption] = useState('');
-  const [color, setColor] = useState('#A78BFA');
-  const [expiresHours, setExpiresHours] = useState('');
+  const [color, setColor] = useState('#AF52DE');
   const [busy, setBusy] = useState(false);
   const [rows, setRows] = useState<Row[]>([]);
   const [copied, setCopied] = useState('');
@@ -28,15 +27,13 @@ export default function SoftprismPage() {
     if (!files.length) return;
     setBusy(true);
     const next: Row[] = [];
-    const expiresAt = expiresHours ? new Date(Date.now() + Number(expiresHours) * 3600000).toISOString() : null;
     for (const file of files) {
       const res = await publishLocalFile(file, {
         author,
         caption: caption ? `${caption} · ${file.name}` : file.name,
         color,
         cardTitle: caption || file.name,
-        expiresAt,
-        meta: { accent: color, source: 'softprism', expiresHours: expiresHours || null },
+        meta: { accent: color, source: 'softprism' },
       });
       next.push({
         name: file.name,
@@ -66,47 +63,39 @@ export default function SoftprismPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
-          {/* Prism refraction beams */}
-          {[0, 1, 2].map((i) => (
+          {[...Array(5)].map((_, i) => (
             <motion.div
               key={i}
-              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 origin-center"
+              className="absolute"
               style={{
-                width: 2,
-                height: 220,
-                background: `linear-gradient(to bottom, transparent, ${color}, transparent)`,
+                width: 120 + i * 20,
+                height: 140 + i * 10,
+                left: `${15 + i * 14}%`,
+                top: `${20 + (i % 2) * 25}%`,
+                background: `linear-gradient(135deg, ${color}40, transparent 60%)`,
+                clipPath: 'polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)',
                 filter: 'blur(1px)',
-                transform: `rotate(${i * 60}deg)`,
               }}
               animate={{
-                rotate: [i * 60, i * 60 + 360],
-                opacity: [0.3, 0.8, 0.3],
+                rotate: [0, 12, -8, 0],
+                y: [0, -12, 4, 0],
+                opacity: [0.35, 0.7, 0.45, 0.35],
               }}
               transition={{
-                duration: 12 + i * 2,
+                duration: 6 + i,
                 repeat: Infinity,
-                ease: 'linear',
+                ease: 'easeInOut',
+                delay: i * 0.4,
               }}
             />
           ))}
-          <motion.div
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
-            style={{
-              width: 80,
-              height: 80,
-              background: `radial-gradient(circle, ${color}40, transparent 70%)`,
-              filter: 'blur(8px)',
-            }}
-            animate={{ scale: [1, 1.2, 1], opacity: [0.4, 0.7, 0.4] }}
-            transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-          />
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 110, damping: 20 }} className="relative">
           <p className="text-[12px] uppercase tracking-[0.16em] text-white/45">softprism</p>
-          <h1 className="mt-2 text-[34px] font-semibold tracking-[-0.04em]">quiet refracting prism for what you carry</h1>
+          <h1 className="mt-2 text-[34px] font-semibold tracking-[-0.04em]">light bends around what you carry</h1>
           <p className="mt-3 text-[15px] leading-relaxed text-white/60">
-            Multi-file drop with shared note, accent color, and optional expiration. Soft spectral beams that gently rotate and breathe in your color, like light refracting through a still prism. Spring motion, glass surfaces. Each file lands in storage and the public_shares table. Professional Discord embeds on every link. Large files receive only a gentle slowness warning — never refused. All prior desks remain intact. No traces of boosting.
+            Multi-file drop with shared note and accent. Soft rotating prisms refract your color across frosted glass with spring motion. Each file uploads to storage and the public_shares table. Professional Discord embeds on every link. Large files receive only a gentle slowness warning — never refused. All prior desks remain intact.
           </p>
         </motion.div>
 
@@ -130,10 +119,9 @@ export default function SoftprismPage() {
         <div className="mt-4 grid gap-3">
           <input value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="shared note that rides every card" className="glass rounded-2xl px-4 py-3 text-[14px] outline-none" />
           <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="name, optional" className="glass rounded-2xl px-4 py-3 text-[14px] outline-none" />
-          <input value={expiresHours} onChange={(e) => setExpiresHours(e.target.value.replace(/[^0-9]/g, ''))} placeholder="expires in hours, optional" className="glass rounded-2xl px-4 py-3 text-[14px] outline-none" />
           <div className="flex items-center gap-3">
             <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="h-10 w-14 cursor-pointer rounded-xl border border-white/10 bg-transparent" />
-            <span className="text-[13px] text-white/50">accent for prism beams</span>
+            <span className="text-[13px] text-white/50">accent for cards and refracting prisms</span>
           </div>
         </div>
 
@@ -147,7 +135,7 @@ export default function SoftprismPage() {
           className="mt-4 w-full rounded-full px-4 py-3 text-[15px] font-medium text-white disabled:opacity-40"
           style={{ background: color }}
         >
-          {busy ? 'refracting…' : 'cast through the prism'}
+          {busy ? 'sending…' : 'share the prism'}
         </motion.button>
 
         {!!rows.length && (

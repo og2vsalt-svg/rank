@@ -16,6 +16,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softwhisper` — soft whisper. Drop one or many local files with a shared title, caption, and accent light. Each settles with a gentle breathing glow and spring motion on frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/softvelvet` — soft velvet drape. Drop one or many local files with a shared title, caption, and accent light. Each settles with a gentle fold animation and spring motion on a subtle velvet texture. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/softaurora` — soft aurora veil. Drop one or many local files with a shared title, caption, and accent light. Each settles under dual soft glows with a gentle light sweep and spring motion. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

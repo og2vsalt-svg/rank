@@ -16,6 +16,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softlumendusk` — files settle under a quiet dusk light. Drop one or many local files with a shared title, caption, and accent light. Soft fading glows breathe and settle across frosted glass with spring motion. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/softlumen` — quiet beams of shared light. Drop one or many local files with a shared title, caption, and accent light. Soft vertical beams rise and breathe with spring motion on frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/softveil` — soft veil of light. Drop one or many local files with a shared title, caption, and accent light. A soft light veil sweeps across frosted glass with spring motion. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

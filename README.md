@@ -16,6 +16,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softrefract` — soft prism refraction. Drop one or many local files with a shared title, caption, and accent light. Beams gently refract and breathe under a soft glow. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/softlumen` — a luminous field. Drop one or many local files with a shared title, caption, and accent light. Each settles with a gentle float and spring motion under a soft horizon glow. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/softquay` — a quiet quay. Drop one or many local files with a shared quay name, caption, and accent light. Each settles along the waterline with spring motion and a gentle ripple. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

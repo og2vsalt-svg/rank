@@ -16,6 +16,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softveil` — soft veil of light. Drop one or many local files with a shared title, caption, and accent light. A soft light veil sweeps across frosted glass with spring motion. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/softmeadow` — quiet meadow for files. Drop one or many local files with a shared title, caption, and accent light. Soft floating motes drift with spring motion on frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/softquietharbor` — quiet harbor for files. Drop one or many local files with a shared title, caption, and accent light. Each settles along the waterline with spring motion and gentle ripples on frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

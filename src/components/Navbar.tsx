@@ -5,6 +5,8 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'softorbit', label: 'softorbit' },
+  { to: 'softconstellation', label: 'softconstellation' },
   { to: 'softgrove', label: 'softgrove' },
   { to: 'softlumendusk', label: 'softlumendusk' },
   { to: 'softlumen', label: 'softlumen' },
@@ -121,7 +123,6 @@ const primary: NavItem[] = [
   { to: 'softcandle', label: 'softcandle' },
   { to: 'quietmosaic', label: 'quietmosaic' },
   { to: 'softlumenveil', label: 'softlumenveil' },
-  { to: 'softconstellation', label: 'softconstellation' },
   { to: 'softember', label: 'softember' },
   { to: 'quietglow', label: 'quietglow' },
   { to: 'quietnebula', label: 'quietnebula' },

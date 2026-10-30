@@ -1,6 +1,6 @@
 const BOT = /discord|twitterbot|facebookexternalhit|slackbot|telegrambot|whatsapp|linkedinbot|redditbot|applebot|iframely|unfurl|pinterest|embedly|skype|slack-imgproxy|preview|bot|crawler|spider/i;
 const CARD_PAGES = new Set(['impost', 'reading', 's', 'share']);
-const DIRECT = { cartouche: 'cartouche', fillet: 'fillet' };
+const DIRECT = { cartouche: 'cartouche', fillet: 'fillet', softcascade: 'softcascade' };
 
 export const config = {
   matcher: ['/((?!api/|assets/|og\\.png|favicon|robots).*)'],

@@ -16,6 +16,10 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softpulse` — a quiet pulse of light. Multi-file drop with a shared note and accent. A gentle breathing pulse of light surrounds what you carry, with spring motion and frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a soft warning of possible slowness. Prior desks remain intact.
+
+- `/softcascade` — cascading light trails. Drop one or many local files with a shared title, caption, and accent light. Each cascades down with spring motion and a gentle light trail on frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact.
+
 - `/softwhisper` — soft whisper. Drop one or many local files with a shared title, caption, and accent light. Each settles with a gentle breathing glow and spring motion on frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/softvelvet` — soft velvet drape. Drop one or many local files with a shared title, caption, and accent light. Each settles with a gentle fold animation and spring motion on a subtle velvet texture. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
@@ -23,27 +27,5 @@ Live: https://rank-six-iota.vercel.app/
 - `/softaurora` — soft aurora veil. Drop one or many local files with a shared title, caption, and accent light. Each settles under dual soft glows with a gentle light sweep and spring motion. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/softnimbus` — soft nimbus. Soft clouds that gently float and breathe with your accent color. Multi-file drop with a shared note. Each file settles into storage and the public_shares table with spring motion. Professional Discord embeds on every share link. Large files warned only for possible slowness — never refused. Apple-style glass and pacing. Prior desks remain intact. No traces of boosting.
-
-- `/softrefract` — soft prism refraction. Drop one or many local files with a shared title, caption, and accent light. Beams gently refract and breathe under a soft glow. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
-
-- `/softlumen` — a luminous field. Drop one or many local files with a shared title, caption, and accent light. Each settles with a gentle float and spring motion under a soft horizon glow. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
-
-- `/softquay` — a quiet quay. Drop one or many local files with a shared quay name, caption, and accent light. Each settles along the waterline with spring motion and a gentle ripple. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
-
-- `/softmeridian` — a crystalline meridian share. Drop one or many local files with a shared title, caption, and accent light. Each settles along a soft horizon with staggered spring motion and a gentle light sweep. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
-
-- `/softatelier` — a soft workshop. Drop one or many local files with a shared title, caption, and accent light. Each settles into frosted glass with spring motion, as if laid on a soft workbench. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
-
-- `/softlinen` — a soft linen drape. Drop one or many local files with a shared title and note. Each settles with a gentle fold animation and spring motion on a subtle linen texture. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
-
-- `/softquire` — a soft gathered share. Drop one or many local files with a shared title and note. Each settles into frosted glass with spring motion. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
-
-- `/softchamber` — a soft breathing chamber. Drop one or many local files with a shared title, chamber note, and accent light. Each settles behind expanding frosted glass walls with spring motion and a gentle breathing glow. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
-
-- `/aureate` — a golden soft share. Drop one or many local files with a title, caption, and accent color. Each settles into its own frosted glass card with a soft radial glow and spring motion. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
-
-- `/resonance` — a resonant share. Drop a note, a file, or both. It resonates in the public_shares table with soft spring motion and frosted glass. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
-
-- `/softglow` — a soft glowing share. Drop one local file with a title, caption, and accent color. It settles into a frosted glass card with a soft radial glow and spring motion. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 (Truncated for brevity; all prior desks remain intact in the codebase.)

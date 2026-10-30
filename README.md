@@ -16,6 +16,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softmeridian` — a crystalline meridian share. Drop one or many local files with a shared title, caption, and accent light. Each settles along a soft horizon with staggered spring motion and a gentle light sweep. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/softatelier` — a soft workshop. Drop one or many local files with a shared title, caption, and accent light. Each settles into frosted glass with spring motion, as if laid on a soft workbench. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/softlinen` — a soft linen drape. Drop one or many local files with a shared title and note. Each settles with a gentle fold animation and spring motion on a subtle linen texture. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

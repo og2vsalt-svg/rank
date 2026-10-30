@@ -16,6 +16,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softpulse` — quiet pulse for files. Drop one or many local files with a shared title, caption, and accent light. Soft concentric rings expand and fade like a gentle heartbeat with spring motion on frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/softecho` — quiet echoes for files. Drop one or many local files with a shared title, caption, and accent light. Soft concentric ripples expand and fade like gentle sound echoes with spring motion on frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/softorbit` — quiet orbits for files. Drop one or many local files with a shared title, caption, and accent light. Soft lights gently orbit a still center with spring motion on frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

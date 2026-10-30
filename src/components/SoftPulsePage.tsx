@@ -1,168 +1,158 @@
-import { useMemo, useState } from 'react';
-import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './Navbar';
 import { publishLocalFile, shareUrls } from '../lib/cloudShare';
 
-type Row = {
-  name: string;
-  size: number;
-  id?: string;
-  embed?: string;
-  error?: string;
-  warn?: string | null;
-};
-
 export default function SoftPulsePage() {
   const [files, setFiles] = useState<File[]>([]);
-  const [author, setAuthor] = useState('');
-  const [caption, setCaption] = useState('');
-  const [color, setColor] = useState('#60A5FA');
+  const [accent, setAccent] = useState('#FF6B6B');
+  const [title, setTitle] = useState('');
+  const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
-  const [rows, setRows] = useState<Row[]>([]);
-  const [copied, setCopied] = useState('');
+  const [warn, setWarn] = useState('');
+  const [links, setLinks] = useState<string[]>([]);
+  const [err, setErr] = useState('');
+  const [pulse, setPulse] = useState(0);
 
-  const heavy = useMemo(() => files.reduce((n, f) => n + f.size, 0) > 40 * 1024 * 1024, [files]);
-
-  const send = async () => {
-    if (!files.length) return;
-    setBusy(true);
-    const next: Row[] = [];
-    for (const file of files) {
-      const res = await publishLocalFile(file, {
-        author,
-        caption: caption ? `${caption} · ${file.name}` : file.name,
-        color,
-        cardTitle: caption || file.name,
-        meta: { accent: color, source: 'softpulse' },
-      });
-      next.push({
-        name: file.name,
-        size: file.size,
-        id: res.id,
-        embed: res.id ? shareUrls(res.id).embed : undefined,
-        error: res.ok ? undefined : res.error,
-        warn: res.warn,
-      });
-      setRows([...next]);
-    }
-    setBusy(false);
+  const onDrop = (list: FileList | null) => {
+    const next = Array.from(list || []);
+    setFiles((prev) => [...prev, ...next].slice(0, 12));
+    const big = next.some((f) => f.size > 40 * 1024 * 1024);
+    setWarn(big ? 'some files are chunky. encoding may feel slow. no hard limit.' : '');
+    setPulse((p) => p + 1);
   };
 
-  const copy = async (value: string) => {
-    await navigator.clipboard.writeText(value);
-    setCopied(value);
-    setTimeout(() => setCopied(''), 1200);
+  const remove = (i: number) => setFiles((prev) => prev.filter((_, idx) => idx !== i));
+
+  const publish = async () => {
+    if (files.length === 0) {
+      setErr('drop at least one local file');
+      return;
+    }
+    setBusy(true);
+    setErr('');
+    setLinks([]);
+    const made: string[] = [];
+    try {
+      for (const file of files) {
+        const res = await publishLocalFile(file, {
+          caption: note.trim() || 'soft pulse',
+          cardTitle: title.trim() || file.name,
+          color: accent,
+          meta: { desk: 'softpulse', note: note.trim(), title: title.trim() },
+        });
+        if (!res.ok || !res.id) {
+          setErr(res.error || `failed on ${file.name}`);
+          break;
+        }
+        if (res.warn) setWarn(res.warn);
+        made.push(shareUrls(res.id).app);
+      }
+      setLinks(made);
+      if (made[0]) {
+        try { await navigator.clipboard.writeText(made.join('\n')); } catch {}
+      }
+    } catch (e: any) {
+      setErr(e?.message || 'publish failed');
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <main className="mx-auto max-w-2xl px-5 pb-24 pt-10 relative">
-        <motion.div
-          className="absolute inset-0 pointer-events-none overflow-hidden"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-        >
-          {[...Array(12)].map((_, i) => {
-            const angle = (i / 12) * Math.PI * 2;
-            const radius = 120 + (i % 3) * 40;
-            return (
-              <motion.div
-                key={i}
-                className="absolute rounded-full"
-                style={{
-                  width: 32 + (i % 4) * 12,
-                  height: 32 + (i % 4) * 12,
-                  background: color,
-                  left: `calc(50% + ${Math.cos(angle) * radius}px)`,
-                  top: `calc(42% + ${Math.sin(angle) * radius}px)`,
-                  opacity: 0.4,
-                  filter: 'blur(1px)',
-                }}
-                animate={{
-                  scale: [0.7, 1.15, 0.8],
-                  opacity: [0.2, 0.65, 0.25],
-                  y: [0, -8, 0],
-                }}
-                transition={{
-                  duration: 3.5 + (i % 4) * 0.6,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                  delay: i * 0.15,
-                }}
-              />
-            );
-          })}
-        </motion.div>
-
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 110, damping: 20 }} className="relative">
-          <p className="text-[12px] uppercase tracking-[0.16em] text-white/45">softpulse</p>
-          <h1 className="mt-2 text-[34px] font-semibold tracking-[-0.04em]">quiet pulsing orbs of light for what you carry</h1>
-          <p className="mt-3 text-[15px] leading-relaxed text-white/60">
-            Multi-file drop with a shared note and accent. Soft orbs that gently pulse, expand, and breathe in your color, like a quiet heartbeat of light. Spring motion, glass surfaces. Each file lands in storage and the public_shares table. Professional Discord embeds on every link. Large files receive only a gentle slowness warning — never refused. All prior desks remain intact.
-          </p>
-        </motion.div>
-
-        <label className="glass mt-8 block cursor-pointer rounded-3xl p-8 text-center relative">
-          <input className="hidden" type="file" multiple onChange={(e) => setFiles(Array.from(e.target.files || []))} />
-          <div className="text-[15px] text-white/80">{files.length ? `${files.length} files ready` : 'drop or choose files from this machine'}</div>
-          <div className="mt-1 text-[12px] text-white/40">any type · soft warning only · no hard limits</div>
-        </label>
-
-        {!!files.length && (
-          <ul className="mt-4 space-y-1.5">
-            {files.map((f) => (
-              <li key={f.name + f.size} className="flex items-center justify-between rounded-2xl bg-white/[0.04] px-4 py-2.5 text-[13px]">
-                <span className="truncate pr-3">{f.name}</span>
-                <span className="shrink-0 text-white/40">{(f.size / 1024).toFixed(0)} kb</span>
-              </li>
-            ))}
-          </ul>
-        )}
-
-        <div className="mt-4 grid gap-3">
-          <input value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="shared note that rides every card" className="glass rounded-2xl px-4 py-3 text-[14px] outline-none" />
-          <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="name, optional" className="glass rounded-2xl px-4 py-3 text-[14px] outline-none" />
-          <div className="flex items-center gap-3">
-            <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="h-10 w-14 cursor-pointer rounded-xl border border-white/10 bg-transparent" />
-            <span className="text-[13px] text-white/50">accent for the pulse</span>
-          </div>
+      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto relative">
+        {/* soft pulse rings */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-[40px]">
+          {[0, 1, 2].map((i) => (
+            <motion.div
+              key={i + pulse}
+              initial={{ scale: 0.6, opacity: 0.4 }}
+              animate={{ scale: 1.8 + i * 0.4, opacity: 0 }}
+              transition={{ duration: 2.4 + i * 0.3, ease: [0.22, 1, 0.36, 1], repeat: Infinity, delay: i * 0.4 }}
+              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border"
+              style={{ width: 180, height: 180, borderColor: accent, opacity: 0.25 }}
+            />
+          ))}
         </div>
-
-        {heavy && <p className="mt-3 text-[13px] text-amber-200/80">large batch. sending may feel slow. nothing is refused.</p>}
-
-        <motion.button
-          whileTap={{ scale: 0.97 }}
-          whileHover={{ scale: 1.01 }}
-          onClick={send}
-          disabled={!files.length || busy}
-          className="mt-4 w-full rounded-full px-4 py-3 text-[15px] font-medium text-white disabled:opacity-40"
-          style={{ background: color }}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: 'spring', stiffness: 100, damping: 18 }}
+          className="glass rounded-[32px] p-8 relative z-10"
         >
-          {busy ? 'sending…' : 'compose the pulse'}
-        </motion.button>
-
-        {!!rows.length && (
-          <div className="mt-6 space-y-2">
-            {rows.map((r) => (
-              <div key={r.name + r.size} className="glass rounded-2xl px-4 py-3">
-                <div className="flex items-center justify-between gap-3">
-                  <p className="truncate text-[14px]">{r.name}</p>
-                  {r.embed ? (
-                    <button onClick={() => copy(r.embed!)} className="shrink-0 rounded-full bg-white/10 px-3 py-1 text-[12px]">
-                      {copied === r.embed ? 'copied' : 'copy link'}
-                    </button>
-                  ) : (
-                    <span className="text-[12px] text-red-300">{r.error || 'failed'}</span>
-                  )}
-                </div>
-                {r.embed && <p className="mt-1 break-all text-[12px] text-white/45">{r.embed}</p>}
-                {r.warn && <p className="mt-1 text-[12px] text-amber-200/80">{r.warn}</p>}
-              </div>
-            ))}
+          <p className="text-sm mb-2 tracking-wide" style={{ color: accent }}>softpulse</p>
+          <h1 className="text-3xl font-semibold mb-3 tracking-tight">quiet pulse. many files.</h1>
+          <p className="text-neutral-400 text-sm mb-6 leading-relaxed">
+            Drop several local files. Each becomes its own share in storage and the public table, lit with your warm accent and optional title. Soft concentric pulses expand and fade like a gentle heartbeat with spring motion on frosted glass. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact.
+          </p>
+          <div className="flex items-center gap-3 mb-4">
+            <label className="text-xs text-neutral-500">accent</label>
+            <input
+              type="color"
+              value={accent}
+              onChange={(e) => setAccent(e.target.value)}
+              className="w-10 h-10 rounded-full border border-white/10 bg-transparent cursor-pointer"
+            />
+            <span className="text-xs text-neutral-400">{accent}</span>
           </div>
-        )}
-      </main>
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="optional shared title…"
+            className="w-full mb-3 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm placeholder:text-neutral-500 focus:outline-none focus:border-[#FF6B6B]/50 transition"
+          />
+          <textarea
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="optional note for every pulse…"
+            rows={2}
+            className="w-full mb-4 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm placeholder:text-neutral-500 focus:outline-none focus:border-[#FF6B6B]/50 transition resize-none"
+          />
+          <label
+            className="block cursor-pointer rounded-2xl border border-dashed border-white/15 hover:border-[#FF6B6B]/40 p-8 text-center transition mb-4"
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => { e.preventDefault(); onDrop(e.dataTransfer.files); }}
+          >
+            <input type="file" multiple className="hidden" onChange={(e) => onDrop(e.target.files)} />
+            <p className="text-sm text-neutral-300">drop or click for local files (up to twelve)</p>
+          </label>
+          <AnimatePresence>
+            {files.map((f, i) => (
+              <motion.div
+                key={f.name + i}
+                initial={{ opacity: 0, x: -8 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, height: 0 }}
+                className="flex items-center justify-between text-xs text-neutral-400 mb-1 px-1"
+              >
+                <span className="truncate max-w-[70%]">{f.name}</span>
+                <button type="button" onClick={() => remove(i)} className="text-neutral-500 hover:text-white">remove</button>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+          {warn && <p className="text-xs text-amber-300/80 mb-3 mt-2">{warn}</p>}
+          {err && <p className="text-xs text-red-400 mb-3">{err}</p>}
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            onClick={publish}
+            disabled={busy || files.length === 0}
+            className="w-full py-3 rounded-full text-white text-sm font-medium disabled:opacity-50 transition mt-2"
+            style={{ background: accent }}
+          >
+            {busy ? 'pulsing…' : 'publish pulse'}
+          </motion.button>
+          {links.length > 0 && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-5 text-xs text-neutral-400 space-y-1">
+              <p>share links (copied):</p>
+              {links.map((l) => (
+                <div key={l} className="break-all">{l}</div>
+              ))}
+            </motion.div>
+          )}
+        </motion.div>
+      </div>
     </div>
   );
 }

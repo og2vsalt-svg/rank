@@ -16,6 +16,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softprismdesk` — soft prism desk. Drop one or many local files with a shared title, caption, and accent light. A soft rotating prism refracts your color across frosted glass with spring motion. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/softprism` — soft prism refraction. Drop one or many local files with a shared title, caption, and accent light. Soft rotating prisms refract your color across frosted glass with spring motion. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/softpulse` — a quiet pulse of light. Multi-file drop with a shared note and accent. A gentle breathing pulse of light surrounds what you carry, with spring motion and frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a soft warning of possible slowness. Prior desks remain intact.

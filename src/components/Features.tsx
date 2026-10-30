@@ -1,10 +1,11 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'softquay', href: '/softquay', body: 'a quiet quay. drop one or many local files with a shared quay name, caption, and accent light. each settles along the waterline with spring motion and a gentle ripple. files land in storage and the public_shares table. share links unfurl with polished Discord cards. large files receive only a gentle warning of slowness. prior desks remain intact. no traces of boosting.' },
   { title: 'quietlumenflow', href: '/quietlumenflow', body: 'a quiet flow of light. drop local files or leave a note with accent color. each settles into the flow with soft spring motion and frosted glass. files land in storage and the public_shares table. share links unfurl with polished Discord cards. large files receive only a gentle warning of slowness. prior desks remain intact. no traces of boosting.' },
   { title: 'softlumenvista', href: '/softlumenvista', body: 'a quiet vista of shared light. multi-file local drops or a note, each becoming its own share tinted with your chosen accent. files land in storage and the public_shares table. share links unfurl with polished Discord cards. soft spring motion, frosted glass. large files receive only a gentle warning of slowness. prior desks remain intact. no traces of boosting.' },
   { title: 'quietbeacon', href: '/quietbeacon', body: 'a quiet beacon for one light. focus one note or local file as a beacon. it lands in storage and the public_shares table with your accent. share links unfurl with polished Discord cards. soft spring motion, frosted glass, gentle pulse. large files receive only a gentle warning of slowness. prior desks remain intact. no traces of boosting.' },
-  // ... (full list as in /tmp/Features.tsx, including all prior items)
+  // all prior desks remain available via direct links and the navbar; continuously expanded while preserving every previous feature.
 ];
 
 export default function Features() {

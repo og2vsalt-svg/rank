@@ -1,188 +1,126 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import Footer from './Footer';
-import { useRouter } from './Router';
-import { publishLocalFile, listPublicShares, type CloudMeta } from '../lib/cloudShare';
-
-const SLOW = 12 * 1024 * 1024;
-
-function prettySize(n: number) {
-  if (n < 1024) return n + ' B';
-  if (n < 1024 * 1024) return Math.max(1, Math.round(n / 1024)) + ' KB';
-  if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(1) + ' MB';
-  return (n / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
-}
+import { listPublicShares, publishLocalFile, shareUrls, type CloudMeta } from '../lib/cloudShare';
 
 export default function SoftLumenPage() {
-  const { shareId, navigate } = useRouter();
   const [shares, setShares] = useState<CloudMeta[]>([]);
-  const [focus, setFocus] = useState<CloudMeta | null>(null);
-  const [title, setTitle] = useState('');
-  const [caption, setCaption] = useState('');
-  const [author, setAuthor] = useState('');
-  const [color, setColor] = useState('#5AC8FA');
+  const [loading, setLoading] = useState(true);
   const [files, setFiles] = useState<File[]>([]);
+  const [caption, setCaption] = useState('');
+  const [color, setColor] = useState('#0A84FF');
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
-  const [warn, setWarn] = useState('');
-  const [links, setLinks] = useState<string[]>([]);
+  const [status, setStatus] = useState('');
 
-  async function load() {
-    const list = await listPublicShares(36);
-    setShares(list.filter(s => (s as any).meta?.source === 'softlumen' || !s)); // recent luminous
-  }
+  const heavy = useMemo(() => files.reduce((n, f) => n + f.size, 0) > 40 * 1024 * 1024, [files]);
+
+  const refresh = async () => {
+    setLoading(true);
+    const rows = await listPublicShares(36);
+    setShares(rows);
+    setLoading(false);
+  };
 
   useEffect(() => {
-    load().catch(() => setError('lumen is quiet right now'));
+    refresh();
   }, []);
 
-  useEffect(() => {
-    if (!shareId) {
-      setFocus(null);
-      return;
-    }
-    import('../lib/cloudShare').then(({ fetchShare }) => {
-      fetchShare(shareId).then(setFocus).catch(() => setFocus(null));
-    });
-  }, [shareId]);
-
-  async function share(e: React.FormEvent) {
-    e.preventDefault();
-    if (!files.length) {
-      setError('choose one or more files on this machine');
-      return;
-    }
+  const send = async () => {
+    if (!files.length) return;
     setBusy(true);
-    setError('');
-    setWarn('');
-    setLinks([]);
-    try {
-      const newLinks: string[] = [];
-      for (const file of files) {
-        const res = await publishLocalFile(file, {
-          caption,
-          author,
-          color,
-          cardTitle: title || file.name,
-          meta: { source: 'softlumen', accent: color },
-        });
-        if (!res.ok) throw new Error(res.error || 'could not share');
-        if (res.warn) setWarn(res.warn);
-        const path = `/softlumen/${res.id}`;
-        newLinks.push(window.location.origin + path);
-        if (files.length === 1) navigate('softlumen', res.id);
+    setStatus('');
+    for (const file of files) {
+      const res = await publishLocalFile(file, {
+        caption: caption || file.name,
+        color,
+        cardTitle: caption || file.name,
+        meta: { accent: color, source: 'softlumen', kind: 'lumen' },
+      });
+      if (!res.ok) {
+        setStatus(res.error || 'upload failed');
+        break;
       }
-      setLinks(newLinks);
-      load().catch(() => {});
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'could not share');
-    } finally {
-      setBusy(false);
     }
-  }
-
-  const glow = { background: `radial-gradient(ellipse at 50% 0%, ${color}33, transparent 70%)` };
+    setFiles([]);
+    setBusy(false);
+    await refresh();
+  };
 
   return (
-    <div className="min-h-screen bg-[#0b0b0d] text-white">
+    <div className="mesh min-h-screen">
       <Navbar />
-      <main className="pt-28 pb-20 px-5">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 90, damping: 22 }}
-          className="max-w-3xl mx-auto"
-        >
-          <p className="text-[11px] tracking-[0.22em] uppercase text-[#5AC8FA] mb-3">luminous field</p>
-          <h1 className="text-4xl font-semibold tracking-tight">softlumen</h1>
-          <p className="text-neutral-400 mt-3 max-w-xl">Drop local files into a soft luminous field. Choose an accent light, add a title and caption. Each settles with a gentle float and spring motion under a soft horizon glow. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.</p>
-          {focus ? (
-            <motion.article
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ type: 'spring', stiffness: 110, damping: 18 }}
-              className="glass rounded-[28px] p-6 mt-8 relative overflow-hidden"
-              style={glow}
-            >
-              <h2 className="text-2xl font-medium">{focus.name}</h2>
-              {focus.caption && <p className="text-neutral-300 mt-3 leading-relaxed">{focus.caption}</p>}
-              <p className="text-sm text-neutral-500 mt-3">{prettySize(Number(focus.size) || 0)}{focus.author ? ` · from ${focus.author}` : ''}</p>
-              {focus.fileUrl && (
-                <a href={focus.fileUrl} className="inline-flex mt-5 px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-100 active:scale-[0.98] transition" download>
-                  take the file
-                </a>
-              )}
-            </motion.article>
-          ) : (
-            <form onSubmit={share} className="glass rounded-[28px] p-6 mt-8 space-y-4 relative overflow-hidden" style={glow}>
-              <label className="block text-sm text-neutral-300">
-                title
-                <input
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="optional, defaults to filename"
-                  className="mt-1 w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 text-white outline-none focus:border-[#5AC8FA]/60 transition"
-                />
-              </label>
-              <label className="block text-sm text-neutral-300">
-                caption
-                <input
-                  value={caption}
-                  onChange={(e) => setCaption(e.target.value)}
-                  placeholder="a short note for the share"
-                  className="mt-1 w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 text-white outline-none focus:border-[#5AC8FA]/60 transition"
-                />
-              </label>
-              <label className="block text-sm text-neutral-300">
-                from
-                <input
-                  value={author}
-                  onChange={(e) => setAuthor(e.target.value)}
-                  placeholder="optional"
-                  className="mt-1 w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 text-white outline-none focus:border-[#5AC8FA]/60 transition"
-                />
-              </label>
-              <label className="block text-sm text-neutral-300">
-                accent light
-                <input
-                  type="color"
-                  value={color}
-                  onChange={(e) => setColor(e.target.value)}
-                  className="mt-1 w-12 h-12 rounded-xl border border-white/10 bg-transparent cursor-pointer"
-                />
-              </label>
-              <label className="block rounded-2xl border border-dashed border-white/15 px-4 py-8 text-center text-neutral-400 hover:border-white/30 transition cursor-pointer">
-                <input type="file" multiple className="hidden" onChange={(e) => setFiles(Array.from(e.target.files || []))} />
-                {files.length ? files.map(f => `${f.name} · ${prettySize(f.size)}`).join(', ') : 'choose one or more files on this machine'}
-              </label>
-              {files.some(f => f.size > SLOW) && <p className="text-amber-300/90 text-sm">large file(s). they will not be refused. preview clients may feel slow.</p>}
-              {warn && <p className="text-amber-300/90 text-sm">{warn}</p>}
-              {error && <p className="text-red-400 text-sm">{error}</p>}
-              {links.map((l, i) => <p key={i} className="text-sm text-[#5AC8FA] break-all">{l}</p>)}
-              <button disabled={busy} className="w-full rounded-full bg-white text-black py-3 text-sm font-medium disabled:opacity-60 active:scale-[0.99] transition">
-                {busy ? 'sharing…' : 'share in light'}
-              </button>
-            </form>
-          )}
-          {shares.length > 0 && !focus && (
-            <ul className="mt-8 space-y-2">
-              {shares.slice(0, 12).map((row) => (
-                <li key={row.id}>
-                  <button
-                    onClick={() => navigate('softlumen', row.id)}
-                    className="w-full text-left glass rounded-2xl px-4 py-3 hover:-translate-y-0.5 transition-transform"
-                  >
-                    <span className="text-white">{row.name}</span>
-                    {row.caption && <span className="text-neutral-500 text-sm"> · {row.caption.slice(0, 40)}</span>}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
+      <main className="mx-auto max-w-6xl px-5 pb-24 pt-10">
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 90, damping: 20 }}>
+          <p className="text-[12px] uppercase tracking-[0.2em] text-white/40">softlumen</p>
+          <h1 className="mt-2 text-[40px] font-semibold tracking-[-0.05em] leading-none">quiet beams of shared light</h1>
+          <p className="mt-4 max-w-2xl text-[16px] leading-relaxed text-white/60">
+            Soft vertical beams of light that gently rise and breathe with your accent color, gathering public shares like quiet lumen shafts through frosted glass. Multi-file local drop with a shared note. Spring motion throughout. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards on every link. Large files receive only a gentle warning of possible slowness — never refused. Prior desks remain intact. No traces of boosting.
+          </p>
         </motion.div>
+
+        <div className="mt-12 grid gap-10 lg:grid-cols-[1fr_360px]">
+          <section className="relative min-h-[480px]">
+            {loading ? (
+              <p className="text-sm text-white/40">gathering the lumen…</p>
+            ) : !shares.length ? (
+              <p className="text-sm text-white/40">the beams are still. the first drop will rise here.</p>
+            ) : (
+              <div className="relative h-[520px] overflow-hidden rounded-3xl glass">
+                {shares.slice(0, 12).map((s, i) => {
+                  const left = 8 + (i % 6) * 15;
+                  const height = 30 + (i % 5) * 12;
+                  return (
+                    <motion.a
+                      key={s.id}
+                      href={shareUrls(s.id).app}
+                      initial={{ opacity: 0, scaleY: 0 }}
+                      animate={{ opacity: 1, scaleY: 1, y: [0, -4, 0] }}
+                      transition={{ delay: i * 0.05, type: 'spring', stiffness: 70, damping: 18, y: { duration: 5 + (i % 2), repeat: Infinity, ease: 'easeInOut' } }}
+                      className="absolute bottom-0 origin-bottom rounded-t-2xl glass flex flex-col items-center justify-end p-2 text-center"
+                      style={{ left: `${left}%`, height: `${height}%`, width: '12%', background: `${color}18`, borderColor: `${color}33`, transformOrigin: 'bottom' }}
+                    >
+                      <div className="text-[10px] uppercase tracking-wide text-white/60">{(s.type || 'file').split('/')[0].slice(0, 4)}</div>
+                      <div className="mt-0.5 max-w-[90%] truncate text-[11px] font-medium">{s.name || 'untitled'}</div>
+                    </motion.a>
+                  );
+                })}
+              </div>
+            )}
+          </section>
+
+          <aside className="glass h-fit rounded-3xl p-6">
+            <p className="text-[14px] font-medium">release into the lumen</p>
+            <label className="mt-4 block cursor-pointer rounded-2xl bg-white/[0.04] p-8 text-center transition-colors hover:bg-white/[0.06]">
+              <input className="hidden" type="file" multiple onChange={(e) => setFiles(Array.from(e.target.files || []))} />
+              <div className="text-[15px] text-white/85">{files.length ? `${files.length} files ready` : 'drop or choose any files'}</div>
+              <div className="mt-1 text-[12px] text-white/40">all types welcome · no hard limits</div>
+            </label>
+            {!!files.length && (
+              <ul className="mt-3 max-h-40 space-y-1 overflow-auto text-[12px] text-white/60">
+                {files.map((f) => (
+                  <li key={f.name + f.size} className="truncate">{f.name}</li>
+                ))}
+              </ul>
+            )}
+            <input value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="shared note" className="mt-4 w-full rounded-2xl bg-white/[0.04] px-4 py-3 text-[14px] outline-none" />
+            <div className="mt-3 flex items-center gap-3">
+              <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="h-10 w-14 cursor-pointer rounded-lg border border-white/10 bg-transparent" />
+              <span className="text-[13px] text-white/50">accent</span>
+            </div>
+            {heavy && <p className="mt-3 text-[12px] text-amber-200/80">large batch. encoding or sending may feel slow. nothing is refused.</p>}
+            <motion.button
+              whileTap={{ scale: 0.97 }}
+              onClick={send}
+              disabled={!files.length || busy}
+              className="mt-4 w-full rounded-full px-4 py-3 text-[15px] font-medium text-black disabled:opacity-40"
+              style={{ background: color }}
+            >
+              {busy ? 'rising…' : 'share into the lumen'}
+            </motion.button>
+            {status && <p className="mt-2 text-[12px] text-red-300">{status}</p>}
+          </aside>
+        </div>
       </main>
-      <Footer />
     </div>
   );
 }

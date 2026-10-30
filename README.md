@@ -16,6 +16,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softnimbus` — soft nimbus. Soft clouds that gently float and breathe with your accent color. Multi-file drop with a shared note. Each file settles into storage and the public_shares table with spring motion. Professional Discord embeds on every share link. Large files warned only for possible slowness — never refused. Apple-style glass and pacing. Prior desks remain intact. No traces of boosting.
+
 - `/softrefract` — soft prism refraction. Drop one or many local files with a shared title, caption, and accent light. Beams gently refract and breathe under a soft glow. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/softlumen` — a luminous field. Drop one or many local files with a shared title, caption, and accent light. Each settles with a gentle float and spring motion under a soft horizon glow. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

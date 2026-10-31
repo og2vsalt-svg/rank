@@ -16,6 +16,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softgrokvault` — quiet vault for files. Drop one or many local files with a shared note and accent light. Gentle light breathes from the center with spring motion on frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/softhaze` — quiet haze for files. Drop one or many local files with a shared title, caption, and accent light. Soft veils of light gently breathe and shift like morning mist over still water with spring motion on frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/softstillwater` — quiet still water for files. Drop one or many local files with a shared title, caption, and accent light. Soft concentric ripples expand and fade like still water with spring motion on frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

@@ -120,6 +120,7 @@ import resonance from '../lib/endpoints/resonance.js';
 import softcascade from '../lib/endpoints/softcascade.js';
 import quietforge from '../lib/endpoints/quietforge.js';
 import softnook from '../lib/endpoints/softnook.js';
+import softbasin from '../lib/endpoints/softbasin.js';
 
 const routes = {
   atelier, beacon, card, cardfront, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -268,6 +269,7 @@ const routes = {
   softcascade,
   quietforge,
   softnook,
+  softbasin,
 };
 
 export default function handler(req, res) {

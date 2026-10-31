@@ -16,6 +16,10 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softhorizon` — quiet horizon for files. Drop one or many local files with a shared title, caption, and accent light. Soft light rises from a still line, warm and slow, like the first glow of day settling across quiet water with spring motion on frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
+- `/softaether` — quiet aether for files. Drop one or many local files with a shared title, caption, and accent light. Soft orbs of light float, drift, and breathe in your accent color, like motes suspended in clear air with spring motion on frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/softdawn` — quiet rising dawn for files. Drop one or many local files with a shared title, caption, and accent light. Gentle beams and floating motes that slowly lift, warm, and breathe with spring motion on frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/softcandle` — quiet candle for files. Drop one or many local files with a shared title, caption, and accent light. A gentle flame breathes and flickers with spring motion on frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

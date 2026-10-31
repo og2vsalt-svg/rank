@@ -16,6 +16,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softcandle` — quiet candle for files. Drop one or many local files with a shared title, caption, and accent light. A gentle flame breathes and flickers with spring motion on frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/softstillcove` — a quiet still cove for what arrives. Drop one or many local files with a shared title, caption, and accent light. Gentle waves of light breathe and settle with spring motion on frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/softlumenstudio` — a quiet studio for light. Drop one or many local files with a shared title, caption, and accent light. Soft studio beams gently breathe and settle with spring motion on frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

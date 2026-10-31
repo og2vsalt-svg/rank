@@ -16,6 +16,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softbasin` — a still basin for what you carry. Drop a local file with a title, caption, and cool indigo accent. Concentric ripples breathe and settle with spring motion on frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. All prior desks remain fully intact. No traces of boosting.
+
 - `/softnook` — a warm nook for what you carry. Drop a local file with a title, caption, and accent light. Soft cards settle with spring motion on frosted glass, glowing with the chosen accent. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. All prior desks remain fully intact. No traces of boosting.
 
 - `/softlumenquietplaza` — a still plaza for what you carry. Drop one or many local files with a shared title, caption, and accent light. Soft cards settle and breathe with spring motion on frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. All prior desks remain fully intact. No traces of boosting.

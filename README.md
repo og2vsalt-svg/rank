@@ -16,6 +16,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softquietcascade` — a quiet cascade of what arrives. Drop one or many local files with a shared title, caption, and accent light. Soft particles fall and breathe with spring motion on frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/softquietindex` — a quiet index of what has been shared. Recent public shares appear as frosted glass cards with spring animations. Search by name, caption, or author. Open any link for the full share with polished Discord embeds. Large files are never refused — only gently noted if slow. All prior desks remain fully intact. No traces of boosting.
 
 - `/softzephyr` — quiet breeze for what you carry. Drop one or many local files with a shared title, caption, and accent light. Soft streaks of wind drift and breathe with your accent color, spring motion on frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

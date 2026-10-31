@@ -118,6 +118,7 @@ import softlumen from '../lib/endpoints/softlumen.js';
 import softglow from '../lib/endpoints/softglow.js';
 import resonance from '../lib/endpoints/resonance.js';
 import softcascade from '../lib/endpoints/softcascade.js';
+import quietforge from '../lib/endpoints/quietforge.js';
 
 const routes = {
   atelier, beacon, card, cardfront, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -264,6 +265,7 @@ const routes = {
   softglow,
   resonance,
   softcascade,
+  quietforge,
 };
 
 export default function handler(req, res) {

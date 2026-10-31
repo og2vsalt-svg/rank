@@ -1,157 +1,148 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishLocalFile, shareUrls } from '../lib/cloudShare';
-
-type Row = {
-  name: string;
-  size: number;
-  id?: string;
-  embed?: string;
-  error?: string;
-  warn?: string | null;
-};
+import { listPublicShares, publishLocalFile, shareUrls, type CloudMeta } from '../lib/cloudShare';
 
 export default function SoftHorizonPage() {
+  const [shares, setShares] = useState<CloudMeta[]>([]);
+  const [loading, setLoading] = useState(true);
   const [files, setFiles] = useState<File[]>([]);
   const [author, setAuthor] = useState('');
   const [caption, setCaption] = useState('');
-  const [color, setColor] = useState('#A78BFA');
+  const [color, setColor] = useState('#FF9500');
+  const [expires, setExpires] = useState('');
   const [busy, setBusy] = useState(false);
-  const [rows, setRows] = useState<Row[]>([]);
-  const [copied, setCopied] = useState('');
+  const [status, setStatus] = useState('');
+  const [lastLinks, setLastLinks] = useState<string[]>([]);
 
   const heavy = useMemo(() => files.reduce((n, f) => n + f.size, 0) > 40 * 1024 * 1024, [files]);
 
-  const lines = useMemo(() => [0, 1, 2, 3, 4], []);
+  const refresh = async () => {
+    setLoading(true);
+    const rows = await listPublicShares(48);
+    setShares(rows);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    refresh();
+  }, []);
 
   const send = async () => {
     if (!files.length) return;
     setBusy(true);
-    const next: Row[] = [];
+    setStatus('');
+    setLastLinks([]);
+    const links: string[] = [];
     for (const file of files) {
       const res = await publishLocalFile(file, {
         author,
         caption: caption ? `${caption} · ${file.name}` : file.name,
         color,
         cardTitle: caption || file.name,
+        expiresAt: expires || null,
         meta: { accent: color, source: 'softhorizon' },
       });
-      next.push({
-        name: file.name,
-        size: file.size,
-        id: res.id,
-        embed: res.id ? shareUrls(res.id).embed : undefined,
-        error: res.ok ? undefined : res.error,
-        warn: res.warn,
-      });
-      setRows([...next]);
+      if (!res.ok) {
+        setStatus(res.error || 'upload failed');
+        break;
+      }
+      if (res.embed) links.push(res.embed);
     }
+    setLastLinks(links);
+    setFiles([]);
     setBusy(false);
-  };
-
-  const copy = async (value: string) => {
-    await navigator.clipboard.writeText(value);
-    setCopied(value);
-    setTimeout(() => setCopied(''), 1200);
+    await refresh();
   };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <main className="mx-auto max-w-2xl px-5 pb-24 pt-10 relative">
-        <motion.div className="absolute inset-0 pointer-events-none overflow-hidden" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-          {lines.map((l) => (
-            <motion.div
-              key={l}
-              className="absolute left-0 right-0 h-px"
-              style={{
-                top: `${20 + l * 15}%`,
-                background: `linear-gradient(90deg, transparent, ${color}, transparent)`,
-                opacity: 0.25 - l * 0.04,
-              }}
-              animate={{
-                scaleY: [1, 1.8, 1],
-                opacity: [0.15 - l * 0.02, 0.4 - l * 0.05, 0.15 - l * 0.02],
-                y: [0, -8, 0],
-              }}
-              transition={{
-                duration: 6 + l * 0.8,
-                repeat: Infinity,
-                ease: 'easeInOut',
-                delay: l * 0.3,
-              }}
-            />
-          ))}
-        </motion.div>
-
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 110, damping: 20 }} className="relative">
-          <p className="text-[12px] uppercase tracking-[0.16em] text-white/45">softhorizon</p>
-          <h1 className="mt-2 text-[34px] font-semibold tracking-[-0.04em]">quiet rising horizon for what you carry</h1>
-          <p className="mt-3 text-[15px] leading-relaxed text-white/60">
-            Multi-file drop with shared note and accent. Soft undulating horizon lines of light that gently rise, breathe, and settle in your color, like a quiet dawn over still water. Spring motion, glass surfaces. Each file uploads to storage and the public_shares table. Professional Discord embeds on every link. Large files receive only a gentle slowness warning — never refused. All prior desks remain intact. No traces of boosting.
+      <main className="mx-auto max-w-6xl px-5 pb-24 pt-10">
+        <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 100, damping: 18 }}>
+          <p className="text-[12px] uppercase tracking-[0.18em] text-white/40">softhorizon</p>
+          <h1 className="mt-2 text-[36px] font-semibold tracking-[-0.045em] text-white">quiet horizon for what you carry</h1>
+          <p className="mt-3 max-w-2xl text-[15.5px] leading-relaxed text-white/60">
+            Drop local files onto a still horizon. Soft light rises from the line, warm and slow, like the first glow of day settling across quiet water. Shared note, optional expiration. Every link unfurls a polished Discord card. Large drops warned, never refused. Spring motion, glass surfaces, human pacing.
           </p>
         </motion.div>
 
-        <label className="glass mt-8 block cursor-pointer rounded-3xl p-8 text-center relative">
-          <input className="hidden" type="file" multiple onChange={(e) => setFiles(Array.from(e.target.files || []))} />
-          <div className="text-[15px] text-white/80">{files.length ? `${files.length} files ready` : 'drop or choose files from this machine'}</div>
-          <div className="mt-1 text-[12px] text-white/40">any type · soft warning only · no hard limits</div>
-        </label>
-
-        {!!files.length && (
-          <ul className="mt-4 space-y-1.5">
-            {files.map((f) => (
-              <li key={f.name + f.size} className="flex items-center justify-between rounded-2xl bg-white/[0.04] px-4 py-2.5 text-[13px]">
-                <span className="truncate pr-3">{f.name}</span>
-                <span className="shrink-0 text-white/40">{(f.size / 1024).toFixed(0)} kb</span>
-              </li>
-            ))}
-          </ul>
-        )}
-
-        <div className="mt-4 grid gap-3">
-          <input value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="shared note that rides every card" className="glass rounded-2xl px-4 py-3 text-[14px] outline-none" />
-          <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="name, optional" className="glass rounded-2xl px-4 py-3 text-[14px] outline-none" />
-          <div className="flex items-center gap-3">
-            <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="h-10 w-14 cursor-pointer rounded-xl border border-white/10 bg-transparent" />
-            <span className="text-[13px] text-white/50">accent for cards and rising horizons</span>
-          </div>
-        </div>
-
-        {heavy && <p className="mt-3 text-[13px] text-amber-200/80">large batch. sending may feel slow. nothing is refused.</p>}
-
-        <motion.button
-          whileTap={{ scale: 0.97 }}
-          whileHover={{ scale: 1.01 }}
-          onClick={send}
-          disabled={!files.length || busy}
-          className="mt-4 w-full rounded-full px-4 py-3 text-[15px] font-medium text-white disabled:opacity-40"
-          style={{ background: color }}
-        >
-          {busy ? 'sending…' : 'share the horizon'}
-        </motion.button>
-
-        {!!rows.length && (
-          <div className="mt-6 space-y-2">
-            {rows.map((r) => (
-              <div key={r.name + r.size} className="glass rounded-2xl px-4 py-3">
-                <div className="flex items-center justify-between gap-3">
-                  <p className="truncate text-[14px]">{r.name}</p>
-                  {r.embed ? (
-                    <button onClick={() => copy(r.embed!)} className="shrink-0 rounded-full bg-white/10 px-3 py-1 text-[12px]">
-                      {copied === r.embed ? 'copied' : 'copy link'}
-                    </button>
-                  ) : (
-                    <span className="text-[12px] text-red-300">{r.error || 'failed'}</span>
-                  )}
-                </div>
-                {r.embed && <p className="mt-1 break-all text-[12px] text-white/45">{r.embed}</p>}
-                {r.warn && <p className="mt-1 text-[12px] text-amber-200/80">{r.warn}</p>}
+        <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_340px]">
+          <section>
+            {loading ? (
+              <p className="text-sm text-white/40">waiting on the line…</p>
+            ) : !shares.length ? (
+              <p className="text-sm text-white/40">the horizon is clear. the first drop will rise here.</p>
+            ) : (
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {shares.map((s, i) => (
+                  <motion.a
+                    key={s.id}
+                    href={shareUrls(s.id).embed}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.02, type: 'spring', stiffness: 120, damping: 18 }}
+                    className="glass block rounded-2xl p-4 hover:bg-white/[0.05] transition relative overflow-hidden"
+                  >
+                    <motion.div
+                      className="absolute bottom-0 left-0 right-0 h-px opacity-60"
+                      style={{ background: `linear-gradient(90deg, transparent, ${s.color || color}, transparent)` }}
+                      animate={{ scaleX: [0.6, 1, 0.6], opacity: [0.3, 0.7, 0.3] }}
+                      transition={{ duration: 6 + (i % 3), repeat: Infinity, ease: 'easeInOut' }}
+                    />
+                    <div className="flex items-start justify-between gap-3">
+                      <p className="truncate text-[14px] font-medium">{s.name || s.id}</p>
+                      <span className="shrink-0 text-[11px] text-white/40">{((s.size || 0) / 1024).toFixed(0)} kb</span>
+                    </div>
+                    {s.caption && <p className="mt-1 line-clamp-2 text-[12px] text-white/50">{s.caption}</p>}
+                    <p className="mt-2 text-[11px] text-white/30">{s.author || 'anonymous'} · {s.createdAt ? new Date(s.createdAt).toLocaleDateString() : 'recent'}</p>
+                  </motion.a>
+                ))}
               </div>
-            ))}
-          </div>
-        )}
+            )}
+          </section>
+
+          <aside className="glass h-fit rounded-3xl p-5">
+            <p className="text-[13px] font-medium">let the light rise</p>
+            <label className="mt-3 block cursor-pointer rounded-2xl bg-white/[0.04] p-6 text-center transition hover:bg-white/[0.06]">
+              <input className="hidden" type="file" multiple onChange={(e) => setFiles(Array.from(e.target.files || []))} />
+              <div className="text-[14px] text-white/80">{files.length ? `${files.length} files ready` : 'drop or choose local files'}</div>
+              <div className="mt-1 text-[11px] text-white/40">light rises gently · soft warning only</div>
+            </label>
+            {!!files.length && (
+              <ul className="mt-3 space-y-1 text-[12px] text-white/60">
+                {files.map((f) => (
+                  <li key={f.name + f.size} className="truncate">{f.name}</li>
+                ))}
+              </ul>
+            )}
+            <input value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="shared note" className="mt-3 w-full rounded-2xl bg-white/[0.04] px-3 py-2.5 text-[13px] outline-none focus:bg-white/[0.07]" />
+            <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="name, optional" className="mt-2 w-full rounded-2xl bg-white/[0.04] px-3 py-2.5 text-[13px] outline-none focus:bg-white/[0.07]" />
+            <div className="mt-2 flex items-center gap-2">
+              <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="h-9 w-12 cursor-pointer rounded-lg border border-white/10 bg-transparent" />
+              <span className="text-[12px] text-white/45">horizon color</span>
+            </div>
+            <input type="datetime-local" value={expires} onChange={(e) => setExpires(e.target.value)} className="mt-2 w-full rounded-2xl bg-white/[0.04] px-3 py-2.5 text-[13px] outline-none" />
+            {heavy && <p className="mt-2 text-[12px] text-amber-200/80">large batch. sending may feel slow. nothing is refused.</p>}
+            <motion.button
+              whileTap={{ scale: 0.97 }}
+              onClick={send}
+              disabled={!files.length || busy}
+              className="mt-3 w-full rounded-full px-4 py-2.5 text-[14px] font-medium text-black disabled:opacity-40"
+              style={{ background: color }}
+            >
+              {busy ? 'rising…' : 'share on the horizon'}
+            </motion.button>
+            {status && <p className="mt-2 text-[12px] text-red-300">{status}</p>}
+            {lastLinks.length > 0 && (
+              <div className="mt-3 space-y-1 text-[11px] text-white/50">
+                {lastLinks.map((l) => (
+                  <a key={l} href={l} className="block truncate hover:text-white">{l}</a>
+                ))}
+              </div>
+            )}
+          </aside>
+        </div>
       </main>
     </div>
   );

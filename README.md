@@ -16,6 +16,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softnook` — a warm nook for what you carry. Drop a local file with a title, caption, and accent light. Soft cards settle with spring motion on frosted glass, glowing with the chosen accent. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. All prior desks remain fully intact. No traces of boosting.
+
 - `/softlumenquietplaza` — a still plaza for what you carry. Drop one or many local files with a shared title, caption, and accent light. Soft cards settle and breathe with spring motion on frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. All prior desks remain fully intact. No traces of boosting.
 
 - `/softlumenplaza` — a quiet plaza for shared light. Drop one or many local files with a shared title, caption, and accent light. Soft cards settle and breathe with spring motion on frosted glass, like light gathering in a still public square. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

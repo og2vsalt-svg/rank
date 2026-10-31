@@ -16,6 +16,8 @@ Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
 
+- `/softlumencanvas` — a quiet canvas for what you carry. Drop one or many local files with a shared title, caption, and accent light. Live previews settle with spring motion on frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
+
 - `/quietforge` — a quiet forge for what you carry. Drop one or many local files under a shared title and caption. Soft rings settle with spring motion on frosted glass. Files land in storage and the quietforge_pieces table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
 
 - `/softquietember` — a quiet ember for what you carry. Drop one or many local files with a shared title, caption, and warm accent. Soft embers rise and fade with spring motion on frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.

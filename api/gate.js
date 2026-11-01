@@ -1,1 +1,1 @@
-PLACEHOLDER_WILL_REPLACE
+const SUPABASE_URL placeholder - wait, no, this is gate.js, I need the actual content from file

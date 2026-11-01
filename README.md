@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
+- `/softaurora` — a flowing aurora of northern light for what you carry. Drop a local file with a title, caption, and soft accent. Gentle ribbons of color drift and breathe with spring motion on frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. All prior desks remain fully intact. No traces of boosting.
+
 - `/softquietveil` — a quiet veil of cool light for what you carry. Drop a local file with a title, caption, and soft accent. Gentle curtains of light breathe and settle with spring motion on frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. All prior desks remain fully intact. No traces of boosting.
 
 - `/softveil` — a translucent veil of light for what you carry. Drop a local file with a title, caption, and soft accent. Drifting curtains of light breathe and settle with spring motion on frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. All prior desks remain fully intact. No traces of boosting.

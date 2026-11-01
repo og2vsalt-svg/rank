@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
+- `/softquietprism` — a quiet prism of refracting light for what you carry. Drop one or many local files with a shared note and accent. Gentle spectral rays breathe and shift with spring motion on frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. All prior desks remain fully intact. No traces of boosting.
+
 - `/softlumenwhisper` — soft lumen whispers for what you carry. Drop one or many local files with a shared note and accent. Soft glowing orbs drift and breathe like quiet whispers of light with spring motion on frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. All prior desks remain fully intact. No traces of boosting.
 
 - `/softmist` — a soft mist of drifting vapor for what you carry. Drop one or many local files with a shared note and accent. Soft layered mist drifts and breathes with spring motion on frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. All prior desks remain fully intact. No traces of boosting.

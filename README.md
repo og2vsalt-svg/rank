@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
+- `/softstarlight` — a soft starlight of cool points for what you carry. Drop a local file with a title, caption, and cool accent. Tiny stars twinkle and drift with spring motion on frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. All prior desks remain fully intact. No traces of boosting.
+
 - `/softmoonglow` — a soft moonglow of silvery light for what you carry. Drop a local file with a title, caption, and cool accent. Gentle orbs of moonlight drift and breathe with spring motion on frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. All prior desks remain fully intact. No traces of boosting.
 
 - `/softaurora` — a flowing aurora of northern light for what you carry. Drop a local file with a title, caption, and soft accent. Gentle ribbons of color drift and breathe with spring motion on frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. All prior desks remain fully intact. No traces of boosting.

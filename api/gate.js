@@ -125,6 +125,7 @@ import softlumenhaven from '../lib/endpoints/softlumenhaven.js';
 import softglimmer from '../lib/endpoints/softglimmer.js';
 import softaurora from '../lib/endpoints/softaurora.js';
 import softmoonglow from '../lib/endpoints/softmoonglow.js';
+import softstarlight from '../lib/endpoints/softstarlight.js';
 
 const routes = {
   atelier, beacon, card, cardfront, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -278,6 +279,7 @@ const routes = {
   softglimmer,
   softaurora,
   softmoonglow,
+  softstarlight,
 };
 
 export default function handler(req, res) {

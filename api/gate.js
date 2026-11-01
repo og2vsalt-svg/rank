@@ -127,6 +127,7 @@ import softaurora from '../lib/endpoints/softaurora.js';
 import softmoonglow from '../lib/endpoints/softmoonglow.js';
 import softstarlight from '../lib/endpoints/softstarlight.js';
 import softprism from '../lib/endpoints/softprism.js';
+import softmist from '../lib/endpoints/softmist.js';
 
 const routes = {
   atelier, beacon, card, cardfront, catfall, cathead, chock, crosstree, desk, embed, ferry, forefoot,
@@ -282,6 +283,7 @@ const routes = {
   softmoonglow,
   softstarlight,
   softprism,
+  softmist,
 };
 
 export default function handler(req, res) {

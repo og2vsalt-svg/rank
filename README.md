@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
+- `/softquietthreshold` — a quiet threshold of shared light. Drop a local file with a title/note and cool accent. Soft cards settle just beyond the edge with spring motion on frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. All prior desks remain fully intact. No traces of boosting.
+
 - `/softlumenjournal` — a quiet journal of dated entries. Drop a local file with a title, note, entry date, and cool accent. Soft cards settle with spring motion on frosted glass, like light settling on a page. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. All prior desks remain fully intact. No traces of boosting.
 
 - `/softquietislet` — a quiet islet of still water for what you carry. Drop a local file with a title, caption, and cool accent. Soft floating cards settle with spring motion on frosted glass, like light on calm water. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. All prior desks remain fully intact. No traces of boosting.

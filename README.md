@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
+- `/quietatrium` — light gathers here. Browse recent public shares as floating glass cards with spring hover, or add your own local file with title, note, and accent. Lands in storage and public_shares. Discord unfurls a polished card on every link. Large drops warned, never refused. All prior desks remain fully intact. No traces of boosting.
+
 - `/velvethorizon` — a soft line of velvet light for what you carry. Drop one or many local files with a shared title, caption, and soft violet accent. Glass cards float and settle with spring motion on deep navy. Lands in storage and public_shares. Discord unfurls a polished card on every link. Large drops warned, never refused. All prior desks remain fully intact. No traces of boosting.
 
 - `/softlumenstudio` — a quiet studio for what you carry. Drop one local file with a title, caption, and soft violet accent. Glass cards float and settle with spring motion on deep navy. Lands in storage and public_shares. Discord unfurls a polished card on the share link. Large drops warned, never refused. All prior desks remain fully intact. No traces of boosting.

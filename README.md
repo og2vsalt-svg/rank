@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
+- `/lumenkeep` — a quiet keepsake chest for one local file. Drop it with a title, a short caption, a personal dedication, and a soft green accent. Soft glass cards settle with spring motion on deep navy. Lands in storage and public_shares. Discord unfurls a polished card. Large drops warned, never refused. All prior desks remain fully intact. No traces of boosting.
+
 - `/lumenharbor` — a quiet harbor of light for one file. Drop a local file with an optional title and note. It settles into storage and the public table with a soft spring, like light gathering in a still harbor. Share links open with a clean Discord card. Large files receive only a gentle warning of slowness. All prior desks remain fully intact. No traces of boosting.
 
 - `/stillwater` — a quiet surface for one file. Drop a local file with an optional title and note. It settles into storage and the public table with a soft spring, like a stone into still water. Share links open with a clean Discord card. Large files receive only a gentle warning of slowness. All prior desks remain fully intact. No traces of boosting.

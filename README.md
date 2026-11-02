@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
+- `/softember` — a quiet ember of warm light for what you carry. Drop one or many local files with a shared title, caption, and soft amber accent. Glass cards float and settle with spring motion on deep navy, glowing softly like embers. Lands in storage and public_shares. Discord unfurls a polished card on every link. Large drops warned, never refused. All prior desks remain fully intact. No traces of boosting.
+
 - `/haven` — a quiet haven for what you carry. Drop one or many local files with a shared title, caption, and soft accent. Glass cards float and settle with spring motion on deep navy. Lands in storage and public_shares. Discord unfurls a polished card on every link. Large drops warned, never refused. All prior desks remain fully intact. No traces of boosting.
 
 - `/lumenkeep` — a quiet keepsake chest for one local file. Drop it with a title, a short caption, a personal dedication, and a soft green accent. Soft glass cards settle with spring motion on deep navy. Lands in storage and public_shares. Discord unfurls a polished card. Large drops warned, never refused. All prior desks remain fully intact. No traces of boosting.

@@ -1,136 +1,211 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishLocalFile, shareUrls } from '../lib/cloudShare';
+import Footer from './Footer';
+import { useRouter } from './Router';
+
+const SLOW = 12 * 1024 * 1024;
+
+function prettySize(n: number) {
+  if (n < 1024) return n + ' B';
+  if (n < 1024 * 1024) return Math.max(1, Math.round(n / 1024)) + ' KB';
+  if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(1) + ' MB';
+  return (n / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
+}
+
+type Share = {
+  id: string;
+  name: string;
+  caption: string | null;
+  size: number;
+  file_url?: string;
+  mime: string | null;
+  created_at: string;
+  meta?: { accent?: string };
+};
 
 export default function HavenPage() {
+  const { shareId, navigate } = useRouter();
+  const [shares, setShares] = useState<Share[]>([]);
+  const [focus, setFocus] = useState<Share | null>(null);
+  const [title, setTitle] = useState('');
+  const [caption, setCaption] = useState('');
+  const [accent, setAccent] = useState('#5AC8FA');
   const [files, setFiles] = useState<File[]>([]);
-  const [notes, setNotes] = useState<Record<string, string>>({});
-  const [sharedNote, setSharedNote] = useState('');
-  const [accent, setAccent] = useState('#6EE7B7');
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
   const [warn, setWarn] = useState('');
-  const [links, setLinks] = useState<string[]>([]);
-  const [err, setErr] = useState('');
+  const [link, setLink] = useState('');
 
-  const handleFiles = (list: FileList | null) => {
-    const arr = Array.from(list || []);
-    setFiles(arr);
-    setWarn(arr.some(f => f.size > 45 * 1024 * 1024) ? 'large file detected. upload may feel slower. never refused.' : '');
-  };
+  async function load() {
+    const res = await fetch('/api/haven');
+    const data = await res.json();
+    setShares(Array.isArray(data.shares) ? data.shares : []);
+  }
 
-  const publish = async () => {
-    if (!files.length && !sharedNote.trim()) return setErr('select files or add a note');
-    setBusy(true);
-    setErr('');
-    const created: string[] = [];
-    const targets = files.length ? files : [new File([sharedNote], 'haven-note.txt', { type: 'text/plain' })];
-    for (const file of targets) {
-      const res = await publishLocalFile(file, {
-        caption: notes[file.name] || sharedNote || 'haven share',
-        cardTitle: file.name,
-        color: accent,
-        meta: { desk: 'haven' },
-      });
-      if (res.ok && res.id) created.push(shareUrls(res.id).app);
-      else setErr(res.error || 'issue with a file');
+  useEffect(() => {
+    load().catch(() => setError('haven is quiet right now'));
+  }, []);
+
+  useEffect(() => {
+    if (!shareId) {
+      setFocus(null);
+      return;
     }
-    setLinks(created);
-    if (created[0]) try { await navigator.clipboard.writeText(created[0]); } catch {}
-    setBusy(false);
-  };
+    fetch(`/api/haven?id=${encodeURIComponent(shareId)}`)
+      .then((r) => r.json())
+      .then((data) => setFocus(data.ok ? data : null))
+      .catch(() => setFocus(null));
+  }, [shareId]);
 
-  const canopies = [
-    { width: 280, height: 60, delay: 0, x: '5%', y: '20%' },
-    { width: 200, height: 40, delay: 0.8, x: '65%', y: '35%' },
-    { width: 240, height: 50, delay: 1.5, x: '15%', y: '65%' },
-    { width: 160, height: 35, delay: 2.2, x: '70%', y: '75%' },
-  ];
+  async function leave(e: React.FormEvent) {
+    e.preventDefault();
+    if (files.length === 0) {
+      setError('choose one or more files on this machine');
+      return;
+    }
+    setBusy(true);
+    setError('');
+    setWarn('');
+    try {
+      const results = [];
+      for (const file of files) {
+        const dataUrl = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result || ''));
+          reader.onerror = () => reject(new Error('could not read the file'));
+          reader.readAsDataURL(file);
+        });
+        const res = await fetch('/api/haven', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ dataUrl, name: file.name, type: file.type, size: file.size, title: title || file.name, caption, accent }),
+        });
+        const data = await res.json();
+        if (!res.ok || !data.ok) throw new Error(data.error || 'haven did not take it');
+        if (data.warn) setWarn(data.warn);
+        results.push(data);
+      }
+      if (results.length) {
+        const path = results[0].sharePath || `/haven/${results[0].id}`;
+        setLink(window.location.origin + path);
+        navigate('haven', results[0].id);
+      }
+      load().catch(() => {});
+      setFiles([]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'haven did not take it');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const glowColor = focus?.meta?.accent || accent;
 
   return (
-    <div className="mesh min-h-screen overflow-hidden">
+    <div className="min-h-screen bg-[#0b0b0d] text-white">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto relative">
-        {canopies.map((c, i) => (
-          <motion.div
-            key={i}
-            className="absolute rounded-full blur-2xl pointer-events-none mix-blend-screen opacity-25"
-            style={{
-              width: c.width,
-              height: c.height,
-              background: accent,
-              left: c.x,
-              top: c.y,
-            }}
-            animate={{
-              y: [0, -12, 8, 0],
-              opacity: [0.25, 0.4, 0.2, 0.25],
-              scaleX: [1, 1.05, 0.98, 1],
-            }}
-            transition={{ duration: 8 + i * 0.5, repeat: Infinity, ease: 'easeInOut', delay: c.delay }}
-          />
-        ))}
+      <main className="pt-28 pb-20 px-5">
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 90, damping: 20 }}
-          className="glass rounded-[36px] p-8 relative z-10"
+          transition={{ type: 'spring', stiffness: 100, damping: 20 }}
+          className="max-w-5xl mx-auto"
         >
-          <p className="text-sm mb-2 tracking-wide" style={{ color: accent }}>haven</p>
-          <h1 className="text-3xl font-semibold mb-3 tracking-tight">a quiet shelter for what you carry.</h1>
-          <p className="text-neutral-400 text-sm mb-6 leading-relaxed">
-            Multi-file drop with per-file notes or a shared line (note-only also works). Soft canopies drift with your accent color, spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior features preserved. No traces of boosting.
-          </p>
-          <div className="flex gap-3 mb-4 items-center">
-            <input
-              type="color"
-              value={accent}
-              onChange={(e) => setAccent(e.target.value)}
-              className="w-12 h-10 rounded-xl border border-white/10 bg-transparent cursor-pointer"
-            />
-            <input
-              value={sharedNote}
-              onChange={(e) => setSharedNote(e.target.value)}
-              placeholder="shared note under the haven"
-              className="flex-1 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm placeholder:text-neutral-500 focus:outline-none focus:border-white/30 transition-all"
-            />
-          </div>
-          <label
-            className="block cursor-pointer rounded-2xl border border-dashed border-white/15 hover:border-white/40 p-10 text-center transition-all duration-300"
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => { e.preventDefault(); handleFiles(e.dataTransfer.files); }}
-          >
-            <input type="file" multiple className="hidden" onChange={(e) => handleFiles(e.target.files)} />
-            <p className="text-sm text-neutral-300">{files.length ? `${files.length} file${files.length > 1 ? 's' : ''} selected` : 'drop files into the haven (optional)'}</p>
-          </label>
-          {files.map(f => (
-            <input
-              key={f.name}
-              value={notes[f.name] || ''}
-              onChange={e => setNotes(prev => ({ ...prev, [f.name]: e.target.value }))}
-              placeholder={`note for ${f.name}`}
-              className="w-full mt-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-xs"
-            />
-          ))}
-          {warn && <p className="text-xs text-amber-300/80 mt-3">{warn}</p>}
-          {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
-          <motion.button
-            whileTap={{ scale: 0.97 }}
-            whileHover={{ scale: 1.02 }}
-            onClick={publish}
-            disabled={busy || (!files.length && !sharedNote.trim())}
-            style={{ backgroundColor: accent }}
-            className="w-full mt-4 py-3 rounded-full text-white text-sm font-medium disabled:opacity-50 transition"
-          >
-            {busy ? 'sheltering…' : 'share under the haven'}
-          </motion.button>
-          {links.length > 0 && (
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-5 text-xs text-neutral-400 break-all space-y-1">
-              {links.map((l, i) => <div key={i}>shared: {l}</div>)}
-            </motion.div>
+          <p className="text-[11px] tracking-[0.22em] uppercase mb-3" style={{ color: glowColor }}>haven</p>
+          <h1 className="text-4xl font-semibold tracking-tight">haven</h1>
+          <p className="text-neutral-400 mt-3 max-w-2xl">A quiet haven for what you carry. Drop one or many local files with a shared title, caption, and soft accent. Glass cards float and settle with spring motion on deep navy. Lands in storage and public_shares. Discord unfurls a polished card on every link. Large drops warned, never refused. All prior desks remain fully intact. No traces of boosting.</p>
+          {focus ? (
+            <motion.article
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ type: 'spring', stiffness: 120, damping: 18 }}
+              className="glass rounded-[28px] p-6 mt-8 relative overflow-hidden max-w-xl"
+              style={{ boxShadow: `0 0 40px ${glowColor}22` }}
+            >
+              <div className="relative">
+                <p className="text-sm text-neutral-500">haven</p>
+                <h2 className="text-2xl font-medium mt-1">{focus.name}</h2>
+                {focus.caption && <p className="text-neutral-300 mt-3">{focus.caption}</p>}
+                <p className="text-sm text-neutral-500 mt-3">{prettySize(Number(focus.size) || 0)}</p>
+                {focus.file_url && /^image\//.test(focus.mime || '') && (
+                  <img src={focus.file_url} alt={focus.name} className="mt-4 rounded-2xl max-h-80 object-contain" />
+                )}
+                {focus.file_url && (
+                  <a href={focus.file_url} className="inline-flex mt-5 px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium" download>
+                    take the file
+                  </a>
+                )}
+                <button onClick={() => navigate('haven')} className="ml-3 text-sm text-neutral-400 hover:text-white">back to haven</button>
+              </div>
+            </motion.article>
+          ) : (
+            <form onSubmit={leave} className="glass rounded-[28px] p-6 mt-8 space-y-4 max-w-xl">
+              <label className="block text-sm text-neutral-300">
+                shared title
+                <input
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="optional shared title"
+                  className="mt-1 w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 text-white outline-none focus:border-[#5AC8FA]/60 transition"
+                />
+              </label>
+              <label className="block text-sm text-neutral-300">
+                caption
+                <input
+                  value={caption}
+                  onChange={(e) => setCaption(e.target.value)}
+                  placeholder="a short note for the haven"
+                  className="mt-1 w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 text-white outline-none focus:border-[#5AC8FA]/60 transition"
+                />
+              </label>
+              <label className="block text-sm text-neutral-300">
+                accent
+                <input
+                  type="color"
+                  value={accent}
+                  onChange={(e) => setAccent(e.target.value)}
+                  className="mt-1 w-full h-12 rounded-2xl bg-black/30 border border-white/10"
+                />
+              </label>
+              <label className="block rounded-2xl border border-dashed border-white/15 px-4 py-8 text-center text-neutral-400 hover:border-white/30 transition cursor-pointer">
+                <input type="file" multiple className="hidden" onChange={(e) => setFiles(Array.from(e.target.files || []))} />
+                {files.length ? `${files.length} file${files.length > 1 ? 's' : ''} selected` : 'choose one or more files on this machine'}
+              </label>
+              {files.some((f) => f.size > SLOW) && <p className="text-amber-300/90 text-sm">large drops. they will not be refused. preview clients may feel slow.</p>}
+              {warn && <p className="text-amber-300/90 text-sm">{warn}</p>}
+              {error && <p className="text-red-400 text-sm">{error}</p>}
+              {link && <p className="text-sm break-all" style={{ color: accent }}>{link}</p>}
+              <button disabled={busy} className="w-full rounded-full bg-white text-black py-3 text-sm font-medium disabled:opacity-60 active:scale-[0.98] transition">
+                {busy ? 'settling into haven…' : 'leave them in the haven'}
+              </button>
+            </form>
+          )}
+          {shares.length > 0 && !focus && (
+            <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {shares.map((row, i) => (
+                <motion.button
+                  key={row.id}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.04, type: 'spring', stiffness: 120, damping: 18 }}
+                  onClick={() => navigate('haven', row.id)}
+                  className="glass rounded-2xl p-4 text-left hover:-translate-y-1 transition-transform"
+                  style={{ boxShadow: `0 0 20px ${row.meta?.accent || accent}11` }}
+                >
+                  {row.file_url && /^image\//.test(row.mime || '') && (
+                    <img src={row.file_url} alt="" className="w-full h-40 object-cover rounded-xl mb-3" />
+                  )}
+                  <p className="text-white font-medium truncate">{row.name}</p>
+                  {row.caption && <p className="text-neutral-500 text-sm mt-1 line-clamp-2">{row.caption}</p>}
+                  <p className="text-xs text-neutral-600 mt-2">{prettySize(Number(row.size) || 0)}</p>
+                </motion.button>
+              ))}
+            </div>
           )}
         </motion.div>
-      </div>
+      </main>
+      <Footer />
     </div>
   );
 }

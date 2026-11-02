@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
+- `/softfocus` — a quiet lens for one local file. Drop it with a title, a short focus note, and a cool accent. Soft glass cards settle with spring motion on deep navy. Lands in storage and public_shares. Discord unfurls a polished card. Large drops warned, never refused. All prior desks remain fully intact. No traces of boosting.
+
 - `/quietroom` — a quiet room for one local file. Drop it with a title, a short caption, and a soft green accent. Soft glass cards settle with spring motion on deep navy. Lands in storage and public_shares. Discord unfurls a polished card. Large drops warned, never refused. All prior desks remain fully intact. No traces of boosting.
 
 - `/glow` — a soft glowing desk for one local file. Drop it with a title, a short caption, and an accent. Soft glass cards settle with spring motion and a gentle radial glow on deep navy. Lands in storage and public_shares. Discord unfurls a polished card. Large drops warned, never refused. All prior desks remain fully intact. No traces of boosting.

@@ -33,6 +33,7 @@ export default function Hero() {
           Local vault. Cloud shares that land in the database with professional Discord embeds on every link. Galleries, notes, and dozens of specialized desks. Large files warned, never refused. Human-crafted Apple-smooth animations.
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center">
+          <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('lumenkeep')} className="px-5 py-2.5 rounded-full bg-[#34C759] text-black text-sm font-medium hover:bg-[#4cd469] transition">lumenkeep</motion.button>
           <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('lumenharbor')} className="px-5 py-2.5 rounded-full bg-[#64D2FF] text-black text-sm font-medium hover:bg-[#7ad8ff] transition">lumenharbor</motion.button>
           <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('softfocus')} className="px-5 py-2.5 rounded-full bg-[#64D2FF] text-black text-sm font-medium hover:bg-[#7ad8ff] transition">softfocus</motion.button>
           <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('lumenroom')} className="px-5 py-2.5 rounded-full bg-[#7dd3fc] text-black text-sm font-medium hover:bg-[#a5e8ff] transition">lumenroom</motion.button>

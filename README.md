@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
+- `/softlumennook` — a still corner for one thing. Drop a single local file into this quiet nook with an optional short note and warm accent. Soft glass settles with spring motion on deep navy. Lands in storage and public_shares. Discord unfurls a polished card on the share link. Large drops warned, never refused. All prior desks remain fully intact. No traces of boosting.
+
 - `/softlumenoriel` — a quiet oriel of soft light for what you carry. Drop one or many local files with a shared title, caption, and soft violet accent. Glass panes float and settle with spring motion on deep navy, like light gathering in a bay window. Lands in storage and public_shares. Discord unfurls a polished card on every link. Large drops warned, never refused. All prior desks remain fully intact. No traces of boosting.
 
 - `/softnimbus` — a soft cloud for what you carry. Drop one or many local files with a shared note and accent. Soft nimbus clouds float and breathe with spring motion on deep navy. Lands in storage and public_shares. Discord unfurls a polished card on every link. Large drops warned, never refused. All prior desks remain fully intact. No traces of boosting.

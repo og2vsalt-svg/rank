@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
+- `/lumenmosaic` — a living mosaic of light for what you carry. Drop local files; images settle into a responsive lattice of glass tiles that lift with spring motion on hover. Shared note and accent ride every card. Lands in storage and public_shares. Discord unfurls a polished card on every /s link. Large batches warned only for possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.
+
 - `/quietatrium` — light gathers here. Browse recent public shares as floating glass cards with spring hover, or add your own local file with title, note, and accent. Lands in storage and public_shares. Discord unfurls a polished card on every link. Large drops warned, never refused. All prior desks remain fully intact. No traces of boosting.
 
 - `/velvethorizon` — a soft line of velvet light for what you carry. Drop one or many local files with a shared title, caption, and soft violet accent. Glass cards float and settle with spring motion on deep navy. Lands in storage and public_shares. Discord unfurls a polished card on every link. Large drops warned, never refused. All prior desks remain fully intact. No traces of boosting.

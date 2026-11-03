@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
+- `/softlumenmeridian` — align files on a quiet meridian. Drop one or many local files with a shared note and accent. They land in storage and public_shares. Recent public drops settle into a horizontal timeline of glass tiles that lift with spring motion. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.
+
 - `/quietarchive` — a still place for what has already been shared. Recent public files settle into glass tiles with spring lift on hover. Drop more from this machine — they land in storage and public_shares. Every link unfurls a polished Discord card. Large batches warned only for possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.
 
 - `/softgallery` — a living gallery of light for what you carry. Recent public shares settle into glass tiles that lift with spring motion on hover. Drop local files with shared note and accent; they land in storage and public_shares. Discord unfurls a polished card on every link. Large batches warned only for possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.

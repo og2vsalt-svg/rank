@@ -15,10 +15,10 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
-- `/softcascade` — let it cascade. Drop one or many local files with a shared note and accent. They enter storage and public_shares. Recent public drops settle into a living cascade of glass that flows downward with spring motion. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.
+- `/meridianboard` — align what you carry. Drop one or many local files with a shared note and accent. They enter storage and public_shares. Recent public drops settle into a horizontal meridian of glass cards that drift with spring motion. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.
 
 - `/aurorafold` — fold the light you carry. Drop one or many local files with a shared note and accent. They enter storage and public_shares. Recent public drops settle into a living aurora of glass that folds and unfolds with spring motion on hover. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.
 
-- `/softlumenfold` — fold what you carry into light. Drop one or many local files with a shared note and accent. They enter storage and public_shares. Recent public drops settle into a soft folded stack of glass that unfolds with spring motion on hover. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.
+- `/softcascade` — let it cascade. Drop one or many local files with a shared note and accent. They enter storage and public_shares. Recent public drops settle into a living cascade of glass that flows downward with spring motion. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.
 
 (All prior desks remain fully intact in the codebase.)

@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
+- `/apexdesk` — elevate what you carry. Drop one or many local files with a shared note and accent. They rise into storage and public_shares. Recent public drops settle as spring-lifted polaroids that tilt gently on hover. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.
+
 - `/softquietstory` — a vertical story of quiet shares for what you carry. Drop one or many local files with a shared note and accent. They land in storage and public_shares. Recent public drops settle into a vertical stack of glass cards that lift with spring motion. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.
 
 - `/softprismlattice` — a living lattice of refracted light for what you carry. Drop one or many local files with a shared note and accent. They land in storage and public_shares. Recent public drops settle into a responsive lattice of glass tiles that lift with spring motion on hover. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.

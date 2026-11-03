@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
+- `/nebuladesk` — drift among the light. Drop one or many local files with a shared note and accent. They enter storage and public_shares. Recent public drops settle into a living nebula of glass that gently drifts and glows with spring motion. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.
+
 - `/solsticedesk` — catch the longest light. Drop one or many local files with a shared note and accent. They enter storage and public_shares. Recent public drops settle into a living radial arrangement that slowly turns and lifts with spring motion. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.
 
 - `/rippledesk` — let it expand. Drop one or many local files with a shared note and accent. They enter storage and public_shares. Recent public drops settle into expanding ripples of glass that pulse and lift with spring motion. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.

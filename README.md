@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
+- `/softlumenfold` — fold what you carry into light. Drop one or many local files with a shared note and accent. They enter storage and public_shares. Recent public drops settle into a soft folded stack of glass that unfolds with spring motion on hover. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.
+
 - `/whispernote` — leave a quiet note. Type a message; it becomes a shared text file in storage and public_shares. Recent whispers settle into a soft vertical list of glass that lifts with spring motion. Every link unfurls a polished Discord card. Different from pure file vaults. All prior desks remain fully intact. No traces of boosting.
 
 - `/nebuladesk` — drift among the light. Drop one or many local files with a shared note and accent. They enter storage and public_shares. Recent public drops settle into a living nebula of glass that gently drifts and glows with spring motion. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.

@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
+- `/orbitdesk` — place what you carry in orbit. Drop one or many local files with a shared note and accent. They enter storage and public_shares. Recent public drops settle into a living orbital arrangement of glass tiles that drift and lift with spring motion. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.
+
 - `/velvetdesk` — settle what you carry. Drop one or many local files with a shared note and accent. They settle into storage and public_shares. Recent public drops rest in a quiet vertical stack of glass that lifts with spring motion on hover. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.
 
 - `/horizondesk` — where shares meet the light. Drop one or many local files with a shared note and accent. They settle along a quiet horizon of glass cards that drift with spring motion. Scroll the timeline. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.

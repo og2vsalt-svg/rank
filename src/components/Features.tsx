@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'softlumenfold', href: '/softlumenfold', body: 'fold what you carry into light. drop one or many local files with a shared note and accent. they enter storage and public_shares. recent public drops settle into a soft folded stack of glass that unfolds with spring motion on hover. every share link unfurls a polished Discord card. large batches warned only for possible slowness. no hard limits. all prior desks remain fully intact. no traces of boosting.' },
+
   { title: 'auroradesk', href: '/auroradesk', body: 'where light rises. drop one or many local files with a shared note and accent. they rise into storage and public_shares. recent public drops settle as soft aurora cards that lift with spring motion and a gentle breathing glow. every share link unfurls a polished Discord card. large batches warned only for possible slowness. no hard limits. all prior desks remain fully intact. no traces of boosting.' },
 
   { title: 'softember', href: '/softember', body: 'a quiet ember of warm light for what you carry. drop one or many local files with a shared title, caption, and soft amber accent. glass cards float and settle with spring motion on deep navy, glowing softly like embers. lands in storage and public_shares. discord unfurls a polished card on every link. large drops warned, never refused. all prior desks remain fully intact. no traces of boosting.' },

@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
+- `/halodesk` — let it rest in the light. Drop one or many local files with a shared note and accent. They enter storage and public_shares. Recent public drops settle into a soft halo of glass that drifts and glows with spring motion. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.
+
 - `/lumentidedesk` — let it rise with the tide. Drop one or many local files with a shared note and accent. They enter storage and public_shares. Recent public drops settle into a living tide of glass that rises, falls, and drifts with spring motion. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.
 
 - `/glimmerdesk` — let it glimmer. Drop one or many local files with a shared note and accent. They enter storage and public_shares. Recent public drops settle into a living constellation of glass that drifts and glimmers with spring motion. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.

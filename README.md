@@ -15,6 +15,10 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
+- `/notepad` — write a note. share it quietly. A clean Apple Notes surface. Your text becomes a file in storage and a row in public_shares. Every link unfurls a polished Discord card. No hard limits — only a soft warning if the note is unusually long. Prior desks stay intact. No traces of boosting.
+
+- `/orbitboard` — recent shares in quiet orbit. A living board of the latest public drops. Each orb is a share that landed in the database. Hover to lift, click to open. Every link still carries a polished Discord embed. Soft spring motion, frosted glass, no hard limits. All prior desks remain fully intact. No traces of boosting.
+
 - `/softcurrent` — let it drift with the current. Drop one or many local files with a shared note and accent. They enter storage and public_shares. Recent public drops settle into a living current of glass that drifts and flows with spring motion. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.
 
 - `/softprism` — let it refract. Drop one or many local files with a shared note and accent. They enter storage and public_shares. Recent public drops settle into a living prism of glass that refracts and shifts with spring motion on hover. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.

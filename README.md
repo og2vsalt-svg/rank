@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
+- `/softprism` — let it refract. Drop one or many local files with a shared note and accent. They enter storage and public_shares. Recent public drops settle into a living prism of glass that refracts and shifts with spring motion on hover. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.
+
 - `/softconstellation` — place what you carry among the stars. Drop one or many local files with a shared note and accent. They enter storage and public_shares. Recent public drops settle into a living constellation of glass that slowly turns with spring motion. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.
 
 - `/lumenorbit` — let it circle in the light. Drop one or many local files with a shared note and accent. They enter storage and public_shares. Recent public drops settle into a living orbit of glass that slowly circles with spring motion on hover. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.

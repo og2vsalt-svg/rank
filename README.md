@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
+- `/softgleam` — quiet gleam for what you carry. Drop one or many local files with a shared note and accent. Soft horizontal light streaks gently sweep, pulse, and settle across frosted glass in your color. They enter storage and public_shares. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.
+
 - `/softforge` — forge what you carry. Drop one or many local files with individual quiet notes and a shared accent. They enter storage and public_shares. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.
 
 - `/softlagoon` — let it drift. Drop one or many local files with a shared note and accent. They enter storage and public_shares. Recent public drops settle into a living lagoon of glass that gently drifts and bobs with spring motion. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.

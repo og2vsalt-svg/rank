@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'sketch', href: '/sketch', body: 'draw something quiet. a simple canvas for marks that become a PNG in storage and public_shares. every share link unfurls a polished Discord card. soft warning only for large images. no hard limits. all prior desks remain fully intact. no traces of boosting.' },
+
   { title: 'softcascade', href: '/softcascade', body: 'let it cascade. drop one or many local files with a shared note and accent. they enter storage and public_shares. recent public drops settle into a living cascade of glass that flows downward with spring motion. every share link unfurls a polished Discord card. large batches warned only for possible slowness. no hard limits. all prior desks remain fully intact. no traces of boosting.' },
 
   { title: 'softlumenfold', href: '/softlumenfold', body: 'fold what you carry into light. drop one or many local files with a shared note and accent. they enter storage and public_shares. recent public drops settle into a soft folded stack of glass that unfolds with spring motion on hover. every share link unfurls a polished Discord card. large batches warned only for possible slowness. no hard limits. all prior desks remain fully intact. no traces of boosting.' },

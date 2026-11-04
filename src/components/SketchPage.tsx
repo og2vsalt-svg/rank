@@ -1,81 +1,211 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
+import { publishLocalFile, shareUrls } from '../lib/cloudShare';
 
 export default function SketchPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const drawing = useRef(false);
-  const [color, setColor] = useState('#f5f5f7');
+  const [drawing, setDrawing] = useState(false);
+  const [color, setColor] = useState('#0A84FF');
+  const [author, setAuthor] = useState('');
+  const [caption, setCaption] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState<{ embed?: string; error?: string; warn?: string | null } | null>(null);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    const c = canvasRef.current;
-    if (!c) return;
-    const ctx = c.getContext('2d');
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
     if (!ctx) return;
-    ctx.fillStyle = '#111113';
-    ctx.fillRect(0, 0, c.width, c.height);
+    ctx.fillStyle = '#0b0b0d';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
   }, []);
 
-  const pos = (e: React.PointerEvent) => {
-    const c = canvasRef.current!;
-    const r = c.getBoundingClientRect();
-    return { x: ((e.clientX - r.left) / r.width) * c.width, y: ((e.clientY - r.top) / r.height) * c.height };
+  const getPos = (e: any, canvas: HTMLCanvasElement) => {
+    const rect = canvas.getBoundingClientRect();
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+    return {
+      x: ((clientX - rect.left) / rect.width) * canvas.width,
+      y: ((clientY - rect.top) / rect.height) * canvas.height,
+    };
   };
 
-  const down = (e: React.PointerEvent) => {
-    drawing.current = true;
-    const ctx = canvasRef.current?.getContext('2d');
+  const startDraw = (e: any) => {
+    setDrawing(true);
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
     if (!ctx) return;
-    const p = pos(e);
-    ctx.beginPath();
-    ctx.moveTo(p.x, p.y);
-  };
-
-  const move = (e: React.PointerEvent) => {
-    if (!drawing.current) return;
-    const ctx = canvasRef.current?.getContext('2d');
-    if (!ctx) return;
-    const p = pos(e);
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 3;
+    const pos = getPos(e, canvas);
+    ctx.lineWidth = 4;
     ctx.lineCap = 'round';
-    ctx.lineTo(p.x, p.y);
-    ctx.stroke();
+    ctx.strokeStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(pos.x, pos.y);
   };
 
-  const save = () => {
-    const c = canvasRef.current;
-    if (!c) return;
-    const a = document.createElement('a');
-    a.href = c.toDataURL('image/png');
-    a.download = 'sketch.png';
-    a.click();
+  const draw = (e: any) => {
+    if (!drawing) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    const pos = getPos(e, canvas);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(pos.x, pos.y);
+  };
+
+  const endDraw = () => setDrawing(false);
+
+  const clear = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.fillStyle = '#0b0b0d';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.beginPath();
+  };
+
+  const share = async () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    setBusy(true);
+    setResult(null);
+    canvas.toBlob(async (blob) => {
+      if (!blob) {
+        setResult({ error: 'could not capture the sketch' });
+        setBusy(false);
+        return;
+      }
+      const file = new File([blob], `sketch-${Date.now()}.png`, { type: 'image/png' });
+      const res = await publishLocalFile(file, {
+        author,
+        caption: caption || 'a quiet sketch',
+        color,
+        cardTitle: caption || 'sketch',
+        meta: { accent: color, source: 'sketch', kind: 'image' },
+      });
+      setResult({
+        embed: res.id ? shareUrls(res.id).embed : undefined,
+        error: res.ok ? undefined : res.error,
+        warn: res.warn,
+      });
+      setBusy(false);
+    }, 'image/png');
+  };
+
+  const copy = async () => {
+    if (!result?.embed) return;
+    await navigator.clipboard.writeText(result.embed);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1200);
   };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-3xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} className="glass rounded-[32px] p-6">
-          <p className="text-[#0a84ff] text-sm mb-2">sketch</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3">scribble, then keep it.</h1>
-          <p className="text-sm text-neutral-400 mb-5">local only pad. download the png into the vault if you want it hosted.</p>
-          <div className="flex items-center gap-3 mb-4">
-            <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="w-10 h-10 rounded-full bg-transparent" />
-            <button onClick={save} className="px-4 py-2 rounded-full bg-white text-black text-sm font-medium">download png</button>
-          </div>
+      <main className="mx-auto max-w-2xl px-5 pb-24 pt-12">
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: 'spring', stiffness: 110, damping: 22 }}
+        >
+          <p className="text-[12px] uppercase tracking-[0.18em] text-white/40">sketch</p>
+          <h1 className="mt-2 text-[34px] font-semibold tracking-[-0.04em]">draw something quiet. share the moment.</h1>
+          <p className="mt-3 text-[15.5px] leading-relaxed text-white/65">
+            A simple canvas for quiet marks. When you’re ready, the sketch becomes a PNG that lands in storage and the public_shares table.
+            The link unfurls a polished Discord card. Soft warning only if the image is unusually large. No hard limits.
+            Prior desks stay intact. No traces of boosting.
+          </p>
+        </motion.div>
+
+        <div className="mt-8 glass rounded-[28px] p-6">
           <canvas
             ref={canvasRef}
-            width={960}
-            height={540}
-            onPointerDown={down}
-            onPointerMove={move}
-            onPointerUp={() => { drawing.current = false; }}
-            onPointerLeave={() => { drawing.current = false; }}
-            className="w-full rounded-2xl touch-none cursor-crosshair bg-[#111113]"
+            width={800}
+            height={500}
+            className="w-full rounded-2xl bg-black/40 touch-none"
+            onMouseDown={startDraw}
+            onMouseMove={draw}
+            onMouseUp={endDraw}
+            onMouseLeave={endDraw}
+            onTouchStart={startDraw}
+            onTouchMove={draw}
+            onTouchEnd={endDraw}
           />
-        </motion.div>
-      </div>
+          <div className="mt-4 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <input
+                type="color"
+                value={color}
+                onChange={(e) => setColor(e.target.value)}
+                className="h-11 w-16 cursor-pointer rounded-xl border border-white/10 bg-transparent"
+              />
+              <span className="text-[13px] text-white/50">ink</span>
+            </div>
+            <button
+              onClick={clear}
+              className="rounded-full bg-white/10 px-4 py-2 text-[13px] text-white/80 hover:bg-white/15"
+            >
+              clear
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-6 space-y-3">
+          <input
+            value={caption}
+            onChange={(e) => setCaption(e.target.value)}
+            placeholder="title for the card (optional)"
+            className="glass w-full rounded-2xl px-4 py-3.5 text-[14px] outline-none"
+          />
+          <input
+            value={author}
+            onChange={(e) => setAuthor(e.target.value)}
+            placeholder="name, optional"
+            className="glass w-full rounded-2xl px-4 py-3.5 text-[14px] outline-none"
+          />
+        </div>
+
+        <motion.button
+          whileTap={{ scale: 0.965 }}
+          whileHover={{ scale: 1.012 }}
+          onClick={share}
+          disabled={busy}
+          className="mt-6 w-full rounded-full px-4 py-3.5 text-[15px] font-medium text-black disabled:opacity-40"
+          style={{ background: color }}
+        >
+          {busy ? 'filing the sketch…' : 'share the sketch'}
+        </motion.button>
+
+        {result && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="glass mt-6 rounded-2xl px-4 py-4"
+          >
+            {result.embed ? (
+              <>
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-[14px]">sketch filed</p>
+                  <button onClick={copy} className="rounded-full bg-white/10 px-3 py-1 text-[12px]">
+                    {copied ? 'copied' : 'copy link'}
+                  </button>
+                </div>
+                <p className="mt-2 break-all text-[12px] text-white/45">{result.embed}</p>
+              </>
+            ) : (
+              <p className="text-[13px] text-red-300">{result.error || 'could not file the sketch'}</p>
+            )}
+            {result.warn && <p className="mt-2 text-[12px] text-amber-200/80">{result.warn}</p>}
+          </motion.div>
+        )}
+      </main>
     </div>
   );
 }

@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
+- `/sketch` — draw something quiet. share the moment. A simple canvas for quiet marks. When you’re ready, the sketch becomes a PNG that lands in storage and the public_shares table. The link unfurls a polished Discord card. Soft warning only if the image is unusually large. No hard limits. Prior desks stay intact. No traces of boosting.
+
 - `/memo` — leave a voice note. share it quietly. Record a memo right in the browser. When you stop, it becomes a file in storage and a row in public_shares. Every link unfurls a polished Discord card. Soft warning only if the recording runs long. No hard limits. Prior desks stay intact. No traces of boosting.
 
 - `/notepad` — write a note. share it quietly. A clean Apple Notes surface. Your text becomes a file in storage and a row in public_shares. Every link unfurls a polished Discord card. No hard limits — only a soft warning if the note is unusually long. Prior desks stay intact. No traces of boosting.

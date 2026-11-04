@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
+- `/softforge` — forge what you carry. Drop one or many local files with individual quiet notes and a shared accent. They enter storage and public_shares. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.
+
 - `/softlagoon` — let it drift. Drop one or many local files with a shared note and accent. They enter storage and public_shares. Recent public drops settle into a living lagoon of glass that gently drifts and bobs with spring motion. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.
 
 - `/softlumentide` — let it rise and settle with the tide. Drop one or many local files with a shared note and accent. They enter storage and public_shares. Recent public drops settle into a living tide of glass that rises, falls, and drifts with quiet spring motion. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.

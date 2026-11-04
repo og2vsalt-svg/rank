@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'softlumenpool', href: '/softlumenpool', body: 'a quiet lumen pool for what you carry. drop one or many local files with a shared note and accent. soft ripples of light expand and settle with spring motion on deep navy glass. recent public drops surface as quiet cards in the pool. lands in storage and public_shares. discord unfurls a polished card on every link. large drops warned, never refused. all prior desks remain fully intact. no traces of boosting.' },
+
   { title: 'sketch', href: '/sketch', body: 'draw something quiet. a simple canvas for marks that become a PNG in storage and public_shares. every share link unfurls a polished Discord card. soft warning only for large images. no hard limits. all prior desks remain fully intact. no traces of boosting.' },
 
   { title: 'softcascade', href: '/softcascade', body: 'let it cascade. drop one or many local files with a shared note and accent. they enter storage and public_shares. recent public drops settle into a living cascade of glass that flows downward with spring motion. every share link unfurls a polished Discord card. large batches warned only for possible slowness. no hard limits. all prior desks remain fully intact. no traces of boosting.' },
@@ -11,9 +13,8 @@ const items = [
 
   { title: 'softember', href: '/softember', body: 'a quiet ember of warm light for what you carry. drop one or many local files with a shared title, caption, and soft amber accent. glass cards float and settle with spring motion on deep navy, glowing softly like embers. lands in storage and public_shares. discord unfurls a polished card on every link. large drops warned, never refused. all prior desks remain fully intact. no traces of boosting.' },
   { title: 'haven', href: '/haven', body: 'a quiet haven for what you carry. drop one or many local files with a shared title, caption, and soft accent. glass cards float and settle with spring motion on deep navy. lands in storage and public_shares. discord unfurls a polished card on every link. large drops warned, never refused. all prior desks remain fully intact. no traces of boosting.' },
-  // ... (rest of the long list remains the same as previous, with all prior desks intact)
-  { title: 'quietbeacon', href: '/quietbeacon', body: 'a quiet beacon for one light. focus one note or local file as a beacon. it lands in storage and the public_shares table with your accent. share links unfurl with polished Discord cards. soft spring motion, frosted glass, gentle pulse. large files receive only a gentle warning of slowness. prior desks remain intact. no traces of boosting.' },
   // all prior desks remain available via direct links and the navbar; continuously expanded while preserving every previous feature.
+  { title: 'quietbeacon', href: '/quietbeacon', body: 'a quiet beacon for one light. focus one note or local file as a beacon. it lands in storage and the public_shares table with your accent. share links unfurl with polished Discord cards. soft spring motion, frosted glass, gentle pulse. large files receive only a gentle warning of slowness. prior desks remain intact. no traces of boosting.' },
 ];
 
 export default function Features() {

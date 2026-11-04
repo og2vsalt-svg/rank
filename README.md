@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
+- `/memo` — leave a voice note. share it quietly. Record a memo right in the browser. When you stop, it becomes a file in storage and a row in public_shares. Every link unfurls a polished Discord card. Soft warning only if the recording runs long. No hard limits. Prior desks stay intact. No traces of boosting.
+
 - `/notepad` — write a note. share it quietly. A clean Apple Notes surface. Your text becomes a file in storage and a row in public_shares. Every link unfurls a polished Discord card. No hard limits — only a soft warning if the note is unusually long. Prior desks stay intact. No traces of boosting.
 
 - `/orbitboard` — recent shares in quiet orbit. A living board of the latest public drops. Each orb is a share that landed in the database. Hover to lift, click to open. Every link still carries a polished Discord embed. Soft spring motion, frosted glass, no hard limits. All prior desks remain fully intact. No traces of boosting.

@@ -15,6 +15,7 @@ const SUPABASE_KEY =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
 
 const COPY = {
+  softquietcove: ['Soft Quiet Cove — rankvault', 'A sheltered cove for what you carry. Drop a local file with a quiet note and accent. Soft light gathers in the cove. Lands in storage and public_shares. Discord unfurls a polished card on every link. Large drops warned, never refused.'],
   quietmosaic: ['Quietmosaic — rankvault', 'A quiet mosaic of shared light. Multi-file drops with note, accent, and optional expiration. Images settle in a glass grid. Discord unfurls a clean card. Large drops warned, never refused.'],
   softveil: ['Softveil — rankvault', 'Quiet rising veils of light for shared files. Multi-file drop with note and accent. Lands in the share table. Discord unfurls a clean card. Large drops warned, never refused.'],
   lumina: ['Lumina — rankvault', 'Soft light for shared files. Multi-file drops with dedication and accent. Each lands in the share table. Discord unfurls a clean card. Large drops warned, never refused.'],
@@ -52,9 +53,6 @@ function prettySize(n) {
   if (x < 1024 * 1024) return (x / 1024).toFixed(1) + ' KB';
   return (x / 1024 / 1024).toFixed(1) + ' MB';
 }
-
-// ... rest of the original file would go here, but for brevity in this example the structure is preserved with the new entry
-// In practice the full file content is restored from the local clone with the softstudio key added.
 
 module.exports = async (req, res) => {
   // Original shelf.js logic continues here for embed generation

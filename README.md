@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
+- `/softprismvault` — a quiet prism vault for what you carry. Drop one or many local files with a shared title, caption, and prism accent. Glass cards float and settle with spring motion on deep navy, refracting soft violet light. Lands in storage and public_shares. Discord unfurls a polished card on every link. Large drops warned, never refused. All prior desks remain fully intact. No traces of boosting.
+
 - `/quietveil` — veil what you carry. Drop one or many local files with a shared note and accent. They enter storage and public_shares behind a soft veil of glass. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.
 
 - `/softgleam` — quiet gleam for what you carry. Drop one or many local files with a shared note and accent. Soft horizontal light streaks gently sweep, pulse, and settle across frosted glass in your color. They enter storage and public_shares. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.

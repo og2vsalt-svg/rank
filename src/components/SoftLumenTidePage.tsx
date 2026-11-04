@@ -1,199 +1,253 @@
-import { useState, useRef } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { publishLocalFile, shareUrls } from '../lib/cloudShare';
 import Navbar from './Navbar';
-import { useRouter } from './Router';
+import { publishLocalFile, shareUrls, listPublicShares, type CloudMeta } from '../lib/cloudShare';
 
-const COLORS = ['#0A84FF', '#30D158', '#FF9F0A', '#FF453A', '#BF5AF2', '#64D2FF', '#1D1D1F'];
+type Drop = {
+  id: string;
+  file: File;
+  preview?: string;
+  caption: string;
+};
 
 export default function SoftLumenTidePage() {
-  const { navigate } = useRouter();
-  const fileRef = useRef<HTMLInputElement>(null);
-  const [files, setFiles] = useState<File[]>([]);
-  const [title, setTitle] = useState('');
-  const [caption, setCaption] = useState('');
-  const [color, setColor] = useState('#0A84FF');
-  const [uploading, setUploading] = useState(false);
-  const [warn, setWarn] = useState('');
-  const [results, setResults] = useState<{ id: string; name: string; embed: string }[]>([]);
+  const [drops, setDrops] = useState<Drop[]>([]);
+  const [note, setNote] = useState('');
+  const [author, setAuthor] = useState('');
+  const [accent, setAccent] = useState('#5AC8FA');
+  const [busy, setBusy] = useState(false);
+  const [results, setResults] = useState<{ embed?: string; warn?: string | null; name: string }[]>([]);
+  const [recent, setRecent] = useState<CloudMeta[]>([]);
+  const [copied, setCopied] = useState<string | null>(null);
 
-  const totalSize = files.reduce((n, f) => n + f.size, 0);
+  useEffect(() => {
+    listPublicShares(14).then(setRecent).catch(() => {});
+  }, []);
 
-  const onSelect = (list: FileList | null) => {
-    const arr = Array.from(list || []);
-    if (!arr.length) return;
-    setFiles((prev) => [...prev, ...arr].slice(0, 8));
-    const newTotal = totalSize + arr.reduce((n, f) => n + f.size, 0);
-    setWarn(newTotal > 40 * 1024 * 1024 ? 'Large tide. The connection may feel slow while the waves settle — no hard limit.' : '');
-    setResults([]);
-  };
+  const onFiles = useCallback((list: FileList | null) => {
+    if (!list) return;
+    const next: Drop[] = [];
+    Array.from(list).forEach((file) => {
+      const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+      const drop: Drop = { id, file, caption: '' };
+      if (file.type.startsWith('image/')) {
+        drop.preview = URL.createObjectURL(file);
+      }
+      next.push(drop);
+    });
+    setDrops((prev) => [...prev, ...next]);
+  }, []);
 
-  const remove = (i: number) => setFiles((prev) => prev.filter((_, idx) => idx !== i));
+  const remove = (id: string) => setDrops((d) => d.filter((x) => x.id !== id));
+
+  const updateCaption = (id: string, caption: string) =>
+    setDrops((d) => d.map((x) => (x.id === id ? { ...x, caption } : x)));
 
   const shareAll = async () => {
-    if (!files.length) return;
-    setUploading(true);
-    const out: { id: string; name: string; embed: string }[] = [];
-    for (const file of files) {
-      const res = await publishLocalFile(file, {
-        caption: caption || title,
-        cardTitle: title || file.name,
-        color,
-        meta: { desk: 'softlumentide' },
+    if (!drops.length) return;
+    setBusy(true);
+    setResults([]);
+    const out: typeof results = [];
+    for (const d of drops) {
+      const res = await publishLocalFile(d.file, {
+        author,
+        caption: d.caption || note || d.file.name,
+        color: accent,
+        cardTitle: d.caption || note || d.file.name,
+        meta: { accent, source: 'softlumentide', kind: d.file.type.split('/')[0] || 'file', tideNote: note },
       });
       if (res.ok && res.id) {
-        out.push({ id: res.id, name: file.name, embed: shareUrls(res.id).embed });
+        out.push({
+          embed: shareUrls(res.id).embed,
+          warn: res.warn,
+          name: d.file.name,
+        });
       }
     }
     setResults(out);
-    setUploading(false);
+    setBusy(false);
+    listPublicShares(14).then(setRecent).catch(() => {});
   };
 
-  const copy = async (text: string) => {
-    try { await navigator.clipboard.writeText(text); } catch {}
+  const copy = async (url: string) => {
+    await navigator.clipboard.writeText(url);
+    setCopied(url);
+    setTimeout(() => setCopied(null), 1400);
   };
 
   return (
-    <div className="mesh min-h-screen text-white">
+    <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 sm:px-8 max-w-6xl mx-auto">
+      <main className="mx-auto max-w-4xl px-5 pb-28 pt-12">
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 80, damping: 20, mass: 0.8 }}
+          transition={{ type: 'spring', stiffness: 90, damping: 22 }}
         >
-          <p className="text-[#0A84FF] text-sm font-medium tracking-wide mb-3">tide</p>
-          <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight leading-[1.05] mb-4">
-            rising tides of shared light.
+          <p className="text-[12px] uppercase tracking-[0.22em] text-white/40">soft lumen tide</p>
+          <h1 className="mt-2 text-[38px] font-semibold tracking-[-0.048em] leading-tight">
+            let it rise and settle<br />with the tide.
           </h1>
-          <p className="text-neutral-400 text-lg max-w-2xl mb-10 leading-relaxed">
-            Drop local files. They become quiet tides that rise and settle in your accent, like light finding the shore. Each tide carries a polished Discord embed. Soft spring motion, frosted glass. Large drops receive only a gentle warning of slowness.
+          <p className="mt-4 text-[15.5px] leading-relaxed text-white/65 max-w-xl">
+            Drop one or many local files with a shared note and accent. They enter storage and the public_shares table.
+            Recent drops settle into a living tide of glass that rises, falls, and drifts with quiet spring motion.
+            Every share link unfurls a polished Discord card. Large batches warned only for possible slowness.
+            No hard limits. All prior desks remain fully intact. No traces of boosting.
           </p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-5 gap-8">
-          <div className="lg:col-span-3 space-y-6">
-            <div
-              onClick={() => fileRef.current?.click()}
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={(e) => { e.preventDefault(); onSelect(e.dataTransfer.files); }}
-              className="rounded-3xl border border-dashed border-white/15 bg-white/[0.03] backdrop-blur-xl p-10 text-center cursor-pointer hover:border-white/25 transition-all active:scale-[0.995]"
-            >
-              <motion.div
-                animate={{ y: [0, -8, 0] }}
-                transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
-                className="text-5xl mb-4 opacity-70"
-              >
-                ∼
-              </motion.div>
-              <p className="font-medium mb-1">drop files or click to add tides</p>
-              <p className="text-sm text-neutral-500">up to 8 · any type · any size</p>
-              <input ref={fileRef} type="file" multiple className="hidden" onChange={(e) => onSelect(e.target.files)} />
-            </div>
+        <div
+          className="mt-10 glass rounded-[32px] p-8 text-center border border-white/10"
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={(e) => {
+            e.preventDefault();
+            onFiles(e.dataTransfer.files);
+          }}
+        >
+          <input
+            type="file"
+            multiple
+            className="hidden"
+            id="tide-files"
+            onChange={(e) => onFiles(e.target.files)}
+          />
+          <label htmlFor="tide-files" className="cursor-pointer block">
+            <div className="text-[15px] text-white/70">drop files into the tide or tap to choose</div>
+            <div className="mt-2 text-[13px] text-white/40">any type · soft warning only</div>
+          </label>
+        </div>
 
-            {warn && (
-              <motion.p initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} className="text-amber-300 text-sm text-center">
-                {warn}
-              </motion.p>
-            )}
-
-            {files.length > 0 && (
-              <div className="relative h-48 rounded-3xl bg-white/[0.02] border border-white/10 overflow-hidden">
-                <svg className="absolute inset-0 w-full h-full" viewBox="0 0 400 180" preserveAspectRatio="none">
-                  <motion.path
-                    d="M0 120 Q 50 90 100 120 T 200 120 T 300 120 T 400 120"
-                    fill="none"
-                    stroke={color}
-                    strokeWidth="1.5"
-                    strokeOpacity="0.4"
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
-                    transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                  />
-                </svg>
-                <div className="absolute inset-x-4 bottom-4 flex flex-wrap gap-2">
-                  <AnimatePresence>
-                    {files.map((f, i) => (
-                      <motion.div
-                        key={f.name + i}
-                        initial={{ opacity: 0, y: 30, scale: 0.85 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.7 }}
-                        transition={{ type: 'spring', stiffness: 140, damping: 15, delay: i * 0.07 }}
-                        className="relative group"
-                      >
-                        <div
-                          className="px-2.5 py-1.5 rounded-full bg-white/[0.07] border border-white/15 text-[11px] font-medium max-w-[120px] truncate"
-                          style={{ boxShadow: `0 0 12px ${color}22` }}
-                        >
-                          {f.name}
-                        </div>
-                        <button onClick={() => remove(i)} className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-white/20 text-[10px] opacity-0 group-hover:opacity-100 transition">×</button>
-                      </motion.div>
-                    ))}
-                  </AnimatePresence>
-                </div>
-              </div>
-            )}
-
-            <div className="space-y-4">
-              <label className="block">
-                <span className="text-xs uppercase tracking-wider text-neutral-500 mb-1.5 block">tide title</span>
-                <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="what the tides hold" className="w-full bg-white/[0.04] border border-white/10 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-[#0A84FF]/50 transition" />
-              </label>
-              <label className="block">
-                <span className="text-xs uppercase tracking-wider text-neutral-500 mb-1.5 block">shared caption</span>
-                <textarea value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="a note that travels with every tide" rows={2} className="w-full bg-white/[0.04] border border-white/10 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-[#0A84FF]/50 transition resize-none" />
-              </label>
-              <div>
-                <span className="text-xs uppercase tracking-wider text-neutral-500 mb-2 block">accent</span>
-                <div className="flex gap-2 flex-wrap">
-                  {COLORS.map((c) => (
-                    <button key={c} onClick={() => setColor(c)} className={`w-8 h-8 rounded-full transition-all ${color === c ? 'ring-2 ring-white ring-offset-2 ring-offset-black scale-110' : 'hover:scale-105'}`} style={{ background: c }} />
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <button onClick={shareAll} disabled={!files.length || uploading} className="w-full py-3.5 rounded-full bg-[#0A84FF] text-white font-medium text-sm hover:bg-[#409CFF] active:scale-[0.98] transition disabled:opacity-50 disabled:pointer-events-none">
-              {uploading ? 'rising…' : `rise ${files.length} tide${files.length === 1 ? '' : 's'}`}
-            </button>
-          </div>
-
-          <div className="lg:col-span-2">
-            <p className="text-xs uppercase tracking-wider text-neutral-500 mb-3">discord preview</p>
-            <div className="rounded-2xl overflow-hidden border border-white/10 bg-[#1c1c1e] shadow-2xl sticky top-28">
-              <div className="h-1.5" style={{ background: color }} />
-              <div className="p-4">
-                <div className="flex items-center gap-2 mb-2 text-xs text-neutral-400">
-                  <div className="w-5 h-5 rounded-full bg-white/10" />
-                  rankvault · tide
-                </div>
-                <h3 className="font-semibold text-[15px] leading-snug mb-1">{title || 'untitled tide'}</h3>
-                <p className="text-[13px] text-neutral-400 line-clamp-2">{caption || 'rising tides of shared light'}</p>
-                {files.length > 0 && <p className="text-[11px] text-neutral-500 mt-2">{files.length} tide{files.length === 1 ? '' : 's'}</p>}
-              </div>
-            </div>
-
-            <AnimatePresence>
-              {results.length > 0 && (
-                <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mt-6 space-y-3">
-                  {results.map((r) => (
-                    <div key={r.id} className="p-3 rounded-2xl bg-white/[0.04] border border-white/10">
-                      <p className="text-xs font-medium truncate mb-2">{r.name}</p>
-                      <div className="flex gap-2">
-                        <input readOnly value={r.embed} className="flex-1 bg-black/40 rounded-xl px-2 py-1.5 text-[10px] font-mono" />
-                        <button onClick={() => copy(r.embed)} className="px-3 py-1.5 rounded-xl bg-white text-black text-xs font-medium hover:bg-neutral-200 active:scale-95">copy</button>
-                      </div>
-                      <button onClick={() => navigate('s', r.id)} className="mt-1.5 text-[11px] text-[#0A84FF] hover:underline">open →</button>
-                    </div>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
+        <div className="mt-6 space-y-4">
+          <textarea
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="shared tide note, optional"
+            className="glass w-full rounded-2xl px-4 py-3 text-[14.5px] outline-none min-h-[80px] resize-none"
+          />
+          <div className="flex flex-wrap items-center gap-4">
+            <input
+              type="color"
+              value={accent}
+              onChange={(e) => setAccent(e.target.value)}
+              className="h-11 w-16 rounded-xl border border-white/10 bg-transparent cursor-pointer"
+            />
+            <input
+              value={author}
+              onChange={(e) => setAuthor(e.target.value)}
+              placeholder="your name, optional"
+              className="glass flex-1 min-w-[200px] rounded-2xl px-4 py-3 text-[14px] outline-none"
+            />
           </div>
         </div>
-      </div>
+
+        <AnimatePresence>
+          {drops.map((d, i) => (
+            <motion.div
+              key={d.id}
+              initial={{ opacity: 0, y: 14, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              transition={{ type: 'spring', stiffness: 110, damping: 18, delay: i * 0.03 }}
+              className="mt-5 glass rounded-[28px] p-5 flex gap-4 items-start"
+            >
+              {d.preview ? (
+                <img src={d.preview} alt="" className="w-24 h-24 object-cover rounded-2xl shrink-0" />
+              ) : (
+                <div className="w-24 h-24 rounded-2xl bg-white/5 grid place-items-center text-[12px] text-white/40 shrink-0">
+                  {d.file.type.split('/')[0] || 'file'}
+                </div>
+              )}
+              <div className="flex-1 min-w-0">
+                <p className="text-[13px] text-white/50 truncate">{d.file.name}</p>
+                <input
+                  value={d.caption}
+                  onChange={(e) => updateCaption(d.id, e.target.value)}
+                  placeholder="individual caption"
+                  className="mt-2 w-full bg-transparent text-[14.5px] outline-none placeholder:text-white/30"
+                />
+                <p className="mt-1 text-[12px] text-white/35">
+                  {(d.file.size / 1024 / 1024).toFixed(1)} MB
+                  {d.file.size > 40 * 1024 * 1024 ? ' · may feel slow' : ''}
+                </p>
+              </div>
+              <button
+                onClick={() => remove(d.id)}
+                className="text-white/30 hover:text-white/70 text-[18px] leading-none"
+              >
+                ×
+              </button>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+
+        {drops.length > 0 && (
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            whileHover={{ scale: 1.01 }}
+            onClick={shareAll}
+            disabled={busy}
+            className="mt-8 w-full rounded-full py-3.5 text-[15px] font-medium text-black disabled:opacity-50"
+            style={{ background: accent }}
+          >
+            {busy ? 'settling into the tide…' : `share ${drops.length} drop${drops.length > 1 ? 's' : ''}`}
+          </motion.button>
+        )}
+
+        {results.length > 0 && (
+          <div className="mt-8 space-y-3">
+            {results.map((r) => (
+              <motion.div
+                key={r.embed}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="glass rounded-2xl px-4 py-3.5 flex items-center justify-between gap-3"
+              >
+                <div className="min-w-0">
+                  <p className="text-[14px] truncate">{r.name}</p>
+                  <p className="text-[12px] text-white/40 break-all mt-0.5">{r.embed}</p>
+                  {r.warn && <p className="text-[11px] text-amber-200/70 mt-1">{r.warn}</p>}
+                </div>
+                <button
+                  onClick={() => r.embed && copy(r.embed)}
+                  className="shrink-0 rounded-full bg-white/10 px-3 py-1 text-[12px]"
+                >
+                  {copied === r.embed ? 'copied' : 'copy'}
+                </button>
+              </motion.div>
+            ))}
+          </div>
+        )}
+
+        {recent.length > 0 && (
+          <div className="mt-16">
+            <p className="text-[12px] uppercase tracking-[0.22em] text-white/40 mb-6">recent tide</p>
+            <div className="relative h-[280px] overflow-hidden">
+              {recent.map((item, i) => (
+                <motion.a
+                  key={item.id}
+                  href={shareUrls(item.id).embed}
+                  initial={{ opacity: 0, y: 40 }}
+                  animate={{ opacity: 1, y: [0, -8, 0] }}
+                  transition={{
+                    y: { duration: 5 + (i % 4) * 0.8, repeat: Infinity, ease: 'easeInOut', delay: i * 0.15 },
+                    opacity: { duration: 0.6, delay: i * 0.04 },
+                  }}
+                  whileHover={{ y: -12, scale: 1.05 }}
+                  className="absolute glass rounded-[24px] p-4 block apple-card w-[46%] max-w-[220px]"
+                  style={{
+                    left: `${(i % 4) * 24 + 2}%`,
+                    top: `${20 + (i % 3) * 22}%`,
+                    background: `linear-gradient(145deg, ${accent}22, transparent)`,
+                  }}
+                >
+                  <p className="text-[13.5px] truncate font-medium">{item.name || 'untitled'}</p>
+                  <p className="text-[11px] text-white/40 mt-1 truncate">{item.caption || item.author || 'quiet drop'}</p>
+                </motion.a>
+              ))}
+            </div>
+          </div>
+        )}
+      </main>
     </div>
   );
 }

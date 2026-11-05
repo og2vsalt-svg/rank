@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
+- `/softlumencathedral` — a quiet cathedral of light for what you carry. Drop local files. Soft beams of light descend and settle with spring motion on deep navy glass. Search recent shares. Shared note, optional expiration. Every link unfurls a polished Discord card. Large drops warned, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
 - `/softquietsanctuary` — a quiet sanctuary for what you carry. Drop local files into a still sanctuary. Soft pillars of light rise and settle with spring motion on deep navy glass. Shared note, optional expiration. Every link unfurls a polished Discord card. Large drops warned, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 
 - `/lumenfold` — fold a local file into luminous light. Title, a longer note, accent color. Soft glass folds and settles with spring motion on deep navy. Lands in storage and the fold table. Discord unfurls a polished card on every link. Large drops warned, never refused. All prior desks remain fully intact. No traces of boosting.

@@ -33,8 +33,8 @@ export default function Hero() {
           Local vault. Cloud shares that land in the database with professional Discord embeds on every link. Galleries, notes, and dozens of specialized desks. Large files warned, never refused. Human-crafted Apple-smooth animations.
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center">
-          <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('softlumenstudio')} className="px-5 py-2.5 rounded-full bg-[#5AC8FA] text-black text-sm font-medium hover:bg-[#6ed0fb] transition">softlumenstudio</motion.button>
-          <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('softprismforge')} className="px-5 py-2.5 rounded-full bg-[#AF52DE] text-white text-sm font-medium hover:bg-[#bf6ae8] transition">softprismforge</motion.button>
+          <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('prismdesk')} className="px-5 py-2.5 rounded-full bg-[#5AC8FA] text-black text-sm font-medium hover:bg-[#6ed0fb] transition">prismdesk</motion.button>
+          <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('softlumenstudio')} className="px-5 py-2.5 rounded-full bg-[#AF52DE] text-white text-sm font-medium hover:bg-[#bf6ae8] transition">softlumenstudio</motion.button>
           <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('quietgallery')} className="px-5 py-2.5 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#3a9aff] transition">quietgallery</motion.button>
           <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('vault')} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition">open vault</motion.button>
           <a href="#features" className="px-5 py-2.5 rounded-full glass text-neutral-300 text-sm font-medium hover:text-white transition">all desks</a>

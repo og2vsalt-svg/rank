@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-rivall.vercel.app/
 
 ## Recent desks
+- `/softquilldesk` — a quiet desk for notes and what you carry. Write a note, give it a title, optionally attach a local file. It settles into storage and the public_shares table with your accent. Every share link unfurls a polished Discord card. Large files receive only a gentle warning of possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.
+
 - `/softlumenforge` — forge what you carry. Drop a local file into spectral light. Quiet note and accent. Soft glass settles with spring motion on deep navy. Lands in storage and public shares. Every link unfurls a polished Discord card. Large drops warned, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 
 - `/softprismforge` — a prismatic forge for what you carry. Drop local files. Soft spectral light refracts and settles with spring motion on deep navy glass. Search recent shares. Shared note, optional expiration. Every link unfurls a polished Discord card. Large drops warned, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.

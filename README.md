@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
+- `/softorbitshare` — orbit your files. Drop one or many local files with a shared note and accent. They settle into a quiet orbit with spring motion on deep navy glass. Recent public drops surface as quiet cards. Lands in storage and public_shares. Discord unfurls a polished card on every link. Large drops warned, never refused. All prior desks remain fully intact. No traces of boosting.
+
 - `/softquietgrove` — a quiet grove for what you carry. Drop one or many local files with a shared note and accent. Soft trees of light gather and settle with spring motion on deep navy glass. Recent public drops surface as quiet cards in the grove. Lands in storage and public_shares. Discord unfurls a polished card on every link. Large drops warned, never refused. All prior desks remain fully intact. No traces of boosting.
 
 - `/quietgallery` — a living gallery of shared light. Drop local files with a shared note and accent. Recent public drops surface as quiet glass cards that settle with spring motion on deep navy glass. Lands in storage and public_shares. Discord unfurls a polished card on every link. Large drops warned, never refused. All prior desks remain fully intact. No traces of boosting.

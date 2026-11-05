@@ -15,6 +15,10 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
+- `/quietechofield` — an echo field for what you carry. Drop one or many local files with a shared note and accent. Soft concentric echoes expand and settle with spring motion on deep navy glass. Recent public drops surface as quiet cards that drift into the field. Lands in storage and public_shares. Discord unfurls a polished card on every link. Large drops warned, never refused. All prior desks remain fully intact. No traces of boosting.
+
+- `/softaurorastream` — a flowing stream of light for what you carry. Drop one or many local files with a shared note and accent. Soft ribbons of light rise and settle with spring motion on deep navy glass. Recent public drops surface as quiet cards that drift with the current. Lands in storage and public_shares. Discord unfurls a polished card on every link. Large drops warned, never refused. All prior desks remain fully intact. No traces of boosting.
+
 - `/softlumenorchard` — a quiet orchard for what you carry. Drop one or many local files with a shared note and accent. Soft trees of light sway and settle with spring motion on deep navy glass. Recent public drops surface as quiet cards among the rows. Lands in storage and public_shares. Discord unfurls a polished card on every link. Large drops warned, never refused. All prior desks remain fully intact. No traces of boosting.
 
 - `/softlumenspring` — a flowing spring for what you carry. Drop one or many local files with a shared note and accent. Soft streams of light rise and settle with spring motion on deep navy glass. Recent public drops surface as quiet cards along the banks. Lands in storage and public_shares. Discord unfurls a polished card on every link. Large drops warned, never refused. All prior desks remain fully intact. No traces of boosting.

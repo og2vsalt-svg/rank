@@ -1,6 +1,10 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'softlumenatlas', href: '/softlumenatlas', body: 'a quiet atlas of what has been shared. search recent public drops. add new ones with a shared note and accent. soft light drifts across the glass. lands in storage and public_shares. discord unfurls a polished card on every link. large drops warned, never refused. all prior desks remain fully intact. no traces of boosting.' },
+
+  { title: 'quietbatch', href: '/quietbatch', body: 'batch what you carry, each with its own note. drop several files. give each a quiet caption. soft vertical light drifts in your accent. each lands separately in storage and public_shares. discord unfurls a polished card on every link. large drops warned, never refused. all prior desks remain fully intact. no traces of boosting.' },
+
   { title: 'softquietecho', href: '/softquietecho', body: 'an echo for what you carry. drop one or many local files with a shared note and accent. soft concentric echoes expand and fade with spring motion on deep navy glass. recent public drops surface as quiet cards that settle into the echo field. lands in storage and public_shares. discord unfurls a polished card on every link. large drops warned, never refused. all prior desks remain fully intact. no traces of boosting.' },
 
   { title: 'softlumenpool', href: '/softlumenpool', body: 'a quiet lumen pool for what you carry. drop one or many local files with a shared note and accent. soft ripples of light expand and settle with spring motion on deep navy glass. recent public drops surface as quiet cards in the pool. lands in storage and public_shares. discord unfurls a polished card on every link. large drops warned, never refused. all prior desks remain fully intact. no traces of boosting.' },

@@ -1,190 +1,148 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect, useMemo, useState } from 'react';
+import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishLocalFile, listPublicShares } from '../lib/cloudShare';
-
-type Share = {
-  id: string;
-  name: string;
-  size: number;
-  caption?: string | null;
-  color?: string | null;
-  createdAt?: string;
-  downloads?: number;
-  url?: string;
-  mime?: string;
-};
-
-function prettySize(n: number) {
-  if (!n) return '0 B';
-  if (n < 1024) return n + ' B';
-  if (n < 1048576) return Math.round(n / 1024) + ' KB';
-  if (n < 1073741824) return (n / 1048576).toFixed(1) + ' MB';
-  return (n / 1073741824).toFixed(2) + ' GB';
-}
+import { listPublicShares, publishLocalFile, shareUrls, type CloudMeta } from '../lib/cloudShare';
 
 export default function SoftLumenStudioPage() {
-  const [shares, setShares] = useState<Share[]>([]);
-  const [accent, setAccent] = useState('#A78BFA');
-  const [caption, setCaption] = useState('');
-  const [files, setFiles] = useState<File[]>([]);
+  const [shares, setShares] = useState<CloudMeta[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [file, setFile] = useState<File | null>(null);
+  const [title, setTitle] = useState('');
+  const [note, setNote] = useState('');
+  const [color, setColor] = useState('#5AC8FA');
   const [busy, setBusy] = useState(false);
-  const [warn, setWarn] = useState<string | null>(null);
-  const [err, setErr] = useState('');
-  const [links, setLinks] = useState<string[]>([]);
-  const [q, setQ] = useState('');
+  const [status, setStatus] = useState('');
 
-  const load = useCallback(async () => {
-    try {
-      const s = await listPublicShares(36);
-      setShares(s.map((m: any) => ({
-        id: m.id,
-        name: m.name || 'untitled',
-        size: m.size || 0,
-        caption: m.caption,
-        color: m.color,
-        createdAt: m.createdAt,
-        downloads: m.downloads,
-        url: m.url,
-        mime: m.type,
-      })));
-    } catch {}
+  const heavy = useMemo(() => file && file.size > 50 * 1024 * 1024, [file]);
+
+  const refresh = async () => {
+    setLoading(true);
+    const rows = await listPublicShares(48);
+    setShares(rows);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    refresh();
   }, []);
 
-  useEffect(() => { load(); }, [load]);
-
-  const onFiles = (list: FileList | null) => {
-    const arr = Array.from(list || []);
-    setFiles(arr);
-    const big = arr.find((f) => f.size > 40 * 1024 * 1024);
-    setWarn(big ? 'One or more files are large. The upload may feel slow. No hard limit — only a gentle note of patience.' : null);
-  };
-
-  const drop = async () => {
-    if (!files.length) return setErr('choose at least one local file');
+  const publish = async () => {
+    if (!file && !note.trim()) return;
     setBusy(true);
-    setErr('');
-    setLinks([]);
-    try {
-      const made: string[] = [];
-      for (const f of files) {
-        const res = await publishLocalFile(f, {
-          caption: caption.trim() || undefined,
-          color: accent,
-          cardTitle: f.name,
-          meta: { desk: 'softlumenstudio' },
-        });
-        if (res.ok && res.embed) made.push(res.embed);
-        else if (!res.ok) setErr(res.error || 'upload slowed');
-      }
-      setLinks(made);
-      setFiles([]);
-      setCaption('');
-      await load();
-    } catch (e: any) {
-      setErr(e.message || 'something slowed');
+    setStatus('');
+    const res = await publishLocalFile(file || new File([note], 'note.txt', { type: 'text/plain' }), {
+      caption: note || title || 'studio note',
+      color,
+      cardTitle: title || 'studio share',
+      meta: { accent: color, source: 'softlumenstudio', kind: 'studio' },
+    });
+    if (!res.ok) {
+      setStatus(res.error || 'could not settle');
+    } else {
+      setFile(null);
+      setTitle('');
+      setNote('');
+      setStatus('settled');
     }
     setBusy(false);
+    await refresh();
   };
 
-  const filtered = useMemo(() => shares.filter((s) =>
-    !q ||
-    s.name.toLowerCase().includes(q.toLowerCase()) ||
-    (s.caption || '').toLowerCase().includes(q.toLowerCase())
-  ), [shares, q]);
-
   return (
-    <div className="mesh min-h-screen bg-[#0b0b0d]">
+    <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-32 pb-24 px-6 max-w-5xl mx-auto">
+      <main className="mx-auto max-w-5xl px-5 pb-28 pt-12">
         <motion.div
-          initial={{ opacity: 0, y: 12 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 110, damping: 22 }}
-          className="glass rounded-[32px] p-10 mb-12"
+          transition={{ type: 'spring', stiffness: 80, damping: 22 }}
         >
-          <p className="text-[13px] font-medium tracking-wide mb-2" style={{ color: accent }}>Soft Lumen Studio</p>
-          <h1 className="text-[34px] font-semibold tracking-tight mb-4">Compose shared light.</h1>
-          <p className="text-neutral-400 text-[15.5px] leading-relaxed mb-8 max-w-2xl">
-            A quiet studio for arranging files and notes. Drop local files with a shared caption and accent color. Each settles into storage and the public_shares table. Share links carry polished Discord embeds. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain intact.
+          <p className="text-[11px] uppercase tracking-[0.22em] text-white/35">softlumenstudio</p>
+          <h1 className="mt-3 text-[44px] font-semibold tracking-[-0.055em] leading-[0.95] text-white">
+            a quiet studio<br />for what you carry
+          </h1>
+          <p className="mt-5 max-w-xl text-[17px] leading-relaxed text-white/55">
+            Drop a local file or write a note. It settles into storage and the public_shares table with your accent. Every link unfurls a polished Discord card. Large drops receive only a gentle warning. Spring motion, glass surfaces, human pacing. All prior desks remain fully intact.
           </p>
-
-          <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Filter the studio floor…"
-            className="w-full bg-black/20 border border-white/10 rounded-[18px] px-5 py-3 text-[15px] text-white placeholder:text-neutral-500 mb-5 focus:outline-none focus:border-white/20"
-          />
-
-          <textarea
-            value={caption}
-            onChange={(e) => setCaption(e.target.value)}
-            placeholder="Shared note for this drop…"
-            rows={3}
-            className="w-full bg-black/20 border border-white/10 rounded-[18px] px-5 py-3.5 text-[15px] text-white placeholder:text-neutral-500 mb-5 resize-none focus:outline-none focus:border-white/20"
-          />
-
-          <div className="flex items-center gap-5 mb-6">
-            <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="w-10 h-10 rounded-full cursor-pointer border-0" />
-            <label className="text-[14px] text-neutral-300 cursor-pointer hover:text-white transition">
-              {files.length ? `${files.length} file${files.length > 1 ? 's' : ''} ready` : 'Choose local files to compose'}
-              <input type="file" multiple className="hidden" onChange={(e) => onFiles(e.target.files)} />
-            </label>
-          </div>
-
-          {warn && <p className="text-[13px] text-amber-300/90 mb-4">{warn}</p>}
-
-          <motion.button
-            whileTap={{ scale: 0.97 }}
-            whileHover={{ scale: 1.02 }}
-            onClick={drop}
-            disabled={busy || !files.length}
-            className="px-10 rounded-[20px] py-4 text-[16px] font-medium text-white disabled:opacity-40 transition"
-            style={{ background: accent }}
-          >
-            {busy ? 'Composing…' : 'Compose & share'}
-          </motion.button>
-
-          <AnimatePresence>
-            {links.map((l) => (
-              <motion.a key={l} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} href={l} className="block mt-4 text-[14px] break-all" style={{ color: accent }}>
-                {l}
-              </motion.a>
-            ))}
-            {err && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 text-[13px] text-red-400">{err}</motion.p>}
-          </AnimatePresence>
         </motion.div>
 
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((s, i) => (
-            <motion.a
-              key={s.id}
-              href={`/s/${s.id}`}
-              initial={{ opacity: 0, y: 16, scale: 0.97 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ delay: Math.min(i * 0.02, 0.4), type: 'spring', stiffness: 130, damping: 22 }}
-              className="glass rounded-[24px] p-6 block hover:bg-white/[0.04] transition group"
-              style={{ borderTop: `3px solid ${s.color || accent}` }}
-            >
-              <div className="aspect-[4/3] rounded-2xl bg-black/30 mb-4 overflow-hidden flex items-center justify-center">
-                {s.mime?.startsWith('image/') && s.url ? (
-                  <img src={s.url} alt="" className="w-full h-full object-cover group-hover:scale-[1.03] transition duration-700" />
-                ) : (
-                  <span className="text-[12px] text-neutral-500 uppercase tracking-widest">{(s.mime || 'file').split('/')[1] || 'file'}</span>
-                )}
+        <div className="mt-14 grid gap-12 lg:grid-cols-[1fr_380px]">
+          <section>
+            {loading ? (
+              <p className="text-sm text-white/40">gathering recent shares…</p>
+            ) : !shares.length ? (
+              <p className="text-sm text-white/40">the studio is still. the first drop will appear here.</p>
+            ) : (
+              <div className="space-y-2.5">
+                {shares.map((s, i) => (
+                  <motion.a
+                    key={s.id}
+                    href={shareUrls(s.id).app}
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: Math.min(i * 0.015, 0.4), type: 'spring', stiffness: 140, damping: 20 }}
+                    className="group flex items-center gap-4 rounded-2xl glass px-4 py-3.5 transition-all hover:bg-white/[0.025]"
+                  >
+                    <div
+                      className="grid h-11 w-11 shrink-0 place-items-center rounded-xl text-[10px] uppercase tracking-wider text-white/60"
+                      style={{ background: `${s.color || '#5AC8FA'}22` }}
+                    >
+                      {(s.type || 'file').split('/')[0].slice(0, 3)}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-[15px] font-medium text-white/90">{s.cardTitle || s.name || 'untitled'}</p>
+                      <p className="mt-0.5 truncate text-[12px] text-white/40">{s.caption || 'no note'}</p>
+                    </div>
+                    <span className="text-[12px] text-[#5AC8FA] opacity-0 transition-opacity group-hover:opacity-100">open</span>
+                  </motion.a>
+                ))}
               </div>
-              <p className="text-[15px] font-medium text-neutral-100 truncate">{s.name}</p>
-              {s.caption && <p className="text-[13px] text-neutral-400 mt-1.5 line-clamp-2">{s.caption}</p>}
-              <div className="flex items-center justify-between mt-4 text-[12px] text-neutral-500">
-                <span>{prettySize(s.size)}</span>
-                <span>{s.downloads || 0}</span>
-              </div>
-            </motion.a>
-          ))}
-        </div>
+            )}
+          </section>
 
-        {!filtered.length && <p className="text-center text-neutral-500 text-sm mt-16">The studio is quiet for now.</p>}
-      </div>
+          <aside className="glass h-fit rounded-[28px] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+            <p className="text-[15px] font-medium text-white/90">compose</p>
+            <input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="title"
+              className="mt-5 w-full rounded-xl bg-white/[0.04] px-3.5 py-2.5 text-[15px] outline-none ring-1 ring-white/5 focus:ring-white/15"
+            />
+            <textarea
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="a quiet note"
+              rows={3}
+              className="mt-3 w-full resize-none rounded-xl bg-white/[0.04] px-3.5 py-2.5 text-[15px] outline-none ring-1 ring-white/5 focus:ring-white/15"
+            />
+            <label className="mt-3 flex cursor-pointer items-center justify-between rounded-xl bg-white/[0.04] px-3.5 py-3 text-[14px] ring-1 ring-white/5 hover:bg-white/[0.06]">
+              <span className="text-white/70">{file ? file.name : 'optional local file'}</span>
+              <input className="hidden" type="file" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+              <span className="text-[12px] text-white/40">choose</span>
+            </label>
+            <div className="mt-4 flex items-center gap-3">
+              <input
+                type="color"
+                value={color}
+                onChange={(e) => setColor(e.target.value)}
+                className="h-9 w-9 cursor-pointer rounded-lg bg-transparent"
+              />
+              <span className="text-[13px] text-white/50">accent</span>
+            </div>
+            {heavy && (
+              <p className="mt-3 text-[12px] text-amber-300/80">this drop may feel slow — still welcome, no hard limit.</p>
+            )}
+            <button
+              onClick={publish}
+              disabled={busy || (!file && !note.trim())}
+              className="mt-5 w-full rounded-2xl bg-white py-2.5 text-[15px] font-medium text-black transition active:scale-[0.98] disabled:opacity-40"
+            >
+              {busy ? 'settling…' : 'settle into the studio'}
+            </button>
+            {status && <p className="mt-3 text-center text-[13px] text-white/50">{status}</p>}
+          </aside>
+        </div>
+      </main>
     </div>
   );
 }

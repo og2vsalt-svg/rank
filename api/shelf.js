@@ -15,6 +15,7 @@ const SUPABASE_KEY =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
 
 const COPY = {
+  softlumenorchard: ['Soft Lumen Orchard — rankvault', 'A quiet orchard for what you carry. Drop one or many local files with a shared note and accent. Soft trees of light sway and settle. Lands in storage and public_shares. Discord unfurls a polished card on every link. Large drops warned, never refused.'],
   softharbor: ['Soft Harbor — rankvault', 'A quiet harbor for what you carry. Drop one or many local files with a shared note and accent. Soft waves of light lap and settle. Lands in storage and public_shares. Discord unfurls a polished card on every link. Large drops warned, never refused.'],
   softprismcove: ['Soft Prism Cove — rankvault', 'A prismatic cove for what you carry. Drop one or many local files with a shared note and accent. Soft prismatic light refracts and settles. Lands in storage and public_shares. Discord unfurls a polished card on every link. Large drops warned, never refused.'],
   softquietecho: ['Soft Quiet Echo — rankvault', 'An echo for what you carry. Drop one or many local files with a shared note and accent. Soft concentric echoes expand and fade. Lands in storage and public_shares. Discord unfurls a polished card on every link. Large drops warned, never refused.'],

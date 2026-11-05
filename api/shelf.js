@@ -15,6 +15,7 @@ const SUPABASE_KEY =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
 
 const COPY = {
+  softprismforge: ['Soft Prism Forge — rankvault', 'A prismatic forge for what you carry. Drop local files. Soft spectral light refracts and settles with spring motion on deep navy glass. Search recent shares. Shared note, optional expiration. Every link unfurls a polished Discord card. Large drops warned, never refused. Human-crafted Apple-style pacing.'],
   lumenfold: ['Lumen Fold — rankvault', 'Fold a local file into luminous light. Title, a longer note, accent color. Soft glass folds and settles with spring motion. Lands in storage and the fold table. Discord unfurls a polished card on every link. Large drops warned, never refused.'],
   softhorizon: ['Soft Horizon — rankvault', 'A quiet horizon for what you carry. Drop local files onto a still horizon. Soft light rises from the line, warm and slow. Shared note, optional expiration. Every link unfurls a polished Discord card. Large drops warned, never refused.'],
   quietechofield: ['Quiet Echo Field — rankvault', 'An echo field for what you carry. Drop one or many local files with a shared note and accent. Soft concentric echoes expand and settle. Lands in storage and public_shares. Discord unfurls a polished card on every link. Large drops warned, never refused.'],
@@ -97,7 +98,7 @@ module.exports = async (req, res) => {
     }
   }
 
-  const fullUrl = `https://${req.headers.host || 'rank-six-iota.vercel.app'}${path}`;
+  const fullUrl = `https://${req.headers.host || 'rank-rivall.vercel.app'}${path}`;
   const html = pageHtml({ title, desc, image, url: fullUrl, color });
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8');

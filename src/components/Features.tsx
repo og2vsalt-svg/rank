@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'softlumencathedral', href: '/softlumencathedral', body: 'a quiet cathedral of light for what you carry. drop local files. soft beams of light descend and settle with spring motion on deep navy glass. search recent shares. shared note, optional expiration. every link unfurls a polished Discord card. large drops warned, never refused. all prior desks remain fully intact. no traces of boosting.' },
+
   { title: 'quietgallery', href: '/quietgallery', body: 'a living gallery of shared light. drop local files with a shared note and accent. recent public drops surface as quiet glass cards that settle with spring motion. lands in storage and public_shares. discord unfurls a polished card on every link. large drops warned, never refused. all prior desks remain fully intact. no traces of boosting.' },
 
   { title: 'softlumenatlas', href: '/softlumenatlas', body: 'a quiet atlas of what has been shared. search recent public drops. add new ones with a shared note and accent. soft light drifts across the glass. lands in storage and public_shares. discord unfurls a polished card on every link. large drops warned, never refused. all prior desks remain fully intact. no traces of boosting.' },

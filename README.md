@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-rivall.vercel.app/
 
 ## Recent desks
+- `/softauroraisle` — a quiet aurora isle for what you carry. Drop local files onto a still isle. Soft ribbons of aurora light rise from the water and settle with spring motion on deep navy glass. Search recent shares. Shared note, optional expiration. Every link unfurls a polished Discord card. Large drops warned, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
 - `/softlumenisle` — a quiet isle for what you carry. Drop one or many local files. Soft tides of light wash across the glass and settle with spring motion on deep navy. Shared note and accent color. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops warned, never refused. All prior desks remain fully intact. No traces of boosting.
 
 - `/softlumenkeep` — a quiet keep for what you carry. Drop one or more local files into soft light that gathers with spring motion on deep navy glass. Shared note and accent color. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops warned, never refused. All prior desks remain fully intact. No traces of boosting.

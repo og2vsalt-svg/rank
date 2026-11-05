@@ -15,36 +15,13 @@ const SUPABASE_KEY =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
 
 const COPY = {
+  softharbor: ['Soft Harbor — rankvault', 'A quiet harbor for what you carry. Drop one or many local files with a shared note and accent. Soft waves of light lap and settle. Lands in storage and public_shares. Discord unfurls a polished card on every link. Large drops warned, never refused.'],
+  softprismcove: ['Soft Prism Cove — rankvault', 'A prismatic cove for what you carry. Drop one or many local files with a shared note and accent. Soft prismatic light refracts and settles. Lands in storage and public_shares. Discord unfurls a polished card on every link. Large drops warned, never refused.'],
+  softquietecho: ['Soft Quiet Echo — rankvault', 'An echo for what you carry. Drop one or many local files with a shared note and accent. Soft concentric echoes expand and fade. Lands in storage and public_shares. Discord unfurls a polished card on every link. Large drops warned, never refused.'],
+  softlumenpool: ['Soft Lumen Pool — rankvault', 'A quiet lumen pool for what you carry. Drop one or many local files with a shared note and accent. Soft ripples of light expand and settle. Lands in storage and public_shares. Discord unfurls a polished card on every link. Large drops warned, never refused.'],
   softquietcove: ['Soft Quiet Cove — rankvault', 'A sheltered cove for what you carry. Drop a local file with a quiet note and accent. Soft light gathers in the cove. Lands in storage and public_shares. Discord unfurls a polished card on every link. Large drops warned, never refused.'],
-  quietmosaic: ['Quietmosaic — rankvault', 'A quiet mosaic of shared light. Multi-file drops with note, accent, and optional expiration. Images settle in a glass grid. Discord unfurls a clean card. Large drops warned, never refused.'],
-  softveil: ['Softveil — rankvault', 'Quiet rising veils of light for shared files. Multi-file drop with note and accent. Lands in the share table. Discord unfurls a clean card. Large drops warned, never refused.'],
-  lumina: ['Lumina — rankvault', 'Soft light for shared files. Multi-file drops with dedication and accent. Each lands in the share table. Discord unfurls a clean card. Large drops warned, never refused.'],
-  nebula: ['Nebula — rankvault', 'A quiet cosmic drop. One local file with soft accent. Lands in the share table. Discord unfurls a clean card. Large drops warned, never refused.'],
-  nimbus: ['Nimbus — rankvault', 'A soft cloud for a note and an optional local file. Lands in the share table. Discord unfurls a clean card. Large drops warned, never refused.'],
-  crossette: ['Crossette — rankvault', 'A local file paired with a companion line. The file lands in the share table. Large drops are warned, never refused.'],
-  plinth: ['Plinth — rankvault', 'A dedication under a local file. The file lands in the share table. Large drops are warned, never refused.'],
-  corbel: ['Corbel — rankvault', 'A load note for a local file. Paste the link in Discord for a card.'],
-  ashlar: ['Ashlar — rankvault', 'A letter with an optional local file. Large drops are warned, never refused.'],
-  tympanum: ['Tympanum — rankvault', 'The public face of files already in the share table. Paste the link in Discord for a card.'],
-  nosing: ['Nosing — rankvault', 'The edge of a local file. The file lands in the share table. No size gate.'],
-  trundle: ['Trundle — rankvault', 'A handoff slip with a local file in the share table. Large drops are warned, never refused.'],
-  coping: ['Coping — rankvault', 'A checklist beside an optional local file. Paste the link in Discord for a card.'],
-  keepsake: ['Keepsake — rankvault', 'A local file filed in the share table. Large drops are warned, never refused.'],
-  lintel: ['Lintel — rankvault', 'A note or a local file under the door. Paste the link in Discord for a card.'],
-  oriel: ['Oriel — rankvault', 'A short window note. The card uses the line itself.'],
-  sill: ['Sill — rankvault', 'A short link, not a drawer. Paste /sill in Discord for a card.'],
-  vitrine: ['Vitrine — rankvault', 'Dress a Discord card, then drop the local file into the shared shelf. Large files are warned, never refused.'],
-  pressmark: ['Pressmark — rankvault', 'A painted 1200×630 cover, filed so Discord can unfurl a real image.'],
-  shelf: ['Shelf — rankvault', 'Drop a local file into the shared shelf. Large files are warned, never refused.'],
-  board: ['Board — rankvault', 'Public files people left out. Paste the link in Discord for a card.'],
-  receipt: ['Receipt — rankvault', 'A short handoff note that travels with the link.'],
-  satchel: ['Satchel — rankvault', 'A local file packed with a checklist. Paste the link in Discord for a card.'],
-  gallipot: ['Gallipot — rankvault', 'A local file dipped in a line. The file lands in the share table. Large drops are warned, never refused.'],
-  catchword: ['Catchword — rankvault', 'The word at the foot of the page. Paste the link in Discord for a card.'],
-  bookplate: ['Bookplate — rankvault', 'A name pasted on a local file. Large drops are warned, never refused.'],
-  vignette: ['Vignette — rankvault', 'A quiet frame for a local file. Preview, caption, share. Discord gets a pro card. Large drops warned, never refused.'],
-  softstudio: ['Softstudio — rankvault', 'Compose what you carry. Multi-file drops with captions and accent. Lands in the share table. Discord unfurls a clean card. Large drops warned, never refused.'],
-  home: ['rankvault', 'Private file hosting. Share a file, keep the older desks, Discord cards on every link.'],
+  softaurorafield: ['Soft Aurora Field — rankvault', 'A quiet aurora field for what you carry. Drop a local file with title, caption, and accent. Soft light ribbons drift, pulse, and settle. Lands in storage and public_shares. Discord unfurls a polished card on every link. Large drops warned, never refused.'],
+  home: ['rankvault', 'Private file hosting and sharing. Upload local files to the database, share with professional Discord embeds. No size limits — only gentle slow warnings. Sleek Apple-style interface.'],
 };
 
 function prettySize(n) {
@@ -54,9 +31,71 @@ function prettySize(n) {
   return (x / 1024 / 1024).toFixed(1) + ' MB';
 }
 
+async function loadShare(id) {
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/public_shares?id=eq.${encodeURIComponent(id)}&select=id,name,mime,size,file_url,expires_at,is_public,author,caption,meta&limit=1`, {
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
+    });
+    if (!r.ok) return null;
+    const rows = await r.json();
+    return Array.isArray(rows) && rows[0] ? rows[0] : null;
+  } catch {
+    return null;
+  }
+}
+
+function pageHtml({ title, desc, image, url, color }) {
+  const fallback = 'https://og2vsalt-svg.github.io/rank/og.png';
+  const safeImg = image && /^https?:\/\//i.test(image) && !image.startsWith('data:') ? image : fallback;
+  const c = /^#[0-9a-fA-F]{6}$/.test(color || '') ? color : '#0A84FF';
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8" /><title>${esc(title)}</title><meta name="description" content="${esc(desc)}" /><meta name="theme-color" content="${esc(c)}" /><meta property="og:type" content="website" /><meta property="og:site_name" content="rankvault" /><meta property="og:title" content="${esc(title)}" /><meta property="og:description" content="${esc(desc)}" /><meta property="og:image" content="${esc(safeImg)}" /><meta property="og:image:secure_url" content="${esc(safeImg)}" /><meta property="og:image:alt" content="${esc(title)}" /><meta property="og:image:width" content="1200" /><meta property="og:image:height" content="630" /><meta property="og:url" content="${esc(url)}" /><meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content="${esc(title)}" /><meta name="twitter:description" content="${esc(desc)}" /><meta name="twitter:image" content="${esc(safeImg)}" /></head><body style="margin:0;background:#050506;color:#f5f5f7;font-family:Inter,system-ui,-apple-system,sans-serif;padding:64px 28px"><p style="opacity:.55;font-size:13px;letter-spacing:.08em;text-transform:uppercase">rankvault</p><h1 style="font-size:32px;letter-spacing:-.04em">${esc(title)}</h1><p style="color:#a1a1aa">${esc(desc)}</p></body></html>`;
+}
+
 module.exports = async (req, res) => {
-  // Original shelf.js logic continues here for embed generation
-  // Full implementation handles user-agent detection, Supabase fetches, and HTML cards for Discord
+  const url = new URL(req.url || '/', `https://${req.headers.host || 'localhost'}`);
+  const path = url.pathname.replace(/\/+$/, '') || '/';
+  const parts = path.split('/').filter(Boolean);
+  const ua = (req.headers['user-agent'] || '').toLowerCase();
+  const isDiscord = ua.includes('discord');
+
+  let title = 'rankvault — private file hosting';
+  let desc = 'Upload local files to the database, share with professional Discord embeds. No hard size limits — only gentle warnings of slowness. Sleek Apple-style animations.';
+  let image;
+  let color = '#0A84FF';
+  let shareId = null;
+
+  if (parts.length >= 2 && ['s', 'f', 'open', 'go', 'link', 'card', 'share'].includes(parts[0])) {
+    shareId = parts[1];
+  } else if (parts.length === 1 && parts[0] !== 'index.html') {
+    const desk = parts[0].toLowerCase();
+    if (COPY[desk]) {
+      title = COPY[desk][0];
+      desc = COPY[desk][1];
+    } else {
+      title = `${desk} — rankvault`;
+      desc = 'A specialized desk for files and notes. Lands in storage and public_shares. Discord unfurls a polished card. Large drops warned, never refused.';
+    }
+  }
+
+  if (shareId) {
+    const row = await loadShare(shareId);
+    if (row && row.is_public !== false && !(row.expires_at && +new Date(row.expires_at) < Date.now())) {
+      title = (row.meta && row.meta.cardTitle) || row.caption || row.name || 'Shared file — rankvault';
+      desc = row.caption || `${prettySize(row.size)} · public drop on rankvault`;
+      if (/^image\//.test(row.mime || '') && /^https?:\/\//i.test(row.file_url || '')) {
+        image = row.file_url;
+      }
+      color = (row.meta && row.meta.color) || color;
+    } else {
+      title = 'Share — rankvault';
+      desc = 'A shared file from the quiet desks. Discord unfurls a polished card.';
+    }
+  }
+
+  const fullUrl = `https://${req.headers.host || 'rank-six-iota.vercel.app'}${path}`;
+  const html = pageHtml({ title, desc, image, url: fullUrl, color });
+
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
-  res.status(200).send('<html><body>rankvault embed</body></html>');
+  res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
+  res.status(200).send(html);
 };

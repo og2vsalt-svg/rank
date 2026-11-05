@@ -12,9 +12,11 @@ Private file hosting and sharing, built as a collection of quiet desks.
 - Features are continuously added while all prior desks and functionality remain intact
 - No traces of boosting. Prior features preserved.
 
-Live: https://rank-six-iota.vercel.app/
+Live: https://rank-rivall.vercel.app/
 
 ## Recent desks
+- `/softprismforge` — a prismatic forge for what you carry. Drop local files. Soft spectral light refracts and settles with spring motion on deep navy glass. Search recent shares. Shared note, optional expiration. Every link unfurls a polished Discord card. Large drops warned, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
 - `/softlumennave` — a quiet nave of light for what you carry. Drop local files. Soft columns of light rise and settle with spring motion on deep navy glass. Search recent shares. Shared note, optional expiration. Every link unfurls a polished Discord card. Large drops warned, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 
 - `/softlumencathedral` — a quiet cathedral of light for what you carry. Drop local files. Soft beams of light descend and settle with spring motion on deep navy glass. Search recent shares. Shared note, optional expiration. Every link unfurls a polished Discord card. Large drops warned, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.

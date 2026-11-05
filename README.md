@@ -15,6 +15,10 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
+- `/lumenfold` — fold a local file into luminous light. Title, a longer note, accent color. Soft glass folds and settles with spring motion on deep navy. Lands in storage and the fold table. Discord unfurls a polished card on every link. Large drops warned, never refused. All prior desks remain fully intact. No traces of boosting.
+
+- `/softhorizon` — a quiet horizon for what you carry. Drop local files onto a still horizon. Soft light rises from the line, warm and slow. Shared note, optional expiration. Every link unfurls a polished Discord card. Large drops warned, never refused. Spring motion, glass surfaces, human pacing. All prior desks remain fully intact. No traces of boosting.
+
 - `/softnebulashare` — a quiet nebula for what you carry. Drop one or many local files with a shared note and accent. Soft clouds of light drift and settle with spring motion on deep navy glass. Recent public drops surface as quiet cards that gather in the nebula. Lands in storage and public_shares. Discord unfurls a polished card on every link. Large drops warned, never refused. All prior desks remain fully intact. No traces of boosting.
 
 - `/softorbitshare` — orbit your files. Drop one or many local files with a shared note and accent. They settle into a quiet orbit with spring motion on deep navy glass. Recent public drops surface as quiet cards. Lands in storage and public_shares. Discord unfurls a polished card on every link. Large drops warned, never refused. All prior desks remain fully intact. No traces of boosting.

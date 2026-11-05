@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'softauroraisle', href: '/softauroraisle', body: 'a quiet aurora isle for what you carry. drop local files onto a still isle. soft ribbons of aurora light rise from the water and settle with spring motion on deep navy glass. search recent shares. shared note, optional expiration. every link unfurls a polished Discord card. large drops warned, never refused. human-crafted Apple-style pacing. all prior desks remain fully intact. no traces of boosting.' },
+
   { title: 'softquilldesk', href: '/softquilldesk', body: 'a quiet desk for notes and what you carry. write a note, give it a title, optionally attach a local file. it settles into storage and the public_shares table with your accent. every share link unfurls a polished Discord card. large files receive only a gentle warning of possible slowness. no hard limits. all prior desks remain fully intact. no traces of boosting.' },
 
   { title: 'softlumencathedral', href: '/softlumencathedral', body: 'a quiet cathedral of light for what you carry. drop local files. soft beams of light descend and settle with spring motion on deep navy glass. search recent shares. shared note, optional expiration. every link unfurls a polished Discord card. large drops warned, never refused. all prior desks remain fully intact. no traces of boosting.' },

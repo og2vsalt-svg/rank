@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-six-iota.vercel.app/
 
 ## Recent desks
+- `/softprismcove` — a prismatic cove for what you carry. Drop one or many local files with a shared note and accent. Soft prismatic light refracts and settles with spring motion on deep navy glass. Recent public drops surface as quiet cards that catch the light. Lands in storage and public_shares. Discord unfurls a polished card on every link. Large drops warned, never refused. All prior desks remain fully intact. No traces of boosting.
+
 - `/softquietecho` — an echo for what you carry. Drop one or many local files with a shared note and accent. Soft concentric echoes expand and fade with spring motion on deep navy glass. Recent public drops surface as quiet cards that settle into the echo field. Lands in storage and public_shares. Discord unfurls a polished card on every link. Large drops warned, never refused. All prior desks remain fully intact. No traces of boosting.
 
 - `/softlumenpool` — a quiet lumen pool for what you carry. Drop one or many local files with a shared note and accent. Soft ripples of light expand and settle with spring motion on deep navy glass. Recent public drops surface as quiet cards in the pool. Lands in storage and public_shares. Discord unfurls a polished card on every link. Large drops warned, never refused. All prior desks remain fully intact. No traces of boosting.

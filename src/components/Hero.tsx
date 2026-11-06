@@ -30,9 +30,10 @@ export default function Hero() {
           transition={{ type: 'spring', stiffness: 80, damping: 20, delay: 0.12 }}
           className="text-neutral-400 text-lg leading-relaxed max-w-xl mb-10 mx-auto"
         >
-          Local vault. Cloud shares that land in the database with professional Discord embeds on every link. Galleries, notes, and dozens of specialized desks including NexusDesk and ChronicleDesk. Large files warned, never refused. Human-crafted Apple-smooth animations.
+          Local vault. Cloud shares that land in the database with professional Discord embeds on every link. Galleries, notes, and dozens of specialized desks including SoftPulseDesk, NexusDesk and ChronicleDesk. Large files warned, never refused. Human-crafted Apple-smooth animations.
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center">
+          <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('softpulsedesk')} className="px-5 py-2.5 rounded-full bg-[#FF9F0A] text-black text-sm font-medium hover:bg-[#ffb33a] transition">softpulsedesk</motion.button>
           <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('nexusdesk')} className="px-5 py-2.5 rounded-full bg-[#64D2FF] text-black text-sm font-medium hover:bg-[#7ad8ff] transition">nexusdesk</motion.button>
           <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('chronicledesk')} className="px-5 py-2.5 rounded-full bg-[#30D158] text-black text-sm font-medium hover:bg-[#40db68] transition">chronicledesk</motion.button>
           <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('summitdesk')} className="px-5 py-2.5 rounded-full bg-[#5AC8FA] text-black text-sm font-medium hover:bg-[#6ed0fb] transition">summitdesk</motion.button>

@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-rivall.vercel.app/
 
 ## Recent desks
+- `/softlumenpulse` — let it pulse with what you carry. Drop local files. Soft glass orbs breathe and rise with spring motion in your accent. Shared note. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops warned, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
 - `/quietlumenvault` — a still luminous place for what you carry. Drop local files. Soft glass cards rise with spring motion in your accent. Shared note. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops warned, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 
 - `/tidedesk` — let the quiet tide carry what you hold. Drop local files. Soft glass cards rise and fall with gentle spring motion like a still tide in your accent. Shared note. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops warned, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.

@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-rivall.vercel.app/
 
 ## Recent desks
+- `/softnotesdesk` — leave a quiet note. Write text, optionally attach local files. They land in storage and public_shares. Recent notes appear as soft glass cards that expand with spring motion. Every share link unfurls a polished Discord card. Large drops gently warned, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
 - `/softcollagedesk` — arrange what you carry into a living collage. Drop several local files, give each a quiet caption. Soft glass tiles lift and overlap with spring motion in your accent. Shared pieces land in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 
 - `/softlumenpulse` — let it pulse with what you carry. Drop local files. Soft glass orbs breathe and rise with spring motion in your accent. Shared note. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops warned, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
@@ -32,31 +34,5 @@ Live: https://rank-rivall.vercel.app/
 - `/softribbondesk` — soft ribbons of light for what you carry. Drop local files. Soft drifting ribbons settle with spring motion in your accent. Shared note. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops warned, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 
 - `/quietharbor` — a still place for what you carry. Drop local files (or leave a note) with an optional accent and shared caption. Soft docking lights pulse gently in your color. Files land in storage and the public_shares table. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness, never refused. Human-crafted Apple-style spring motion and glass surfaces. All prior desks remain fully intact. No traces of boosting.
-
-- `/softaetherorbit` — let it orbit what you carry. Drop local files. They settle as glass orbs that orbit a quiet center with spring motion. Shared note and accent tint every share. Recent public drops shown in the orbit. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
-
-- `/vortexdesk` — a living spiral of what you carry. Drop local files. They arrange as floating glass orbs in a gentle vortex with spring motion. Shared note and accent tint every share. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
-
-- `/helixdesk` — wind what you carry into a living helix. Drop local files. They spiral as glass orbs with spring motion. Shared note and accent tint every share. Recent public drops shown in the helix. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
-
-- `/constellationdesk` — a living map of what you carry. Drop local files. They arrange as floating nodes in a quiet constellation with spring motion. Shared note and accent tint every share. Recent public drops shown below. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
-
-- `/nimbusdesk` — let it rise into soft clouds. Drop local files with a shared note and accent. They settle as floating glass orbs that breathe with spring motion across a quiet sky. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
-
-- `/softpulsedesk` — let it breathe. Drop local files into a quiet pulse field. They settle as breathing glass orbs that expand and contract with spring motion. Shared notes and accents. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
-
-- `/zenithdesk` — reach the zenith with what you carry. Drop one or many local files with a shared note and accent. They rise as floating glass orbs that breathe with spring motion. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness, never refused. Spring motion, glass surfaces, human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
-
-- `/nexusdesk` — weave local files into a living constellation of floating nodes connected by light threads. Shared note and accent. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness, never refused. Spring motion, glass surfaces, human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
-
-- `/chronicledesk` — record local files onto a quiet expandable timeline. Filter entries, expand notes with spring motion. Shared note and accent. Every link unfurls a polished Discord card. Large batches warned, never refused. All prior desks remain fully intact. No traces of boosting.
-
-- `/lumendesk` — catch the light in what you carry. Drop one or many local files with a shared note and accent. They settle as glowing orbs that breathe with spring motion. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness, never refused. All prior desks remain fully intact. No traces of boosting.
-
-- `/summitdesk` — an elevated summit for what you carry. Drop one or many local files, choose an accent. They settle into storage and the public_shares table with your color. Every share link unfurls a polished Discord card. Large drops or batches gently warned about possible slowness, never refused. Spring motion, glass surfaces, human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
-
-- `/horizondesk` — a quiet horizon for what you carry. Drop local files onto a drifting timeline of glass cards. Shared note and accent. Every link unfurls a polished Discord card. Large batches warned, never refused. All prior desks remain fully intact. No traces of boosting.
-
-- `/prismdesk` — a glass prism for what you carry. Drop a local file, choose an accent color. It settles into storage and the public_shares table with your color. Every share link unfurls a polished Discord card. Large drops warned, never refused. Spring motion, glass surfaces, human pacing. All prior desks remain fully intact. No traces of boosting.
 
 (All prior desks remain fully intact in the codebase.)

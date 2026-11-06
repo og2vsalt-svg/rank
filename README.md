@@ -15,10 +15,10 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-rivall.vercel.app/
 
 ## Recent desks
+- `/summitdesk` — an elevated summit for what you carry. Drop one or many local files, choose an accent. They settle into storage and the public_shares table with your color. Every share link unfurls a polished Discord card. Large drops or batches gently warned about possible slowness, never refused. Spring motion, glass surfaces, human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
+- `/horizondesk` — a quiet horizon for what you carry. Drop local files onto a drifting timeline of glass cards. Shared note and accent. Every link unfurls a polished Discord card. Large batches warned, never refused. All prior desks remain fully intact. No traces of boosting.
+
 - `/prismdesk` — a glass prism for what you carry. Drop a local file, choose an accent color. It settles into storage and the public_shares table with your color. Every share link unfurls a polished Discord card. Large drops warned, never refused. Spring motion, glass surfaces, human pacing. All prior desks remain fully intact. No traces of boosting.
-
-- `/softlumenstudio` — a quiet studio for what you carry. Drop a local file or write a note. It settles into storage and the public_shares table with your accent. Every link unfurls a polished Discord card. Large drops warned, never refused. Spring motion, glass surfaces, human pacing. All prior desks remain fully intact. No traces of boosting.
-
-- `/softauroraisle` — a quiet aurora isle for what you carry. Drop local files onto a still isle. Soft ribbons of aurora light rise from the water and settle with spring motion on deep navy glass. Search recent shares. Shared note, optional expiration. Every link unfurls a polished Discord card. Large drops warned, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 
 (All prior desks remain fully intact in the codebase.)

@@ -15,6 +15,10 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-rivall.vercel.app/
 
 ## Recent desks
+- `/nexusdesk` — weave local files into a living constellation of floating nodes connected by light threads. Shared note and accent. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness, never refused. Spring motion, glass surfaces, human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
+- `/chronicledesk` — record local files onto a quiet expandable timeline. Filter entries, expand notes with spring motion. Shared note and accent. Every link unfurls a polished Discord card. Large batches warned, never refused. All prior desks remain fully intact. No traces of boosting.
+
 - `/lumendesk` — catch the light in what you carry. Drop one or many local files with a shared note and accent. They settle as glowing orbs that breathe with spring motion. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness, never refused. All prior desks remain fully intact. No traces of boosting.
 
 - `/summitdesk` — an elevated summit for what you carry. Drop one or many local files, choose an accent. They settle into storage and the public_shares table with your color. Every share link unfurls a polished Discord card. Large drops or batches gently warned about possible slowness, never refused. Spring motion, glass surfaces, human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.

@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-rivall.vercel.app/
 
 ## Recent desks
+- `/quietdropdesk` — drop what you carry. Drag local files onto soft glass. Optional shared note. Recent drops settle into a living grid with spring motion. Shared pieces land in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
 - `/softnotesdesk` — leave a quiet note. Write text, optionally attach local files. They land in storage and public_shares. Recent notes appear as soft glass cards that expand with spring motion. Every share link unfurls a polished Discord card. Large drops gently warned, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 
 - `/softcollagedesk` — arrange what you carry into a living collage. Drop several local files, give each a quiet caption. Soft glass tiles lift and overlap with spring motion in your accent. Shared pieces land in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.

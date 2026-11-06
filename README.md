@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-rivall.vercel.app/
 
 ## Recent desks
+- `/silkdesk` — a soft silk desk for what you carry. Drop a local file, choose a quiet hue. It settles into storage and the public_shares table with your color. Search recent shares. Every share link unfurls a polished Discord card. Large drops warned, never refused. Spring motion, glass surfaces, human pacing. All prior desks remain fully intact. No traces of boosting.
+
 - `/prismdesk` — a glass prism for what you carry. Drop a local file, choose an accent color. It settles into storage and the public_shares table with your color. Every share link unfurls a polished Discord card. Large drops warned, never refused. Spring motion, glass surfaces, human pacing. All prior desks remain fully intact. No traces of boosting.
 
 - `/softlumenstudio` — a quiet studio for what you carry. Drop a local file or write a note. It settles into storage and the public_shares table with your accent. Every link unfurls a polished Discord card. Large drops warned, never refused. Spring motion, glass surfaces, human pacing. All prior desks remain fully intact. No traces of boosting.

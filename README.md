@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-rivall.vercel.app/
 
 ## Recent desks
+- `/etherdesk` — let it drift in the quiet ether. Drop local files. Soft floating orbs breathe and drift with spring motion in your accent. Shared note. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
 - `/harborshare` — let the harbor hold what you carry. Drop local files onto soft glass. Optional shared note. They dock in storage and public_shares. Recent shares float in a living grid with spring motion. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 
 - `/quietdropdesk` — drop what you carry. Drag local files onto soft glass. Optional shared note. Recent drops settle into a living grid with spring motion. Shared pieces land in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.

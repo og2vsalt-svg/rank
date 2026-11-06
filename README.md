@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-rivall.vercel.app/
 
 ## Recent desks
+- `/constellationdesk` — a living map of what you carry. Drop local files. They arrange as floating nodes in a quiet constellation with spring motion. Shared note and accent tint every share. Recent public drops shown below. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
 - `/nimbusdesk` — let it rise into soft clouds. Drop local files with a shared note and accent. They settle as floating glass orbs that breathe with spring motion across a quiet sky. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 
 - `/softpulsedesk` — let it breathe. Drop local files into a quiet pulse field. They settle as breathing glass orbs that expand and contract with spring motion. Shared notes and accents. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.

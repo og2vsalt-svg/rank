@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'softaetherorbit', href: '/softaetherorbit', body: 'let it orbit what you carry. drop local files. they settle as glass orbs that orbit a quiet center with spring motion. shared note and accent. recent public drops shown in the orbit. every share link unfurls a polished Discord card. large batches warned only for possible slowness, never refused. human-crafted Apple-style pacing. all prior desks remain fully intact. no traces of boosting.' },
+
   { title: 'helixdesk', href: '/helixdesk', body: 'wind what you carry. drop local files into a living helix. they spiral as glass orbs that wind with spring motion. shared notes and accents. every share link unfurls a polished Discord card. large batches warned only for possible slowness, never refused. human-crafted Apple-style pacing. all prior desks remain fully intact. no traces of boosting.' },
 
   { title: 'softpulsedesk', href: '/softpulsedesk', body: 'let it breathe. drop local files into a quiet pulse field. they settle as breathing glass orbs that expand and contract with spring motion. shared notes and accents. every share link unfurls a polished Discord card. large batches warned only for possible slowness, never refused. human-crafted Apple-style pacing. all prior desks remain fully intact. no traces of boosting.' },

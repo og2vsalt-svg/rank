@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-rivall.vercel.app/
 
 ## Recent desks
+- `/softribbondesk` — soft ribbons of light for what you carry. Drop local files. Soft drifting ribbons settle with spring motion in your accent. Shared note. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops warned, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
 - `/quietharbor` — a still place for what you carry. Drop local files (or leave a note) with an optional accent and shared caption. Soft docking lights pulse gently in your color. Files land in storage and the public_shares table. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness, never refused. Human-crafted Apple-style spring motion and glass surfaces. All prior desks remain fully intact. No traces of boosting.
 
 - `/softaetherorbit` — let it orbit what you carry. Drop local files. They settle as glass orbs that orbit a quiet center with spring motion. Shared note and accent tint every share. Recent public drops shown in the orbit. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.

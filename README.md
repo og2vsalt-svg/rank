@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-rivall.vercel.app/
 
 ## Recent desks
+- `/softaetherorbit` — let it orbit what you carry. Drop local files. They settle as glass orbs that orbit a quiet center with spring motion. Shared note and accent tint every share. Recent public drops shown in the orbit. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
 - `/vortexdesk` — a living spiral of what you carry. Drop local files. They arrange as floating glass orbs in a gentle vortex with spring motion. Shared note and accent tint every share. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 
 - `/helixdesk` — wind what you carry into a living helix. Drop local files. They spiral as glass orbs with spring motion. Shared note and accent tint every share. Recent public drops shown in the helix. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.

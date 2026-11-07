@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-rivall.vercel.app/
 
 ## Recent desks
+- `/softlumenshare` — drop a file. leave a quiet note. A clean, focused desk for uploading local files with an optional caption and accent color. Shares land in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Soft glass UI with spring motion. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
 - `/softecholedger` — leave an echo in the quiet ledger. A different kind of desk: chronological notes and optional local files that settle into a living ledger. Soft glass entries rise with spring motion. Shared note. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 
 - `/softglassriver` — let it flow down the quiet river. Drop local files. Soft glass tiles drift downstream with spring motion in your accent. Shared note. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.

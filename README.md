@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-rivall.vercel.app/
 
 ## Recent desks
+- `/moonlitdock` — dock what you carry under the quiet moon. Drop local files. Soft glass cards float and glow with spring motion under moonlight in your accent. Shared note. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
 - `/quiethorizondesk` — let what you carry rise to the quiet horizon. Drop local files. Soft glass cards rise and settle with spring motion in your accent. Shared note. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 
 - `/quietconstellation` — let what you carry settle among the stars. Drop local files. Soft glass stars drift and connect with spring motion in your accent. Shared note. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.

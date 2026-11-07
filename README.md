@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-rivall.vercel.app/
 
 ## Recent desks
+- `/softfileharbor` — harbor what you carry. Multi-file local upload where each file can carry its own quiet note or share a collective caption. Soft glass surfaces rise with spring motion. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
 - `/softlumenhalo` — arrange what you carry in a quiet halo. Multi-file local upload where each file can carry its own quiet note. Soft glass cards orbit with spring motion. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 
 - `/quiethalo` — arrange what you carry in a quiet halo of light. Multi-file local upload where each file can carry its own quiet note. Soft glass cards orbit with spring motion. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.

@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'softlumenhalo', href: '/softlumenhalo', body: 'arrange what you carry in a quiet halo. drop multiple local files, give each a quiet note, watch them orbit in soft glass with spring motion. shares land in storage and public_shares. every link unfurls a polished Discord card. large drops gently warned about possible slowness, never refused. human-crafted Apple-style pacing. all prior desks remain fully intact. no traces of boosting.' },
+
   { title: 'quiethalo', href: '/quiethalo', body: 'arrange what you carry in a quiet halo of light. drop multiple local files, give each a quiet note, watch them orbit in soft glass with spring motion. shares land in storage and public_shares. every link unfurls a polished Discord card. large drops gently warned about possible slowness, never refused. human-crafted Apple-style pacing. all prior desks remain fully intact. no traces of boosting.' },
 
   { title: 'softglassriver', href: '/softglassriver', body: 'let it flow down the quiet river. drop local files. soft glass tiles drift downstream with spring motion in your accent. shared note. lands in storage and public_shares. every link unfurls a polished Discord card. large drops gently warned about possible slowness, never refused. human-crafted Apple-style pacing. all prior desks remain fully intact. no traces of boosting.' },

@@ -52,7 +52,7 @@ async function loadShare(id) {
       headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
     });
     if (!r.ok) return null;
-    const rows = await res.json();
+    const rows = await r.json();
     return Array.isArray(rows) && rows[0] ? rows[0] : null;
   } catch {
     return null;

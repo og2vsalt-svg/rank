@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'moonlitdock', href: '/moonlitdock', body: 'dock what you carry under the quiet moon. drop local files onto soft glass. optional shared note and moonlight accent. they dock in storage and public_shares. recent docks float as glowing cards with spring motion. every share link unfurls a polished Discord card. large drops gently warned about possible slowness, never refused. human-crafted Apple-style pacing. all prior desks remain fully intact. no traces of boosting.' },
+
   { title: 'softaetherorbit', href: '/softaetherorbit', body: 'let it orbit what you carry. drop local files. they settle as glass orbs that orbit a quiet center with spring motion. shared note and accent. recent public drops shown in the orbit. every share link unfurls a polished Discord card. large batches warned only for possible slowness, never refused. human-crafted Apple-style pacing. all prior desks remain fully intact. no traces of boosting.' },
 
   { title: 'helixdesk', href: '/helixdesk', body: 'wind what you carry. drop local files into a living helix. they spiral as glass orbs that wind with spring motion. shared notes and accents. every share link unfurls a polished Discord card. large batches warned only for possible slowness, never refused. human-crafted Apple-style pacing. all prior desks remain fully intact. no traces of boosting.' },

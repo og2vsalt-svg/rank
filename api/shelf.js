@@ -15,6 +15,7 @@ const SUPABASE_KEY =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
 
 const COPY = {
+  quietconstellation: ['Quiet Constellation — rankvault', 'Let what you carry settle among the stars. Drop local files. Soft glass stars drift and connect with spring motion in your accent. Shared note. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.'],
   quietstarfielddesk: ['Quiet Starfield Desk — rankvault', 'Let it settle among the stars. Drop local files. Soft glass cards drift under a quiet twinkling starfield with spring motion in your accent. Shared note. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.'],
   softnotesdesk: ['Soft Notes Desk — rankvault', 'Leave a quiet note. Write text, optionally attach local files. They land in storage and public_shares. Recent notes appear as soft glass cards that expand with spring motion. Every share link unfurls a polished Discord card. Large drops gently warned, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.'],
   softcollagedesk: ['Soft Collage Desk — rankvault', 'Arrange what you carry into a living collage. Drop several local files, give each a quiet caption. Soft glass tiles lift and overlap with spring motion in your accent. Shared pieces land in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.'],
@@ -51,7 +52,7 @@ async function loadShare(id) {
       headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
     });
     if (!r.ok) return null;
-    const rows = await r.json();
+    const rows = await res.json();
     return Array.isArray(rows) && rows[0] ? rows[0] : null;
   } catch {
     return null;

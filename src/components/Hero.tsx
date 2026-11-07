@@ -33,21 +33,14 @@ export default function Hero() {
           Local vault. Cloud shares that land in the database with professional Discord embeds on every link. Galleries, notes, and dozens of specialized desks. Large files warned, never refused. Human-crafted Apple-smooth animations.
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center">
+          <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('softwhisperdesk')} className="px-5 py-2.5 rounded-full bg-[#BF5AF2] text-white text-sm font-medium hover:bg-[#c97af5] transition">soft whisper</motion.button>
+          <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('quietimageatlas')} className="px-5 py-2.5 rounded-full bg-[#5AC8FA] text-black text-sm font-medium hover:bg-[#6ed0fb] transition">quiet image atlas</motion.button>
           <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('softlumenshare')} className="px-5 py-2.5 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#3a9aff] transition">soft lumen share</motion.button>
           <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('softecholedger')} className="px-5 py-2.5 rounded-full bg-[#BF5AF2] text-white text-sm font-medium hover:bg-[#c97af5] transition">soft echo ledger</motion.button>
           <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('softglassriver')} className="px-5 py-2.5 rounded-full bg-[#5AC8FA] text-black text-sm font-medium hover:bg-[#6ed0fb] transition">soft glass river</motion.button>
           <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('quietorbitdesk')} className="px-5 py-2.5 rounded-full bg-[#64D2FF] text-black text-sm font-medium hover:bg-[#7ad8ff] transition">quiet orbit desk</motion.button>
           <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('lumengallery')} className="px-5 py-2.5 rounded-full bg-[#5AC8FA] text-black text-sm font-medium hover:bg-[#6ed0fb] transition">lumen gallery</motion.button>
           <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('quietprismdesk')} className="px-5 py-2.5 rounded-full bg-[#64D2FF] text-black text-sm font-medium hover:bg-[#7ad8ff] transition">quiet prism desk</motion.button>
-          <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('quietmosaicdesk')} className="px-5 py-2.5 rounded-full bg-[#5AC8FA] text-black text-sm font-medium hover:bg-[#6ed0fb] transition">quiet mosaic</motion.button>
-          <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('lumenprism')} className="px-5 py-2.5 rounded-full bg-[#5AC8FA] text-black text-sm font-medium hover:bg-[#6ed0fb] transition">lumen prism</motion.button>
-          <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('moonlitdock')} className="px-5 py-2.5 rounded-full bg-[#5AC8FA] text-black text-sm font-medium hover:bg-[#6ed0fb] transition">moonlit dock</motion.button>
-          <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('quietconstellation')} className="px-5 py-2.5 rounded-full bg-[#5AC8FA] text-black text-sm font-medium hover:bg-[#6ed0fb] transition">quiet constellation</motion.button>
-          <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('lumendriftdesk')} className="px-5 py-2.5 rounded-full bg-[#5AC8FA] text-black text-sm font-medium hover:bg-[#6ed0fb] transition">lumen drift</motion.button>
-          <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('quietdropdesk')} className="px-5 py-2.5 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#3a9aff] transition">quiet drop</motion.button>
-          <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('softnotesdesk')} className="px-5 py-2.5 rounded-full bg-[#C084FC] text-white text-sm font-medium hover:bg-[#d4a5ff] transition">soft notes</motion.button>
-          <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('softlumenpulse')} className="px-5 py-2.5 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#3a9aff] transition">soft lumen pulse</motion.button>
-          <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('quietharbor')} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-200 transition">quiet harbor</motion.button>
           <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('vault')} className="px-5 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/20 transition">open vault</motion.button>
         </div>
       </div>

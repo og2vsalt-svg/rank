@@ -5,6 +5,7 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'softquietcascade', label: 'soft quiet cascade' },
   { to: 'softquietnexus', label: 'soft quiet nexus' },
   { to: 'softquietorbit', label: 'soft quiet orbit' },
   { to: 'softmoonlithaven', label: 'soft moonlit haven' },
@@ -101,7 +102,6 @@ const primary: NavItem[] = [
   { to: 'softlumenplaza', label: 'softlumenplaza' },
   { to: 'softlumencanvas', label: 'softlumencanvas' },
   { to: 'softquietdrift', label: 'softquietdrift' },
-  { to: 'softquietcascade', label: 'softquietcascade' },
   { to: 'softquietindex', label: 'softquietindex' },
   { to: 'softzephyr', label: 'softzephyr' },
   { to: 'softlumendawn', label: 'softlumendawn' },

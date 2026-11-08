@@ -98,7 +98,6 @@ const primary: NavItem[] = [
   { to: 'softlumenlagoon', label: 'softlumenlagoon' },
   { to: 'softlumenwhisper', label: 'softlumenwhisper' },
   { to: 'softquietlibrary', label: 'softquietlibrary' },
-  { to: 'softquietveil', label: 'softquietveil' },
   { to: 'softlumenquietplaza', label: 'softlumenquietplaza' },
   { to: 'softlumenplaza', label: 'softlumenplaza' },
   { to: 'softlumencanvas', label: 'softlumencanvas' },

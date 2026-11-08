@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'softglassvault', href: '/softglassvault', body: 'drop files into the quiet vault. one or many local files, each with its own quiet note or a shared vault caption and accent. soft glass tiles settle with spring motion. lands in storage and public_shares. every link unfurls a polished Discord card. large drops gently warned about possible slowness, never refused. human-crafted Apple-style pacing. all prior desks remain fully intact. no traces of boosting.' },
+
   { title: 'softcurrentdesk', href: '/softcurrentdesk', body: 'let it flow. drop one or many local files, each with its own quiet note or a shared current caption. soft glass tiles drift with spring motion. lands in storage and public_shares. every link unfurls a polished Discord card. large drops gently warned about possible slowness, never refused. human-crafted Apple-style pacing. all prior desks remain fully intact. no traces of boosting.' },
 
   { title: 'softquietpath', href: '/softquietpath', body: 'walk the quiet path. drop one or many local files with an optional shared note and accent. they settle along a soft path of glass with spring motion. lands in storage and public_shares. every link unfurls a polished Discord card. large drops gently warned about possible slowness, never refused. human-crafted Apple-style pacing. all prior desks remain fully intact. no traces of boosting.' },

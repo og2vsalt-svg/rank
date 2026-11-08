@@ -1,163 +1,219 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishLocalFile, shareUrls, listPublicShares, type CloudMeta } from '../lib/cloudShare';
+import { publishLocalFile, listPublicShares, shareUrls, type CloudMeta } from '../lib/cloudShare';
+
+type Tree = { file: File; note: string; id: string; sway: number };
 
 export default function SoftQuietGrovePage() {
-  const [files, setFiles] = useState<File[]>([]);
-  const [accent, setAccent] = useState('#5AC8FA');
-  const [note, setNote] = useState('');
-  const [busy, setBusy] = useState(false);
-  const [warn, setWarn] = useState('');
-  const [links, setLinks] = useState<string[]>([]);
-  const [err, setErr] = useState('');
-  const [grove, setGrove] = useState<CloudMeta[]>([]);
+  const [trees, setTrees] = useState<Tree[]>([]);
+  const [groveCaption, setGroveCaption] = useState('');
+  const [accent, setAccent] = useState('#34C759');
+  const [uploading, setUploading] = useState(false);
+  const [results, setResults] = useState<{ id: string; embed: string; warn?: string | null; name: string }[]>([]);
+  const [error, setError] = useState('');
+  const [shares, setShares] = useState<CloudMeta[]>([]);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    listPublicShares(36).then(setGrove).catch(() => setGrove([]));
+    listPublicShares(12).then(setShares);
   }, []);
 
-  const onDrop = (list: FileList | null) => {
-    const next = Array.from(list || []);
-    setFiles((prev) => [...prev, ...next].slice(0, 12));
-    const big = next.some((f) => f.size > 40 * 1024 * 1024);
-    setWarn(big ? 'some files are large. the upload may feel slow. no hard limit.' : '');
+  const addFiles = (files: FileList | File[]) => {
+    const next: Tree[] = Array.from(files).map((file, i) => ({
+      file,
+      note: '',
+      id: Math.random().toString(36).slice(2, 10),
+      sway: (Math.random() * 6 - 3) + (i * 0.4),
+    }));
+    setTrees((prev) => [...prev, ...next]);
   };
 
-  const remove = (i: number) => setFiles((prev) => prev.filter((_, idx) => idx !== i));
+  const onDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    if (e.dataTransfer.files.length) addFiles(e.dataTransfer.files);
+  };
 
-  const publish = async () => {
-    if (files.length === 0) {
-      setErr('drop at least one local file');
-      return;
+  const updateNote = (id: string, note: string) => {
+    setTrees((prev) => prev.map((it) => (it.id === id ? { ...it, note } : it)));
+  };
+
+  const remove = (id: string) => {
+    setTrees((prev) => prev.filter((it) => it.id !== id));
+  };
+
+  const plantTheGrove = async () => {
+    if (!trees.length) return;
+    setUploading(true);
+    setError('');
+    setResults([]);
+    const outs: typeof results = [];
+    for (const it of trees) {
+      const caption = it.note.trim() || groveCaption.trim() || undefined;
+      const res = await publishLocalFile(it.file, {
+        caption,
+        color: accent,
+        cardTitle: caption || it.file.name,
+        meta: { kind: 'softquietgrove', grove: groveCaption.trim() || null },
+      });
+      if (res.ok && res.id && res.embed) {
+        outs.push({ id: res.id, embed: res.embed, warn: res.warn, name: it.file.name });
+      } else {
+        setError(res.error || `could not plant ${it.file.name}`);
+        break;
+      }
     }
-    setBusy(true);
-    setErr('');
-    setLinks([]);
-    const made: string[] = [];
-    try {
-      for (const file of files) {
-        const res = await publishLocalFile(file, {
-          caption: note.trim() || 'soft quiet grove',
-          cardTitle: file.name,
-          color: accent,
-          meta: { desk: 'softquietgrove', note: note.trim() },
-        });
-        if (!res.ok || !res.id) {
-          setErr(res.error || `failed on ${file.name}`);
-          break;
-        }
-        if (res.warn) setWarn(res.warn);
-        made.push(shareUrls(res.id).app);
-      }
-      setLinks(made);
-      if (made[0]) {
-        try { await navigator.clipboard.writeText(made.join('\n')); } catch {}
-      }
-      listPublicShares(36).then(setGrove).catch(() => {});
-    } catch (e: any) {
-      setErr(e?.message || 'publish failed');
-    } finally {
-      setBusy(false);
+    setUploading(false);
+    if (outs.length) {
+      setResults(outs);
+      setTrees([]);
+      setGroveCaption('');
+      listPublicShares(12).then(setShares);
     }
   };
+
+  const totalMb = trees.reduce((s, it) => s + it.file.size, 0) / 1024 / 1024;
+  const isLarge = totalMb > 25;
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-5xl mx-auto">
+      <div className="pt-28 pb-24 px-5 max-w-3xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 32 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 110, damping: 16 }}
-          className="glass rounded-[32px] p-8 mb-10"
+          transition={{ type: 'spring', stiffness: 60, damping: 18 }}
+          className="glass rounded-[40px] p-8 sm:p-12 relative overflow-hidden"
         >
-          <p className="text-sm mb-2 tracking-wide" style={{ color: accent }}>soft quiet grove</p>
-          <h1 className="text-3xl font-semibold mb-3 tracking-tight">a quiet grove for what you carry.</h1>
-          <p className="text-neutral-400 text-sm mb-6 leading-relaxed">
-            Drop one or many local files with a shared note and accent. Soft trees of light gather and settle with spring motion on deep navy glass. Recent public drops surface as quiet cards in the grove. Lands in storage and public_shares. Discord unfurls a polished card on every link. Large drops warned, never refused. All prior desks remain fully intact. No traces of boosting.
-          </p>
-          <div className="flex items-center gap-3 mb-4">
-            <label className="text-xs text-neutral-500">accent</label>
-            <input
-              type="color"
-              value={accent}
-              onChange={(e) => setAccent(e.target.value)}
-              className="w-10 h-10 rounded-full border border-white/10 bg-transparent cursor-pointer"
-            />
-            <span className="text-xs text-neutral-400">{accent}</span>
+          <div className="absolute inset-0 pointer-events-none opacity-30">
+            <div className="absolute top-12 left-1/5 w-36 h-36 rounded-full bg-emerald-400/15 blur-3xl" />
+            <div className="absolute bottom-16 right-1/4 w-44 h-44 rounded-full bg-green-500/10 blur-3xl" />
           </div>
-          <textarea
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            placeholder="optional note for the grove…"
-            rows={2}
-            className="w-full mb-4 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm placeholder:text-neutral-500 focus:outline-none focus:border-[#5AC8FA]/50 transition resize-none"
-          />
-          <label
-            className="block cursor-pointer rounded-2xl border border-dashed border-white/15 hover:border-[#5AC8FA]/40 p-8 text-center transition mb-4"
+          <p className="text-sm text-emerald-400 mb-3 tracking-wide font-medium relative">soft quiet grove</p>
+          <h1 className="text-3xl sm:text-5xl font-semibold tracking-tight mb-4 text-white leading-tight relative">
+            plant a quiet grove of trees
+          </h1>
+          <p className="text-neutral-400 text-sm leading-relaxed mb-10 relative">
+            Drop local files as trees in a soft grove. Each carries its own quiet note or shares a grove caption. Soft glass trees rise and gently sway with spring motion. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+          </p>
+
+          <div
             onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => { e.preventDefault(); onDrop(e.dataTransfer.files); }}
+            onDrop={onDrop}
+            onClick={() => inputRef.current?.click()}
+            className="border border-dashed border-emerald-500/20 rounded-3xl p-12 text-center cursor-pointer hover:border-emerald-400/40 hover:bg-emerald-500/[0.04] transition-all duration-700 mb-8 relative"
           >
-            <input type="file" multiple className="hidden" onChange={(e) => onDrop(e.target.files)} />
-            <p className="text-sm text-neutral-300">drop or click for local files</p>
-          </label>
+            <input
+              ref={inputRef}
+              type="file"
+              multiple
+              className="hidden"
+              onChange={(e) => e.target.files && addFiles(e.target.files)}
+            />
+            <p className="text-neutral-400 text-sm">drop files or click to plant trees</p>
+            {trees.length > 0 && <p className="text-neutral-500 text-xs mt-2">{trees.length} tree{trees.length > 1 ? 's' : ''} ready · {totalMb.toFixed(1)} MB</p>}
+          </div>
+
+          {isLarge && (
+            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-emerald-300/80 text-xs mb-6 text-center">
+              dense grove — the browser may feel slow while it plants. no hard limit.
+            </motion.p>
+          )}
+
           <AnimatePresence>
-            {files.map((f, i) => (
+            {trees.map((it, idx) => (
               <motion.div
-                key={f.name + i}
-                initial={{ opacity: 0, x: -8 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, height: 0 }}
-                className="flex items-center justify-between text-xs text-neutral-400 mb-1 px-1"
+                key={it.id}
+                initial={{ opacity: 0, y: 16, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.94 }}
+                transition={{ type: 'spring', stiffness: 100, damping: 16, delay: idx * 0.04 }}
+                className="glass rounded-2xl p-4 mb-3 flex flex-col sm:flex-row gap-3 items-start relative"
+                style={{ boxShadow: `0 0 40px ${accent}15` }}
               >
-                <span className="truncate max-w-[70%]">{f.name}</span>
-                <button type="button" onClick={() => remove(i)} className="text-neutral-500 hover:text-white">remove</button>
+                <motion.div
+                  animate={{ rotate: [it.sway - 2, it.sway + 2, it.sway - 2] }}
+                  transition={{ duration: 4 + idx * 0.2, repeat: Infinity, ease: 'easeInOut' }}
+                  className="w-6 h-10 flex-shrink-0 mt-1 relative"
+                >
+                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-6 bg-emerald-700/60 rounded-full" />
+                  <div
+                    className="absolute top-0 left-1/2 -translate-x-1/2 w-5 h-5 rounded-full"
+                    style={{ background: `radial-gradient(circle, ${accent}, ${accent}90)` }}
+                  />
+                </motion.div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm text-white truncate font-medium">{it.file.name}</p>
+                  <p className="text-xs text-neutral-500">{(it.file.size / 1024 / 1024).toFixed(1)} MB</p>
+                </div>
+                <input
+                  value={it.note}
+                  onChange={(e) => updateNote(it.id, e.target.value)}
+                  placeholder="quiet note for this tree"
+                  className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-neutral-500 focus:outline-none focus:border-emerald-400/30"
+                />
+                <button onClick={() => remove(it.id)} className="text-xs text-neutral-500 hover:text-white px-2 py-1">remove</button>
               </motion.div>
             ))}
           </AnimatePresence>
-          {warn && <p className="text-xs text-amber-300/80 mb-3 mt-2">{warn}</p>}
-          {err && <p className="text-xs text-red-400 mb-3">{err}</p>}
+
+          <input
+            value={groveCaption}
+            onChange={(e) => setGroveCaption(e.target.value)}
+            placeholder="shared grove caption (optional)"
+            className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white placeholder:text-neutral-500 mb-5 focus:outline-none focus:border-emerald-400/30"
+          />
+
+          <div className="flex items-center gap-3 mb-8">
+            <span className="text-xs text-neutral-500">grove light</span>
+            <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="w-10 h-10 rounded-full border border-white/20 cursor-pointer bg-transparent" />
+            <span className="text-xs text-neutral-400">{accent}</span>
+          </div>
+
           <motion.button
             whileTap={{ scale: 0.97 }}
-            onClick={publish}
-            disabled={busy || files.length === 0}
-            className="w-full py-3 rounded-full text-white text-sm font-medium disabled:opacity-50 transition mt-2"
-            style={{ background: accent }}
+            disabled={!trees.length || uploading}
+            onClick={plantTheGrove}
+            className="w-full py-4 rounded-full bg-emerald-500 text-black text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-emerald-400 transition-all duration-300"
           >
-            {busy ? 'gathering…' : 'share to the grove'}
+            {uploading ? 'planting the grove…' : 'plant the quiet grove'}
           </motion.button>
-          {links.length > 0 && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-5 text-xs text-neutral-400 space-y-1">
-              <p>share links (copied):</p>
-              {links.map((l) => (
-                <div key={l} className="break-all">{l}</div>
-              ))}
-            </motion.div>
-          )}
+
+          <AnimatePresence>
+            {error && (
+              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-red-400 text-sm mt-4 text-center">
+                {error}
+              </motion.p>
+            )}
+            {results.length > 0 && (
+              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="mt-8 space-y-3">
+                <p className="text-sm text-neutral-300 text-center mb-2">grove planted</p>
+                {results.map((r) => (
+                  <div key={r.id} className="glass rounded-2xl p-4 text-center">
+                    <p className="text-xs text-neutral-400 truncate mb-1">{r.name}</p>
+                    <a href={r.embed} target="_blank" rel="noreferrer" className="text-emerald-400 text-sm break-all hover:underline">
+                      {r.embed}
+                    </a>
+                    {r.warn && <p className="text-xs text-emerald-300/70 mt-1">{r.warn}</p>}
+                  </div>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {grove.map((item, i) => (
-            <motion.a
-              key={item.id}
-              href={shareUrls(item.id).app}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.03, type: 'spring', stiffness: 100, damping: 18 }}
-              className="glass rounded-2xl p-4 block hover:bg-white/[0.07] transition overflow-hidden"
-            >
-              <div className="h-32 rounded-xl mb-3 flex items-center justify-center" style={{ background: item.color || '#5AC8FA20' }}>
-                <span className="text-xs text-neutral-300 truncate px-2">{item.name}</span>
-              </div>
-              <p className="text-sm font-medium truncate">{item.cardTitle || item.name}</p>
-              {item.caption && <p className="text-xs text-neutral-400 mt-1 line-clamp-2">{item.caption}</p>}
-              <p className="text-[10px] text-neutral-500 mt-2">{item.size ? `${(item.size / 1024 / 1024).toFixed(1)} MB` : ''}</p>
-            </motion.a>
-          ))}
-        </div>
-        {grove.length === 0 && (
-          <p className="text-center text-neutral-500 text-sm mt-8">the grove is quiet for now. share something above.</p>
+        {shares.length > 0 && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="mt-14">
+            <h2 className="text-lg font-medium mb-5 text-neutral-300">recent quiet growth</h2>
+            <div className="grid sm:grid-cols-2 gap-3">
+              {shares.map((s) => (
+                <a key={s.id} href={shareUrls(s.id).app} className="glass rounded-2xl p-4 block hover:bg-white/[0.06] transition-all duration-500">
+                  <p className="text-sm text-white truncate">{s.name || 'untitled'}</p>
+                  <p className="text-xs text-neutral-500 mt-1 line-clamp-2">{s.caption || 'shared quietly'}</p>
+                </a>
+              ))}
+            </div>
+          </motion.div>
         )}
       </div>
     </div>

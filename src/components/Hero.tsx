@@ -33,6 +33,7 @@ export default function Hero() {
           Local vault. Cloud shares that land in the database with professional Discord embeds on every link. Galleries, notes, and dozens of specialized desks. Large files warned, never refused. Human-crafted Apple-smooth animations.
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center">
+          <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('softquietripple')} className="px-5 py-2.5 rounded-full bg-[#5AC8FA] text-black text-sm font-medium hover:bg-[#6ed0fb] transition">soft quiet ripple</motion.button>
           <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('softquietveil')} className="px-5 py-2.5 rounded-full bg-[#BF5AF2] text-white text-sm font-medium hover:bg-[#c97af5] transition">soft quiet veil</motion.button>
           <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('softquietcascade')} className="px-5 py-2.5 rounded-full bg-[#5AC8FA] text-black text-sm font-medium hover:bg-[#6ed0fb] transition">soft quiet cascade</motion.button>
           <motion.button whileTap={{ scale: 0.96 }} onClick={() => navigate('softglassvault')} className="px-5 py-2.5 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#3a9aff] transition">soft glass vault</motion.button>

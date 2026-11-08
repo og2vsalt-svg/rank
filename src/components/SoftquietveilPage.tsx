@@ -1,216 +1,201 @@
-import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useMemo, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './Navbar';
 import Footer from './Footer';
-import { useRouter } from './Router';
+import { publishLocalFile } from '../lib/cloudShare';
 
-const SLOW = 12 * 1024 * 1024;
-
-function prettySize(n: number) {
-  if (n < 1024) return n + ' B';
-  if (n < 1024 * 1024) return Math.max(1, Math.round(n / 1024)) + ' KB';
-  if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(1) + ' MB';
-  return (n / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
+function pretty(n: number) {
+  if (n < 1024) return `${n} B`;
+  if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
+  if (n < 1024 * 1024 * 1024) return `${(n / (1024 * 1024)).toFixed(2)} MB`;
+  return `${(n / (1024 * 1024 * 1024)).toFixed(2)} GB`;
 }
 
-type Share = {
-  id: string;
-  name: string;
-  caption: string | null;
-  size: number;
-  file_url?: string;
-  author: string | null;
-  created_at: string;
-  warn?: string | null;
-  mime?: string;
-  meta?: { accent?: string };
+type Dropped = {
+  file: File;
+  note: string;
+  id?: string;
+  status: 'pending' | 'uploading' | 'done' | 'error';
+  warn?: string;
 };
 
 export default function SoftquietveilPage() {
-  const { shareId, navigate } = useRouter();
-  const [shares, setShares] = useState<Share[]>([]);
-  const [focus, setFocus] = useState<Share | null>(null);
-  const [title, setTitle] = useState('');
-  const [caption, setCaption] = useState('');
-  const [author, setAuthor] = useState('');
-  const [accent, setAccent] = useState('#5AC8FA');
-  const [file, setFile] = useState<File | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [files, setFiles] = useState<Dropped[]>([]);
+  const [sharedCaption, setSharedCaption] = useState('');
+  const [accent, setAccent] = useState('#BF5AF2');
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
-  const [warn, setWarn] = useState('');
-  const [link, setLink] = useState('');
+  const [results, setResults] = useState<{id: string; name: string; link: string; warn?: string}[]>([]);
+  const [copied, setCopied] = useState('');
 
-  async function load() {
-    const res = await fetch('/api/softquietveil');
-    const data = await res.json();
-    setShares(Array.isArray(data.shares) ? data.shares : []);
-  }
+  const totalSize = useMemo(() => files.reduce((s, f) => s + f.file.size, 0), [files]);
+  const slow = totalSize > 20 * 1024 * 1024;
 
-  useEffect(() => {
-    load().catch(() => setError('softquietveil is resting right now'));
-  }, []);
+  const addFiles = (list: FileList | File[]) => {
+    const next: Dropped[] = Array.from(list).map(file => ({
+      file,
+      note: '',
+      status: 'pending' as const,
+    }));
+    setFiles(prev => [...prev, ...next].slice(0, 12));
+  };
 
-  useEffect(() => {
-    if (!shareId) {
-      setFocus(null);
-      return;
-    }
-    fetch(`/api/softquietveil?id=${encodeURIComponent(shareId)}`)
-      .then((r) => r.json())
-      .then((data) => setFocus(data.ok ? data : null))
-      .catch(() => setFocus(null));
-  }, [shareId]);
+  const updateNote = (idx: number, note: string) => {
+    setFiles(prev => prev.map((f, i) => i === idx ? { ...f, note } : f));
+  };
 
-  async function share(e: React.FormEvent) {
-    e.preventDefault();
-    if (!file) {
-      setError('choose a file on this machine');
-      return;
-    }
+  const remove = (idx: number) => setFiles(prev => prev.filter((_, i) => i !== idx));
+
+  const uploadAll = async () => {
+    if (!files.length) return;
     setBusy(true);
-    setError('');
-    setWarn('');
-    try {
-      const dataUrl = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(String(reader.result || ''));
-        reader.onerror = () => reject(new Error('could not read the file'));
-        reader.readAsDataURL(file);
+    setResults([]);
+    const outs: typeof results = [];
+    for (let i = 0; i < files.length; i++) {
+      const item = files[i];
+      setFiles(prev => prev.map((f, j) => j === i ? { ...f, status: 'uploading' } : f));
+      const caption = item.note.trim() || sharedCaption.trim() || undefined;
+      const out = await publishLocalFile(item.file, {
+        caption,
+        cardTitle: item.file.name,
+        color: accent,
+        meta: { desk: 'softquietveil', shared: !!sharedCaption },
       });
-      const res = await fetch('/api/softquietveil', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ dataUrl, name: file.name, type: file.type, size: file.size, title: title || file.name, caption, author, accent }),
-      });
-      const data = await res.json();
-      if (!res.ok || !data.ok) throw new Error(data.error || 'could not share');
-      if (data.warn) setWarn(data.warn);
-      const path = data.sharePath || `/softquietveil/${data.id}`;
-      setLink(window.location.origin + path);
-      navigate('softquietveil', data.id);
-      load().catch(() => {});
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'could not share');
-    } finally {
-      setBusy(false);
+      if (out.ok && out.id) {
+        setFiles(prev => prev.map((f, j) => j === i ? { ...f, status: 'done', id: out.id, warn: out.warn || undefined } : f));
+        outs.push({
+          id: out.id,
+          name: item.file.name,
+          link: out.embed || `${location.origin}/s/${out.id}`,
+          warn: out.warn || undefined,
+        });
+      } else {
+        setFiles(prev => prev.map((f, j) => j === i ? { ...f, status: 'error' } : f));
+      }
     }
-  }
+    setResults(outs);
+    setBusy(false);
+  };
 
-  const glow = focus?.meta?.accent || accent || '#5AC8FA';
+  const copy = async (text: string, key: string) => {
+    await navigator.clipboard.writeText(text);
+    setCopied(key);
+    setTimeout(() => setCopied(''), 1400);
+  };
+
+  const spring = { type: 'spring' as const, stiffness: 320, damping: 26, mass: 0.8 };
 
   return (
-    <div className="min-h-screen bg-[#0b0b0d] text-white">
+    <div className="min-h-screen bg-[#050506] text-[#f5f5f7]">
       <Navbar />
-      <main className="pt-28 pb-20 px-5">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 100, damping: 20 }}
-          className="max-w-3xl mx-auto"
+      <main className="mx-auto max-w-4xl px-5 pb-28 pt-28">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={spring}>
+          <p className="text-[12px] uppercase tracking-[0.18em] text-neutral-500">soft quiet veil</p>
+          <h1 className="mt-2 text-4xl sm:text-5xl font-semibold tracking-tight">Veil what you carry in quiet layers.</h1>
+          <p className="mt-4 max-w-2xl text-[16px] leading-relaxed text-neutral-400">
+            Drop local files into soft overlapping veils. Each glass layer settles with gentle spring motion, carrying its own quiet note or sharing a veil caption and accent. They land in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact.
+          </p>
+        </motion.div>
+
+        <div className="mt-8 grid gap-4 sm:grid-cols-[1fr_auto]">
+          <label className="block text-sm text-neutral-400">
+            Veil caption (optional)
+            <input
+              value={sharedCaption}
+              onChange={e => setSharedCaption(e.target.value)}
+              placeholder="a quiet note for the whole veil"
+              className="mt-1.5 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition focus:border-[#BF5AF2]"
+            />
+          </label>
+          <label className="block text-sm text-neutral-400">
+            Accent
+            <input
+              type="color"
+              value={accent}
+              onChange={e => setAccent(e.target.value)}
+              className="mt-1.5 h-[46px] w-full rounded-2xl border border-white/10 bg-white/5 cursor-pointer"
+            />
+          </label>
+        </div>
+
+        <motion.button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          onDragOver={e => e.preventDefault()}
+          onDrop={e => { e.preventDefault(); addFiles(e.dataTransfer.files); }}
+          whileHover={{ scale: 1.005 }}
+          whileTap={{ scale: 0.995 }}
+          className="mt-5 flex w-full flex-col items-center rounded-[28px] border border-dashed border-white/15 bg-white/[0.03] px-6 py-16 text-center transition hover:border-[#BF5AF2]/50"
         >
-          <p className="text-[11px] tracking-[0.22em] uppercase text-[#5AC8FA] mb-3">quiet veil</p>
-          <h1 className="text-4xl font-semibold tracking-tight">softquietveil</h1>
-          <p className="text-neutral-400 mt-3 max-w-xl">A quiet veil of cool light for what you carry. Drop a local file with a title, caption, and soft accent. Gentle curtains of light breathe and settle with spring motion on frosted glass. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. All prior desks remain fully intact. No traces of boosting.</p>
-          {focus ? (
-            <motion.article
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ type: 'spring', stiffness: 120, damping: 18 }}
-              className="glass rounded-[28px] p-6 mt-8 relative overflow-hidden"
-              style={{ boxShadow: `0 0 40px ${glow}22` }}
-            >
-              <div className="absolute -top-20 -right-20 w-40 h-40 rounded-full blur-3xl opacity-30" style={{ background: glow }} />
-              <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                {Array.from({ length: 4 }).map((_, i) => (
-                  <motion.div
-                    key={i}
-                    className="absolute h-full w-1/4 opacity-20"
-                    style={{
-                      background: `linear-gradient(to bottom, transparent, ${glow}, transparent)`,
-                      left: `${i * 25}%`,
-                    }}
-                    animate={{ x: ['-8%', '8%', '-8%'], opacity: [0.15, 0.35, 0.15] }}
-                    transition={{ duration: 7 + i * 1.2, repeat: Infinity, ease: 'easeInOut', delay: i * 0.6 }}
-                  />
+          <span className="text-[17px] font-medium">Drop local files into the veil</span>
+          <span className="mt-2 text-[13px] text-neutral-500">up to 12. no hard size limit — large ones just warned of possible slowness.</span>
+        </motion.button>
+        <input ref={inputRef} type="file" multiple className="hidden" onChange={e => { if (e.target.files) addFiles(e.target.files); e.target.value = ''; }} />
+
+        {slow && files.length > 0 && (
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-3 text-sm text-[#ffd60a]">
+            This veil is large. Nothing is refused — it may simply take a moment to leave your machine.
+          </motion.p>
+        )}
+
+        <AnimatePresence>
+          {files.length > 0 && (
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="mt-6 space-y-3 relative">
+              {files.map((item, idx) => (
+                <motion.div
+                  key={item.file.name + idx}
+                  layout
+                  initial={{ opacity: 0, y: 30, scale: 0.92, filter: 'blur(4px)' }}
+                  animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+                  exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                  transition={{ ...spring, delay: idx * 0.06 }}
+                  className="glass relative z-10 flex items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.04] p-4 shadow-xl"
+                  style={{ marginLeft: `${idx * 8}px`, marginTop: idx > 0 ? '-8px' : 0 }}
+                >
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-[15px] font-medium">{item.file.name}</p>
+                    <p className="text-xs text-neutral-500">{pretty(item.file.size)} · {item.status}</p>
+                    <input
+                      value={item.note}
+                      onChange={e => updateNote(idx, e.target.value)}
+                      placeholder="quiet note for this file (overrides shared)"
+                      className="mt-2 w-full rounded-xl bg-black/30 border border-white/10 px-3 py-2 text-sm text-white outline-none focus:border-[#BF5AF2]"
+                    />
+                  </div>
+                  <button onClick={() => remove(idx)} className="text-neutral-500 hover:text-white text-sm">remove</button>
+                </motion.div>
+              ))}
+              <button
+                onClick={uploadAll}
+                disabled={busy}
+                className="rounded-full bg-[#BF5AF2] px-6 py-3 text-sm font-medium text-white disabled:opacity-60 mt-4"
+              >
+                {busy ? 'Veiling into the quiet…' : 'Share the veil'}
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {results.length > 0 && (
+            <motion.section initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} className="mt-10">
+              <h2 className="text-xl font-semibold tracking-tight">Veil links</h2>
+              <p className="mt-1 text-sm text-neutral-500">Each file has its own polished Discord card.</p>
+              <div className="mt-4 space-y-3">
+                {results.map(r => (
+                  <div key={r.id} className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                    <p className="font-medium">{r.name}</p>
+                    <p className="mt-1 break-all text-sm text-[#BF5AF2]">{r.link}</p>
+                    {r.warn && <p className="mt-1 text-xs text-[#ffd60a]">{r.warn}</p>}
+                    <button onClick={() => copy(r.link, r.id)} className="mt-2 text-sm text-white/80 hover:text-white">
+                      {copied === r.id ? 'copied' : 'copy link'}
+                    </button>
+                  </div>
                 ))}
               </div>
-              <h2 className="text-2xl font-medium relative">{focus.name}</h2>
-              {focus.caption && <p className="text-neutral-300 mt-3 leading-relaxed relative">{focus.caption}</p>}
-              <p className="text-sm text-neutral-500 mt-3 relative">{prettySize(Number(focus.size) || 0)}{focus.author ? ` · from ${focus.author}` : ''}</p>
-              {focus.warn && <p className="text-amber-300/90 text-sm mt-3 relative">{focus.warn}</p>}
-              {focus.file_url && (
-                <a href={focus.file_url} className="inline-flex mt-5 px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-100 active:scale-[0.98] transition relative" download>
-                  take the file
-                </a>
-              )}
-            </motion.article>
-          ) : (
-            <form onSubmit={share} className="glass rounded-[28px] p-6 mt-8 space-y-4">
-              <label className="block text-sm text-neutral-300">
-                title
-                <input
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="optional, defaults to filename"
-                  className="mt-1 w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 text-white outline-none focus:border-[#5AC8FA]/60 transition"
-                />
-              </label>
-              <label className="block text-sm text-neutral-300">
-                caption
-                <input
-                  value={caption}
-                  onChange={(e) => setCaption(e.target.value)}
-                  placeholder="a short note for the share"
-                  className="mt-1 w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 text-white outline-none focus:border-[#5AC8FA]/60 transition"
-                />
-              </label>
-              <label className="block text-sm text-neutral-300">
-                from
-                <input
-                  value={author}
-                  onChange={(e) => setAuthor(e.target.value)}
-                  placeholder="optional"
-                  className="mt-1 w-full rounded-2xl bg-black/30 border border-white/10 px-4 py-3 text-white outline-none focus:border-[#5AC8FA]/60 transition"
-                />
-              </label>
-              <label className="block text-sm text-neutral-300">
-                accent
-                <input
-                  type="color"
-                  value={accent}
-                  onChange={(e) => setAccent(e.target.value)}
-                  className="mt-1 w-16 h-10 rounded-xl border border-white/10 bg-transparent cursor-pointer"
-                />
-              </label>
-              <label className="block rounded-2xl border border-dashed border-white/15 px-4 py-8 text-center text-neutral-400 hover:border-white/30 transition cursor-pointer">
-                <input type="file" className="hidden" onChange={(e) => setFile(e.target.files?.[0] || null)} />
-                {file ? `${file.name} · ${prettySize(file.size)}` : 'choose a file on this machine'}
-              </label>
-              {file && file.size > SLOW && <p className="text-amber-300/90 text-sm">large file. it will not be refused. preview clients may feel slow.</p>}
-              {warn && <p className="text-amber-300/90 text-sm">{warn}</p>}
-              {error && <p className="text-red-400 text-sm">{error}</p>}
-              {link && <p className="text-sm text-[#5AC8FA] break-all">{link}</p>}
-              <button disabled={busy} className="w-full rounded-full bg-[#5AC8FA] text-black py-3 text-sm font-medium disabled:opacity-60 active:scale-[0.99] transition hover:bg-[#7dd3fc]">
-                {busy ? 'settling…' : 'share through the quiet veil'}
-              </button>
-            </form>
+            </motion.section>
           )}
-          {shares.length > 0 && !focus && (
-            <ul className="mt-8 space-y-2">
-              {shares.map((row) => (
-                <li key={row.id}>
-                  <button
-                    onClick={() => navigate('softquietveil', row.id)}
-                    className="w-full text-left glass rounded-2xl px-4 py-3 hover:-translate-y-0.5 transition-transform"
-                  >
-                    <span className="text-white">{row.name}</span>
-                    {row.caption && <span className="text-neutral-500 text-sm"> · {row.caption.slice(0, 40)}</span>}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </motion.div>
+        </AnimatePresence>
       </main>
       <Footer />
     </div>

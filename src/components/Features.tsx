@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'softquietripple', href: '/softquietripple', body: 'let it ripple outward. drop local files into soft concentric rings that expand and settle with spring motion. each can hold its own quiet note or share a ripple caption and accent. lands in storage and public_shares. every link unfurls a polished Discord card. large drops gently warned about possible slowness, never refused. human-crafted Apple-style pacing. all prior desks remain fully intact. no traces of boosting.' },
+
   { title: 'softquietprism', href: '/softquietprism', body: 'refract what you carry into quiet light. drop local files into a living prism. soft spectral panes tilt and settle with spring motion. each can carry its own quiet note or share a prism caption and accent. lands in storage and public_shares. every link unfurls a polished Discord card. large drops gently warned about possible slowness, never refused. human-crafted Apple-style pacing. all prior desks remain fully intact. no traces of boosting.' },
 
   { title: 'softquietnexus', href: '/softquietnexus', body: 'gather around the quiet nexus. drop local files into a soft orbital field. each becomes a glass orb that drifts around a quiet center with spring motion. optional shared note and accent. lands in storage and public_shares. every link unfurls a polished Discord card. large drops gently warned about possible slowness, never refused. human-crafted Apple-style pacing. all prior desks remain fully intact. no traces of boosting.' },

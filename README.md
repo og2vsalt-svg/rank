@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-rivall.vercel.app/
 
 ## Recent desks
+- `/softquietorbit` — set files into a quiet orbit. Multi-file local upload where each file is a soft glass orb that drifts in orbital paths. Each can carry its own quiet note or share a collective caption and accent. Orbs settle and circle with spring motion. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
 - `/softmoonlithaven` — settle what you carry under quiet moonlight. Multi-file local upload where each floating glass pane can hold its own quiet note or share a haven caption and lunar accent. Soft panes drift and settle with spring motion. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 
 - `/softmoonlitarchive` — float what you carry under quiet moonlight. Multi-file local upload where each orb can hold its own quiet note or share an archive caption and lunar accent. Soft glass spheres drift and float gently with spring motion. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.

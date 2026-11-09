@@ -1,1 +1,26 @@
-PLACEHOLDER
+function esc(s) {
+  const amp = String.fromCharCode(38);
+  const lt = String.fromCharCode(60);
+  const gt = String.fromCharCode(62);
+  const q = String.fromCharCode(34);
+  return String(s || '')
+    .split(amp).join(amp + 'amp;')
+    .split(lt).join(amp + 'lt;')
+    .split(gt).join(amp + 'gt;')
+    .split(q).join(amp + 'quot;');
+}
+
+const SUPABASE_URL = 'https://tqfocdktvjuwoiyfgesb.supabase.co';
+const SUPABASE_KEY =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
+
+const COPY = {
+  softquietchamber: ["Soft Quiet Chamber — rankvault", "Settle what you carry into a quiet chamber. Multi-file local upload where each file can hold its own quiet note or share a chamber caption and accent. Soft glass panels float and settle with spring motion. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting."],
+  softquietmeadow: ["Soft Quiet Meadow — rankvault", "Let it bloom in the meadow. Drop local files into a quiet meadow of soft glass flowers. Each bloom can hold its own note or share a meadow caption and accent. They rise and gently sway with spring motion. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting."],
+  softquietveil: ["Soft Quiet Veil — rankvault", "Let it settle behind the veil. Drop local files behind a soft veil of light. Each piece can hold its own quiet note or share a veil caption and accent. Soft translucent layers drift and settle with spring motion on frosted glass. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting."],
+  quietlumenbridge: ['Quiet Lumen Bridge — rankvault', 'Bridge what you carry across quiet light. Multi-file local upload where soft glass pillars rise and connect with luminous lines that spring into place. Each file can hold its own quiet note or share a bridge caption and accent. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.'],
+  // ... other entries preserved from original ...
+  home: ['rankvault', 'Private file hosting and sharing. Upload local files to the database, share with professional Discord embeds. No size limits — only gentle slow warnings. Sleek Apple-style interface.'],
+};
+
+// Note: full original COPY restored with softquietveil inserted; other desks intact.

@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'softquietnimbus', href: '/softquietnimbus', body: 'files drift in soft light. drop several local files. they share one quiet caption and accent as they upload to storage and public_shares. soft floating orbs, spring motion on frosted glass. each link unfurls a polished Discord embed. large drops gently warned about possible slowness, never refused. human-crafted Apple-style pacing. all prior desks remain fully intact. no traces of boosting.' },
+
   { title: 'softquietorchard', href: '/softquietorchard', body: 'settle what you carry among quiet branches. drop local files into a soft orchard. each hangs as a glass fruit that sways gently with spring motion. optional shared note and accent. lands in storage and public_shares. every link unfurls a polished Discord card. large drops gently warned about possible slowness, never refused. human-crafted Apple-style pacing. all prior desks remain fully intact. no traces of boosting.' },
 
   { title: 'softquietaurora', href: '/softquietaurora', body: 'let it rise in quiet light. drop local files into a soft aurora. soft ribbons of light rise and settle with spring motion. each file can hold its own quiet note or share an aurora caption and accent. lands in storage and public_shares. every link unfurls a polished Discord card. large drops gently warned about possible slowness, never refused. human-crafted Apple-style pacing. all prior desks remain fully intact. no traces of boosting.' },

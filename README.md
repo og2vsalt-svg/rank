@@ -15,20 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-rivall.vercel.app/
 
 ## Recent desks
+- `/softquietveil` — let it settle behind the veil. Multi-file local upload where each piece can hold its own quiet note or share a veil caption and accent. Soft translucent layers drift and settle with spring motion on frosted glass. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
 - `/softquietdusk` — let what you carry fade into quiet dusk. Multi-file local upload where each file settles as soft dusk light. Individual quiet notes or a shared caption and dusk accent. Glass surfaces catch the last light with spring motion. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
-
-- `/softquietgarden` — let what you carry root and grow quietly. Multi-file local upload where each file takes root and unfurls with spring motion. Optional shared note and accent. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
-
-- `/quietjournal` — leave a quiet page. Write a note and optionally attach one local file. The entry lands in storage and public_shares. Every link unfurls a polished Discord card. Large attachments gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
-
-- `/softquietlighthouse` — guide what you carry into quiet light. Multi-file local upload where each file becomes a beam that sweeps gently with spring motion. Optional shared note and accent. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
-
-- `/softquietorchard` — settle what you carry among quiet branches. Multi-file local upload where each file hangs as a glass fruit that sways gently with spring motion. Optional shared note and accent. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
-
-- `/softquietaurora` — let it rise in quiet light. Multi-file local upload where soft ribbons of light rise and settle with spring motion. Each file can hold its own quiet note or share an aurora caption and accent. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
-
-- `/softquietforge` — forge what you carry into quiet metal. Multi-file local upload where each file is heated and settled into the forge. Individual quiet notes or a shared caption and warm accent. Soft glass surfaces with gentle heat glow and spring motion. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
-
-- `/softquietchamber` — settle what you carry into a quiet chamber. Multi-file local upload where each file can hold its own quiet note or share a chamber caption and accent. Soft glass panels float and settle with spring motion. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 
 (All prior desks remain fully intact in the codebase.)

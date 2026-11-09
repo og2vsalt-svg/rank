@@ -15,6 +15,7 @@ const SUPABASE_KEY =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
 
 const COPY = {
+  softquietchamber: ["Soft Quiet Chamber — rankvault", "Settle what you carry into a quiet chamber. Multi-file local upload where each file can hold its own quiet note or share a chamber caption and accent. Soft glass panels float and settle with spring motion. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting."],
   softquietmeadow: ["Soft Quiet Meadow — rankvault", "Let it bloom in the meadow. Drop local files into a quiet meadow of soft glass flowers. Each bloom can hold its own note or share a meadow caption and accent. They rise and gently sway with spring motion. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting."],
   quietlumenbridge: ['Quiet Lumen Bridge — rankvault', 'Bridge what you carry across quiet light. Multi-file local upload where soft glass pillars rise and connect with luminous lines that spring into place. Each file can hold its own quiet note or share a bridge caption and accent. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.'],
   softquiettide: ["Soft Quiet Tide — rankvault", "Let the tide carry what you bring. Multi-file local upload where soft glass waves rise and settle with spring motion. Each file can hold its own quiet note or share a tide caption and accent. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting."],
@@ -93,43 +94,45 @@ module.exports = async (req, res) => {
   const isDiscord = ua.includes('discord');
 
   let title = 'rankvault — private file hosting';
-  let desc = 'Upload local files to the database, share with professional Discord embeds. No hard size limits — only gentle warnings of slowness. Sleek Apple-style animations.';
-  let image;
+  let desc = 'Private file hosting and sharing. Upload local files to the database, share with professional Discord embeds. No size limits — only gentle slow warnings. Sleek Apple-style interface.';
+  let image = 'https://og2vsalt-svg.github.io/rank/og.png';
   let color = '#0A84FF';
   let shareId = null;
 
-  if (parts.length >= 2 && ['s', 'f', 'open', 'go', 'link', 'card', 'share'].includes(parts[0])) {
-    shareId = parts[1];
+  if (parts.length >= 2 && ['s', 'f', 'open', 'go', 'link', 'card'].includes(parts[0])) {
+    shareId = decodeURIComponent(parts[1]);
+  } else if (parts.length >= 2) {
+    shareId = decodeURIComponent(parts[1]);
   } else if (parts.length === 1 && parts[0] !== 'index.html') {
-    const desk = parts[0].toLowerCase();
-    if (COPY[desk]) {
-      title = COPY[desk][0];
-      desc = COPY[desk][1];
-    } else {
-      title = `${desk} — rankvault`;
-      desc = 'A specialized desk for files and notes. Lands in storage and public_shares. Discord unfurls a polished card. Large drops warned, never refused.';
+    const slug = parts[0].toLowerCase();
+    if (COPY[slug]) {
+      title = COPY[slug][0];
+      desc = COPY[slug][1];
     }
   }
 
   if (shareId) {
     const row = await loadShare(shareId);
-    if (row && row.is_public !== false && !(row.expires_at && +new Date(row.expires_at) < Date.now())) {
-      title = (row.meta && row.meta.cardTitle) || row.caption || row.name || 'Shared file — rankvault';
-      desc = row.caption || `${prettySize(row.size)} · public drop on rankvault`;
-      if (/^image\//.test(row.mime || '') && /^https?:\/\//i.test(row.file_url || '')) {
+    if (row) {
+      title = row.name || 'shared file — rankvault';
+      desc = row.caption || `Shared quietly on rankvault. ${prettySize(row.size)}`;
+      if (row.meta && row.meta.color) color = row.meta.color;
+      if (row.file_url && /^https?:\/\//i.test(row.file_url) && !row.file_url.startsWith('data:')) {
         image = row.file_url;
       }
-      color = (row.meta && row.meta.color) || color;
-    } else {
-      title = 'Share — rankvault';
-      desc = 'A shared file from the quiet desks. Discord unfurls a polished card.';
+    }
+  } else if (parts.length === 1) {
+    const slug = parts[0].toLowerCase();
+    if (COPY[slug]) {
+      title = COPY[slug][0];
+      desc = COPY[slug][1];
     }
   }
 
-  const fullUrl = `https://${req.headers.host || 'rank-rivall.vercel.app'}${path}`;
-  const html = pageHtml({ title, desc, image, url: fullUrl, color });
+  const pageUrl = `https://${req.headers.host || 'rank-rivall.vercel.app'}${path}`;
+  const html = pageHtml({ title, desc, image, url: pageUrl, color });
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
-  res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
+  res.setHeader('Cache-Control', 'public, max-age=60, s-maxage=300');
   res.status(200).send(html);
 };

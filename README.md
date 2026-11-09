@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-rivall.vercel.app/
 
 ## Recent desks
+- `/softquietdusk` — let what you carry fade into quiet dusk. Multi-file local upload where each file settles as soft dusk light. Individual quiet notes or a shared caption and dusk accent. Glass surfaces catch the last light with spring motion. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
 - `/softquietgarden` — let what you carry root and grow quietly. Multi-file local upload where each file takes root and unfurls with spring motion. Optional shared note and accent. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 
 - `/quietjournal` — leave a quiet page. Write a note and optionally attach one local file. The entry lands in storage and public_shares. Every link unfurls a polished Discord card. Large attachments gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.

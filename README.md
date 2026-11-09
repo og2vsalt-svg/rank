@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-rivall.vercel.app/
 
 ## Recent desks
+- `/softquietbeam` — let a quiet beam settle. Multi-file local upload where files ride a soft beam. Soft light beams drift and settle with spring motion on frosted glass. Each piece can hold its own note or share a beam caption and accent. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
 - `/softquietrefraction` — let light split. Multi-file local upload where files pass through a quiet prism. Light refracts into soft spectral beams that settle with spring motion on frosted glass. Each piece can hold its own note or share a refraction caption and accent. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 
 - `/softquietquill` — write a quiet note with the quill. Compose a short note, optionally attach local files. They settle under soft glass with gentle spring motion. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.

@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'softquietmist', href: '/softquietmist', body: 'let it settle in the mist. drop one or many local files with a shared note. soft mist particles drift and fade with spring motion on deep navy glass. lands in storage and public_shares. every share link unfurls a polished Discord card. large drops gently warned about possible slowness, never refused. human-crafted Apple-style pacing. all prior desks remain fully intact. no traces of boosting.' },
+
   { title: 'softquietquill', href: '/softquietquill', body: 'write a quiet note with the quill. compose a short note, optionally attach local files. they settle under soft glass with gentle spring motion. lands in storage and public_shares. every link unfurls a polished Discord card. large drops gently warned about possible slowness, never refused. human-crafted Apple-style pacing. all prior desks remain fully intact. no traces of boosting.' },
 
   { title: 'softquietcanopy', href: '/softquietcanopy', body: 'settle under the canopy. drop local files beneath soft glass leaves that drift and sway with spring motion. each can hold its own quiet note or share a canopy caption and accent. lands in storage and public_shares. every link unfurls a polished Discord card. large drops gently warned about possible slowness, never refused. human-crafted Apple-style pacing. all prior desks remain fully intact. no traces of boosting.' },

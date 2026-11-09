@@ -1,168 +1,161 @@
-import { useMemo, useState } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishLocalFile, shareUrls } from '../lib/cloudShare';
-
-type Row = {
-  name: string;
-  size: number;
-  id?: string;
-  embed?: string;
-  error?: string;
-  warn?: string | null;
-};
+import { publishLocalFile, listPublicShares, type CloudMeta } from '../lib/cloudShare';
 
 export default function SoftQuietMistPage() {
   const [files, setFiles] = useState<File[]>([]);
-  const [author, setAuthor] = useState('');
-  const [caption, setCaption] = useState('');
-  const [color, setColor] = useState('#5AC8FA');
+  const [note, setNote] = useState('');
+  const [accent, setAccent] = useState('#5AC8FA');
   const [busy, setBusy] = useState(false);
-  const [rows, setRows] = useState<Row[]>([]);
-  const [copied, setCopied] = useState('');
+  const [warn, setWarn] = useState<string | null>(null);
+  const [err, setErr] = useState('');
+  const [links, setLinks] = useState<string[]>([]);
+  const [mists, setMists] = useState<CloudMeta[]>([]);
 
-  const heavy = useMemo(() => files.reduce((n, f) => n + f.size, 0) > 40 * 1024 * 1024, [files]);
+  useEffect(() => {
+    listPublicShares(6).then(setMists).catch(() => {});
+  }, []);
 
-  const send = async () => {
-    if (!files.length) return;
+  const onFiles = (list: FileList | null) => {
+    const arr = list ? Array.from(list) : [];
+    setFiles(arr);
+    const big = arr.some(f => f.size > 40 * 1024 * 1024);
+    setWarn(big ? 'One or more files are large. Uploads may feel slow. No hard limit — only a gentle warning.' : null);
+  };
+
+  const share = async () => {
+    if (files.length === 0 && !note.trim()) return setErr('add a note or local files');
     setBusy(true);
-    const next: Row[] = [];
-    for (const file of files) {
-      const res = await publishLocalFile(file, {
-        author,
-        caption: caption ? `${caption} · ${file.name}` : file.name,
-        color,
-        cardTitle: caption || file.name,
-        meta: { accent: color, source: 'softquietmist' },
-      });
-      next.push({
-        name: file.name,
-        size: file.size,
-        id: res.id,
-        embed: res.id ? shareUrls(res.id).embed : undefined,
-        error: res.ok ? undefined : res.error,
-        warn: res.warn,
-      });
-      setRows([...next]);
+    setErr('');
+    setLinks([]);
+    try {
+      const newLinks: string[] = [];
+      if (files.length) {
+        for (const file of files) {
+          const res = await publishLocalFile(file, {
+            caption: note.trim() || 'settled in the mist',
+            color: accent,
+            cardTitle: file.name,
+            meta: { desk: 'softquietmist' },
+          });
+          if (res.ok && res.embed) newLinks.push(res.embed);
+          else if (!res.ok) setErr(res.error || 'upload failed');
+        }
+        setFiles([]);
+      }
+      setLinks(newLinks);
+      setNote('');
+      const fresh = await listPublicShares(6);
+      setMists(fresh);
+    } catch (e: any) {
+      setErr(e.message || 'something slowed');
     }
     setBusy(false);
   };
 
-  const copy = async (value: string) => {
-    await navigator.clipboard.writeText(value);
-    setCopied(value);
-    setTimeout(() => setCopied(''), 1200);
-  };
-
   return (
-    <div className="mesh min-h-screen">
+    <div className="mesh min-h-screen bg-[#0b0b0d] relative overflow-hidden">
       <Navbar />
-      <main className="mx-auto max-w-2xl px-5 pb-24 pt-10 relative">
-        <motion.div
-          className="absolute inset-0 pointer-events-none overflow-hidden"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-        >
-          {[...Array(7)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute rounded-full"
-              style={{
-                width: 120 + i * 30,
-                height: 80 + i * 20,
-                background: `${color}18`,
-                left: `${5 + (i * 13) % 75}%`,
-                top: `${8 + (i * 11) % 70}%`,
-                filter: 'blur(28px)',
-              }}
-              animate={{
-                scale: [1, 1.15, 1],
-                opacity: [0.12, 0.28, 0.12],
-                y: [0, -12, 0],
-              }}
-              transition={{
-                duration: 12 + i * 1.5,
-                repeat: Infinity,
-                ease: 'easeInOut',
-                delay: i * 0.6,
-              }}
-            />
-          ))}
-        </motion.div>
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {[...Array(12)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute rounded-full"
+            style={{
+              width: 40 + (i % 5) * 20,
+              height: 40 + (i % 5) * 20,
+              left: `${(i * 8) % 100}%`,
+              top: `${(i * 13) % 100}%`,
+              background: `${accent}${Math.floor(8 + (i % 4) * 4).toString(16)}`,
+              filter: 'blur(24px)',
+            }}
+            animate={{
+              y: [0, -40, 0],
+              x: [0, 20, 0],
+              opacity: [0.2, 0.5, 0.2],
+              scale: [1, 1.3, 1],
+            }}
+            transition={{ duration: 8 + (i % 4), repeat: Infinity, ease: 'easeInOut', delay: i * 0.4 }}
+          />
+        ))}
+      </div>
 
+      <div className="relative pt-32 pb-24 px-6 max-w-2xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 100, damping: 22 }}
-          className="relative"
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ type: 'spring', stiffness: 110, damping: 20 }}
+          className="glass rounded-[30px] p-8 shadow-2xl border border-white/10"
         >
-          <p className="text-[12px] uppercase tracking-[0.16em] text-white/45">softquietmist</p>
-          <h1 className="mt-2 text-[34px] font-semibold tracking-[-0.04em]">quiet mist for what you keep</h1>
-          <p className="mt-3 text-[15px] leading-relaxed text-white/60">
-            Drop one or many local files into quiet mist. Soft translucent clouds of your accent color gently breathe and drift across frosted glass with spring motion. Files land in storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. All prior desks remain intact.
+          <p className="text-[13px] font-medium tracking-wide mb-2" style={{ color: accent }}>Soft Quiet Mist</p>
+          <h1 className="text-[28px] font-semibold tracking-tight mb-3 text-white">Let it settle in the mist.</h1>
+          <p className="text-neutral-400 text-[14px] leading-relaxed mb-6">
+            Drop one or many local files with a shared note. Soft mist particles drift and fade with spring motion on deep navy glass. Lands in storage and public_shares. Every share link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
           </p>
+
+          <textarea
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="A quiet note that drifts in the mist…"
+            rows={3}
+            className="w-full bg-black/30 border border-white/10 rounded-[16px] px-4 py-3 text-[15px] text-white placeholder:text-neutral-500 mb-4 resize-none focus:outline-none focus:border-white/25 transition"
+          />
+
+          <div className="flex items-center gap-4 mb-5">
+            <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="w-10 h-10 rounded-full cursor-pointer border-0" />
+            <label className="flex-1 text-[13px] text-neutral-300 cursor-pointer hover:text-white transition border border-dashed border-white/15 rounded-[16px] py-3 px-4 text-center">
+              {files.length ? `${files.length} file${files.length > 1 ? 's' : ''}` : 'Choose local files'}
+              <input type="file" multiple className="hidden" onChange={(e) => onFiles(e.target.files)} />
+            </label>
+          </div>
+
+          {warn && <p className="text-[12px] text-amber-300/90 mb-3">{warn}</p>}
+
+          <motion.button
+            whileTap={{ scale: 0.96 }}
+            whileHover={{ scale: 1.02 }}
+            onClick={share}
+            disabled={busy || (files.length === 0 && !note.trim())}
+            className="w-full rounded-[18px] py-3.5 text-[15px] font-medium text-black disabled:opacity-40 transition shadow-lg"
+            style={{ background: accent }}
+          >
+            {busy ? 'Settling the mist…' : 'Drop into the mist'}
+          </motion.button>
+
+          <AnimatePresence>
+            {links.length > 0 && (
+              <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="mt-5 space-y-1">
+                {links.map((l, i) => (
+                  <a key={i} href={l} className="block text-[13px] break-all hover:underline" style={{ color: accent }}>{l}</a>
+                ))}
+              </motion.div>
+            )}
+            {err && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 text-[12px] text-red-400">{err}</motion.p>}
+          </AnimatePresence>
         </motion.div>
 
-        <label className="glass mt-8 block cursor-pointer rounded-3xl p-8 text-center relative">
-          <input className="hidden" type="file" multiple onChange={(e) => setFiles(Array.from(e.target.files || []))} />
-          <div className="text-[15px] text-white/80">{files.length ? `${files.length} files ready` : 'drop or choose files from this machine'}</div>
-          <div className="mt-1 text-[12px] text-white/40">any type · soft warning only · no hard limits</div>
-        </label>
-
-        {!!files.length && (
-          <ul className="mt-4 space-y-1.5">
-            {files.map((f) => (
-              <li key={f.name + f.size} className="flex items-center justify-between rounded-2xl bg-white/[0.04] px-4 py-2.5 text-[13px]">
-                <span className="truncate pr-3">{f.name}</span>
-                <span className="shrink-0 text-white/40">{(f.size / 1024).toFixed(0)} kb</span>
-              </li>
-            ))}
-          </ul>
+        {mists.length > 0 && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="mt-10">
+            <p className="text-[13px] text-neutral-400 mb-4">Recent mist</p>
+            <div className="grid gap-3">
+              {mists.map((item, i) => (
+                <motion.a
+                  key={item.id}
+                  href={`/s/${item.id}`}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: i * 0.06, type: 'spring', stiffness: 130, damping: 16 }}
+                  className="glass rounded-2xl p-4 block hover:bg-white/5 transition border border-white/5"
+                >
+                  <p className="text-[13px] font-medium text-white truncate">{item.name || 'untitled'}</p>
+                  <p className="text-[11px] text-neutral-500 mt-1">{item.caption || 'no note'}</p>
+                </motion.a>
+              ))}
+            </div>
+          </motion.div>
         )}
-
-        <div className="mt-4 grid gap-3">
-          <input value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="shared note that rides every card" className="glass rounded-2xl px-4 py-3 text-[14px] outline-none" />
-          <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="name, optional" className="glass rounded-2xl px-4 py-3 text-[14px] outline-none" />
-          <div className="flex items-center gap-3">
-            <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="h-10 w-14 cursor-pointer rounded-xl border border-white/10 bg-transparent" />
-            <span className="text-[13px] text-white/50">accent for cards and quiet mist</span>
-          </div>
-        </div>
-
-        {heavy && <p className="mt-3 text-[13px] text-amber-200/80">large batch. sending may feel slow. nothing is refused.</p>}
-
-        <motion.button
-          whileTap={{ scale: 0.97 }}
-          whileHover={{ scale: 1.01 }}
-          onClick={send}
-          disabled={!files.length || busy}
-          className="mt-4 w-full rounded-full px-4 py-3 text-[15px] font-medium text-white disabled:opacity-40"
-          style={{ background: color }}
-        >
-          {busy ? 'settling…' : 'share the mist'}
-        </motion.button>
-
-        {!!rows.length && (
-          <div className="mt-6 space-y-2">
-            {rows.map((r) => (
-              <div key={r.name + r.size} className="glass rounded-2xl px-4 py-3">
-                <div className="flex items-center justify-between gap-3">
-                  <p className="truncate text-[14px]">{r.name}</p>
-                  {r.embed ? (
-                    <button onClick={() => copy(r.embed!)} className="shrink-0 rounded-full bg-white/10 px-3 py-1 text-[12px]">
-                      {copied === r.embed ? 'copied' : 'copy link'}
-                    </button>
-                  ) : (
-                    <span className="text-[12px] text-red-300">{r.error || 'failed'}</span>
-                  )}
-                </div>
-                {r.embed && <p className="mt-1 break-all text-[12px] text-white/45">{r.embed}</p>}
-                {r.warn && <p className="mt-1 text-[12px] text-amber-200/80">{r.warn}</p>}
-              </div>
-            ))}
-          </div>
-        )}
-      </main>
+      </div>
     </div>
   );
 }

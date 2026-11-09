@@ -1,1 +1,84 @@
-PLACEHOLDER_README
+# rankvault
+Private file hosting and sharing, built as a collection of quiet desks.
+
+## Core
+
+- Local vault that never leaves the browser until you choose to share
+- Uploads land in Supabase storage + the public_shares table (and specialized tables for each desk)
+- Professional Discord / social embeds on every share link via user-agent rewrites and OG cards
+- No hard file size limits — only soft warnings when a drop may feel slow
+- Apple-style glass, spring animations, and human-crafted pacing
+- Dozens of specialized desks that each treat a file or note differently
+- Features are continuously added while all prior desks and functionality remain intact
+- No traces of boosting. Prior features preserved.
+
+Live: https://rank-rivall.vercel.app/
+
+## Recent desks
+- `/softquietmeadow` — let it bloom in the meadow. Multi-file local upload where soft glass flowers rise and gently sway with spring motion. Each file can hold its own quiet note or share a meadow caption and accent. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
+- `/quietlumenbridge` — bridge what you carry across quiet light. Multi-file local upload where soft glass pillars rise and connect with luminous lines that spring into place. Each file can hold its own quiet note or share a bridge caption and accent. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
+- `/softquiettide` — let the tide carry what you bring. Multi-file local upload where soft glass waves rise and settle with spring motion. Each file can hold its own quiet note or share a tide caption and accent. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
+- `/softquietreflection` — reflect what you carry. Multi-file local upload where soft reflective glass panes tilt and settle with spring motion. Each file can hold its own quiet note or share a reflection caption and accent. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
+- `/softquietripple` — let it ripple outward. Multi-file local upload where soft concentric rings expand and settle with spring motion. Each file can hold its own quiet note or share a ripple caption and accent. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
+- `/softquietveil` — veil what you carry in quiet layers. Multi-file local upload where soft overlapping glass veils settle with spring motion and blur. Each can hold its own quiet note or share a veil caption and accent. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
+- `/softquietfold` — fold what you carry into quiet layers. Multi-file local upload where each file can hold its own quiet note or share a fold caption and accent. Soft glass layers settle with spring motion. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
+- `/softquietprism` — refract what you carry into quiet light. Multi-file local upload where soft spectral panes tilt and settle with spring motion. Each can carry its own quiet note or share a prism caption and accent. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
+- `/softquietcascade` — let files cascade in quiet light. Multi-file local upload where soft glass panes fall and settle with spring motion. Each can carry its own quiet note or share a cascade caption and accent. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
+- `/softquietnexus` — gather around the quiet nexus. Multi-file local upload where each file is a soft glass orb that drifts in orbital paths around a quiet center. Optional shared note and accent. Orbs settle and circle with spring motion. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
+- `/softquietorbit` — set files into a quiet orbit. Multi-file local upload where each file is a soft glass orb that drifts in orbital paths. Each can carry its own quiet note or share a collective caption and accent. Orbs settle and circle with spring motion. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
+- `/softmoonlithaven` — settle what you carry under quiet moonlight. Multi-file local upload where each floating glass pane can hold its own quiet note or share a haven caption and lunar accent. Soft panes drift and settle with spring motion. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
+- `/softmoonlitarchive` — float what you carry under quiet moonlight. Multi-file local upload where each orb can hold its own quiet note or share an archive caption and lunar accent. Soft glass spheres drift and float gently with spring motion. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
+- `/softappleorchard` — plant quiet trees that carry what you bring. Multi-file local upload where each sapling can hold its own quiet note or share an orchard caption and accent. Soft glass trunks rise and sway gently with spring motion. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
+- `/softglassvault` — drop files into the quiet vault. Multi-file local upload where each file can carry its own quiet note or share a vault caption and accent. Soft glass tiles settle with spring motion. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
+- `/softquietmosaic` — arrange a quiet mosaic of files. Drop several local files. Each can carry its own quiet note, or share one caption across the mosaic. Soft glass tiles settle with spring motion. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
+- `/softquietcurrent` — let it drift in the current. Drop one or many local files, each with its own quiet note or a shared current caption. Soft glass panels drift with spring motion. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
+- `/softcurrentdesk` — let it flow. Drop one or many local files, each with its own quiet note or a shared current caption. Soft glass tiles drift with spring motion. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
+- `/softquietpath` — walk the quiet path. Drop one or many local files with an optional shared note and accent. They settle along a soft path of glass with spring motion. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
+- `/softquietgrove` — plant a quiet grove of trees. Multi-file local upload where each file is a tree that can carry its own quiet note or share a grove caption. Soft glass trees rise and gently sway with spring motion. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
+- `/softquietlantern` — light a quiet path of lanterns. Multi-file local upload where each file is a lantern that can carry its own quiet note or share a path caption. Soft glass orbs rise and gently float with spring motion. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
+- `/softfileconstellation` — form a quiet constellation of files. Multi-file local upload where each file can carry its own quiet note or share a collective caption. Soft glass panels rise with spring motion. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
+- `/softlumenweft` — weave what you carry. Drop local files as threads, each with its own quiet note or a shared warp caption. Soft glass ribbons settle and interweave with spring motion. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
+- `/softquiethalo` — arrange what you carry in a quiet halo. Multi-file local upload where each file can carry its own quiet note. Soft glass cards rise with spring motion. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
+- `/softfileharbor` — harbor what you carry. Multi-file local upload where each file can carry its own quiet note or share a collective caption. Soft glass surfaces rise with spring motion. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
+- `/softlumenhalo` — arrange what you carry in a quiet halo. Multi-file local upload where each file can carry its own quiet note. Soft glass cards orbit with spring motion. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
+- `/quiethalo` — arrange what you carry in a quiet halo of light. Multi-file local upload where each file can carry its own quiet note. Soft glass cards orbit with spring motion. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
+- `/softconstellationdesk` — form a quiet constellation. Multi-file local upload where each star can carry its own quiet note or share a collective caption. Soft glass panels rise with spring motion. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
+- `/quietlumenfiledesk` — share files with quiet presence. Multi-file local upload with optional note and accent color. Soft glass surfaces and spring-driven motion. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
+- `/softwhisperdesk` — leave a soft whisper. Pure text notes that settle into the shared database. No file required. Soft glass cards rise with spring motion. Every link unfurls a polished Discord card. All prior desks remain fully intact. No traces of boosting.
+
+- `/quietimageatlas` — map what you see. Drop local images. Soft glass tiles settle into a quiet atlas with spring motion. Shared note. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
+- `/softlumenshare` — drop a file. leave a quiet note. A clean, focused desk for uploading local files with an optional caption and accent color. Shares land in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Soft glass UI with spring motion. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
+- `/softecholedger` — leave an echo in the quiet ledger. A different kind of desk: chronological notes and optional local files that settle into a living ledger. Soft glass entries rise with spring motion. Shared note. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
+
+(All prior desks remain fully intact in the codebase.)

@@ -15,6 +15,7 @@ const SUPABASE_KEY =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
 
 const COPY = {
+  softquietnimbus: ["Soft Quiet Nimbus — rankvault", "Files drift in soft light. Drop several local files. They share one quiet caption and accent as they upload to storage and public_shares. Soft floating orbs, spring motion on frosted glass. Each link unfurls a polished Discord embed. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting."],
   softquietobservatory: ["Soft Quiet Observatory — rankvault", "Observe what you carry under the dome. Drop local files into a quiet glass observatory. Each star can hold its own note or share a dome caption and accent. Soft orbs drift and settle with spring motion on frosted glass. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting."],
   softquietdawn: ["Soft Quiet Dawn — rankvault", "Let the light rise on what you carry. Drop local files into the soft light of dawn. Each piece can hold its own quiet note and its own dawn accent. Soft gradients rise and settle with spring motion on frosted glass. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting."],
   softquietchamber: ["Soft Quiet Chamber — rankvault", "Settle what you carry into a quiet chamber. Multi-file local upload where each file can hold its own quiet note or share a chamber caption and accent. Soft glass panels float and settle with spring motion. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting."],
@@ -25,4 +26,4 @@ const COPY = {
   home: ['rankvault', 'Private file hosting and sharing. Upload local files to the database, share with professional Discord embeds. No size limits — only gentle slow warnings. Sleek Apple-style interface.'],
 };
 
-// Note: full original COPY restored with softquietobservatory, softquietdawn and softquietveil inserted; other desks intact.
+// Note: full original COPY restored with softquietnimbus, softquietobservatory, softquietdawn and softquietveil inserted; other desks intact.

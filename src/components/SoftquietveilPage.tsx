@@ -23,7 +23,7 @@ export default function SoftquietveilPage() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [files, setFiles] = useState<Dropped[]>([]);
   const [sharedCaption, setSharedCaption] = useState('');
-  const [accent, setAccent] = useState('#BF5AF2');
+  const [accent, setAccent] = useState('#5AC8FA');
   const [busy, setBusy] = useState(false);
   const [results, setResults] = useState<{id: string; name: string; link: string; warn?: string}[]>([]);
   const [copied, setCopied] = useState('');
@@ -37,7 +37,7 @@ export default function SoftquietveilPage() {
       note: '',
       status: 'pending' as const,
     }));
-    setFiles(prev => [...prev, ...next].slice(0, 12));
+    setFiles(prev => [...prev, ...next].slice(0, 16));
   };
 
   const updateNote = (idx: number, note: string) => {
@@ -83,17 +83,17 @@ export default function SoftquietveilPage() {
     setTimeout(() => setCopied(''), 1400);
   };
 
-  const spring = { type: 'spring' as const, stiffness: 320, damping: 26, mass: 0.8 };
+  const spring = { type: 'spring' as const, stiffness: 220, damping: 20, mass: 0.7 };
 
   return (
     <div className="min-h-screen bg-[#050506] text-[#f5f5f7]">
       <Navbar />
       <main className="mx-auto max-w-4xl px-5 pb-28 pt-28">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={spring}>
+        <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={spring}>
           <p className="text-[12px] uppercase tracking-[0.18em] text-neutral-500">soft quiet veil</p>
-          <h1 className="mt-2 text-4xl sm:text-5xl font-semibold tracking-tight">Veil what you carry in quiet layers.</h1>
+          <h1 className="mt-2 text-4xl sm:text-5xl font-semibold tracking-tight">Let it settle behind the veil.</h1>
           <p className="mt-4 max-w-2xl text-[16px] leading-relaxed text-neutral-400">
-            Drop local files into soft overlapping veils. Each glass layer settles with gentle spring motion, carrying its own quiet note or sharing a veil caption and accent. They land in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact.
+            Drop local files behind a soft veil of light. Each piece can hold its own quiet note or share a veil caption and accent. Soft translucent layers drift and settle with spring motion on frosted glass. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
           </p>
         </motion.div>
 
@@ -104,7 +104,7 @@ export default function SoftquietveilPage() {
               value={sharedCaption}
               onChange={e => setSharedCaption(e.target.value)}
               placeholder="a quiet note for the whole veil"
-              className="mt-1.5 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition focus:border-[#BF5AF2]"
+              className="mt-1.5 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition focus:border-[#5AC8FA]"
             />
           </label>
           <label className="block text-sm text-neutral-400">
@@ -123,54 +123,57 @@ export default function SoftquietveilPage() {
           onClick={() => inputRef.current?.click()}
           onDragOver={e => e.preventDefault()}
           onDrop={e => { e.preventDefault(); addFiles(e.dataTransfer.files); }}
-          whileHover={{ scale: 1.005 }}
-          whileTap={{ scale: 0.995 }}
-          className="mt-5 flex w-full flex-col items-center rounded-[28px] border border-dashed border-white/15 bg-white/[0.03] px-6 py-16 text-center transition hover:border-[#BF5AF2]/50"
+          whileHover={{ scale: 1.004 }}
+          whileTap={{ scale: 0.996 }}
+          className="mt-5 flex w-full flex-col items-center rounded-[28px] border border-dashed border-white/15 bg-white/[0.03] px-6 py-16 text-center transition hover:border-[#5AC8FA]/50 relative overflow-hidden"
         >
-          <span className="text-[17px] font-medium">Drop local files into the veil</span>
-          <span className="mt-2 text-[13px] text-neutral-500">up to 12. no hard size limit — large ones just warned of possible slowness.</span>
+          <span className="text-[17px] font-medium z-10">Drop local files behind the veil</span>
+          <span className="mt-2 text-[13px] text-neutral-500 z-10">up to 16. no hard size limit — large ones just warned of possible slowness.</span>
+          <motion.div className="absolute inset-0 pointer-events-none opacity-40" animate={{ x: [0, 12, 0], opacity: [0.3, 0.5, 0.3] }} transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}>
+            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-transparent via-white/5 to-transparent blur-md" />
+          </motion.div>
         </motion.button>
         <input ref={inputRef} type="file" multiple className="hidden" onChange={e => { if (e.target.files) addFiles(e.target.files); e.target.value = ''; }} />
 
         {slow && files.length > 0 && (
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-3 text-sm text-[#ffd60a]">
-            This veil is large. Nothing is refused — it may simply take a moment to leave your machine.
+            This veil is dense. Nothing is refused — it may simply take a moment to leave your machine.
           </motion.p>
         )}
 
         <AnimatePresence>
           {files.length > 0 && (
-            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="mt-6 space-y-3 relative">
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="mt-6 space-y-3">
               {files.map((item, idx) => (
                 <motion.div
                   key={item.file.name + idx}
                   layout
-                  initial={{ opacity: 0, y: 30, scale: 0.92, filter: 'blur(4px)' }}
-                  animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
-                  exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                  transition={{ ...spring, delay: idx * 0.06 }}
-                  className="glass relative z-10 flex items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.04] p-4 shadow-xl"
-                  style={{ marginLeft: `${idx * 8}px`, marginTop: idx > 0 ? '-8px' : 0 }}
+                  initial={{ opacity: 0, x: -20, filter: 'blur(4px)' }}
+                  animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+                  exit={{ opacity: 0, x: 20 }}
+                  transition={{ ...spring, delay: idx * 0.05 }}
+                  className="glass relative rounded-3xl border border-white/10 bg-white/[0.04] p-4 shadow-xl overflow-hidden"
                 >
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-[15px] font-medium">{item.file.name}</p>
+                  <div className="absolute inset-y-0 left-0 w-1" style={{ background: accent }} />
+                  <div className="min-w-0 pl-3">
+                    <p className="truncate text-[14px] font-medium">{item.file.name}</p>
                     <p className="text-xs text-neutral-500">{pretty(item.file.size)} · {item.status}</p>
                     <input
                       value={item.note}
                       onChange={e => updateNote(idx, e.target.value)}
-                      placeholder="quiet note for this file (overrides shared)"
-                      className="mt-2 w-full rounded-xl bg-black/30 border border-white/10 px-3 py-2 text-sm text-white outline-none focus:border-[#BF5AF2]"
+                      placeholder="quiet note for this piece"
+                      className="mt-2 w-full rounded-xl bg-black/30 border border-white/10 px-2 py-1.5 text-xs text-white outline-none focus:border-[#5AC8FA]"
                     />
                   </div>
-                  <button onClick={() => remove(idx)} className="text-neutral-500 hover:text-white text-sm">remove</button>
+                  <button onClick={() => remove(idx)} className="absolute top-3 right-3 text-neutral-500 hover:text-white text-xs">×</button>
                 </motion.div>
               ))}
               <button
                 onClick={uploadAll}
                 disabled={busy}
-                className="rounded-full bg-[#BF5AF2] px-6 py-3 text-sm font-medium text-white disabled:opacity-60 mt-4"
+                className="w-full rounded-full bg-[#5AC8FA] px-6 py-3 text-sm font-medium text-black disabled:opacity-60 mt-2"
               >
-                {busy ? 'Veiling into the quiet…' : 'Share the veil'}
+                {busy ? 'Settling behind the veil…' : 'Share the veil'}
               </button>
             </motion.div>
           )}
@@ -180,12 +183,12 @@ export default function SoftquietveilPage() {
           {results.length > 0 && (
             <motion.section initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} className="mt-10">
               <h2 className="text-xl font-semibold tracking-tight">Veil links</h2>
-              <p className="mt-1 text-sm text-neutral-500">Each file has its own polished Discord card.</p>
+              <p className="mt-1 text-sm text-neutral-500">Each piece has its own polished Discord card.</p>
               <div className="mt-4 space-y-3">
                 {results.map(r => (
                   <div key={r.id} className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                     <p className="font-medium">{r.name}</p>
-                    <p className="mt-1 break-all text-sm text-[#BF5AF2]">{r.link}</p>
+                    <p className="mt-1 break-all text-sm text-[#5AC8FA]">{r.link}</p>
                     {r.warn && <p className="mt-1 text-xs text-[#ffd60a]">{r.warn}</p>}
                     <button onClick={() => copy(r.link, r.id)} className="mt-2 text-sm text-white/80 hover:text-white">
                       {copied === r.id ? 'copied' : 'copy link'}

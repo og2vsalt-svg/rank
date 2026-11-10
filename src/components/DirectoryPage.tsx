@@ -4,6 +4,7 @@ import { useRouter } from './Router';
 import Navbar from './Navbar';
 
 const desks = [
+  { to: 'softquietprism', label: 'soft quiet prism', desc: 'refractive multi-file prism with spectral accents' },
   { to: 'softquietlattice', label: 'soft quiet lattice', desc: 'interlocking multi-file lattice with notes' },
   { to: 'softquietmosaic', label: 'soft quiet mosaic', desc: 'visual mosaic of files with per-piece notes' },
   { to: 'softquietbrook', label: 'soft quiet brook', desc: 'files flow gently downstream' },

@@ -15,6 +15,8 @@ Private file hosting and sharing, built as a collection of quiet desks.
 Live: https://rank-rivall.vercel.app/
 
 ## Recent desks
+- `/softquietecho` — let it echo softly. Multi-file local upload where soft light echoes settle with spring motion on frosted glass. Shared caption. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style spring motion. All prior desks remain fully intact. No traces of boosting.
+
 - `/publicboard` — what others have shared. Browse recent public drops from the database with live image previews and open counts. Quick multi-file drop zone with optional shared caption. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style spring motion on frosted glass. All prior desks remain fully intact. No traces of boosting.
 
 - `/softquietprism` — let light split through a quiet prism. Multi-file local upload where soft spectral beams drift and settle with spring motion on frosted glass. Shared note and accent. Lands in storage and public_shares. Every link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.

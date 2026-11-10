@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'softquietatrium', href: '/softquietatrium', body: 'settle under quiet light shafts. drop one or many local files into a quiet atrium. soft shafts of light descend and settle with spring motion on frosted glass. each piece can hold its own note or share an atrium caption and accent. lands in storage and public_shares. every link unfurls a polished Discord card. large drops gently warned about possible slowness, never refused. human-crafted Apple-style pacing. all prior desks remain fully intact. no traces of boosting.' },
+
   { title: 'softquietspectrum', href: '/softquietspectrum', body: 'let light split across what you carry. drop one or many local files with a shared note and accent. soft spectral bands drift and settle with spring motion on frosted glass. lands in storage and public_shares. every share link unfurls a polished Discord card. large drops gently warned about possible slowness, never refused. human-crafted Apple-style pacing. all prior desks remain fully intact. no traces of boosting.' },
 
   { title: 'softquietnote', href: '/softquietnote', body: 'write quietly, attach what you carry. compose a note with optional title and local files. settles under soft glass with gentle spring motion. lands in storage and public_shares. every link unfurls a polished Discord card. large drops gently warned about possible slowness, never refused. human-crafted Apple-style pacing. all prior desks remain fully intact. no traces of boosting.' },

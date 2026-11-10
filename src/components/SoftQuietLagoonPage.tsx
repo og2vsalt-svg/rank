@@ -16,16 +16,15 @@ const pads = Array.from({ length: 7 }, (_, i) => ({
   id: i,
   x: 10 + (i * 13) % 80,
   y: 20 + (i * 17) % 60,
-  size: 40 + (i % 4) * 20,
   delay: i * 0.4,
-  duration: 6 + (i % 3),
+  size: 40 + (i % 3) * 20,
 }));
 
 export default function SoftQuietLagoonPage() {
   const [files, setFiles] = useState<File[]>([]);
   const [author, setAuthor] = useState('');
   const [caption, setCaption] = useState('');
-  const [color, setColor] = useState('#4ADE80');
+  const [color, setColor] = useState('#5AC8FA');
   const [busy, setBusy] = useState(false);
   const [rows, setRows] = useState<Row[]>([]);
   const [copied, setCopied] = useState('');
@@ -39,7 +38,7 @@ export default function SoftQuietLagoonPage() {
     for (const file of files) {
       const res = await publishLocalFile(file, {
         author,
-        caption: caption ? `${caption} · ${file.name}` : file.name,
+        caption: caption ? `${caption} \u00b7 ${file.name}` : file.name,
         color,
         cardTitle: caption || file.name,
         meta: { accent: color, source: 'softquietlagoon' },
@@ -76,17 +75,16 @@ export default function SoftQuietLagoonPage() {
               top: `${p.y}%`,
               width: p.size,
               height: p.size * 0.7,
-              background: `radial-gradient(ellipse, ${color}40, ${color}10)`,
-              border: `1px solid ${color}60`,
+              background: `radial-gradient(ellipse, ${color}40, transparent 70%)`,
+              filter: 'blur(1px)',
             }}
             animate={{
-              y: [0, -12, 0],
-              x: [0, 6, -4, 0],
-              rotate: [0, 2, -1, 0],
-              opacity: [0.6, 0.9, 0.6],
+              y: [0, -8, 0],
+              x: [0, 4, 0],
+              opacity: [0.4, 0.7, 0.4],
             }}
             transition={{
-              duration: p.duration,
+              duration: 5 + p.id * 0.3,
               delay: p.delay,
               repeat: Infinity,
               ease: 'easeInOut',
@@ -98,7 +96,7 @@ export default function SoftQuietLagoonPage() {
           style={{
             background: `linear-gradient(to top, ${color}18, transparent)`,
           }}
-          animate={{ opacity: [0.4, 0.7, 0.4] }}
+          animate={{ opacity: [0.2, 0.5, 0.2] }}
           transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
         />
       </div>
@@ -173,7 +171,7 @@ export default function SoftQuietLagoonPage() {
             className="w-full rounded-full px-4 py-3.5 text-[15px] font-medium text-black disabled:opacity-40"
             style={{ background: color }}
           >
-            {busy ? 'settling into lagoon…' : 'share the lagoon'}
+            {busy ? 'settling into lagoon\u2026' : 'share the lagoon'}
           </motion.button>
 
           {!!rows.length && (

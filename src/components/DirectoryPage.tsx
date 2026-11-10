@@ -4,6 +4,8 @@ import { useRouter } from './Router';
 import Navbar from './Navbar';
 
 const desks = [
+  { to: 'softquietlattice', label: 'soft quiet lattice', desc: 'interlocking multi-file lattice with notes' },
+  { to: 'softquietmosaic', label: 'soft quiet mosaic', desc: 'visual mosaic of files with per-piece notes' },
   { to: 'softquietbrook', label: 'soft quiet brook', desc: 'files flow gently downstream' },
   { to: 'softquietatrium', label: 'soft quiet atrium', desc: 'quiet light shafts for files' },
   { to: 'softquietvault', label: 'soft quiet vault', desc: 'private local + cloud shares' },

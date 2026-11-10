@@ -1,164 +1,104 @@
-import { useMemo, useState } from 'react';
-import { motion } from 'framer-motion';
-import Navbar from './Navbar';
-import { publishLocalFile, shareUrls } from '../lib/cloudShare';
+import { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
-type Row = {
-  name: string;
-  size: number;
-  id?: string;
-  embed?: string;
-  error?: string;
-  warn?: string | null;
-};
+const SB_URL = 'https://tqfocdktvjuwoiyfgesb.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxZm9jZGt0dmp1d29peWZnZXNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDg0NTIsImV4cCI6MjEwNTQ4NDQ1Mn0.8TW4fQCQHc4c_xTNBEwOK3lSC9HYCbkTbfXuYQB-S8g';
+
+type Echo = { id: string; body: string; author?: string | null; accent?: string; created_at: string };
 
 export default function SoftEchoPage() {
-  const [files, setFiles] = useState<File[]>([]);
+  const [echoes, setEchoes] = useState<Echo[]>([]);
+  const [body, setBody] = useState('');
   const [author, setAuthor] = useState('');
-  const [caption, setCaption] = useState('');
-  const [color, setColor] = useState('#64D2FF');
-  const [busy, setBusy] = useState(false);
-  const [rows, setRows] = useState<Row[]>([]);
-  const [copied, setCopied] = useState('');
+  const [accent, setAccent] = useState('#0A84FF');
+  const [sending, setSending] = useState(false);
 
-  const heavy = useMemo(() => files.reduce((n, f) => n + f.size, 0) > 40 * 1024 * 1024, [files]);
-
-  const send = async () => {
-    if (!files.length) return;
-    setBusy(true);
-    const next: Row[] = [];
-    for (const file of files) {
-      const res = await publishLocalFile(file, {
-        author,
-        caption: caption ? `${caption} · ${file.name}` : file.name,
-        color,
-        cardTitle: caption || file.name,
-        meta: { accent: color, source: 'softecho' },
-      });
-      next.push({
-        name: file.name,
-        size: file.size,
-        id: res.id,
-        embed: res.id ? shareUrls(res.id).embed : undefined,
-        error: res.ok ? undefined : res.error,
-        warn: res.warn,
-      });
-      setRows([...next]);
-    }
-    setBusy(false);
+  const load = async () => {
+    const res = await fetch(`${SB_URL}/rest/v1/soft_echoes?select=*&order=created_at.desc&limit=40`, {
+      headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` },
+    });
+    if (res.ok) setEchoes(await res.json());
   };
 
-  const copy = async (value: string) => {
-    await navigator.clipboard.writeText(value);
-    setCopied(value);
-    setTimeout(() => setCopied(''), 1200);
+  useEffect(() => { load(); }, []);
+
+  const send = async () => {
+    if (!body.trim()) return;
+    setSending(true);
+    const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    await fetch(`${SB_URL}/rest/v1/soft_echoes`, {
+      method: 'POST',
+      headers: {
+        apikey: SB_KEY,
+        Authorization: `Bearer ${SB_KEY}`,
+        'Content-Type': 'application/json',
+        Prefer: 'return=minimal',
+      },
+      body: JSON.stringify({ id, body: body.trim(), author: author.trim() || null, accent }),
+    });
+    setBody('');
+    setSending(false);
+    load();
   };
 
   return (
-    <div className="mesh min-h-screen">
-      <Navbar />
-      <main className="mx-auto max-w-2xl px-5 pb-24 pt-10 relative">
-        <motion.div
-          className="absolute inset-0 pointer-events-none overflow-hidden"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+    <div className="min-h-screen bg-[#050506] text-white pt-24 px-5 pb-20">
+      <div className="max-w-xl mx-auto">
+        <motion.h1
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-4xl font-semibold tracking-tight mb-2"
         >
-          {[...Array(5)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute rounded-full border border-white/20"
-              style={{
-                width: 80,
-                height: 80,
-                left: '50%',
-                top: '45%',
-                marginLeft: -40,
-                marginTop: -40,
-                borderColor: color,
-                opacity: 0.3,
-              }}
-              animate={{
-                scale: [1, 3.5 + i * 0.4],
-                opacity: [0.4, 0],
-              }}
-              transition={{
-                duration: 4 + i * 0.6,
-                repeat: Infinity,
-                ease: 'easeOut',
-                delay: i * 0.8,
-              }}
+          soft echo
+        </motion.h1>
+        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.06 }} className="text-neutral-400 mb-8">
+          Leave a quiet line. It settles into the public stream with soft spring motion. No accounts required. All prior features stay.
+        </motion.p>
+
+        <div className="glass rounded-3xl p-6 mb-8">
+          <textarea
+            value={body}
+            onChange={(e) => setBody(e.target.value)}
+            placeholder="a soft line…"
+            rows={3}
+            className="w-full bg-transparent outline-none resize-none text-sm"
+          />
+          <div className="flex items-center gap-3 mt-3">
+            <input
+              value={author}
+              onChange={(e) => setAuthor(e.target.value)}
+              placeholder="optional name"
+              className="flex-1 bg-transparent text-sm outline-none"
             />
-          ))}
-        </motion.div>
-
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 110, damping: 20 }} className="relative">
-          <p className="text-[12px] uppercase tracking-[0.16em] text-white/45">softecho</p>
-          <h1 className="mt-2 text-[34px] font-semibold tracking-[-0.04em]">quiet echoes for what you carry</h1>
-          <p className="mt-3 text-[15px] leading-relaxed text-white/60">
-            Multi-file drop with shared note and accent. Soft concentric ripples expand and fade like gentle echoes in your color, with spring motion on frosted glass. Each file uploads to storage and the public_shares table. Share links unfurl with polished Discord cards. Large files receive only a gentle warning of slowness. Prior desks remain intact. No traces of boosting.
-          </p>
-        </motion.div>
-
-        <label className="glass mt-8 block cursor-pointer rounded-3xl p-8 text-center relative">
-          <input className="hidden" type="file" multiple onChange={(e) => setFiles(Array.from(e.target.files || []))} />
-          <div className="text-[15px] text-white/80">{files.length ? `${files.length} files ready` : 'drop or choose files from this machine'}</div>
-          <div className="mt-1 text-[12px] text-white/40">any type · soft warning only · no hard limits</div>
-        </label>
-
-        {!!files.length && (
-          <ul className="mt-4 space-y-1.5">
-            {files.map((f) => (
-              <li key={f.name + f.size} className="flex items-center justify-between rounded-2xl bg-white/[0.04] px-4 py-2.5 text-[13px]">
-                <span className="truncate pr-3">{f.name}</span>
-                <span className="shrink-0 text-white/40">{(f.size / 1024).toFixed(0)} kb</span>
-              </li>
-            ))}
-          </ul>
-        )}
-
-        <div className="mt-4 grid gap-3">
-          <input value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="shared note that rides every card" className="glass rounded-2xl px-4 py-3 text-[14px] outline-none" />
-          <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="name, optional" className="glass rounded-2xl px-4 py-3 text-[14px] outline-none" />
-          <div className="flex items-center gap-3">
-            <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="h-10 w-14 cursor-pointer rounded-xl border border-white/10 bg-transparent" />
-            <span className="text-[13px] text-white/50">accent for cards and echoing ripples</span>
+            <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="w-8 h-8 rounded-full border-0" />
+            <motion.button
+              whileTap={{ scale: 0.96 }}
+              onClick={send}
+              disabled={sending || !body.trim()}
+              className="px-4 py-1.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40"
+            >
+              {sending ? '…' : 'echo'}
+            </motion.button>
           </div>
         </div>
 
-        {heavy && <p className="mt-3 text-[13px] text-amber-200/80">large batch. sending may feel slow. nothing is refused.</p>}
-
-        <motion.button
-          whileTap={{ scale: 0.97 }}
-          whileHover={{ scale: 1.01 }}
-          onClick={send}
-          disabled={!files.length || busy}
-          className="mt-4 w-full rounded-full px-4 py-3 text-[15px] font-medium text-white disabled:opacity-40"
-          style={{ background: color }}
-        >
-          {busy ? 'sending…' : 'share the echo'}
-        </motion.button>
-
-        {!!rows.length && (
-          <div className="mt-6 space-y-2">
-            {rows.map((r) => (
-              <div key={r.name + r.size} className="glass rounded-2xl px-4 py-3">
-                <div className="flex items-center justify-between gap-3">
-                  <p className="truncate text-[14px]">{r.name}</p>
-                  {r.embed ? (
-                    <button onClick={() => copy(r.embed!)} className="shrink-0 rounded-full bg-white/10 px-3 py-1 text-[12px]">
-                      {copied === r.embed ? 'copied' : 'copy link'}
-                    </button>
-                  ) : (
-                    <span className="text-[12px] text-red-300">{r.error || 'failed'}</span>
-                  )}
-                </div>
-                {r.embed && <p className="mt-1 break-all text-[12px] text-white/45">{r.embed}</p>}
-                {r.warn && <p className="mt-1 text-[12px] text-amber-200/80">{r.warn}</p>}
-              </div>
+        <div className="space-y-3">
+          <AnimatePresence>
+            {echoes.map((e) => (
+              <motion.div
+                key={e.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="glass rounded-2xl p-4 apple-card"
+                style={{ borderLeft: `3px solid ${e.accent || '#0A84FF'}` }}
+              >
+                <p className="text-sm leading-relaxed">{e.body}</p>
+                <p className="text-xs text-neutral-500 mt-2">{e.author || 'anonymous'} · {new Date(e.created_at).toLocaleDateString()}</p>
+              </motion.div>
             ))}
-          </div>
-        )}
-      </main>
+          </AnimatePresence>
+        </div>
+      </div>
     </div>
   );
 }

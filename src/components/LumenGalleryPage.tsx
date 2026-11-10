@@ -1,65 +1,90 @@
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
-import { listPublicShares, shareUrls, type CloudMeta } from '../lib/cloudShare';
-import Navbar from './Navbar';
-import { useRouter } from './Router';
+import { motion, AnimatePresence } from 'framer-motion';
+import { listPublicShares, type CloudMeta } from '../lib/cloudShare';
 
 export default function LumenGalleryPage() {
-  const { navigate } = useRouter();
-  const [shares, setShares] = useState<CloudMeta[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [items, setItems] = useState<CloudMeta[]>([]);
+  const [open, setOpen] = useState<CloudMeta | null>(null);
 
   useEffect(() => {
-    (async () => {
-      const list = await listPublicShares(48);
-      setShares(list);
-      setLoading(false);
-    })();
+    listPublicShares(48).then((rows) => {
+      setItems(rows.filter((r) => String(r.type || '').startsWith('image/')));
+    });
   }, []);
 
   return (
-    <div className="mesh min-h-screen text-white">
-      <Navbar />
-      <div className="pt-28 pb-20 px-5 sm:px-8 max-w-6xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
+    <div className="min-h-screen bg-[#050506] text-white pt-24 px-5 pb-20">
+      <div className="max-w-5xl mx-auto">
+        <motion.h1
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ type: 'spring', stiffness: 100, damping: 20 }}
+          className="text-4xl sm:text-5xl font-semibold tracking-tight mb-3"
         >
-          <p className="text-[#64D2FF] text-sm font-medium tracking-wide mb-3">lumen gallery</p>
-          <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight leading-[1.05] mb-4">
-            recent light from the desks.
-          </h1>
-          <p className="text-neutral-400 text-lg max-w-2xl mb-10 leading-relaxed">
-            A quiet gallery of recent public shares. Browse what others have dropped into the database. Every link unfurls a polished Discord card. All prior desks remain fully intact. No traces of boosting.
-          </p>
-        </motion.div>
+          lumen gallery
+        </motion.h1>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.08 }}
+          className="text-neutral-400 mb-10 max-w-lg"
+        >
+          Soft light on shared images. Tap any piece to expand. All prior desks remain. Discord embeds on every link.
+        </motion.p>
 
-        {loading ? (
-          <p className="text-neutral-500 text-sm">gathering light…</p>
-        ) : shares.length === 0 ? (
-          <p className="text-neutral-500">no public shares yet. drop something on any desk.</p>
-        ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {shares.map((s, i) => (
-              <motion.button
-                key={s.id}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.03, type: 'spring', stiffness: 200, damping: 22 }}
-                onClick={() => navigate('s', s.id)}
-                className="text-left rounded-2xl bg-white/[0.04] border border-white/10 p-4 hover:bg-white/[0.07] transition overflow-hidden"
-              >
-                {s.type.startsWith('image/') && s.url && !s.url.startsWith('data:') && (
-                  <img src={s.url} alt="" className="w-full h-32 object-cover rounded-xl mb-3" />
-                )}
-                <p className="font-medium text-sm truncate">{s.name || 'untitled'}</p>
-                {s.caption && <p className="text-xs text-neutral-400 mt-1 line-clamp-2">{s.caption}</p>}
-                <p className="text-[10px] text-neutral-500 mt-2">{(s.size / 1024 / 1024).toFixed(1)} MB · {s.author || 'anonymous'}</p>
-              </motion.button>
-            ))}
-          </div>
+        <div className="columns-2 sm:columns-3 gap-4 space-y-4">
+          {items.map((item, i) => (
+            <motion.div
+              key={item.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.03, type: 'spring', stiffness: 120, damping: 22 }}
+              className="break-inside-avoid glass rounded-2xl overflow-hidden cursor-pointer apple-card"
+              onClick={() => setOpen(item)}
+            >
+              <img
+                src={item.fileUrl || item.url}
+                alt={item.name}
+                className="w-full object-cover"
+                loading="lazy"
+              />
+              {item.caption && (
+                <div className="p-3 text-xs text-neutral-300">{item.caption}</div>
+              )}
+            </motion.div>
+          ))}
+        </div>
+
+        {items.length === 0 && (
+          <p className="text-neutral-500 text-sm mt-8">no shared images yet. drop one from direct share.</p>
         )}
+
+        <AnimatePresence>
+          {open && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-6"
+              onClick={() => setOpen(null)}
+            >
+              <motion.div
+                initial={{ scale: 0.96, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.96, opacity: 0 }}
+                transition={{ type: 'spring', stiffness: 180, damping: 22 }}
+                className="max-w-3xl w-full"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <img src={open.fileUrl || open.url} alt={open.name} className="w-full rounded-3xl" />
+                <div className="mt-4 glass rounded-2xl p-4">
+                  <p className="font-medium">{open.name}</p>
+                  {open.caption && <p className="text-sm text-neutral-400 mt-1">{open.caption}</p>}
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

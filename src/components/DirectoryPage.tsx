@@ -4,6 +4,7 @@ import { useRouter } from './Router';
 import Navbar from './Navbar';
 
 const desks = [
+  { to: 'softquietbrook', label: 'soft quiet brook', desc: 'files flow gently downstream' },
   { to: 'softquietatrium', label: 'soft quiet atrium', desc: 'quiet light shafts for files' },
   { to: 'softquietvault', label: 'soft quiet vault', desc: 'private local + cloud shares' },
   { to: 'softquietecho', label: 'soft quiet echo', desc: 'echoing file drops' },

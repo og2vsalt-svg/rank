@@ -7,6 +7,8 @@ type NavItem = { to: Route; label: string };
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'directshare', label: 'share' },
+  { to: 'lumengallery', label: 'gallery' },
+  { to: 'softecho', label: 'echo' },
   { to: 'directory', label: 'desks' },
   { to: 'publicboard', label: 'board' },
   { to: 'notes', label: 'notes' },
@@ -46,7 +48,7 @@ export default function Navbar() {
           <div className="md:hidden" ref={ref}>
             <button onClick={() => setOpen((o) => !o)} className="px-3 py-1.5 text-sm rounded-full hover:bg-white/10">menu</button>
             {open && (
-              <div className="absolute right-4 top-16 glass rounded-2xl p-2 w-40">
+              <div className="absolute right-4 top-16 glass rounded-2xl p-2 w-44 max-h-80 overflow-auto">
                 {primary.map((item) => (
                   <button key={item.to} onClick={() => go(item.to)} className={`block w-full text-left px-3 py-2 text-sm rounded-xl ${route === item.to ? 'bg-white text-black' : 'hover:bg-white/10'}`}>
                     {item.label}

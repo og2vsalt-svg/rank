@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'soft quiet lumen', href: '/softquietlumen', body: 'Let files glow into place. Multi-file local upload with shared caption and warm accent. Soft pulsing glow, spring motion, Discord embeds. Soft size warnings only.' },
+  { title: 'soft quiet harbor', href: '/softquietharbor', body: 'Files settle like boats in a quiet harbor. Multi-file drops with shared note and ripples. Lands in the database with polished Discord cards. No hard limits.' },
   { title: 'quiet notes', href: '/quietnotes', body: 'A small desk for short text notes. Upload plain text to the database with professional Discord embeds. Soft warnings only. All prior file desks remain.' },
   { title: 'soft quiet atrium', href: '/softquietatrium', body: 'Settle under quiet light shafts. Drop local files. Soft shafts of light, spring motion, Discord embeds on shares. Soft size warnings only.' },
   { title: 'soft quiet vault', href: '/softquietvault', body: 'Private local vault with cloud shares. Upload to database, professional Discord cards. Large files warned, never refused.' },
@@ -33,7 +35,7 @@ export default function Features() {
             </motion.a>
           ))}
         </div>
-        <p className="text-xs text-neutral-500 mt-6 text-center">All prior desks and features remain fully intact. New ones added carefully.</p>
+        <p className="text-xs text-neutral-500 mt-6 text-center">All prior desks and features remain fully intact. New ones added carefully. Human-crafted Apple-style animations throughout.</p>
       </div>
     </section>
   );

@@ -30,11 +30,12 @@ export default function Hero() {
           transition={{ type: 'spring', stiffness: 80, damping: 20, delay: 0.1 }}
           className="text-neutral-400 text-lg leading-relaxed max-w-lg mb-10 mx-auto"
         >
-          Local vault. Multi-file lumen drop to the database with professional Discord embeds on every link. Specialized desks. Large files warned, never refused.
+          Local vault. Multi-file lumen drop or interactive lumen pulse to the database with professional Discord embeds on every link. Specialized desks. Large files warned, never refused.
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center">
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('vault')} className="px-6 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-100 transition">open vault</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('lumendrop')} className="px-6 py-2.5 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#3a9aff] transition">lumen drop</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('lumenpulse')} className="px-6 py-2.5 rounded-full bg-[#AF52DE] text-white text-sm font-medium hover:bg-[#c47ae8] transition">lumen pulse</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('directshare')} className="px-6 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition">direct share</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('directory')} className="px-6 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition">browse desks</motion.button>
         </div>

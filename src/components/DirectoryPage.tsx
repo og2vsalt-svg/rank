@@ -4,6 +4,7 @@ import { useRouter } from './Router';
 import Navbar from './Navbar';
 
 const desks = [
+  { to: 'lumenpulse', label: 'lumen pulse', desc: 'interactive pulsing feed of recent shares with file drops' },
   { to: 'lumenorbit', label: 'lumen orbit', desc: 'files in quiet orbit with spring motion' },
   { to: 'canvasnote', label: 'canvas note', desc: 'draw and share a glass note image' },
   { to: 'quiettimeline', label: 'quiet timeline', desc: 'vertical stream of recent public shares' },

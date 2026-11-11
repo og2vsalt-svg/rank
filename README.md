@@ -10,6 +10,7 @@ Private file hosting and sharing.
 - Dozens of specialized desks (soft quiet prism, soft quiet lattice, soft quiet mosaic, soft quiet brook, soft quiet atrium, soft quiet vault, soft quiet echo, soft quiet harbor, atrium, constellation, meadow, veil, and many more) — all prior features preserved.
 - Direct share page for instant DB uploads.
 - **Lumen Drop** — multi-file drop zone with live previews, spring animations, and batch database shares that return polished Discord embeds.
+- **Lumen Weave** — flowing multi-file weave into the database with animated spring cards, soft slow warnings, and professional Discord embeds.
 - **Lumen Stream** — flowing feed of recent public shares with spring-entry cards and quick local file drops.
 - **Quiet Harbor** — calm docking space with pulsing lights for notes and files.
 - **Lumen Gallery** — visual masonry of shared images with spring-expanded lightbox.
@@ -19,7 +20,7 @@ Private file hosting and sharing.
 - **Quiet Timeline** — calm vertical stream of recent public shares with spring-entry cards.
 - **Soft Quiet Chronicle** — dated notes and optional files that publish to the database with Discord embeds and spring cards.
 - **Lumen Pinboard** — pin local files to a shared visual board with live public pins, spring cards, and Discord embeds.
-- **New: Lumen Pulse** — interactive pulsing feed of recent public shares. Drop a local file or note and watch it join the living beat with spring animations and Discord embeds.
+- **Lumen Pulse** — interactive pulsing feed of recent public shares. Drop a local file or note and watch it join the living beat with spring animations and Discord embeds.
 - Searchable desks directory.
 - Quiet notes desk.
 

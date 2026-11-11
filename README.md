@@ -7,7 +7,8 @@ Private file hosting and sharing.
 - Professional Discord embeds on every share link.
 - Soft size warnings only — no hard file limits.
 - Sleek Apple-style animations (Framer Motion springs, frosted glass, subtle lifts).
-- Dozens of specialized desks (quiet prism, quiet helix, quiet drift, soft quiet prism, soft quiet lattice, soft quiet mosaic, soft quiet brook, soft quiet atrium, soft quiet vault, soft quiet echo, soft quiet harbor, atrium, constellation, meadow, veil, quiet kaleidoscope, and many more) — all prior features preserved.
+- Dozens of specialized desks (quiet zephyr, quiet prism, quiet helix, quiet drift, soft quiet prism, soft quiet lattice, soft quiet mosaic, soft quiet brook, soft quiet atrium, soft quiet vault, soft quiet echo, soft quiet harbor, atrium, constellation, meadow, veil, quiet kaleidoscope, and many more) — all prior features preserved.
+- **Quiet Zephyr** — multi-file drop that drifts like a soft breeze with gentle floating particles and spring motion on frosted glass. Batch-publish to the database with polished Discord embeds. Soft size warnings only.
 - **Quiet Prism** — multi-file drop that refracts into soft prism shards with light beams and spring motion on frosted glass. Batch-publish to the database with polished Discord embeds. Soft size warnings only.
 - **Quiet Kaleidoscope** — multi-file drop that reflects into soft mirrored shards with spring motion on frosted glass. Batch-publish to the database with polished Discord embeds. Soft size warnings only.
 - **Quiet Helix** — multi-file drop that spirals files as soft rotating glass beads with spring motion on frosted glass. Batch-publish to the database with polished Discord embeds. Soft size warnings only.

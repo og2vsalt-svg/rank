@@ -6,6 +6,7 @@ type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
+  { to: 'quiethelix', label: 'helix' },
   { to: 'directshare', label: 'share' },
   { to: 'lumenarchive', label: 'archive' },
   { to: 'quietribbon', label: 'ribbon' },

@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'quiet drift', href: '/quietdrift', body: 'Drop local files as soft drifting clouds. Gentle floating motion and spring animations on frosted glass. Batch share to the database, polished Discord embeds on every link. Soft size warnings only.' },
   { title: 'quiet embers', href: '/quietembers', body: 'Drop local files as soft glowing embers. Gentle floating pulse and spring motion on frosted glass. Batch share to the database, polished Discord embeds on every link. Soft size warnings only.' },
   { title: 'quiet ribbon', href: '/quietribbon', body: 'Drop local files into a flowing ribbon of frosted glass cards. Soft spring motion, batch share to the database, polished Discord embeds on every link. Soft size warnings only.' },
   { title: 'soft quiet chronicle', href: '/softquietchronicle', body: 'Dated quiet notes and optional files that settle into the database. Each entry returns a polished Discord embed. Soft slow warnings only. No hard limits.' },

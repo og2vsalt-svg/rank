@@ -7,7 +7,8 @@ Private file hosting and sharing.
 - Professional Discord embeds on every share link.
 - Soft size warnings only — no hard file limits.
 - Sleek Apple-style animations (Framer Motion springs, frosted glass, subtle lifts).
-- Dozens of specialized desks (soft quiet prism, soft quiet lattice, soft quiet mosaic, soft quiet brook, soft quiet atrium, soft quiet vault, soft quiet echo, soft quiet harbor, atrium, constellation, meadow, veil, and many more) — all prior features preserved.
+- Dozens of specialized desks (quiet drift, soft quiet prism, soft quiet lattice, soft quiet mosaic, soft quiet brook, soft quiet atrium, soft quiet vault, soft quiet echo, soft quiet harbor, atrium, constellation, meadow, veil, and many more) — all prior features preserved.
+- **Quiet Drift** — multi-file drop that drifts files as soft clouds with gentle floating motion and spring animations on frosted glass. Batch-publish to the database with polished Discord embeds. Soft size warnings only.
 - **Quiet Embers** — multi-file drop that settles files as soft glowing embers with gentle floating pulse and spring animations on frosted glass. Batch-publish to the database with polished Discord embeds. Soft size warnings only.
 - **Quiet Lantern** — multi-file drop that hangs files as soft glowing lanterns with gentle floating/pulsing light and spring animations on frosted glass. Batch-publish to the database with polished Discord embeds. Soft size warnings only.
 - **Lumen Archive** — calm visual archive of recent public shares with live multi-file drop publishing to the database, type filters, spring-animated cards, and polished Discord embeds. Soft warnings only.

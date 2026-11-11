@@ -30,10 +30,11 @@ export default function Hero() {
           transition={{ type: 'spring', stiffness: 80, damping: 20, delay: 0.1 }}
           className="text-neutral-400 text-lg leading-relaxed max-w-lg mb-10 mx-auto"
         >
-          Local vault. Multi-file lumen drop, fold, collage, weave, studio, or interactive pulse. Quiet atlas of recent shares. Professional Discord embeds on every link. Specialized desks. Large files warned, never refused.
+          Local vault. Multi-file quiet drift, quiet embers, lumen drop, fold, collage, weave, studio, or interactive pulse. Quiet atlas of recent shares. Professional Discord embeds on every link. Specialized desks. Large files warned, never refused.
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center">
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('vault')} className="px-6 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-100 transition">open vault</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietdrift')} className="px-6 py-2.5 rounded-full bg-[#5AC8FA] text-black text-sm font-medium hover:bg-[#7ad4fc] transition">quiet drift</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('lumendrop')} className="px-6 py-2.5 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#3a9aff] transition">lumen drop</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('lumenfold')} className="px-6 py-2.5 rounded-full bg-[#AF52DE] text-white text-sm font-medium hover:bg-[#c47ae8] transition">lumen fold</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('lumencollage')} className="px-6 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition">lumen collage</motion.button>

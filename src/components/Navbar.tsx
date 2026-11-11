@@ -8,6 +8,7 @@ const primary: NavItem[] = [
   { to: 'vault', label: 'vault' },
   { to: 'directshare', label: 'share' },
   { to: 'lumendrop', label: 'drop' },
+  { to: 'lumenpulse', label: 'pulse' },
   { to: 'lumenstream', label: 'stream' },
   { to: 'lumengallery', label: 'gallery' },
   { to: 'lumenpinboard', label: 'pins' },

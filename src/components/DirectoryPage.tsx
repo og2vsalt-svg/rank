@@ -4,6 +4,7 @@ import { useRouter } from './Router';
 import Navbar from './Navbar';
 
 const desks = [
+  { to: 'lumencollage', label: 'lumen collage', desc: 'drop images into a quiet grid collage, publish as one file with Discord embed' },
   { to: 'lumenquill', label: 'lumen quill', desc: 'compose notes with optional local file, spring preview, Discord embed' },
   { to: 'lumenpulse', label: 'lumen pulse', desc: 'interactive pulsing feed of recent shares with file drops' },
   { to: 'lumenorbit', label: 'lumen orbit', desc: 'files in quiet orbit with spring motion' },

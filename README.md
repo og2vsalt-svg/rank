@@ -17,6 +17,7 @@ Private file hosting and sharing.
 - **Lumen Orbit** — files settle into a quiet orbiting visualizer with multi-file drops and Discord embeds.
 - **Canvas Note** — draw on dark glass and share the image straight to the database.
 - **Quiet Timeline** — calm vertical stream of recent public shares with spring-entry cards.
+- **New: Soft Quiet Chronicle** — dated notes and optional files that publish to the database with Discord embeds and spring cards.
 - **New: Lumen Pinboard** — pin local files to a shared visual board with live public pins, spring cards, and Discord embeds.
 - Searchable desks directory.
 - Quiet notes desk.

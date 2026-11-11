@@ -39,7 +39,7 @@ export default function Hero() {
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('lumencollage')} className="px-6 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition">lumen collage</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietatlas')} className="px-6 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition">quiet atlas</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('lumenpulse')} className="px-6 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition">lumen pulse</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('directshare')} className="px-6 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition">direct share</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietcascade')} className="px-6 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition">quiet cascade</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('directory')} className="px-6 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition">browse desks</motion.button>
         </div>
       </div>

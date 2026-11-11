@@ -8,6 +8,7 @@ Private file hosting and sharing.
 - Soft size warnings only — no hard file limits.
 - Sleek Apple-style animations (Framer Motion springs, frosted glass, subtle lifts).
 - Dozens of specialized desks (soft quiet prism, soft quiet lattice, soft quiet mosaic, soft quiet brook, soft quiet atrium, soft quiet vault, soft quiet echo, soft quiet harbor, atrium, constellation, meadow, veil, and many more) — all prior features preserved.
+- **Quiet Cascade** — multi-file drop that cascades into spring-animated glass cards, then batch-publishes each to the database with polished Discord embeds. Soft size warnings only.
 - Direct share page for instant DB uploads.
 - **Lumen Fold** — drop multiple local files, fold them into one quiet share package with a rich Discord embed that lists companions. Soft warnings only.
 - **Quiet Atlas** — calm visual map of recent public shares in a spring-animated grid with type filters. Click to open. Professional Discord embeds on every link.

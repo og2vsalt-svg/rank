@@ -22,6 +22,7 @@ const desks = [
   { to: 'softquietmeadow', label: 'soft quiet meadow', desc: 'blooming glass flowers' },
   { to: 'softquietveil', label: 'soft quiet veil', desc: 'soft light layers' },
   { to: 'softquietconstellation', label: 'soft quiet constellation', desc: 'stars connecting files' },
+  { to: 'quietcascade', label: 'quiet cascade', desc: 'multi-file cascade with spring cards, batch DB upload, Discord embeds' },
   { to: 'directshare', label: 'direct share', desc: 'upload local file to DB + Discord embed' },
   { to: 'publicboard', label: 'public board', desc: 'browse recent shares' },
   { to: 'notes', label: 'notes', desc: 'quiet local notes desk' },

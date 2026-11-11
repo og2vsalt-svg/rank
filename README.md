@@ -11,6 +11,7 @@ Private file hosting and sharing.
 - Direct share page for instant DB uploads.
 - **Lumen Drop** — multi-file drop zone with live previews, spring animations, and batch database shares that return polished Discord embeds.
 - **Lumen Weave** — flowing multi-file weave into the database with animated spring cards, soft slow warnings, and professional Discord embeds.
+- **Lumen Constellation** — multi-file drop that settles into a spring-animated grid of glass cards; share each or all to the database and receive Discord embed links. Soft warnings only.
 - **Lumen Stream** — flowing feed of recent public shares with spring-entry cards and quick local file drops.
 - **Quiet Harbor** — calm docking space with pulsing lights for notes and files.
 - **Lumen Gallery** — visual masonry of shared images with spring-expanded lightbox.

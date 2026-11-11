@@ -9,6 +9,7 @@ Private file hosting and sharing.
 - Sleek Apple-style animations (Framer Motion springs, frosted glass, subtle lifts).
 - Dozens of specialized desks (soft quiet prism, soft quiet lattice, soft quiet mosaic, soft quiet brook, soft quiet atrium, soft quiet vault, soft quiet echo, soft quiet harbor, atrium, constellation, meadow, veil, and many more) — all prior features preserved.
 - Direct share page for instant DB uploads.
+- **Lumen Collage** — drop multiple images into a quiet grid, compose them into one polished collage image, and publish to the database with a Discord embed. Soft warnings only.
 - **Lumen Quill** — compose a quiet note with optional local file attachment, spring preview, and publish to the database with a polished Discord embed. Soft warnings only.
 - **Lumen Drop** — multi-file drop zone with live previews, spring animations, and batch database shares that return polished Discord embeds.
 - **Lumen Weave** — flowing multi-file weave into the database with animated spring cards, soft slow warnings, and professional Discord embeds.

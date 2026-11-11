@@ -4,6 +4,7 @@ import { useRouter } from './Router';
 import Navbar from './Navbar';
 
 const desks = [
+  { to: 'quietembers', label: 'quiet embers', desc: 'soft glowing embers for multi-file drops, floating pulse, spring animations, batch DB upload, Discord embeds' },
   { to: 'quietlantern', label: 'quiet lantern', desc: 'hanging glowing lanterns for multi-file drops, spring animations, batch DB upload, Discord embeds' },
   { to: 'quietribbon', label: 'quiet ribbon', desc: 'flowing multi-file ribbon of spring-animated glass cards, batch DB upload, Discord embeds' },
   { to: 'lumencollage', label: 'lumen collage', desc: 'drop images into a quiet grid collage, publish as one file with Discord embed' },

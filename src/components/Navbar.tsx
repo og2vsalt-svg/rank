@@ -11,6 +11,7 @@ const primary: NavItem[] = [
   { to: 'lumenstream', label: 'stream' },
   { to: 'lumengallery', label: 'gallery' },
   { to: 'lumenpinboard', label: 'pins' },
+  { to: 'softquietchronicle', label: 'chronicle' },
   { to: 'quietharbor', label: 'harbor' },
   { to: 'softecho', label: 'echo' },
   { to: 'directory', label: 'desks' },

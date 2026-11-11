@@ -13,6 +13,9 @@ Private file hosting and sharing.
 - **New: Quiet Harbor** — calm docking space with pulsing lights for notes and files.
 - **New: Lumen Gallery** — visual masonry of shared images with spring-expanded lightbox.
 - **New: Soft Echo** — public short notes stream, no account required, accent colors.
+- **New: Lumen Orbit** — files settle into a quiet orbiting visualizer with multi-file drops and Discord embeds.
+- **New: Canvas Note** — draw on dark glass and share the image straight to the database.
+- **New: Quiet Timeline** — calm vertical stream of recent public shares with spring-entry cards.
 - Searchable desks directory.
 - Quiet notes desk.
 

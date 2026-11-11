@@ -9,6 +9,7 @@ const primary: NavItem[] = [
   { to: 'directshare', label: 'share' },
   { to: 'lumendrop', label: 'drop' },
   { to: 'lumenweave', label: 'weave' },
+  { to: 'lumenstudio', label: 'studio' },
   { to: 'lumenconstellation', label: 'constellation' },
   { to: 'lumenpulse', label: 'pulse' },
   { to: 'lumenstream', label: 'stream' },

@@ -9,6 +9,8 @@ Private file hosting and sharing.
 - Sleek Apple-style animations (Framer Motion springs, frosted glass, subtle lifts).
 - Dozens of specialized desks (soft quiet prism, soft quiet lattice, soft quiet mosaic, soft quiet brook, soft quiet atrium, soft quiet vault, soft quiet echo, soft quiet harbor, atrium, constellation, meadow, veil, and many more) — all prior features preserved.
 - Direct share page for instant DB uploads.
+- **New: Lumen Stream** — flowing feed of recent public shares with spring-entry cards and quick local file drops.
+- **New: Quiet Harbor** — calm docking space with pulsing lights for notes and files.
 - **New: Lumen Gallery** — visual masonry of shared images with spring-expanded lightbox.
 - **New: Soft Echo** — public short notes stream, no account required, accent colors.
 - Searchable desks directory.

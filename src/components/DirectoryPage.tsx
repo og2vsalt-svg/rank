@@ -4,6 +4,10 @@ import { useRouter } from './Router';
 import Navbar from './Navbar';
 
 const desks = [
+  { to: 'lumenorbit', label: 'lumen orbit', desc: 'files in quiet orbit with spring motion' },
+  { to: 'canvasnote', label: 'canvas note', desc: 'draw and share a glass note image' },
+  { to: 'quiettimeline', label: 'quiet timeline', desc: 'vertical stream of recent public shares' },
+
   { to: 'softquietprism', label: 'soft quiet prism', desc: 'refractive multi-file prism with spectral accents' },
   { to: 'softquietlattice', label: 'soft quiet lattice', desc: 'interlocking multi-file lattice with notes' },
   { to: 'softquietmosaic', label: 'soft quiet mosaic', desc: 'visual mosaic of files with per-piece notes' },

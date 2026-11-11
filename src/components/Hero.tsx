@@ -30,10 +30,11 @@ export default function Hero() {
           transition={{ type: 'spring', stiffness: 80, damping: 20, delay: 0.1 }}
           className="text-neutral-400 text-lg leading-relaxed max-w-lg mb-10 mx-auto"
         >
-          Local vault. Multi-file quiet helix, quiet drift, quiet embers, quiet kaleidoscope, lumen drop, fold, collage, weave, studio, or interactive pulse. Quiet atlas of recent shares. Professional Discord embeds on every link. Specialized desks. Large files warned, never refused.
+          Local vault. Multi-file quiet prism, quiet helix, quiet drift, quiet embers, quiet kaleidoscope, lumen drop, fold, collage, weave, studio, or interactive pulse. Quiet atlas of recent shares. Professional Discord embeds on every link. Specialized desks. Large files warned, never refused.
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center">
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('vault')} className="px-6 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-100 transition">open vault</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietprism')} className="px-6 py-2.5 rounded-full bg-[#5AC8FA] text-black text-sm font-medium hover:bg-[#7ad4fc] transition">quiet prism</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quiethelix')} className="px-6 py-2.5 rounded-full bg-[#AF52DE] text-white text-sm font-medium hover:bg-[#c47ae8] transition">quiet helix</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietkaleidoscope')} className="px-6 py-2.5 rounded-full bg-[#AF52DE] text-white text-sm font-medium hover:bg-[#c47ae8] transition">quiet kaleidoscope</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietdrift')} className="px-6 py-2.5 rounded-full bg-[#5AC8FA] text-black text-sm font-medium hover:bg-[#7ad4fc] transition">quiet drift</motion.button>

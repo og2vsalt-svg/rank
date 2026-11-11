@@ -4,6 +4,7 @@ import { useRouter } from './Router';
 import Navbar from './Navbar';
 
 const desks = [
+  { to: 'quietkaleidoscope', label: 'quiet kaleidoscope', desc: 'reflective multi-file kaleidoscope with mirrored shards, spring motion, batch DB upload, Discord embeds' },
   { to: 'quiethelix', label: 'quiet helix', desc: 'spiraling multi-file helix with rotating glass beads, spring motion, batch DB upload, Discord embeds' },
   { to: 'quietdrift', label: 'quiet drift', desc: 'soft cloud drift for multi-file drops, gentle floating motion, spring animations, batch DB upload, Discord embeds' },
   { to: 'quietembers', label: 'quiet embers', desc: 'soft glowing embers for multi-file drops, floating pulse, spring animations, batch DB upload, Discord embeds' },

@@ -1,6 +1,10 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'lumen orbit', href: '/lumenorbit', body: 'Files settle into a quiet orbit. Multi-file drop with shared caption and accent. Soft spring motion, Discord embeds. Soft size warnings only.' },
+  { title: 'canvas note', href: '/canvasnote', body: 'Draw a quiet note on dark glass. Share the image to the database with a polished Discord card. Soft warnings only.' },
+  { title: 'quiet timeline', href: '/quiettimeline', body: 'Calm vertical stream of recent public shares. Spring-entry cards. Every link carries a professional Discord embed.' },
+
   { title: 'soft quiet lumen', href: '/softquietlumen', body: 'Let files glow into place. Multi-file local upload with shared caption and warm accent. Soft pulsing glow, spring motion, Discord embeds. Soft size warnings only.' },
   { title: 'soft quiet harbor', href: '/softquietharbor', body: 'Files settle like boats in a quiet harbor. Multi-file drops with shared note and ripples. Lands in the database with polished Discord cards. No hard limits.' },
   { title: 'quiet notes', href: '/quietnotes', body: 'A small desk for short text notes. Upload plain text to the database with professional Discord embeds. Soft warnings only. All prior file desks remain.' },

@@ -4,6 +4,7 @@ import { useRouter } from './Router';
 import Navbar from './Navbar';
 
 const desks = [
+  { to: 'quietsketch', label: 'quiet sketch', desc: 'freehand canvas drawing on dark glass, publish as PNG to the database with Discord embeds. soft warnings only' },
   { to: 'quietshore', label: 'quiet shore', desc: 'files wash onto a soft shore of spring-animated frosted glass cards with live public waves, batch DB upload, Discord embeds. soft warnings only' },
   { to: 'quietwhisper', label: 'quiet whisper', desc: 'soft floating multi-file glass cards with gentle particle motion, spring animations, batch DB upload, Discord embeds. soft warnings only' },
   { to: 'quietkaleidoscope', label: 'quiet kaleidoscope', desc: 'reflective multi-file kaleidoscope with mirrored shards, spring motion, batch DB upload, Discord embeds' },

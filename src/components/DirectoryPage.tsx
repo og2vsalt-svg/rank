@@ -4,6 +4,7 @@ import { useRouter } from './Router';
 import Navbar from './Navbar';
 
 const desks = [
+  { to: 'quietcanopy', label: 'quiet canopy', desc: 'multi-file drop that settles into a soft canopy of swaying spring-animated frosted glass leaves, batch DB publish, live public canopy, Discord embeds. soft warnings only' },
   { to: 'quietmosaic', label: 'quiet mosaic', desc: 'multi-file drop that settles into a soft mosaic of spring-animated frosted glass tiles with per-tile notes, batch DB publish, live public mosaic, Discord embeds. soft warnings only' },
   { to: 'quietsketch', label: 'quiet sketch', desc: 'freehand canvas drawing on dark glass, publish as PNG to the database with Discord embeds. soft warnings only' },
   { to: 'quietshore', label: 'quiet shore', desc: 'files wash onto a soft shore of spring-animated frosted glass cards with live public waves, batch DB upload, Discord embeds. soft warnings only' },

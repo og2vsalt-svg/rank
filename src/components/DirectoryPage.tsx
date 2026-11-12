@@ -4,6 +4,8 @@ import { useRouter } from './Router';
 import Navbar from './Navbar';
 
 const desks = [
+  { to: 'quietresonance', label: 'quiet resonance', desc: 'multi-file drop that settles into gentle wave-animated frosted glass cards with soft pulsing rhythm, batch DB publish, live public resonance, Discord embeds. soft warnings only' },
+  { to: 'quietglyph', label: 'quiet glyph', desc: 'compose a quiet note or drop a single local file that settles into storage and the public record with a polished Discord embed. soft warnings only' },
   { to: 'quietforge', label: 'quiet forge', desc: 'multi-file drop with live image previews that settle into spring-animated frosted glass cards, batch DB publish, Discord embeds. soft warnings only' },
   { to: 'quietgrove', label: 'quiet grove', desc: 'multi-file drop that settles into a soft grove of growing spring-animated frosted glass trees with gentle sway, batch DB publish, live public grove, Discord embeds. soft warnings only' },
   { to: 'quietcanopy', label: 'quiet canopy', desc: 'multi-file drop that settles into a soft canopy of swaying spring-animated frosted glass leaves, batch DB publish, live public canopy, Discord embeds. soft warnings only' },

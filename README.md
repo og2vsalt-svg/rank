@@ -8,6 +8,7 @@ Private file hosting and sharing.
 - Soft size warnings only — no hard file limits.
 - Sleek Apple-style animations (Framer Motion springs, frosted glass, subtle lifts).
 - Dozens of specialized desks (quiet grove, quiet canopy, quiet mosaic, quiet current, quiet whisper, quiet shore, quiet zephyr, quiet prism, quiet helix, quiet drift, quiet solstice, quiet lattice, soft quiet prism, soft quiet lattice, soft quiet mosaic, soft quiet brook, soft quiet atrium, soft quiet vault, soft quiet echo, soft quiet harbor, atrium, constellation, meadow, veil, quiet kaleidoscope, and many more) — all prior features preserved.
+- **Quiet Forge** — refined multi-file drop with live image previews that settle into spring-animated frosted glass cards. Batch-publish to the database with polished Discord embeds. Soft size warnings only. No hard limits. Recent public shares shown beside.
 - **Quiet Shelf** — refined multi-file drop that settles into spring-animated frosted glass cards with live previews. Batch-publish to the database with polished Discord embeds. Soft size warnings only. No hard limits. Recent public shares shown beside.
 - **Quiet Tide** — multi-file drop that washes onto a soft rising tide of spring-animated frosted glass cards with gentle floating motion. Batch-publish to the database with polished Discord embeds. Soft size warnings only. No hard limits.
 - **Quiet Nexus** — calm central hub for quick drops, recent public shares, and navigation to all desks. Spring-animated frosted glass cards. Soft warnings only.

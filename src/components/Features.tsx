@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'quiet manuscript', href: '/quietmanuscript', body: 'Compose a quiet note or drop a single local file with live preview. Shared caption and warm accent. Publish to the database with a polished Discord embed. Soft size warnings only. No hard limits.' },
   { title: 'quiet nimbus', href: '/quietnimbus', body: 'Drop local files into a soft nimbus of floating light. They settle as gentle orbs of frosted glass with spring motion. Shared caption and cool accent. Batch-publish to the database with polished Discord embeds. Soft size warnings only. No hard limits.' },
   { title: 'quiet portfolio', href: '/quietportfolio', body: 'Refined multi-file portfolio grid with live image previews that settle into spring-animated frosted glass cards. Per-file or shared captions. Batch-publish to the database with polished Discord embeds. Soft size warnings only.' },
   { title: 'quiet forge', href: '/quietforge', body: 'Drop local files with live image previews that settle into spring-animated frosted glass cards. Batch-publish to the database with polished Discord embeds. Soft size warnings only.' },

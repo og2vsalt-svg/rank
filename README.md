@@ -8,6 +8,7 @@ Private file hosting and sharing.
 - Soft size warnings only — no hard file limits.
 - Sleek Apple-style animations (Framer Motion springs, frosted glass, subtle lifts).
 - Dozens of specialized desks (quiet current, quiet whisper, quiet shore, quiet zephyr, quiet prism, quiet helix, quiet drift, quiet solstice, quiet lattice, soft quiet prism, soft quiet lattice, soft quiet mosaic, soft quiet brook, soft quiet atrium, soft quiet vault, soft quiet echo, soft quiet harbor, atrium, constellation, meadow, veil, quiet kaleidoscope, and many more) — all prior features preserved.
+- **Quiet Vesper** — multi-file drop that rises into the soft dusk as gentle floating lanterns of spring-animated frosted glass. Shared caption and warm accent. Batch-publish to the database with polished Discord embeds. Soft size warnings only.
 - **Quiet Observatory** — multi-file drop that settles into a soft radial observatory of orbiting spring-animated frosted glass cards. Batch-publish to the database with polished Discord embeds. Soft size warnings only. Recent public shares shown in a quiet grid beside the orbit.
 - **Quiet Horizon** — multi-file drop that rises onto a soft horizon of spring-animated frosted glass cards with gentle floating motion. Batch-publish to the database with polished Discord embeds. Soft size warnings only.
 - **Quiet Sketch** — freehand canvas drawing on dark glass. Publish the sketch as a PNG straight to the database with a polished Discord embed. Soft warnings only if the export feels heavy.

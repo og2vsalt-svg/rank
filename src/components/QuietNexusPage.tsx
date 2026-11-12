@@ -1,198 +1,105 @@
-import { useEffect, useMemo, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import Navbar from './Navbar';
-import { listPublicShares, publishLocalFile, shareUrls, type CloudMeta } from '../lib/cloudShare';
+import { motion } from 'framer-motion';
+import { useRouter } from './Router';
+import { useEffect, useState } from 'react';
 
 export default function QuietNexusPage() {
-  const [shares, setShares] = useState<CloudMeta[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [files, setFiles] = useState<File[]>([]);
-  const [caption, setCaption] = useState('');
-  const [color, setColor] = useState('#0A84FF');
-  const [busy, setBusy] = useState(false);
-  const [status, setStatus] = useState('');
-  const [selected, setSelected] = useState<CloudMeta | null>(null);
-
-  const heavy = useMemo(() => files.reduce((n, f) => n + f.size, 0) > 40 * 1024 * 1024, [files]);
-
-  const refresh = async () => {
-    setLoading(true);
-    const rows = await listPublicShares(48);
-    setShares(rows);
-    setLoading(false);
-  };
+  const { navigate } = useRouter();
+  const [recent, setRecent] = useState<any[]>([]);
 
   useEffect(() => {
-    refresh();
+    // Soft fetch of recent public shares if available
+    fetch('/api/shelf?limit=6')
+      .then(r => r.ok ? r.json() : [])
+      .then(data => setRecent(Array.isArray(data) ? data.slice(0, 6) : []))
+      .catch(() => {});
   }, []);
 
-  const send = async () => {
-    if (!files.length) return;
-    setBusy(true);
-    setStatus('');
-    for (const file of files) {
-      const res = await publishLocalFile(file, {
-        caption: caption || file.name,
-        color,
-        cardTitle: caption || file.name,
-        meta: { accent: color, source: 'quietnexus', kind: 'nexus' },
-      });
-      if (!res.ok) {
-        setStatus(res.error || 'upload failed');
-        break;
-      }
-    }
-    setFiles([]);
-    setCaption('');
-    setBusy(false);
-    await refresh();
-  };
-
   return (
-    <div className="mesh min-h-screen">
-      <Navbar />
-      <main className="mx-auto max-w-7xl px-5 pb-32 pt-12">
+    <div className="mesh min-h-screen pt-24 pb-16 px-5">
+      <div className="max-w-4xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 80, damping: 18 }}
-          className="text-center"
+          transition={{ type: 'spring', stiffness: 100, damping: 20 }}
+          className="text-center mb-12"
         >
-          <p className="text-[12px] uppercase tracking-[0.25em] text-white/35">quietnexus</p>
-          <h1 className="mt-3 text-[48px] font-semibold tracking-[-0.06em] leading-none">
-            quiet nexus of shared light
-          </h1>
-          <p className="mx-auto mt-5 max-w-xl text-[16px] leading-relaxed text-white/55">
-            A still center where shared files gather as soft points of light. Drop any local files to place them into storage and the public record. Gentle orbital motion, glass surfaces, polished Discord embeds on every link. Large files warned, never refused.
+          <p className="text-[#0A84FF] text-sm font-medium tracking-wide mb-3">central hub</p>
+          <h1 className="text-4xl sm:text-5xl font-semibold text-white tracking-tight mb-4">quiet nexus</h1>
+          <p className="text-neutral-400 text-lg max-w-xl mx-auto">
+            A calm center for everything. Drop files, browse recent shares, jump to specialized desks. All prior features remain. Soft warnings only. Professional embeds on every link.
           </p>
         </motion.div>
 
-        {/* Orbital field */}
-        <div className="relative mx-auto mt-16 h-[520px] max-w-4xl">
-          {loading ? (
-            <div className="absolute inset-0 grid place-items-center text-sm text-white/40">gathering light…</div>
-          ) : (
-            shares.slice(0, 24).map((s, i) => {
-              const angle = (i / Math.min(shares.length, 24)) * Math.PI * 2;
-              const radius = 160 + (i % 5) * 28;
-              const x = Math.cos(angle) * radius;
-              const y = Math.sin(angle) * radius * 0.7;
-              return (
-                <motion.button
-                  key={s.id}
-                  initial={{ opacity: 0, scale: 0.6 }}
-                  animate={{ opacity: 1, scale: 1, x, y }}
-                  transition={{ type: 'spring', stiffness: 60, damping: 14, delay: i * 0.03 }}
-                  whileHover={{ scale: 1.15, zIndex: 10 }}
-                  onClick={() => setSelected(s)}
-                  className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-                  style={{ zIndex: 24 - i }}
-                >
-                  <div
-                    className="glass flex h-16 w-16 items-center justify-center rounded-2xl text-[11px] text-white/80 shadow-lg"
-                    style={{ background: s.color ? `${s.color}22` : undefined, borderColor: s.color || undefined }}
-                  >
-                    <span className="truncate px-1">{(s.caption || s.name || 'file').slice(0, 8)}</span>
-                  </div>
-                </motion.button>
-              );
-            })
-          )}
-          {/* Center orb */}
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-            <motion.div
-              animate={{ scale: [1, 1.04, 1] }}
-              transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-              className="glass flex h-24 w-24 items-center justify-center rounded-full"
-              style={{ background: `${color}18` }}
+        <div className="grid md:grid-cols-2 gap-6 mb-10">
+          <motion.div
+            whileHover={{ y: -4 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+            className="glass apple-card p-8 rounded-3xl"
+          >
+            <h2 className="text-xl font-medium text-white mb-3">quick drop</h2>
+            <p className="text-neutral-400 text-sm mb-6">Upload local files straight to the database. No hard limits.</p>
+            <motion.button
+              whileTap={{ scale: 0.96 }}
+              onClick={() => navigate('lumendrop')}
+              className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium"
             >
-              <span className="text-[13px] text-white/70">nexus</span>
-            </motion.div>
-          </div>
+              open drop
+            </motion.button>
+          </motion.div>
+
+          <motion.div
+            whileHover={{ y: -4 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+            className="glass apple-card p-8 rounded-3xl"
+          >
+            <h2 className="text-xl font-medium text-white mb-3">browse desks</h2>
+            <p className="text-neutral-400 text-sm mb-6">Quiet grove, canopy, helix, atlas, and dozens more.</p>
+            <motion.button
+              whileTap={{ scale: 0.96 }}
+              onClick={() => navigate('directory')}
+              className="px-5 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15"
+            >
+              directory
+            </motion.button>
+          </motion.div>
         </div>
 
-        {/* Upload panel */}
-        <motion.aside
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 70, damping: 18, delay: 0.2 }}
-          className="mx-auto mt-12 max-w-md glass rounded-3xl p-6"
-        >
-          <p className="text-[14px] font-medium">place into the nexus</p>
-          <label className="mt-4 block cursor-pointer rounded-2xl bg-white/[0.04] p-7 text-center transition-colors hover:bg-white/[0.07]">
-            <input className="hidden" type="file" multiple onChange={(e) => setFiles(Array.from(e.target.files || []))} />
-            <div className="text-[15px] text-white/85">{files.length ? `${files.length} files ready` : 'drop or choose any files'}</div>
-            <div className="mt-1 text-[12px] text-white/40">all types · no hard limits</div>
-          </label>
-          {!!files.length && (
-            <ul className="mt-3 max-h-32 space-y-1 overflow-auto text-[12px] text-white/55">
-              {files.map((f) => (
-                <li key={f.name + f.size} className="truncate">{f.name}</li>
+        {recent.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="glass p-6 rounded-3xl"
+          >
+            <h3 className="text-lg font-medium text-white mb-4">recent public</h3>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {recent.map((item, i) => (
+                <motion.div
+                  key={item.id || i}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: i * 0.05, type: 'spring' }}
+                  className="p-4 rounded-2xl bg-white/5 hover:bg-white/10 transition cursor-pointer"
+                  onClick={() => item.id && navigate('share', item.id)}
+                >
+                  <p className="text-sm text-white truncate">{item.title || item.name || 'untitled'}</p>
+                  <p className="text-xs text-neutral-500 mt-1">{item.type || 'file'}</p>
+                </motion.div>
               ))}
-            </ul>
-          )}
-          <input
-            value={caption}
-            onChange={(e) => setCaption(e.target.value)}
-            placeholder="shared note"
-            className="mt-4 w-full rounded-2xl bg-white/[0.04] px-4 py-3 text-[14px] outline-none placeholder:text-white/30"
-          />
-          <div className="mt-3 flex items-center gap-3">
-            <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="h-10 w-14 cursor-pointer rounded-lg border border-white/10 bg-transparent" />
-            <span className="text-[13px] text-white/50">accent</span>
-          </div>
-          {heavy && <p className="mt-3 text-[12px] text-amber-200/80">large batch. encoding or sending may feel slow. nothing is refused.</p>}
+            </div>
+          </motion.div>
+        )}
+
+        <div className="mt-12 text-center">
           <motion.button
             whileTap={{ scale: 0.97 }}
-            onClick={send}
-            disabled={!files.length || busy}
-            className="mt-4 w-full rounded-full px-4 py-3 text-[15px] font-medium text-black disabled:opacity-40"
-            style={{ background: color }}
+            onClick={() => navigate('home')}
+            className="text-sm text-neutral-500 hover:text-white transition"
           >
-            {busy ? 'settling…' : 'share into the nexus'}
+            back to home
           </motion.button>
-          {status && <p className="mt-2 text-[12px] text-red-300">{status}</p>}
-        </motion.aside>
-
-        {/* Detail modal */}
-        <AnimatePresence>
-          {selected && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 grid place-items-center bg-black/50 backdrop-blur-sm p-5"
-              onClick={() => setSelected(null)}
-            >
-              <motion.div
-                initial={{ scale: 0.92, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.92, opacity: 0 }}
-                transition={{ type: 'spring', stiffness: 120, damping: 20 }}
-                className="glass max-w-md rounded-3xl p-6"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <p className="text-[12px] uppercase tracking-[0.2em] text-white/40">shared light</p>
-                <h3 className="mt-2 text-[22px] font-semibold tracking-tight">{selected.caption || selected.name}</h3>
-                <p className="mt-1 text-[13px] text-white/50">{selected.size ? `${Math.round(selected.size / 1024)} kb` : ''} · {selected.type}</p>
-                <div className="mt-6 flex gap-3">
-                  <a
-                    href={shareUrls(selected).view}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="rounded-full bg-white px-5 py-2.5 text-[14px] font-medium text-black"
-                  >
-                    open
-                  </a>
-                  <button onClick={() => setSelected(null)} className="rounded-full px-5 py-2.5 text-[14px] text-white/70">
-                    close
-                  </button>
-                </div>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </main>
+        </div>
+      </div>
     </div>
   );
 }

@@ -11,6 +11,7 @@ const primary: NavItem[] = [
   { to: 'quietzephyr', label: 'zephyr' },
   { to: 'quiethelix', label: 'helix' },
   { to: 'quietprism', label: 'prism' },
+  { to: 'quietsolace', label: 'solace' },
   { to: 'quietobservatory', label: 'observatory' },
   { to: 'directshare', label: 'share' },
   { to: 'lumenarchive', label: 'archive' },

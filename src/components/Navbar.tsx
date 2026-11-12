@@ -10,6 +10,7 @@ const primary: NavItem[] = [
   { to: 'quietshelf', label: 'shelf' },
   { to: 'quiettide', label: 'tide' },
   { to: 'quietcurrent', label: 'current' },
+  { to: 'quietstream', label: 'stream' },
   { to: 'directshare', label: 'share' },
   { to: 'lumendrop', label: 'drop' },
   { to: 'quietatlas', label: 'atlas' },

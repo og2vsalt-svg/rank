@@ -30,11 +30,12 @@ export default function Hero() {
           transition={{ type: 'spring', stiffness: 80, damping: 20, delay: 0.1 }}
           className="text-neutral-400 text-lg leading-relaxed max-w-lg mb-10 mx-auto"
         >
-          Local vault. Multi-file quiet current, quiet shore, quiet zephyr, quiet prism, quiet helix, quiet drift, quiet solstice, quiet embers, quiet kaleidoscope, quiet lattice, quiet observatory, lumen drop, fold, collage, weave, studio, or interactive pulse. Quiet atlas of recent shares. Professional Discord embeds on every link. Specialized desks including quiet sketch. Large files warned, never refused.
+          Local vault. Multi-file quiet current, quiet shore, quiet zephyr, quiet prism, quiet helix, quiet drift, quiet solstice, quiet embers, quiet kaleidoscope, quiet lattice, quiet observatory, quiet vesper, lumen drop, fold, collage, weave, studio, or interactive pulse. Quiet atlas of recent shares. Professional Discord embeds on every link. Specialized desks including quiet sketch. Large files warned, never refused.
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center">
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('vault')} className="px-6 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-100 transition">open vault</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietsketch')} className="px-6 py-2.5 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#3a9aff] transition">quiet sketch</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietvesper')} className="px-6 py-2.5 rounded-full bg-[#FF9500] text-black text-sm font-medium hover:bg-[#ffb340] transition">quiet vesper</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietcurrent')} className="px-6 py-2.5 rounded-full bg-[#5AC8FA] text-black text-sm font-medium hover:bg-[#7ad4fc] transition">quiet current</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietshore')} className="px-6 py-2.5 rounded-full bg-[#5AC8FA] text-black text-sm font-medium hover:bg-[#7ad4fc] transition">quiet shore</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietwhisper')} className="px-6 py-2.5 rounded-full bg-[#5AC8FA] text-black text-sm font-medium hover:bg-[#7ad4fc] transition">quiet whisper</motion.button>

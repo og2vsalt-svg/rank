@@ -14,6 +14,8 @@ const primary: NavItem[] = [
   { to: 'lumendrop', label: 'drop' },
   { to: 'quietatlas', label: 'atlas' },
   { to: 'lumenarchive', label: 'archive' },
+  { to: 'quietcapsule', label: 'capsule' },
+  { to: 'quietsnippet', label: 'snippet' },
   { to: 'directory', label: 'desks' },
   { to: 'notes', label: 'notes' },
 ];

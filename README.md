@@ -60,6 +60,8 @@ Private file hosting and sharing.
 - Searchable desks directory.
 - Quiet notes desk.
 
+- **Quiet Capsule** — seal local files into time-locked capsules with live countdown on frosted glass. Set an unlock moment. Batch-publish to the database with polished Discord embeds. Soft size warnings only. No hard limits.
+- **Quiet Snippet** — compose and preview monospaced code or text snippets on dark glass. Publish as a text file straight to the database with a polished Discord embed. Soft size warnings only.
 No traces of boosting. Human-crafted feel.
 
 Deployed on Vercel. Source under `og2vsalt-svg/rank`.

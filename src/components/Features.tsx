@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'quiet portfolio', href: '/quietportfolio', body: 'Refined multi-file portfolio grid with live image previews that settle into spring-animated frosted glass cards. Per-file or shared captions. Batch-publish to the database with polished Discord embeds. Soft size warnings only.' },
   { title: 'quiet forge', href: '/quietforge', body: 'Drop local files with live image previews that settle into spring-animated frosted glass cards. Batch-publish to the database with polished Discord embeds. Soft size warnings only.' },
   { title: 'quiet current', href: '/quietcurrent', body: 'Drop local files into a soft flowing current of spring-animated frosted glass cards. Batch-publish to the database with polished Discord embeds. Soft size warnings only.' },
   { title: 'quiet shore', href: '/quietshore', body: 'Drop local files that wash onto a soft shore of spring-animated frosted glass cards. Live public shares gather like gentle waves. Batch share to the database, polished Discord embeds on every link. Soft size warnings only.' },

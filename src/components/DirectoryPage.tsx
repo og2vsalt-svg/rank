@@ -4,6 +4,7 @@ import { useRouter } from './Router';
 import Navbar from './Navbar';
 
 const desks = [
+  { to: "quietrelay", label: "quiet relay", desc: "sequential multi-file relay with living progress pulse, each shared one by one to the database with polished Discord embeds. soft warnings only. no hard limits" },
   { to: "quietcapsule", label: "quiet capsule", desc: "time-locked file capsules with live countdown on frosted glass, set unlock moment, batch DB publish, Discord embeds. soft warnings only" },
   { to: "quietsnippet", label: "quiet snippet", desc: "compose and preview monospaced code or text snippets, publish as text file to DB with Discord embed. soft warnings only" },
 

@@ -4,6 +4,7 @@ import { useRouter } from './Router';
 import Navbar from './Navbar';
 
 const desks = [
+  { to: "quietnexus", label: "quiet nexus", desc: "calm central hub for quick drops, recent public shares, and navigation to all desks. spring-animated frosted glass cards. soft warnings only. no hard limits. polished Discord embeds on every share." },
   { to: "quietmirage", label: "quiet mirage", desc: "multi-file drop that shimmers into floating frosted glass cards with gentle heat-haze spring motion. cool accent. batch-publish to the database with polished Discord embeds. soft size warnings only. no hard limits" },
   { to: "quietvellum", label: "quiet vellum", desc: "refined note with optional title and local file. spring preview on frosted glass, warm accent, publish to database with polished Discord embed. soft size warnings only. no hard limits" },
   { to: "quietripple", label: "quiet ripple", desc: "multi-file drop that settles into expanding spring-animated glass cards. per-file or shared captions, cool accent, batch-publish to the database with polished Discord embeds. soft warnings only. no hard limits" },

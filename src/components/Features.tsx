@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'quiet cascade', href: '/quietcascade', body: 'Drop local files. They cascade into soft frosted glass cards with staggered spring motion, then batch-publish to the database. Each returns a polished Discord embed. Soft size warnings only. No hard limits. All prior desks remain fully intact.' },
   { title: 'quiet reflect', href: '/quietreflect', body: 'A still mirror for what you carry. Drop local files. They settle as soft mirrored glass cards with gentle reflection spring motion on frosted glass. Shared caption, cool accent. Batch-publish to the database with polished Discord embeds. Soft size warnings only. No hard limits. All prior desks remain fully intact.' },
   { title: 'quiet equinox', href: '/quietequinox', body: 'Drop local files into balanced dual columns of frosted glass with gentle spring motion. Shared caption and cool accent. Batch-publish to the database with polished Discord embeds. Soft size warnings only. No hard limits. All prior desks remain fully intact.' },
   { title: 'quiet stillroom', href: '/quietstillroom', body: 'A quiet stillroom for compositions. Write a note or drop local files. They settle as soft glowing cards with gentle spring motion on frosted glass. Shared caption, cool accent. Publish to the database with polished Discord embeds. Soft size warnings only. No hard limits. All prior desks remain fully intact.' },

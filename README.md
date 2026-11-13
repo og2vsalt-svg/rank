@@ -2,6 +2,7 @@
 
 Private file hosting and sharing.
 
+- **Quiet Haven** — a still place for a short note or a single local file. Soft glass surfaces, spring motion, polished Discord embeds. Soft size warnings only. No hard limits. All prior desks remain fully intact. No traces of boosting.
 - **Lumen Hub** — clean central desk for multi-file drops that land straight in the shared database. Recent public shares listed beside. Copy polished Discord embed links in one tap. Soft size warnings only. No hard limits. Sleek Apple-style spring motion on frosted glass. All prior desks remain fully intact.
 - Local vault in the browser (IndexedDB).
 - Upload local files straight to the database (Supabase storage + public_shares).

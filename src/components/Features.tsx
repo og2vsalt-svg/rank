@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'quiet stillroom', href: '/quietstillroom', body: 'A quiet stillroom for compositions. Write a note or drop local files. They settle as soft glowing cards with gentle spring motion on frosted glass. Shared caption, cool accent. Publish to the database with polished Discord embeds. Soft size warnings only. No hard limits. All prior desks remain fully intact.' },
   { title: 'quiet reliquary', href: '/quietreliquary', body: 'Seal local files into soft floating glass orbs with upward spring motion. Shared caption. Batch-publish to the database with polished Discord embeds. Soft size warnings only. No hard limits. All prior desks remain fully intact.' },
   { title: 'quiet studio', href: '/quietstudio', body: 'Compose a refined share. Drop a local file, shape title and caption, see a live Discord-style card preview, then publish to the database. Soft size warnings only. No hard limits. Spring-animated frosted glass. All prior desks remain.' },
   { title: 'quiet nexus', href: '/quietnexus', body: 'Calm central hub for quick drops, recent public shares, and navigation to all desks. Spring-animated frosted glass cards. Soft size warnings only. No hard limits. Polished Discord embeds on every share.' },

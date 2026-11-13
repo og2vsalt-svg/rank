@@ -101,9 +101,7 @@ export default function LumenHubPage() {
               <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="mt-6 space-y-2">
                 {files.map((f, i) => (
                   <div key={i} className="flex items-center justify-between text-sm bg-white/5 rounded-2xl px-4 py-3">
-                    <span className="truncate max-w-[70%]"
-                      {f.name}
-                    </span>
+                    <span className="truncate max-w-[70%]">{f.name}</span>
                     <span className="text-neutral-500 text-xs">{formatBytes(f.size)}</span>
                   </div>
                 ))}

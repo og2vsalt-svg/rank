@@ -30,10 +30,11 @@ export default function Hero() {
           transition={{ type: 'spring', stiffness: 80, damping: 20, delay: 0.1 }}
           className="text-neutral-400 text-lg leading-relaxed max-w-lg mb-10 mx-auto"
         >
-          Local vault. Quiet Studio for refined composition with live Discord preview, Quiet Vellum, Quiet Ripple, Quiet Compass, Forge, Shelf, and dozens more specialized desks. Professional Discord embeds on every link. Soft size warnings only. No hard limits. Sleek Apple-style spring animations.
+          Local vault. Quiet Aether, Quiet Studio for refined composition with live Discord preview, Quiet Vellum, Quiet Ripple, Quiet Compass, Forge, Shelf, and dozens more specialized desks. Professional Discord embeds on every link. Soft size warnings only. No hard limits. Sleek Apple-style spring animations.
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center">
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('vault')} className="px-6 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-100 transition">open vault</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietaether')} className="px-6 py-2.5 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#3a9aff] transition">quiet aether</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietstudio')} className="px-6 py-2.5 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#3a9aff] transition">quiet studio</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietvellum')} className="px-6 py-2.5 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#3a9aff] transition">quiet vellum</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietripple')} className="px-6 py-2.5 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#3a9aff] transition">quiet ripple</motion.button>

@@ -30,13 +30,13 @@ export default function Hero() {
           transition={{ type: 'spring', stiffness: 80, damping: 20, delay: 0.1 }}
           className="text-neutral-400 text-lg leading-relaxed max-w-lg mb-10 mx-auto"
         >
-          Local vault. Quiet Compass for searchable archives, Quiet Forge, Shelf, Tide, Stream, and Relay. Multi-file drops. Professional Discord embeds on every link. Soft size warnings only. No hard limits. Sleek Apple-style spring animations.
+          Local vault. Quiet Vellum for refined notes, Quiet Ripple for multi-file drops, Quiet Compass, Forge, Shelf, and dozens more specialized desks. Professional Discord embeds on every link. Soft size warnings only. No hard limits. Sleek Apple-style spring animations.
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center">
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('vault')} className="px-6 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-100 transition">open vault</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietvellum')} className="px-6 py-2.5 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#3a9aff] transition">quiet vellum</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietripple')} className="px-6 py-2.5 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#3a9aff] transition">quiet ripple</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietcompass')} className="px-6 py-2.5 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#3a9aff] transition">quiet compass</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietforge')} className="px-6 py-2.5 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#3a9aff] transition">quiet forge</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietstream')} className="px-6 py-2.5 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#3a9aff] transition">quiet stream</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('directshare')} className="px-6 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition">direct share</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('directory')} className="px-6 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition">browse desks</motion.button>
         </div>

@@ -30,10 +30,11 @@ export default function Hero() {
           transition={{ type: 'spring', stiffness: 80, damping: 20, delay: 0.1 }}
           className="text-neutral-400 text-lg leading-relaxed max-w-lg mb-10 mx-auto"
         >
-          Local vault. Quiet Stillwater for gentle floating glass with subtle ripples, Quiet Sanctum for soft floating glass orbs, Quiet Reliquary, Quiet Aether, Quiet Studio for refined composition with live Discord preview, Quiet Vellum, Quiet Ripple, Quiet Compass, Forge, Shelf, and dozens more specialized desks. Professional Discord embeds on every link. Soft size warnings only. No hard limits. Sleek Apple-style spring animations.
+          Local vault. Quiet Reflect for mirrored glass cards, Quiet Stillwater for gentle floating glass with subtle ripples, Quiet Sanctum for soft floating glass orbs, Quiet Reliquary, Quiet Aether, Quiet Studio for refined composition with live Discord preview, Quiet Vellum, Quiet Ripple, Quiet Compass, Forge, Shelf, and dozens more specialized desks. Professional Discord embeds on every link. Soft size warnings only. No hard limits. Sleek Apple-style spring animations.
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center">
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('vault')} className="px-6 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-100 transition">open vault</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietreflect')} className="px-6 py-2.5 rounded-full bg-[#AF52DE] text-white text-sm font-medium hover:bg-[#c084fc] transition">quiet reflect</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietstillwater')} className="px-6 py-2.5 rounded-full bg-[#5AC8FA] text-black text-sm font-medium hover:bg-[#7ad4ff] transition">quiet stillwater</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietsanctum')} className="px-6 py-2.5 rounded-full bg-[#AF52DE] text-white text-sm font-medium hover:bg-[#c084fc] transition">quiet sanctum</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietreliquary')} className="px-6 py-2.5 rounded-full bg-[#FF9F0A] text-black text-sm font-medium hover:bg-[#ffb340] transition">quiet reliquary</motion.button>

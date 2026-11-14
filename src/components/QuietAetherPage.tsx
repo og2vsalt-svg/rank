@@ -1,97 +1,233 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './Navbar';
+import { publishLocalFile, shareUrls } from '../lib/cloudShare';
 import { useVault } from './VaultContext';
 
-export default function QuietAetherPage() {
-  const { addFiles } = useVault() as any;
-  const [files, setFiles] = useState<File[]>([]);
-  const [caption, setCaption] = useState('');
-  const [warning, setWarning] = useState('');
+type Item = {
+  file: File;
+  note: string;
+  preview?: string;
+  id: string;
+};
 
-  const onDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    const dropped = Array.from(e.dataTransfer.files);
-    setFiles((prev) => [...prev, ...dropped]);
-    const big = dropped.some(f => f.size > 50 * 1024 * 1024);
-    if (big) setWarning('Large files may feel slower to share. No limits enforced.');
-    else setWarning('');
+export default function QuietAetherPage() {
+  const { addFiles } = useVault();
+  const [items, setItems] = useState<Item[]>([]);
+  const [sharedCaption, setSharedCaption] = useState('');
+  const [accent, setAccent] = useState('#5AC8FA');
+  const [busy, setBusy] = useState(false);
+  const [results, setResults] = useState<{ name: string; embed: string; warn?: string | null }[]>([]);
+  const [err, setErr] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const add = useCallback((list: FileList | File[]) => {
+    const next: Item[] = Array.from(list).map((file) => {
+      const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+      let preview: string | undefined;
+      if (file.type.startsWith('image/')) {
+        preview = URL.createObjectURL(file);
+      }
+      return { file, note: '', preview, id };
+    });
+    setItems((prev) => [...prev, ...next]);
+    setResults([]);
+    setErr('');
   }, []);
 
-  const onSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const selected = Array.from(e.target.files);
-      setFiles((prev) => [...prev, ...selected]);
-      const big = selected.some(f => f.size > 50 * 1024 * 1024);
-      if (big) setWarning('Large files may feel slower to share. No limits enforced.');
-    }
+  const remove = (id: string) => {
+    setItems((prev) => {
+      const found = prev.find((i) => i.id === id);
+      if (found?.preview) URL.revokeObjectURL(found.preview);
+      return prev.filter((i) => i.id !== id);
+    });
   };
 
-  const share = async () => {
-    if (addFiles) addFiles(files.map(f => ({ name: f.name, size: f.size, type: f.type })));
-    // Placeholder for DB share + Discord embed link generation
-    alert('Files settled into vault. Share links with polished embeds ready in production.');
-    setFiles([]);
+  const updateNote = (id: string, note: string) => {
+    setItems((prev) => prev.map((i) => (i.id === id ? { ...i, note } : i)));
   };
+
+  const publish = async () => {
+    if (!items.length) return;
+    setBusy(true);
+    setErr('');
+    setResults([]);
+    try {
+      await addFiles(items.map((i) => i.file), 'aether');
+      const out: typeof results = [];
+      for (const item of items) {
+        const caption = item.note.trim() || sharedCaption.trim() || undefined;
+        const res = await publishLocalFile(item.file, {
+          caption,
+          color: accent,
+          cardTitle: item.file.name,
+          author: 'rankvault',
+          meta: { desk: 'quietaether' },
+        });
+        if (res.ok && res.id) {
+          const urls = shareUrls(res.id);
+          out.push({ name: item.file.name, embed: urls.embed, warn: res.warn || null });
+        } else {
+          out.push({ name: item.file.name, embed: '', warn: res.error || 'failed' });
+        }
+      }
+      setResults(out);
+    } catch (e: any) {
+      setErr(e?.message || 'something slowed');
+    }
+    setBusy(false);
+  };
+
+  const large = items.some((i) => i.file.size > 40 * 1024 * 1024);
 
   return (
-    <div className="mesh min-h-screen">
+    <div className="mesh min-h-screen bg-[#0b0b0d] text-white">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
+      <div className="pt-28 pb-24 px-5 max-w-4xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ type: 'spring', stiffness: 100, damping: 20 }}
-          className="glass rounded-[32px] p-8"
+          className="text-center mb-10"
         >
-          <p className="text-[#0A84FF] text-sm mb-2 tracking-wide">quiet aether</p>
-          <h1 className="text-3xl font-semibold tracking-tight text-white mb-3">settle into the air.</h1>
-          <p className="text-neutral-400 text-sm mb-6">Drop local files. They rise as soft glass orbs with spring motion. Soft size warnings only. Publish for Discord-ready embeds.</p>
+          <p className="text-[#5AC8FA] text-sm font-medium tracking-wide mb-3">quiet aether</p>
+          <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight leading-tight mb-4">
+            Float into the aether.<br />Share when settled.
+          </h1>
+          <p className="text-neutral-400 text-base leading-relaxed max-w-lg mx-auto">
+            Drop local files into a soft floating aether of frosted glass orbs. Gentle orbital spring motion, live previews, per-file notes or one shared caption. Batch-publish to the database. Every link unfurls a polished Discord embed. Large files warned for possible slowness, never refused. All prior desks remain fully intact.
+          </p>
+        </motion.div>
 
-          <div
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={onDrop}
-            className="border-2 border-dashed border-white/10 rounded-3xl p-12 text-center mb-6 hover:border-[#0A84FF]/40 transition-colors"
-          >
-            <p className="text-neutral-400">drop files here</p>
-            <input type="file" multiple onChange={onSelect} className="mt-4 text-sm" />
-          </div>
-
-          {warning && <p className="text-xs text-amber-300/80 mb-4">{warning}</p>}
-
+        <motion.div
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.05, type: 'spring', stiffness: 120, damping: 22 }}
+          className="glass rounded-[28px] p-6 sm:p-8 mb-6 cursor-pointer border border-white/10 hover:border-white/20 transition"
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={(e) => {
+            e.preventDefault();
+            if (e.dataTransfer.files?.length) add(e.dataTransfer.files);
+          }}
+          onClick={() => inputRef.current?.click()}
+        >
           <input
-            value={caption}
-            onChange={(e) => setCaption(e.target.value)}
-            placeholder="shared caption (optional)"
-            className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white text-sm mb-6 focus:outline-none focus:border-[#0A84FF]/50"
+            ref={inputRef}
+            type="file"
+            multiple
+            className="hidden"
+            onChange={(e) => e.target.files && add(e.target.files)}
           />
+          <div className="text-center text-neutral-500 text-sm">
+            {items.length ? `${items.length} file${items.length > 1 ? 's' : ''} drifting` : 'drag files here or click to choose'}
+          </div>
+        </motion.div>
 
+        {large && (
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-amber-300/90 text-xs mb-4 text-center">
+            large drop detected. the browser may feel slow while it encodes or uploads. no hard limit.
+          </motion.p>
+        )}
+
+        <div className="flex flex-wrap gap-4 justify-center mb-8 min-h-[120px]">
           <AnimatePresence>
-            {files.map((f, i) => (
+            {items.map((item, i) => (
               <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 10, scale: 0.96 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ type: 'spring', stiffness: 200, damping: 24 }}
-                className="flex items-center justify-between bg-white/[0.03] rounded-2xl px-4 py-3 mb-2"
+                key={item.id}
+                initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ delay: i * 0.05, type: 'spring', stiffness: 120, damping: 18 }}
+                className="glass rounded-2xl p-3 w-40 relative"
+                style={{ rotate: (i % 5 - 2) * 2 }}
               >
-                <span className="text-sm text-white truncate">{f.name}</span>
-                <span className="text-xs text-neutral-500">{(f.size / 1024 / 1024).toFixed(1)} MB</span>
+                {item.preview ? (
+                  <img src={item.preview} alt="" className="w-full h-24 rounded-xl object-cover mb-2" />
+                ) : (
+                  <div className="w-full h-24 rounded-xl bg-white/5 grid place-items-center text-xs text-neutral-500 mb-2">
+                    {item.file.name.split('.').pop()?.slice(0, 4) || 'file'}
+                  </div>
+                )}
+                <p className="text-xs font-medium truncate">{item.file.name}</p>
+                <p className="text-[10px] text-neutral-500 mb-1">{(item.file.size / 1024 / 1024).toFixed(1)} MB</p>
+                <input
+                  value={item.note}
+                  onChange={(e) => updateNote(item.id, e.target.value)}
+                  placeholder="note"
+                  className="w-full bg-black/20 border border-white/10 rounded-lg px-2 py-1 text-[10px] outline-none"
+                />
+                <button onClick={() => remove(item.id)} className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-black/40 text-xs">×</button>
               </motion.div>
             ))}
           </AnimatePresence>
+        </div>
 
-          {files.length > 0 && (
-            <motion.button
-              whileTap={{ scale: 0.97 }}
-              onClick={share}
-              className="mt-6 w-full py-3 rounded-full bg-[#0A84FF] text-white text-sm font-medium"
-            >
-              publish to vault & share
-            </motion.button>
+        <input
+          value={sharedCaption}
+          onChange={(e) => setSharedCaption(e.target.value)}
+          placeholder="shared caption (used when a file has no own note)"
+          className="w-full glass rounded-2xl px-4 py-3 text-sm mb-4 outline-none"
+        />
+
+        <div className="flex items-center gap-3 mb-6 justify-center">
+          <label className="text-xs text-neutral-400">accent</label>
+          <input
+            type="color"
+            value={accent}
+            onChange={(e) => setAccent(e.target.value)}
+            className="w-9 h-9 rounded-full border-0 cursor-pointer"
+          />
+        </div>
+
+        <motion.button
+          whileTap={{ scale: 0.97 }}
+          whileHover={{ scale: 1.01 }}
+          onClick={publish}
+          disabled={!items.length || busy}
+          className="w-full max-w-md mx-auto block py-3.5 rounded-full text-black font-medium disabled:opacity-40 transition shadow-lg"
+          style={{ background: accent }}
+        >
+          {busy ? 'settling into the aether…' : items.length ? `publish ${items.length} file${items.length > 1 ? 's' : ''}` : 'add files first'}
+        </motion.button>
+
+        <AnimatePresence>
+          {results.length > 0 && (
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-8 space-y-3 max-w-md mx-auto">
+              <p className="text-sm font-medium text-center">shared</p>
+              {results.map((r, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.04 }}
+                  className="glass rounded-2xl p-4"
+                >
+                  <p className="text-sm font-medium mb-1 truncate">{r.name}</p>
+                  {r.embed ? (
+                    <>
+                      <p className="text-xs text-neutral-400 break-all mb-2">{r.embed}</p>
+                      <button
+                        onClick={() => navigator.clipboard.writeText(r.embed)}
+                        className="text-xs"
+                        style={{ color: accent }}
+                      >
+                        copy discord link
+                      </button>
+                    </>
+                  ) : (
+                    <p className="text-xs text-red-400">{r.warn}</p>
+                  )}
+                  {r.warn && r.embed && <p className="text-amber-300/80 text-xs mt-1">{r.warn}</p>}
+                </motion.div>
+              ))}
+            </motion.div>
           )}
-        </motion.div>
+          {err && (
+            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 text-sm text-red-400 text-center">
+              {err}
+            </motion.p>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

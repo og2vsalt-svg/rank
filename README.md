@@ -2,6 +2,7 @@
 
 Private file hosting and sharing.
 
+- **Quiet Twilight** — drop local files into the soft blue-purple dusk. They settle as gentle frosted glass orbs with upward spring motion and a quiet glow. Shared note, twilight accent. Batch-publish to the database with polished Discord embeds. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 - **Quiet Glen** — drop local files. They settle as soft floating frosted glass leaves with gentle spring motion. Shared note, cool accent. Batch-publish to the database with polished Discord embeds. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 - **Quiet Orchard** — drop local files. They grow into soft frosted glass trees with gentle spring motion. Shared caption, cool accent. Batch-publish to the database with polished Discord embeds. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 - **Quiet Notebook** — keep multiple quiet entries. Compose notes or drop local files. They settle as soft pages on frosted glass with spring motion. Batch-publish to the database with polished Discord embeds. Soft size warnings only. No hard limits. All prior desks remain fully intact.

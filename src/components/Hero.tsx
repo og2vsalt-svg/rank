@@ -30,22 +30,15 @@ export default function Hero() {
           transition={{ type: 'spring', stiffness: 80, damping: 20, delay: 0.1 }}
           className="text-neutral-400 text-lg leading-relaxed max-w-lg mb-10 mx-auto"
         >
-          Local vault. Quiet Solace for calm drops with per-file notes, Quiet Ember for glowing glass embers with warm light, Quiet Vale for soft glass vale drops, Quiet Album for image-focused drops with previews, Quiet Nadir for deep still drops, Quiet Horizon for files along a soft line, Quiet Glen for floating glass leaves, Quiet Orchard for growing glass trees, Quiet Notebook for multi-entry pages, Quiet Scriptorium for composing notes, Lumen Hub for clean central drops, Quiet Vista for flowing recent shares, and dozens more specialized desks. Professional Discord embeds on every link. Soft size warnings only. No hard limits. Sleek Apple-style spring animations.
+          Local vault. Quiet Mosaic for live image arrangements, Quiet Canvas for painted drops, Quiet Solace for calm notes, Quiet Ember for glowing embers, and dozens more specialized desks. Professional Discord embeds on every link. Soft size warnings only. No hard limits. Sleek Apple-style spring animations. All prior features remain fully intact.
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center">
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietmosaic')} className="px-6 py-2.5 rounded-full bg-[#AF52DE] text-white text-sm font-medium hover:bg-[#c084fc] transition">quiet mosaic</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietcanvas')} className="px-6 py-2.5 rounded-full bg-[#FB7185] text-white text-sm font-medium hover:bg-[#fda4af] transition">quiet canvas</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietsolace')} className="px-6 py-2.5 rounded-full bg-[#5AC8FA] text-black text-sm font-medium hover:bg-[#7ad4ff] transition">quiet solace</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietember')} className="px-6 py-2.5 rounded-full bg-[#FF6B35] text-white text-sm font-medium hover:bg-[#ff7a4a] transition">quiet ember</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietvale')} className="px-6 py-2.5 rounded-full bg-[#5AC8FA] text-black text-sm font-medium hover:bg-[#7ad4ff] transition">quiet vale</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietalbum')} className="px-6 py-2.5 rounded-full bg-[#AF52DE] text-white text-sm font-medium hover:bg-[#c084fc] transition">quiet album</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietnadir')} className="px-6 py-2.5 rounded-full bg-[#3A3A3C] text-white text-sm font-medium hover:bg-[#48484A] transition">quiet nadir</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quiethorizon')} className="px-6 py-2.5 rounded-full bg-[#5AC8FA] text-black text-sm font-medium hover:bg-[#7ad4ff] transition">quiet horizon</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietglen')} className="px-6 py-2.5 rounded-full bg-[#5AC8FA] text-black text-sm font-medium hover:bg-[#7ad4ff] transition">quiet glen</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('lumenhub')} className="px-6 py-2.5 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#3a9aff] transition">lumen hub</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietorchard')} className="px-6 py-2.5 rounded-full bg-[#5AC8FA] text-black text-sm font-medium hover:bg-[#7ad4ff] transition">quiet orchard</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietnotebook')} className="px-6 py-2.5 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#3a9aff] transition">quiet notebook</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietscriptorium')} className="px-6 py-2.5 rounded-full bg-[#AF52DE] text-white text-sm font-medium hover:bg-[#c084fc] transition">quiet scriptorium</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('vault')} className="px-6 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-100 transition">open vault</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietvista')} className="px-6 py-2.5 rounded-full bg-[#5AC8FA] text-black text-sm font-medium hover:bg-[#7ad4ff] transition">quiet vista</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('directory')} className="px-6 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition">browse desks</motion.button>
         </div>
       </div>

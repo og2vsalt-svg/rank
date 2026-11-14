@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 
 const items = [
+  { title: 'quiet ember', href: '/quietember', body: 'Drop local files. They settle as soft glowing embers of frosted glass with gentle upward spring motion and warm light. Individual notes or a shared caption. Batch-publish to the database with polished Discord embeds. Soft size warnings only. No hard limits. All prior desks remain fully intact. No traces of boosting.' },
   { title: 'quiet vale', href: '/quietvale', body: 'Drop local files. They settle into a soft vale of frosted glass with gentle spring motion. Individual notes or a shared caption. Batch-publish to the database with polished Discord embeds. Soft size warnings only. No hard limits. All prior desks remain fully intact. No traces of boosting.' },
   { title: 'quiet link', href: '/quietlink', body: 'Share any URL with a custom polished Discord embed. Set title, description, and optional image. Soft warnings only. No hard limits. All prior desks remain fully intact.' },
   { title: 'quiet weave', href: '/quietweave', body: 'Drop local files. They settle as interwoven frosted glass strands with gentle spring motion. Individual notes or a shared caption. Batch-publish to the database with polished Discord embeds. Soft size warnings only. No hard limits. All prior desks remain fully intact.' },

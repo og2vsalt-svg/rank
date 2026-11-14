@@ -2,6 +2,8 @@
 
 Private file hosting and sharing.
 
+- **Quiet Paste** — a still surface for notes and snippets. Type or paste text and publish it as a quiet text file to the database. Every link unfurls a polished Discord embed. Soft warnings only for long pastes. No hard limits. Apple-style springs and frosted glass. All prior desks remain fully intact.
+- **Quiet QR** — turn any URL or short text into a clean QR code. Preview it live, then publish the image to the database for a polished Discord embed link. Soft warnings only. No hard limits. Prior features stay untouched.
 - **Quiet Anchor** — drop local files. They settle in a quiet harbor of frosted glass with gentle spring motion and subtle wave undertones. Live previews, individual notes or a shared caption. Batch-publish to the database. Every link unfurls a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact.
 - **Quiet Lumen Desk** — drop local files. They float as soft glowing orbs of frosted glass with gentle upward spring motion and live image previews. Individual notes or a shared caption. Batch-publish to the database. Every link unfurls a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact.
 - **Quiet Cove** — gather several quiet notes, each with an optional local file and live preview. Batch-publish the collection to the database. Every link carries a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.

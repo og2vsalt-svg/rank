@@ -1,226 +1,103 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useVault } from './VaultContext';
-import { publishLocalFile, shareUrls, listPublicShares, type CloudMeta } from '../lib/cloudShare';
+import { useRouter } from './Router';
 import Navbar from './Navbar';
+import { publishLocalFile, shareUrls } from '../lib/cloudShare';
 
 export default function QuietLatticePage() {
   const { addFiles } = useVault();
+  const { navigate } = useRouter();
+  const fileRef = useRef<HTMLInputElement>(null);
   const [files, setFiles] = useState<File[]>([]);
+  const [busy, setBusy] = useState(false);
+  const [links, setLinks] = useState<{name: string; url: string}[]>([]);
+  const [warning, setWarning] = useState('');
   const [caption, setCaption] = useState('');
-  const [color, setColor] = useState('#AF52DE');
-  const [status, setStatus] = useState<'idle' | 'uploading' | 'done' | 'error'>('idle');
-  const [results, setResults] = useState<{ id: string; name: string; embed: string; warn?: string | null }[]>([]);
-  const [error, setError] = useState('');
-  const [publicShares, setPublicShares] = useState<CloudMeta[]>([]);
-  const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    listPublicShares(36).then(setPublicShares).catch(() => {});
-  }, []);
-
-  const onDrop = useCallback((list: FileList | File[]) => {
+  const handleFiles = (list: FileList | null) => {
+    if (!list) return;
     const arr = Array.from(list);
-    setFiles((prev) => [...prev, ...arr]);
-    setStatus('idle');
-    setError('');
-  }, []);
-
-  const onFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) onDrop(e.target.files);
-    if (inputRef.current) inputRef.current.value = '';
+    setFiles(arr);
+    const total = arr.reduce((s, f) => s + f.size, 0);
+    setWarning(total > 50 * 1024 * 1024 ? 'Chunky batch. Sending may feel slow — never refused.' : '');
   };
 
-  const remove = (idx: number) => setFiles((prev) => prev.filter((_, i) => i !== idx));
-
-  const shareAll = async () => {
+  const process = async () => {
     if (!files.length) return;
-    setStatus('uploading');
-    setError('');
-    setResults([]);
+    setBusy(true);
+    setLinks([]);
+    const newLinks: {name: string; url: string}[] = [];
     try {
-      await addFiles(files, 'drops');
-      const out: typeof results = [];
-      for (const file of files) {
-        const res = await publishLocalFile(file, {
-          caption: caption || undefined,
-          color,
-          cardTitle: file.name,
-          author: 'rankvault',
-          meta: { source: 'quietlattice' },
-        });
+      await addFiles(files, 'lattice');
+      for (const f of files.slice(0, 6)) {
+        const res = await publishLocalFile(f, { caption: caption || f.name, author: 'lattice', color: '#34D399' });
         if (res.ok && res.id) {
-          const urls = shareUrls(res.id);
-          out.push({ id: res.id, name: file.name, embed: urls.embed, warn: res.warn || null });
-        } else {
-          out.push({ id: '', name: file.name, embed: '', warn: res.error || 'failed' });
+          const u = shareUrls(res.id);
+          newLinks.push({ name: f.name, url: u.embed });
         }
       }
-      setResults(out);
-      setStatus('done');
-      listPublicShares(36).then(setPublicShares).catch(() => {});
+      setLinks(newLinks);
+      if (newLinks[0]) try { await navigator.clipboard.writeText(newLinks[0].url); } catch {}
     } catch (e: any) {
-      setError(e?.message || 'something went wrong');
-      setStatus('error');
+      setWarning(e?.message || 'issue');
     }
+    setBusy(false);
   };
 
-  const large = files.some((f) => f.size > 40 * 1024 * 1024);
-
   return (
-    <div className="min-h-screen bg-[#0b0b0d] text-white pt-8 px-5 pb-16 relative overflow-hidden">
+    <div className="mesh min-h-screen">
       <Navbar />
-      <div className="absolute inset-0 pointer-events-none opacity-[0.04]">
-        <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,#AF52DE20_25%,#AF52DE20_50%,transparent_50%,transparent_75%,#AF52DE20_75%)] bg-[length:40px_40px]" />
-      </div>
+      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 100, damping: 20 }}>
+          <p className="text-[#34D399] text-sm font-medium mb-3 tracking-wide">quiet lattice</p>
+          <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-white mb-4">interlocked drops.</h1>
+          <p className="text-neutral-400 text-lg mb-8">Local files settle into a quiet interlocking lattice of frosted glass nodes with gentle spring connections. Batch-publish to the database. Every link unfurls a polished Discord embed. Soft size warnings only.</p>
+        </motion.div>
 
-      <div className="max-w-4xl mx-auto relative pt-20">
-        <motion.h1
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 90, damping: 18 }}
-          className="text-4xl font-semibold tracking-tight mb-2"
+        <div
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={(e) => { e.preventDefault(); handleFiles(e.dataTransfer.files); }}
+          className="glass rounded-3xl p-10 text-center apple-card mb-5 cursor-pointer relative overflow-hidden"
+          onClick={() => fileRef.current?.click()}
         >
-          quiet lattice
-        </motion.h1>
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.1 }}
-          className="text-neutral-400 mb-8 max-w-2xl"
-        >
-          Multi-file drop that weaves into a soft lattice of spring-animated frosted glass cards. Live public shares sit beside your drops. Batch-publish to the database with polished Discord embeds. Soft size warnings only. No hard limits.
-        </motion.p>
-
-        <div className="grid lg:grid-cols-[1fr_300px] gap-8">
-          <div>
-            {publicShares.length > 0 && (
-              <div className="mb-10">
-                <h2 className="text-sm font-medium text-white/60 mb-4">living lattice</h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {publicShares.slice(0, 12).map((s, i) => (
-                    <motion.a
-                      key={s.id}
-                      href={shareUrls(s.id).embed}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.03, type: 'spring', stiffness: 130, damping: 16 }}
-                      className="glass rounded-2xl p-3 block hover:bg-white/[0.06] transition"
-                    >
-                      <div className="text-xs font-medium truncate">{s.name || s.id.slice(0, 8)}</div>
-                      <div className="text-[10px] text-neutral-500 mt-1">{s.caption ? s.caption.slice(0, 40) : 'shared'}</div>
-                    </motion.a>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <motion.div
-              className="glass rounded-3xl p-10 mb-6 text-center cursor-pointer border border-white/10 hover:border-white/25"
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={(e) => {
-                e.preventDefault();
-                if (e.dataTransfer.files) onDrop(e.dataTransfer.files);
-              }}
-              whileHover={{ scale: 1.004, y: -2 }}
-              whileTap={{ scale: 0.996 }}
-            >
-              <input ref={inputRef} type="file" onChange={onFile} className="hidden" id="lattice-file" multiple />
-              <label htmlFor="lattice-file" className="cursor-pointer block">
-                <div className="text-neutral-400 text-sm mb-1">drop files into the lattice</div>
-                <div className="text-xs text-neutral-500">or click · multiple welcome</div>
-              </label>
-            </motion.div>
-
-            {large && (
-              <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="text-amber-400 text-xs mb-4 px-1">
-                large files detected. the browser may feel slow while encoding or uploading. no hard limit.
-              </motion.div>
-            )}
-
-            {files.length > 0 && (
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8">
-                {files.map((f, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, scale: 0.85, rotate: -2 }}
-                    animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                    transition={{ type: 'spring', stiffness: 140, damping: 15, delay: i * 0.05 }}
-                    className="glass rounded-2xl p-4 relative group"
-                    style={{ borderColor: color + '50' }}
-                  >
-                    <div className="text-sm font-medium truncate mb-1">{f.name}</div>
-                    <div className="text-[10px] text-neutral-500">{(f.size / 1024 / 1024).toFixed(1)} MB</div>
-                    <button
-                      onClick={() => remove(i)}
-                      className="absolute top-2 right-2 w-5 h-5 rounded-full bg-white/10 text-xs opacity-0 group-hover:opacity-100 transition"
-                    >
-                      ×
-                    </button>
-                  </motion.div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <div className="glass rounded-3xl p-5 h-fit">
-            <input
-              value={caption}
-              onChange={(e) => setCaption(e.target.value)}
-              placeholder="optional caption for Discord cards"
-              className="w-full glass rounded-2xl px-4 py-3 text-sm mb-4 outline-none focus:border-white/30 bg-white/5"
-            />
-
-            <div className="flex items-center gap-3 mb-6">
-              <label className="text-xs text-neutral-400">accent</label>
-              <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="w-10 h-10 rounded-full border-0 cursor-pointer" />
-            </div>
-
-            <motion.button
-              whileTap={{ scale: 0.97 }}
-              onClick={shareAll}
-              disabled={!files.length || status === 'uploading'}
-              className="w-full py-3.5 rounded-full bg-[#AF52DE] text-white font-medium disabled:opacity-50"
-            >
-              {status === 'uploading' ? 'weaving into database…' : `weave ${files.length || ''} file${files.length === 1 ? '' : 's'}`}
-            </motion.button>
-
-            <AnimatePresence>
-              {status === 'done' && results.length > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mt-6 space-y-3"
-                >
-                  {results.map((r, i) => (
-                    <div key={i} className="glass rounded-2xl p-3 text-xs">
-                      <p className="font-medium mb-1 truncate">{r.name}</p>
-                      {r.embed ? (
-                        <>
-                          <p className="text-neutral-400 break-all mb-1 text-[10px]">{r.embed}</p>
-                          <button
-                            onClick={() => navigator.clipboard.writeText(r.embed)}
-                            className="text-[#AF52DE]"
-                          >
-                            copy embed
-                          </button>
-                        </>
-                      ) : (
-                        <p className="text-red-400">{r.warn}</p>
-                      )}
-                      {r.warn && r.embed && <p className="text-amber-400 text-[10px] mt-1">{r.warn}</p>}
-                    </div>
-                  ))}
-                </motion.div>
-              )}
-              {status === 'error' && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 text-red-400 text-sm">
-                  {error}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+          <div className="absolute inset-0 opacity-15 bg-[radial-gradient(circle_at_30%_30%,#34D399,transparent_50%),radial-gradient(circle_at_70%_70%,#10B981,transparent_50%)]" />
+          <input ref={fileRef} type="file" multiple className="hidden" onChange={(e) => handleFiles(e.target.files)} />
+          <div className="text-5xl mb-3 opacity-60 relative">▦</div>
+          <p className="text-white font-medium relative">Drop files into the lattice</p>
+          <p className="text-sm text-neutral-500 mt-1 relative">Interlocking nodes with spring motion</p>
+          {files.length > 0 && <p className="mt-3 text-sm text-[#34D399] relative">{files.length} selected</p>}
         </div>
+
+        <input
+          value={caption}
+          onChange={(e) => setCaption(e.target.value)}
+          placeholder="shared caption (optional)"
+          className="w-full mb-4 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm outline-none focus:border-[#34D399]/50"
+        />
+
+        {warning && <p className="text-amber-300 text-sm mb-4 text-center">{warning}</p>}
+
+        <div className="flex justify-center gap-3 mb-8">
+          <button onClick={process} disabled={!files.length || busy} className="px-6 py-3 rounded-full bg-white text-black font-medium disabled:opacity-40 active:scale-95 transition">
+            {busy ? 'linking…' : 'drop & embed'}
+          </button>
+          <button onClick={() => navigate('vault')} className="px-6 py-3 rounded-full glass">vault</button>
+        </div>
+
+        <AnimatePresence>
+          {links.length > 0 && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
+              {links.map((l) => (
+                <div key={l.url} className="glass rounded-2xl p-4">
+                  <p className="text-sm text-white truncate mb-1">{l.name}</p>
+                  <code className="text-xs text-[#34D399] break-all">{l.url}</code>
+                </div>
+              ))}
+              <p className="text-xs text-neutral-500 text-center">first link copied</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

@@ -1,205 +1,100 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useVault } from './VaultContext';
+import { useRouter } from './Router';
+import Navbar from './Navbar';
 import { publishLocalFile, shareUrls } from '../lib/cloudShare';
 
 export default function QuietPrismPage() {
   const { addFiles } = useVault();
+  const { navigate } = useRouter();
+  const fileRef = useRef<HTMLInputElement>(null);
   const [files, setFiles] = useState<File[]>([]);
+  const [busy, setBusy] = useState(false);
+  const [links, setLinks] = useState<{name: string; url: string}[]>([]);
+  const [warning, setWarning] = useState('');
   const [caption, setCaption] = useState('');
-  const [color, setColor] = useState('#5AC8FA');
-  const [status, setStatus] = useState<'idle' | 'uploading' | 'done' | 'error'>('idle');
-  const [results, setResults] = useState<{ id: string; name: string; embed: string; warn?: string | null }[]>([]);
-  const [error, setError] = useState('');
-  const inputRef = useRef<HTMLInputElement>(null);
 
-  const onDrop = useCallback((list: FileList | File[]) => {
+  const handleFiles = (list: FileList | null) => {
+    if (!list) return;
     const arr = Array.from(list);
-    setFiles((prev) => [...prev, ...arr]);
-    setStatus('idle');
-    setError('');
-  }, []);
-
-  const onFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) onDrop(e.target.files);
-    if (inputRef.current) inputRef.current.value = '';
+    setFiles(arr);
+    const total = arr.reduce((s, f) => s + f.size, 0);
+    setWarning(total > 50 * 1024 * 1024 ? 'Chunky batch. Sending may feel slow — never refused.' : '');
   };
 
-  const remove = (idx: number) => setFiles((prev) => prev.filter((_, i) => i !== idx));
-
-  const shareAll = async () => {
+  const process = async () => {
     if (!files.length) return;
-    setStatus('uploading');
-    setError('');
-    setResults([]);
+    setBusy(true);
+    setLinks([]);
+    const newLinks: {name: string; url: string}[] = [];
     try {
       await addFiles(files, 'prism');
-      const out: typeof results = [];
-      for (const file of files) {
-        const res = await publishLocalFile(file, {
-          caption: caption || undefined,
-          color,
-          cardTitle: file.name,
-          author: 'rankvault',
-        });
+      for (const f of files.slice(0, 6)) {
+        const res = await publishLocalFile(f, { caption: caption || f.name, author: 'prism', color: '#A78BFA' });
         if (res.ok && res.id) {
-          const urls = shareUrls(res.id);
-          out.push({ id: res.id, name: file.name, embed: urls.embed, warn: res.warn || null });
-        } else {
-          out.push({ id: '', name: file.name, embed: '', warn: res.error || 'failed' });
+          const u = shareUrls(res.id);
+          newLinks.push({ name: f.name, url: u.embed });
         }
       }
-      setResults(out);
-      setStatus('done');
+      setLinks(newLinks);
+      if (newLinks[0]) try { await navigator.clipboard.writeText(newLinks[0].url); } catch {}
     } catch (e: any) {
-      setError(e?.message || 'something went wrong');
-      setStatus('error');
+      setWarning(e?.message || 'issue');
     }
+    setBusy(false);
   };
 
-  const large = files.some((f) => f.size > 40 * 1024 * 1024);
-
   return (
-    <div className="min-h-screen bg-[#0b0b0d] text-white pt-24 px-5 pb-16">
-      <div className="max-w-2xl mx-auto">
-        <motion.h1
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 100, damping: 20 }}
-          className="text-4xl font-semibold tracking-tight mb-2"
-        >
-          quiet prism
-        </motion.h1>
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.08 }}
-          className="text-neutral-400 mb-8"
-        >
-          Multi-file drop that refracts into soft prism shards. Gentle light beams and spring motion on frosted glass. Each file publishes to the database with a polished Discord embed. Soft slow warnings only. No hard limits.
-        </motion.p>
-
-        <motion.div
-          className="glass rounded-3xl p-10 mb-6 text-center cursor-pointer border border-white/10 hover:border-white/25 transition-all relative overflow-hidden h-64"
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={(e) => {
-            e.preventDefault();
-            if (e.dataTransfer.files) onDrop(e.dataTransfer.files);
-          }}
-          whileHover={{ scale: 1.005 }}
-          whileTap={{ scale: 0.995 }}
-        >
-          <div className="absolute inset-0 opacity-50 pointer-events-none flex items-center justify-center">
-            {[...Array(6)].map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute h-1 rounded-full blur-[2px]"
-                style={{ 
-                  background: `linear-gradient(90deg, transparent, ${color}, transparent)`,
-                  width: 120 + i * 20,
-                  transform: `rotate(${i * 30}deg)`
-                }}
-                animate={{
-                  opacity: [0.3, 0.8, 0.3],
-                  scaleX: [0.8, 1.1, 0.8],
-                }}
-                transition={{ duration: 4 + i * 0.5, repeat: Infinity, ease: 'easeInOut' }}
-              />
-            ))}
-          </div>
-          <input ref={inputRef} type="file" onChange={onFile} className="hidden" id="prism-file" multiple />
-          <label htmlFor="prism-file" className="cursor-pointer block relative z-10 pt-16">
-            <div className="text-neutral-400 text-sm mb-1">drop files here to refract</div>
-            <div className="text-xs text-neutral-500">or click to browse · multiple ok</div>
-          </label>
+    <div className="mesh min-h-screen">
+      <Navbar />
+      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 100, damping: 20 }}>
+          <p className="text-[#A78BFA] text-sm font-medium mb-3 tracking-wide">quiet prism</p>
+          <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-white mb-4">refracted drops.</h1>
+          <p className="text-neutral-400 text-lg mb-8">Local files settle as spectral glass facets with gentle spring refraction. Batch-publish to the database. Every link unfurls a polished Discord embed. Soft size warnings only.</p>
         </motion.div>
 
-        {large && (
-          <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="text-amber-400 text-xs mb-4 px-1">
-            large files detected. encoding and upload may feel slow. no hard limit enforced.
-          </motion.div>
-        )}
-
-        <AnimatePresence>
-          {files.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="mb-6 space-y-3"
-            >
-              {files.map((f, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 8, scale: 0.96 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ type: 'spring', stiffness: 120, damping: 18 }}
-                  className="glass rounded-2xl px-4 py-3 flex items-center justify-between text-sm"
-                >
-                  <span className="truncate max-w-[70%]">{f.name}</span>
-                  <div className="flex items-center gap-3 text-xs text-neutral-400">
-                    <span>{(f.size / 1024 / 1024).toFixed(1)} MB</span>
-                    <button onClick={() => remove(i)} className="text-neutral-500 hover:text-white">remove</button>
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <div
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={(e) => { e.preventDefault(); handleFiles(e.dataTransfer.files); }}
+          className="glass rounded-3xl p-10 text-center apple-card mb-5 cursor-pointer relative overflow-hidden"
+          onClick={() => fileRef.current?.click()}
+        >
+          <div className="absolute inset-0 opacity-20 bg-gradient-to-br from-violet-500/30 via-fuchsia-500/20 to-cyan-500/20 blur-2xl" />
+          <input ref={fileRef} type="file" multiple className="hidden" onChange={(e) => handleFiles(e.target.files)} />
+          <div className="text-5xl mb-3 opacity-60 relative">◆</div>
+          <p className="text-white font-medium relative">Drop files into the prism</p>
+          <p className="text-sm text-neutral-500 mt-1 relative">Spectral facets with spring motion</p>
+          {files.length > 0 && <p className="mt-3 text-sm text-[#A78BFA] relative">{files.length} selected</p>}
+        </div>
 
         <input
           value={caption}
           onChange={(e) => setCaption(e.target.value)}
-          placeholder="optional caption for Discord cards"
-          className="w-full glass rounded-2xl px-4 py-3 text-sm mb-4 outline-none focus:border-white/30"
+          placeholder="shared caption (optional)"
+          className="w-full mb-4 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm outline-none focus:border-[#A78BFA]/50"
         />
 
-        <div className="flex items-center gap-3 mb-6">
-          <label className="text-xs text-neutral-400">prism accent</label>
-          <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="w-10 h-10 rounded-full border-0 cursor-pointer" />
+        {warning && <p className="text-amber-300 text-sm mb-4 text-center">{warning}</p>}
+
+        <div className="flex justify-center gap-3 mb-8">
+          <button onClick={process} disabled={!files.length || busy} className="px-6 py-3 rounded-full bg-white text-black font-medium disabled:opacity-40 active:scale-95 transition">
+            {busy ? 'refracting…' : 'drop & embed'}
+          </button>
+          <button onClick={() => navigate('vault')} className="px-6 py-3 rounded-full glass">vault</button>
         </div>
 
-        <motion.button
-          whileTap={{ scale: 0.97 }}
-          onClick={shareAll}
-          disabled={!files.length || status === 'uploading'}
-          className="w-full py-3.5 rounded-full bg-[#5AC8FA] text-black font-medium disabled:opacity-50 transition"
-        >
-          {status === 'uploading' ? 'refracting into the database…' : `share ${files.length || ''} prism shard${files.length === 1 ? '' : 's'}`}
-        </motion.button>
-
         <AnimatePresence>
-          {status === 'done' && results.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mt-8 space-y-3"
-            >
-              {results.map((r, i) => (
-                <div key={i} className="glass rounded-2xl p-4">
-                  <p className="text-sm font-medium mb-1 truncate">{r.name}</p>
-                  {r.embed ? (
-                    <>
-                      <p className="text-xs text-neutral-400 break-all mb-2">{r.embed}</p>
-                      <button
-                        onClick={() => navigator.clipboard.writeText(r.embed)}
-                        className="text-xs text-[#5AC8FA]"
-                      >
-                        copy embed link
-                      </button>
-                    </>
-                  ) : (
-                    <p className="text-xs text-red-400">{r.warn}</p>
-                  )}
-                  {r.warn && r.embed && <p className="text-amber-400 text-xs mt-1">{r.warn}</p>}
+          {links.length > 0 && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
+              {links.map((l) => (
+                <div key={l.url} className="glass rounded-2xl p-4">
+                  <p className="text-sm text-white truncate mb-1">{l.name}</p>
+                  <code className="text-xs text-[#A78BFA] break-all">{l.url}</code>
                 </div>
               ))}
-            </motion.div>
-          )}
-          {status === 'error' && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 text-red-400 text-sm">
-              {error}
+              <p className="text-xs text-neutral-500 text-center">first link copied</p>
             </motion.div>
           )}
         </AnimatePresence>

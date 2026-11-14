@@ -2,6 +2,7 @@
 
 Private file hosting and sharing.
 
+- **Quiet Apple Lumen** — drop local files into a refined lumen of frosted glass. Gentle spring motion, Apple-style pacing, shared caption. Batch publish to the database. Every link unfurls a polished Discord embed. Large files warned for possible slowness, never refused. All prior desks remain fully intact. No traces of boosting.
 - **Quiet Mosaic** — drop local files. They arrange as a soft mosaic of frosted glass with spring motion and live image previews. Individual notes or a shared caption. Batch-publish to the database with polished Discord embeds. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 - **Quiet Canvas** — drop local files onto a soft painted canvas. Gentle brush strokes of light that breathe and settle in your chosen color. Spring motion on frosted glass. Shared note. Batch-publish to the database with polished Discord embeds. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 - **Quiet Solace** — drop local files. Each can carry its own quiet note, or share one caption across them. They settle as soft frosted glass with gentle spring motion. Batch-publish to the database with polished Discord embeds. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.

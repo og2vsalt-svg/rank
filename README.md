@@ -2,6 +2,7 @@
 
 Private file hosting and sharing.
 
+- **Quiet Solace** — drop local files. Each can carry its own quiet note, or share one caption across them. They settle as soft frosted glass with gentle spring motion. Batch-publish to the database with polished Discord embeds. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 - **Quiet Velvet** — drop local files. They settle into a deep velvet of frosted glass with gentle spring motion and rich depth. Individual notes or a shared caption. Batch-publish to the database with polished Discord embeds. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 - **Quiet Gossamer** — drop local files. They settle as fine gossamer threads of frosted glass with gentle floating spring motion. Individual notes or a shared caption. Batch-publish to the database with polished Discord embeds. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 - **Quiet Ember** — drop local files. They settle as soft glowing embers of frosted glass with gentle upward spring motion and warm light. Individual notes or a shared caption. Batch-publish to the database with polished Discord embeds. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.

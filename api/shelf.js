@@ -17,6 +17,7 @@ const SUPABASE_KEY =
 const FALLBACK = 'https://og2vsalt-svg.github.io/rank/og.png';
 
 const COPY = {
+  quiethorizon: ["Quiet Horizon — rankvault", "Drop local files. They drift down and settle along a quiet glowing horizon of frosted glass with gentle spring motion. Shared caption. Batch-publish to the database. Every link unfurls a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting."],
   quietpaste: ["Quiet Paste — rankvault", "A still surface for notes and snippets. Type or paste text and publish it as a quiet text file to the database. Every link unfurls a polished Discord embed. Soft warnings only for long pastes. No hard limits. Apple-style springs and frosted glass. All prior desks remain fully intact."],
   quietqr: ["Quiet QR — rankvault", "Turn any URL or short text into a clean QR code. Preview it live, then publish the image to the database for a polished Discord embed link. Soft warnings only. No hard limits. Prior features stay untouched."],
   quietlumendesk: ["Quiet Lumen Desk — rankvault", "Drop local files. They float as soft glowing orbs of frosted glass with gentle upward spring motion and live image previews. Individual notes or a shared caption. Batch-publish to the database. Every link unfurls a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact."],
@@ -26,7 +27,7 @@ const COPY = {
   quietlink: ["Quiet Link — rankvault", "Share any URL with a custom polished Discord embed. Set title, description, and optional image. Soft size warnings only. No hard limits. Every link unfurls a professional Discord card. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting."],
   quietpalimpsest: ["Quiet Palimpsest — rankvault", "Layer quiet notes over a local image. Drop a base photo, click to place text overlays with spring motion, then publish the composed PNG straight to storage and the public record. Soft size warnings only. No hard limits. Every link unfurls a polished Discord embed. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting."],
   quietsanctum: ["Quiet Sanctum — rankvault", "A still sanctuary for what you carry. Drop local files. They settle as soft floating glass orbs with gentle upward spring motion on frosted glass. Shared caption, warm accent. Batch-publish to the database. Every link unfurls a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting."],
-  home: ['rankvault', 'Private file hosting and sharing. Upload local files to the database, share with professional Discord embeds. No size limits — only gentle slow warnings. Sleek Apple-style interface. Quiet Paste, Quiet QR, Quiet Anchor, Quiet Lumen Desk, and dozens of specialized desks.'],
+  home: ['rankvault', 'Private file hosting and sharing. Upload local files to the database, share with professional Discord embeds. No size limits — only gentle slow warnings. Sleek Apple-style interface. Quiet Horizon, Quiet Paste, Quiet QR, Quiet Anchor, Quiet Lumen Desk, and dozens of specialized desks.'],
 };
 
 function prettySize(n) {

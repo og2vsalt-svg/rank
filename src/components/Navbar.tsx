@@ -13,6 +13,7 @@ const primary: NavItem[] = [
   { to: 'quietstillwater', label: 'stillwater' },
   { to: 'quietsanctum', label: 'sanctum' },
   { to: 'quietnexus', label: 'nexus' },
+  { to: 'quietscriptorium', label: 'scriptorium' },
   { to: 'quietstudio', label: 'studio' },
   { to: 'quiethaven', label: 'haven' },
   { to: 'quietzenith', label: 'zenith' },

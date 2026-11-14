@@ -2,6 +2,7 @@
 
 Private file hosting and sharing.
 
+- **Quiet Anchor** — drop local files. They settle in a quiet harbor of frosted glass with gentle spring motion and subtle wave undertones. Live previews, individual notes or a shared caption. Batch-publish to the database. Every link unfurls a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact.
 - **Quiet Lumen Desk** — drop local files. They float as soft glowing orbs of frosted glass with gentle upward spring motion and live image previews. Individual notes or a shared caption. Batch-publish to the database. Every link unfurls a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact.
 - **Quiet Cove** — gather several quiet notes, each with an optional local file and live preview. Batch-publish the collection to the database. Every link carries a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 - **Quiet Studio** — central multi-file studio. Drop local files with live image previews, per-file notes or one shared caption, spring motion on frosted glass, batch-publish to the database with polished Discord embeds. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact.

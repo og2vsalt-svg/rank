@@ -1,166 +1,135 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishLocalFile, shareUrls, listPublicShares, type CloudMeta } from '../lib/cloudShare';
+import { listPublicShares, publishLocalFile, type CloudMeta } from '../lib/cloudShare';
 
 export default function QuietGalleryPage() {
-  const [files, setFiles] = useState<File[]>([]);
-  const [accent, setAccent] = useState('#0A84FF');
-  const [note, setNote] = useState('');
+  const [shares, setShares] = useState<CloudMeta[]>([]);
+  const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
-  const [warn, setWarn] = useState('');
-  const [links, setLinks] = useState<string[]>([]);
+  const [warn, setWarn] = useState<string | null>(null);
+  const [links, setLinks] = useState<{ name: string; embed: string }[]>([]);
   const [err, setErr] = useState('');
-  const [gallery, setGallery] = useState<CloudMeta[]>([]);
 
-  useEffect(() => {
-    listPublicShares(36).then(setGallery).catch(() => setGallery([]));
+  const load = useCallback(async () => {
+    setLoading(true);
+    const rows = await listPublicShares(36);
+    setShares(rows);
+    setLoading(false);
   }, []);
 
-  const onDrop = (list: FileList | null) => {
-    const next = Array.from(list || []);
-    setFiles((prev) => [...prev, ...next].slice(0, 12));
-    const big = next.some((f) => f.size > 40 * 1024 * 1024);
-    setWarn(big ? 'some files are large. the upload may feel slow. no hard limit.' : '');
-  };
+  useEffect(() => {
+    load();
+  }, [load]);
 
-  const remove = (i: number) => setFiles((prev) => prev.filter((_, idx) => idx !== i));
-
-  const publish = async () => {
-    if (files.length === 0) {
-      setErr('drop at least one local file');
-      return;
-    }
+  const onFiles = useCallback(async (list: FileList | null) => {
+    if (!list || list.length === 0) return;
     setBusy(true);
     setErr('');
     setLinks([]);
-    const made: string[] = [];
+    let large = false;
+    const made: { name: string; embed: string }[] = [];
     try {
-      for (const file of files) {
+      for (const file of Array.from(list)) {
+        if (file.size > 40 * 1024 * 1024) large = true;
         const res = await publishLocalFile(file, {
-          caption: note.trim() || 'quiet gallery',
+          caption: 'from the quiet gallery',
+          color: '#0A84FF',
           cardTitle: file.name,
-          color: accent,
-          meta: { desk: 'quietgallery', note: note.trim() },
+          meta: { desk: 'quietgallery' },
         });
-        if (!res.ok || !res.id) {
+        if (res.ok && res.embed) {
+          made.push({ name: file.name, embed: res.embed });
+        } else {
           setErr(res.error || `failed on ${file.name}`);
           break;
         }
-        if (res.warn) setWarn(res.warn);
-        made.push(shareUrls(res.id).app);
       }
       setLinks(made);
-      if (made[0]) {
-        try { await navigator.clipboard.writeText(made.join('\n')); } catch {}
-      }
-      // refresh gallery
-      listPublicShares(36).then(setGallery).catch(() => {});
+      setWarn(large ? 'One or more files are large. Uploads may feel slow. No hard limit.' : null);
+      if (made.length) load();
     } catch (e: any) {
-      setErr(e?.message || 'publish failed');
-    } finally {
-      setBusy(false);
+      setErr(e.message || 'something slowed');
     }
-  };
+    setBusy(false);
+  }, [load]);
 
   return (
-    <div className="mesh min-h-screen">
+    <div className="mesh min-h-screen bg-[#0b0b0d]">
       <Navbar />
       <div className="pt-28 pb-20 px-5 max-w-5xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 110, damping: 16 }}
-          className="glass rounded-[32px] p-8 mb-10"
+          transition={{ type: 'spring', stiffness: 100, damping: 20 }}
+          className="mb-10 text-center"
         >
-          <p className="text-sm mb-2 tracking-wide" style={{ color: accent }}>quiet gallery</p>
-          <h1 className="text-3xl font-semibold mb-3 tracking-tight">a living gallery of shared light.</h1>
-          <p className="text-neutral-400 text-sm mb-6 leading-relaxed">
-            Drop local files with a shared note and accent. They land in storage and the public_shares table. Recent public drops surface here as quiet glass cards that settle with spring motion. Every share link unfurls a polished Discord card. Large drops receive only a gentle warning of possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.
+          <p className="text-[#0A84FF] text-sm font-medium tracking-wide mb-2">Quiet Gallery</p>
+          <h1 className="text-4xl font-semibold tracking-tight text-white mb-3">Recent public shares</h1>
+          <p className="text-neutral-400 text-base max-w-xl mx-auto">
+            A still visual archive of what has settled in the public record. Drop local files to add them. Soft size warnings only. No hard limits. Every link carries a polished Discord embed. All prior desks remain fully intact.
           </p>
-          <div className="flex items-center gap-3 mb-4">
-            <label className="text-xs text-neutral-500">accent</label>
-            <input
-              type="color"
-              value={accent}
-              onChange={(e) => setAccent(e.target.value)}
-              className="w-10 h-10 rounded-full border border-white/10 bg-transparent cursor-pointer"
-            />
-            <span className="text-xs text-neutral-400">{accent}</span>
-          </div>
-          <textarea
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            placeholder="optional note for the gallery…"
-            rows={2}
-            className="w-full mb-4 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm placeholder:text-neutral-500 focus:outline-none focus:border-[#0A84FF]/50 transition resize-none"
-          />
-          <label
-            className="block cursor-pointer rounded-2xl border border-dashed border-white/15 hover:border-[#0A84FF]/40 p-8 text-center transition mb-4"
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => { e.preventDefault(); onDrop(e.dataTransfer.files); }}
-          >
-            <input type="file" multiple className="hidden" onChange={(e) => onDrop(e.target.files)} />
-            <p className="text-sm text-neutral-300">drop or click for local files</p>
-          </label>
-          <AnimatePresence>
-            {files.map((f, i) => (
-              <motion.div
-                key={f.name + i}
-                initial={{ opacity: 0, x: -8 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, height: 0 }}
-                className="flex items-center justify-between text-xs text-neutral-400 mb-1 px-1"
-              >
-                <span className="truncate max-w-[70%]">{f.name}</span>
-                <button type="button" onClick={() => remove(i)} className="text-neutral-500 hover:text-white">remove</button>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-          {warn && <p className="text-xs text-amber-300/80 mb-3 mt-2">{warn}</p>}
-          {err && <p className="text-xs text-red-400 mb-3">{err}</p>}
-          <motion.button
-            whileTap={{ scale: 0.97 }}
-            onClick={publish}
-            disabled={busy || files.length === 0}
-            className="w-full py-3 rounded-full text-white text-sm font-medium disabled:opacity-50 transition mt-2"
-            style={{ background: accent }}
-          >
-            {busy ? 'settling…' : 'add to gallery'}
-          </motion.button>
+        </motion.div>
+
+        <label className="block rounded-3xl border border-dashed border-white/15 bg-black/20 p-8 text-center cursor-pointer hover:border-white/25 transition mb-10 max-w-2xl mx-auto">
+          <input type="file" multiple className="hidden" onChange={(e) => onFiles(e.target.files)} disabled={busy} />
+          <p className="text-[15px] text-neutral-300">{busy ? 'Settling…' : 'Drop files or click to add to the gallery'}</p>
+          <p className="text-[12px] text-neutral-500 mt-1">Images preview live. Large files warned, never refused.</p>
+        </label>
+
+        {warn && <p className="text-center text-[12px] text-amber-300/90 mb-6">{warn}</p>}
+
+        <AnimatePresence>
           {links.length > 0 && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-5 text-xs text-neutral-400 space-y-1">
-              <p>share links (copied):</p>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-8 text-center space-y-1">
+              <p className="text-[13px] text-neutral-400">New share links:</p>
               {links.map((l) => (
-                <div key={l} className="break-all">{l}</div>
+                <a key={l.embed} href={l.embed} className="block text-[13px] text-[#0A84FF] break-all">{l.name}</a>
               ))}
             </motion.div>
           )}
-        </motion.div>
+          {err && <motion.p className="text-center text-red-400 text-sm mb-6">{err}</motion.p>}
+        </AnimatePresence>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {gallery.map((item, i) => (
-            <motion.a
-              key={item.id}
-              href={shareUrls(item.id).app}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.03, type: 'spring', stiffness: 100, damping: 18 }}
-              className="glass rounded-2xl p-4 block hover:bg-white/[0.07] transition overflow-hidden"
-            >
-              <div className="h-32 rounded-xl mb-3 flex items-center justify-center" style={{ background: item.color || '#0A84FF20' }}>
-                <span className="text-xs text-neutral-300 truncate px-2">{item.name}</span>
-              </div>
-              <p className="text-sm font-medium truncate">{item.cardTitle || item.name}</p>
-              {item.caption && <p className="text-xs text-neutral-400 mt-1 line-clamp-2">{item.caption}</p>}
-              <p className="text-[10px] text-neutral-500 mt-2">{item.size ? `${(item.size / 1024 / 1024).toFixed(1)} MB` : ''}</p>
-            </motion.a>
-          ))}
-        </div>
-        {gallery.length === 0 && (
-          <p className="text-center text-neutral-500 text-sm mt-8">the gallery is quiet for now. drop something above.</p>
+        {loading ? (
+          <div className="grid place-items-center py-20 text-neutral-500 text-sm">opening the gallery…</div>
+        ) : shares.length === 0 ? (
+          <p className="text-center text-neutral-500 text-sm">No public shares yet. Drop one above.</p>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {shares.map((s, i) => (
+              <motion.a
+                key={s.id}
+                href={`/s/${s.id}`}
+                target="_blank"
+                rel="noreferrer"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ type: 'spring', stiffness: 120, damping: 18, delay: Math.min(i * 0.03, 0.4) }}
+                whileHover={{ scale: 1.02, y: -2 }}
+                className="glass rounded-2xl overflow-hidden block group"
+              >
+                {s.type?.startsWith('image/') && s.fileUrl ? (
+                  <img src={s.fileUrl} alt="" className="w-full aspect-square object-cover" />
+                ) : (
+                  <div className="w-full aspect-square bg-white/5 grid place-items-center text-neutral-500 text-xs">file</div>
+                )}
+                <div className="p-3">
+                  <p className="text-[13px] truncate font-medium">{s.name || 'untitled'}</p>
+                  <p className="text-[11px] text-neutral-500 truncate">{s.caption || prettySize(s.size)}</p>
+                </div>
+              </motion.a>
+            ))}
+          </div>
         )}
       </div>
     </div>
   );
+}
+
+function prettySize(n: number) {
+  if (n < 1024) return n + ' B';
+  if (n < 1048576) return Math.round(n / 1024) + ' KB';
+  if (n < 1073741824) return (n / 1048576).toFixed(1) + ' MB';
+  return (n / 1073741824).toFixed(2) + ' GB';
 }

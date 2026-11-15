@@ -1,228 +1,174 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useVault } from './VaultContext';
-import { publishLocalFile, shareUrls } from '../lib/cloudShare';
+import Navbar from './Navbar';
+import { publishLocalFile } from '../lib/cloudShare';
+
+type FolioItem = {
+  file: File;
+  preview?: string;
+  id: string;
+  title: string;
+  note: string;
+  status: 'idle' | 'uploading' | 'done' | 'error';
+  link?: string;
+  error?: string;
+};
 
 export default function QuietFolioPage() {
-  const { addFiles } = useVault();
-  const [files, setFiles] = useState<File[]>([]);
-  const [previews, setPreviews] = useState<Record<number, string>>({});
-  const [caption, setCaption] = useState('');
-  const [color, setColor] = useState('#0A84FF');
-  const [status, setStatus] = useState<'idle' | 'uploading' | 'done' | 'error'>('idle');
-  const [results, setResults] = useState<{ id: string; name: string; embed: string; warn?: string | null }[]>([]);
-  const [error, setError] = useState('');
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [items, setItems] = useState<FolioItem[]>([]);
+  const [sharedCaption, setSharedCaption] = useState('');
+  const [accent, setAccent] = useState('#0A84FF');
+  const [busy, setBusy] = useState(false);
+  const [warn, setWarn] = useState<string | null>(null);
 
-  const onDrop = useCallback((list: FileList | File[]) => {
-    const arr = Array.from(list);
-    setFiles((prev) => {
-      const next = [...prev, ...arr];
-      arr.forEach((file, idx) => {
-        if (file.type.startsWith('image/')) {
-          const reader = new FileReader();
-          reader.onload = () => {
-            setPreviews((p) => ({ ...p, [prev.length + idx]: reader.result as string }));
-          };
-          reader.readAsDataURL(file);
-        }
-      });
-      return next;
-    });
-    setStatus('idle');
-    setError('');
+  const onFiles = useCallback((files: FileList | File[]) => {
+    const arr = Array.from(files);
+    const total = arr.reduce((s, f) => s + f.size, 0);
+    setWarn(total > 45_000_000 ? 'Large folio. Publishing may feel slower. No hard limits.' : null);
+    const newItems: FolioItem[] = arr.map((file) => ({
+      file,
+      id: Math.random().toString(36).slice(2, 10),
+      title: file.name.replace(/\.[^.]+$/, ''),
+      note: '',
+      status: 'idle',
+      preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : undefined,
+    }));
+    setItems((prev) => [...prev, ...newItems]);
   }, []);
 
-  const onFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) onDrop(e.target.files);
-    if (inputRef.current) inputRef.current.value = '';
+  const update = (id: string, patch: Partial<FolioItem>) => {
+    setItems((prev) => prev.map((i) => (i.id === id ? { ...i, ...patch } : i)));
   };
 
-  const remove = (idx: number) => {
-    setFiles((prev) => prev.filter((_, i) => i !== idx));
-    setPreviews((p) => {
-      const next = { ...p };
-      delete next[idx];
-      return next;
-    });
-  };
+  const remove = (id: string) => setItems((prev) => prev.filter((i) => i.id !== id));
 
-  const shareAll = async () => {
-    if (!files.length) return;
-    setStatus('uploading');
-    setError('');
-    setResults([]);
-    try {
-      await addFiles(files, 'folio');
-      const out: typeof results = [];
-      for (const file of files) {
-        const res = await publishLocalFile(file, {
-          caption: caption || undefined,
-          color,
-          cardTitle: file.name,
-          author: 'rankvault',
+  const publishAll = async () => {
+    if (!items.length) return;
+    setBusy(true);
+    for (const item of items) {
+      if (item.status === 'done') continue;
+      update(item.id, { status: 'uploading' });
+      try {
+        const caption = [sharedCaption, item.note].filter(Boolean).join(' · ') || item.title;
+        const res = await publishLocalFile(item.file, {
+          caption,
+          color: accent,
+          cardTitle: item.title || item.file.name,
+          meta: { desk: 'quietfolio', kind: 'folio' },
         });
-        if (res.ok && res.id) {
-          const urls = shareUrls(res.id);
-          out.push({ id: res.id, name: file.name, embed: urls.embed, warn: res.warn || null });
-        } else {
-          out.push({ id: '', name: file.name, embed: '', warn: res.error || 'failed' });
-        }
+        update(item.id, {
+          status: res.ok ? 'done' : 'error',
+          link: res.embed || undefined,
+          error: res.error,
+        });
+      } catch (e: any) {
+        update(item.id, { status: 'error', error: e.message });
       }
-      setResults(out);
-      setStatus('done');
-    } catch (e: any) {
-      setError(e?.message || 'something went wrong');
-      setStatus('error');
     }
+    setBusy(false);
   };
-
-  const large = files.some((f) => f.size > 40 * 1024 * 1024);
 
   return (
-    <div className="mesh min-h-screen pt-24 pb-16 px-5">
-      <div className="max-w-3xl mx-auto">
+    <div className="mesh min-h-screen">
+      <Navbar />
+      <div className="pt-28 pb-20 px-6 max-w-5xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 100, damping: 22 }}
-          className="text-center mb-10"
+          transition={{ type: 'spring', stiffness: 90, damping: 22 }}
+          className="glass rounded-[36px] p-8 md:p-12"
         >
-          <p className="text-[#0A84FF] text-sm font-medium tracking-wide mb-3">quiet folio</p>
-          <h1 className="text-4xl sm:text-5xl font-semibold text-white tracking-tight mb-4">gather & share</h1>
-          <p className="text-neutral-400 text-lg max-w-xl mx-auto">
-            Drop local files into a soft folio. Previews for images, spring-animated cards, batch publish to the database with polished Discord embeds. Soft size warnings only. No hard limits.
+          <p className="text-[13px] font-medium tracking-wide mb-1" style={{ color: accent }}>Quiet Folio</p>
+          <h1 className="text-[42px] font-semibold tracking-tight mb-3">Compose a quiet folio.</h1>
+          <p className="text-neutral-400 text-[16px] leading-relaxed mb-8 max-w-2xl">
+            Drop local files into a refined portfolio grid. Give each its own title and note, or share one caption across the set. They settle with spring motion on frosted glass. Batch-publish to the database. Every link unfurls a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact.
           </p>
-        </motion.div>
 
-        <motion.div
-          className="glass apple-card rounded-3xl p-12 mb-8 text-center cursor-pointer"
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={(e) => {
-            e.preventDefault();
-            if (e.dataTransfer.files) onDrop(e.dataTransfer.files);
-          }}
-          whileHover={{ y: -2 }}
-          whileTap={{ scale: 0.995 }}
-        >
-          <input ref={inputRef} type="file" onChange={onFile} className="hidden" id="folio-file" multiple />
-          <label htmlFor="folio-file" className="cursor-pointer block">
-            <div className="text-neutral-300 text-base mb-2">drop files or click to browse</div>
-            <div className="text-xs text-neutral-500">multiple files welcome · images show previews</div>
-          </label>
-        </motion.div>
-
-        {large && (
-          <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="text-amber-400 text-xs mb-6 text-center">
-            large files detected. upload may feel slower. no hard limit enforced.
-          </motion.div>
-        )}
-
-        <AnimatePresence>
-          {files.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="mb-8 space-y-3"
-            >
-              {files.map((f, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, x: -12 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 12 }}
-                  transition={{ type: 'spring', stiffness: 200, damping: 25 }}
-                  className="glass rounded-2xl p-4 flex items-center gap-4"
-                >
-                  {previews[i] ? (
-                    <img src={previews[i]} alt="" className="w-12 h-12 object-cover rounded-xl" />
-                  ) : (
-                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-xs text-neutral-400">file</div>
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm text-white truncate">{f.name}</p>
-                    <p className="text-xs text-neutral-500">{(f.size / 1024 / 1024).toFixed(1)} MB</p>
-                  </div>
-                  <button onClick={() => remove(i)} className="text-xs text-neutral-500 hover:text-white transition">remove</button>
-                </motion.div>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        <div className="glass rounded-3xl p-6 mb-8 space-y-4">
-          <input
-            value={caption}
-            onChange={(e) => setCaption(e.target.value)}
-            placeholder="optional shared caption for Discord cards"
-            className="w-full bg-transparent text-sm outline-none placeholder:text-neutral-500"
-          />
-          <div className="flex items-center gap-4">
-            <label className="text-xs text-neutral-400">accent</label>
-            <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="w-10 h-10 rounded-full border-0 cursor-pointer" />
-          </div>
-        </div>
-
-        <motion.button
-          whileTap={{ scale: 0.97 }}
-          onClick={shareAll}
-          disabled={!files.length || status === 'uploading'}
-          className="w-full py-4 rounded-full bg-white text-black font-medium disabled:opacity-50 transition hover:bg-neutral-100"
-        >
-          {status === 'uploading' ? 'publishing to database…' : `publish ${files.length || ''} file${files.length === 1 ? '' : 's'}`}
-        </motion.button>
-
-        <AnimatePresence>
-          {status === 'done' && results.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mt-10 space-y-4"
-            >
-              {results.map((r, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, scale: 0.96 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: i * 0.05 }}
-                  className="glass apple-card rounded-2xl p-5"
-                >
-                  <p className="text-sm font-medium text-white mb-2 truncate">{r.name}</p>
-                  {r.embed ? (
-                    <>
-                      <p className="text-xs text-neutral-400 break-all mb-3">{r.embed}</p>
-                      <button
-                        onClick={() => navigator.clipboard.writeText(r.embed)}
-                        className="text-xs text-[#0A84FF] hover:underline"
-                      >
-                        copy Discord embed link
-                      </button>
-                    </>
-                  ) : (
-                    <p className="text-xs text-red-400">{r.warn}</p>
-                  )}
-                  {r.warn && r.embed && <p className="text-amber-400 text-xs mt-2">{r.warn}</p>}
-                </motion.div>
-              ))}
-            </motion.div>
-          )}
-          {status === 'error' && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-6 text-red-400 text-sm text-center">
-              {error}
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        <div className="mt-12 text-center">
-          <motion.button
-            whileTap={{ scale: 0.97 }}
-            onClick={() => window.history.back()}
-            className="text-sm text-neutral-500 hover:text-white transition"
+          <div
+            onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('ring-2', 'ring-white/20'); }}
+            onDragLeave={(e) => e.currentTarget.classList.remove('ring-2', 'ring-white/20')}
+            onDrop={(e) => {
+              e.preventDefault();
+              e.currentTarget.classList.remove('ring-2', 'ring-white/20');
+              if (e.dataTransfer.files.length) onFiles(e.dataTransfer.files);
+            }}
+            className="border-2 border-dashed border-white/15 rounded-3xl p-12 text-center mb-8 transition hover:border-white/25 bg-black/10"
           >
-            back
+            <p className="text-neutral-300 mb-4">Drop files here or</p>
+            <label className="inline-block px-6 py-2.5 rounded-full bg-white/10 hover:bg-white/15 cursor-pointer text-sm font-medium transition">
+              choose files
+              <input type="file" multiple className="hidden" onChange={(e) => e.target.files && onFiles(e.target.files)} />
+            </label>
+          </div>
+
+          <input
+            value={sharedCaption}
+            onChange={(e) => setSharedCaption(e.target.value)}
+            placeholder="Shared caption for the whole folio (optional)"
+            className="w-full bg-black/20 border border-white/10 rounded-2xl px-4 py-3 text-[15px] text-white placeholder:text-neutral-500 mb-4 focus:outline-none focus:border-white/25 transition"
+          />
+
+          <div className="flex items-center gap-4 mb-6">
+            <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="w-10 h-10 rounded-full cursor-pointer border-0 bg-transparent" />
+            <span className="text-[13px] text-neutral-400">Accent for embeds</span>
+          </div>
+
+          {warn && <p className="text-[13px] text-amber-300/90 mb-6">{warn}</p>}
+
+          <AnimatePresence>
+            {items.length > 0 && (
+              <motion.div layout className="grid gap-4 sm:grid-cols-2 mb-8">
+                {items.map((item) => (
+                  <motion.div
+                    key={item.id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.96 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.96 }}
+                    transition={{ type: 'spring', stiffness: 120, damping: 20 }}
+                    className="glass rounded-2xl p-4"
+                  >
+                    {item.preview && (
+                      <img src={item.preview} alt="" className="w-full h-40 object-cover rounded-xl mb-3" />
+                    )}
+                    <input
+                      value={item.title}
+                      onChange={(e) => update(item.id, { title: e.target.value })}
+                      placeholder="Title"
+                      className="w-full bg-transparent text-sm font-medium outline-none mb-2"
+                    />
+                    <textarea
+                      value={item.note}
+                      onChange={(e) => update(item.id, { note: e.target.value })}
+                      placeholder="Note (optional)"
+                      rows={2}
+                      className="w-full bg-transparent text-xs text-neutral-400 outline-none resize-none mb-2"
+                    />
+                    <div className="flex items-center justify-between text-xs text-neutral-500">
+                      <span>{(item.file.size / 1024 / 1024).toFixed(1)} MB · {item.status}</span>
+                      <button onClick={() => remove(item.id)} className="hover:text-white">remove</button>
+                    </div>
+                    {item.link && (
+                      <a href={item.link} target="_blank" rel="noreferrer" className="text-xs text-blue-400 truncate block mt-1">{item.link}</a>
+                    )}
+                    {item.error && <p className="text-xs text-red-400 mt-1">{item.error}</p>}
+                  </motion.div>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <motion.button
+            whileTap={{ scale: 0.98 }}
+            whileHover={{ scale: 1.005 }}
+            onClick={publishAll}
+            disabled={busy || !items.length}
+            className="w-full rounded-2xl py-4 text-[15px] font-medium text-white disabled:opacity-40 transition shadow-lg"
+            style={{ background: accent }}
+          >
+            {busy ? 'Publishing folio…' : `Publish ${items.length || ''} piece${items.length === 1 ? '' : 's'}`}
           </motion.button>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

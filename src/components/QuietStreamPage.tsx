@@ -1,141 +1,160 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { publishLocalFile, shareUrls, listPublicShares, type CloudMeta } from '../lib/cloudShare';
+import Navbar from './Navbar';
+import { listPublicShares, publishLocalFile, shareUrls, type CloudMeta } from '../lib/cloudShare';
+
+function formatBytes(n: number) {
+  if (n < 1024) return n + ' B';
+  if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
+  return (n / (1024 * 1024)).toFixed(1) + ' MB';
+}
 
 export default function QuietStreamPage() {
-  const [files, setFiles] = useState<File[]>([]);
-  const [status, setStatus] = useState<'idle' | 'uploading' | 'done'>('idle');
-  const [results, setResults] = useState<{ id: string; name: string; embed: string; warn?: string | null }[]>([]);
-  const [stream, setStream] = useState<CloudMeta[]>([]);
+  const [shares, setShares] = useState<CloudMeta[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState('all');
+  const [q, setQ] = useState('');
+  const [items, setItems] = useState<{ file: File; id: string; preview?: string; status: string; link?: string }[]>([]);
+  const [caption, setCaption] = useState('');
+  const [accent, setAccent] = useState('#5AC8FA');
+  const [busy, setBusy] = useState(false);
   const [warn, setWarn] = useState<string | null>(null);
 
-  useEffect(() => {
-    listPublicShares(32).then(setStream).catch(() => {});
+  const load = useCallback(async () => {
+    setLoading(true);
+    const list = await listPublicShares(36);
+    setShares(list);
+    setLoading(false);
   }, []);
 
-  const onDrop = useCallback((list: FileList | File[]) => {
-    const arr = Array.from(list);
-    if (arr.some(f => f.size > 40 * 1024 * 1024)) {
-      setWarn('large files detected. the browser may feel slow while uploading. no hard limit.');
-    } else {
-      setWarn(null);
-    }
-    setFiles(prev => [...prev, ...arr]);
-    setStatus('idle');
+  useEffect(() => { load(); }, [load]);
+
+  const onFiles = useCallback((files: FileList | File[]) => {
+    const arr = Array.from(files);
+    const total = arr.reduce((s, f) => s + f.size, 0);
+    setWarn(total > 40_000_000 ? 'Large drop into the stream. May feel slower. No hard limits.' : null);
+    const newItems = arr.map((file) => ({
+      file,
+      id: Math.random().toString(36).slice(2, 10),
+      preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : undefined,
+      status: 'queued',
+    }));
+    setItems((prev) => [...newItems, ...prev]);
   }, []);
 
-  const shareAll = async () => {
-    if (!files.length) return;
-    setStatus('uploading');
-    const out = [];
-    for (const file of files) {
-      const res = await publishLocalFile(file, {
-        caption: 'streamed',
-        color: '#0A84FF',
-        cardTitle: file.name,
-        author: 'rankvault',
-        meta: { desk: 'quietstream' },
-      });
-      if (res.ok && res.id) {
-        out.push({
-          id: res.id,
-          name: file.name,
-          embed: shareUrls(res.id).embed,
-          warn: res.warn || null,
+  const publish = async () => {
+    if (!items.length) return;
+    setBusy(true);
+    for (const item of items) {
+      if (item.status === 'done') continue;
+      setItems((prev) => prev.map((i) => i.id === item.id ? { ...i, status: 'uploading' } : i));
+      try {
+        const res = await publishLocalFile(item.file, {
+          caption: caption || item.file.name,
+          color: accent,
+          cardTitle: item.file.name,
+          meta: { desk: 'quietstream' },
         });
+        setItems((prev) => prev.map((i) => i.id === item.id ? { ...i, status: res.ok ? 'done' : 'error', link: res.embed } : i));
+      } catch {
+        setItems((prev) => prev.map((i) => i.id === item.id ? { ...i, status: 'error' } : i));
       }
     }
-    setResults(out);
-    setFiles([]);
-    setStatus('done');
-    listPublicShares(32).then(setStream).catch(() => {});
+    setBusy(false);
+    setTimeout(load, 800);
   };
 
+  const filtered = shares.filter((s) => {
+    if (filter === 'image' && !s.type.startsWith('image/')) return false;
+    if (filter === 'text' && !s.type.startsWith('text/')) return false;
+    if (q && !s.name.toLowerCase().includes(q.toLowerCase()) && !(s.caption || '').toLowerCase().includes(q.toLowerCase())) return false;
+    return true;
+  });
+
   return (
-    <div className="min-h-screen bg-[#0b0b0d] text-white pt-24 px-5 pb-16">
-      <div className="max-w-6xl mx-auto">
-        <motion.h1
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 100, damping: 20 }}
-          className="text-4xl font-semibold tracking-tight mb-2"
-        >
-          quiet stream
-        </motion.h1>
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.06 }}
-          className="text-neutral-400 mb-8 max-w-2xl"
-        >
-          A flowing horizontal stream of recent public shares. Drop local files on the side and watch them join the current. Soft size warnings only. Professional Discord embeds on every link. Human-crafted spring motion.
-        </motion.p>
+    <div className="mesh min-h-screen">
+      <Navbar />
+      <div className="pt-28 pb-20 px-5 max-w-4xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 100, damping: 22 }} className="mb-10">
+          <p className="text-[13px] font-medium tracking-wide mb-1" style={{ color: accent }}>Quiet Stream</p>
+          <h1 className="text-4xl font-semibold tracking-tight mb-3">A living stream of shares.</h1>
+          <p className="text-neutral-400 text-base leading-relaxed max-w-2xl">
+            Recent public drops flow through a quiet stream. Search, filter, and drop new local files straight into the current. They publish to the database with polished Discord embeds. Soft size warnings only. No hard limits. Spring-animated frosted glass cards. All prior desks remain fully intact.
+          </p>
+        </motion.div>
 
-        <div className="grid md:grid-cols-[1fr_280px] gap-6">
-          <div className="overflow-x-auto pb-4">
-            <div className="flex gap-4 min-w-max">
-              <AnimatePresence>
-                {stream.map((item, i) => (
-                  <motion.a
-                    key={item.id}
-                    href={shareUrls(item.id).app}
-                    initial={{ opacity: 0, x: 40 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.03, type: 'spring', stiffness: 120, damping: 18 }}
-                    whileHover={{ y: -4, scale: 1.02 }}
-                    className="glass rounded-[24px] p-5 w-64 shrink-0 block hover:bg-white/[0.05] transition"
-                  >
-                    <p className="text-sm font-medium truncate">{item.name || 'untitled'}</p>
-                    <p className="text-xs text-neutral-500 mt-2">{(item.size / 1024).toFixed(0)} KB</p>
-                    {item.caption && <p className="text-xs text-neutral-400 mt-2 line-clamp-2">{item.caption}</p>}
-                  </motion.a>
-                ))}
-              </AnimatePresence>
-            </div>
+        <div className="glass rounded-3xl p-6 mb-8">
+          <div
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => { e.preventDefault(); if (e.dataTransfer.files.length) onFiles(e.dataTransfer.files); }}
+            className="border border-dashed border-white/15 rounded-2xl p-8 text-center mb-4"
+          >
+            <label className="inline-block px-5 py-2 rounded-full bg-white/10 hover:bg-white/15 cursor-pointer text-sm">
+              drop files into the stream
+              <input type="file" multiple className="hidden" onChange={(e) => e.target.files && onFiles(e.target.files)} />
+            </label>
           </div>
-
-          <div className="glass rounded-[28px] p-6 h-fit sticky top-28">
-            <div
-              className="border border-dashed border-white/20 rounded-2xl p-6 text-center cursor-pointer mb-4 hover:border-white/40 transition"
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={(e) => {
-                e.preventDefault();
-                if (e.dataTransfer.files) onDrop(e.dataTransfer.files);
-              }}
-            >
-              <input type="file" multiple onChange={(e) => e.target.files && onDrop(e.target.files)} className="hidden" id="stream-file" />
-              <label htmlFor="stream-file" className="cursor-pointer block text-sm text-neutral-400">
-                drop files to join the stream
-              </label>
-            </div>
-            {warn && <p className="text-amber-400 text-xs mb-3">{warn}</p>}
-            {files.length > 0 && (
-              <div className="space-y-2 mb-4 max-h-40 overflow-auto">
-                {files.map((f, i) => (
-                  <div key={i} className="text-xs text-neutral-300 truncate">{f.name} · {(f.size / 1024 / 1024).toFixed(1)} MB</div>
-                ))}
-              </div>
-            )}
-            <motion.button
-              whileTap={{ scale: 0.97 }}
-              onClick={shareAll}
-              disabled={!files.length || status === 'uploading'}
-              className="w-full py-2.5 rounded-full bg-[#0A84FF] text-white text-sm font-medium disabled:opacity-50"
-            >
-              {status === 'uploading' ? 'streaming…' : 'publish to stream'}
-            </motion.button>
-            {results.length > 0 && (
-              <div className="mt-4 space-y-2">
-                {results.map(r => (
-                  <div key={r.id} className="text-xs">
-                    <p className="truncate">{r.name}</p>
-                    <button onClick={() => navigator.clipboard.writeText(r.embed)} className="text-[#0A84FF]">copy link</button>
-                  </div>
-                ))}
-              </div>
-            )}
+          <input value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="Caption for new drops" className="w-full bg-black/20 rounded-2xl px-4 py-3 text-sm mb-4 outline-none" />
+          <div className="flex items-center gap-3 mb-4">
+            <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="w-9 h-9 rounded-full" />
+            <span className="text-xs text-neutral-500">accent</span>
           </div>
+          {warn && <p className="text-xs text-amber-300/80 mb-4">{warn}</p>}
+          {items.length > 0 && (
+            <div className="space-y-2 mb-4">
+              {items.map((item) => (
+                <div key={item.id} className="flex items-center gap-3 text-sm">
+                  {item.preview && <img src={item.preview} className="w-10 h-10 rounded-lg object-cover" />}
+                  <span className="flex-1 truncate">{item.file.name}</span>
+                  <span className="text-xs text-neutral-500">{item.status}</span>
+                  {item.link && <a href={item.link} className="text-xs text-blue-400">link</a>}
+                </div>
+              ))}
+            </div>
+          )}
+          <button onClick={publish} disabled={busy || !items.length} className="px-5 py-2 rounded-full text-sm font-medium text-black disabled:opacity-40" style={{ background: accent }}>
+            {busy ? 'Publishing…' : 'Publish to stream'}
+          </button>
         </div>
+
+        <div className="flex gap-2 mb-4">
+          {['all', 'image', 'text'].map((f) => (
+            <button key={f} onClick={() => setFilter(f)} className={`px-3 py-1 rounded-full text-xs ${filter === f ? 'bg-white text-black' : 'bg-white/5'}`}>{f}</button>
+          ))}
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="search stream…" className="flex-1 bg-white/5 rounded-full px-4 py-1 text-sm outline-none" />
+        </div>
+
+        {loading ? (
+          <p className="text-neutral-500 text-sm">loading stream…</p>
+        ) : (
+          <div className="space-y-3">
+            <AnimatePresence>
+              {filtered.map((s, i) => (
+                <motion.a
+                  key={s.id}
+                  href={shareUrls(s.id).embed}
+                  target="_blank"
+                  rel="noreferrer"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.03, type: 'spring', stiffness: 110, damping: 20 }}
+                  className="glass rounded-2xl p-4 flex gap-4 hover:bg-white/5 transition block"
+                >
+                  {s.type.startsWith('image/') && s.url ? (
+                    <img src={s.url} alt="" className="w-16 h-16 rounded-xl object-cover" />
+                  ) : (
+                    <div className="w-16 h-16 rounded-xl bg-white/5 grid place-items-center text-xs text-neutral-500">file</div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">{s.name}</p>
+                    <p className="text-xs text-neutral-500 mt-0.5">{formatBytes(s.size)} · {s.caption || 'shared'}</p>
+                  </div>
+                </motion.a>
+              ))}
+            </AnimatePresence>
+            {!filtered.length && <p className="text-neutral-500 text-sm">quiet for now. drop something above.</p>}
+          </div>
+        )}
       </div>
     </div>
   );

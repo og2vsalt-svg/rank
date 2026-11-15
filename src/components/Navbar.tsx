@@ -62,6 +62,7 @@ const primary: NavItem[] = [
   { to: 'quietbrook', label: 'brook' },
   { to: 'directory', label: 'desks' },
   { to: 'notes', label: 'notes' },
+  { to: 'ember', label: 'ember' },
 ];
 
 export default function Navbar() {

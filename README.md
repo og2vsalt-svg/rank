@@ -2,6 +2,7 @@
 
 Private file hosting and sharing.
 
+- **Quiet Flow** — drop local files. They drift into place with staggered spring motion on frosted glass. Shared note and accent color. Batch-publish to the database. Every link unfurls a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 - **Quiet Codex** — gather sequenced notes with optional local files into a still codex. Each entry publishes to the database. Every link unfurls a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style spring motion. All prior desks remain fully intact.
 - **Quiet Gallery** — visual public archive of recent shares. Drop local files to add them. Spring-animated frosted glass cards. Polished Discord embeds. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 - **Quiet Harbor** — drop local files. They settle in a still harbor of frosted glass with gentle spring motion and live image previews. Per-file notes or one shared caption. Batch-publish to the database. Every link unfurls a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.

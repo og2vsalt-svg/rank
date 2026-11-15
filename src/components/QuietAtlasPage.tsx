@@ -1,91 +1,92 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { listPublicShares, type CloudMeta } from '../lib/cloudShare';
-import { useRouter } from './Router';
+import Navbar from './Navbar';
+import { listShares } from '../lib/db';
+
+type Share = {
+  id: string;
+  name: string;
+  mime?: string;
+  size: number;
+  file_url?: string;
+  caption?: string | null;
+  created_at: string;
+  download_count?: number;
+};
 
 export default function QuietAtlasPage() {
-  const { navigate } = useRouter();
-  const [shares, setShares] = useState<CloudMeta[]>([]);
+  const [shares, setShares] = useState<Share[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<'all' | 'image' | 'video' | 'other'>('all');
+  const [query, setQuery] = useState('');
+  const [accent] = useState('#5AC8FA');
 
   useEffect(() => {
-    (async () => {
-      const list = await listPublicShares(36);
-      setShares(list);
-      setLoading(false);
-    })();
+    listShares(48)
+      .then(setShares)
+      .catch(() => setShares([]))
+      .finally(() => setLoading(false));
   }, []);
 
-  const filtered = shares.filter(s => {
-    if (filter === 'all') return true;
-    if (filter === 'image') return s.type.startsWith('image/');
-    if (filter === 'video') return s.type.startsWith('video/');
-    return !s.type.startsWith('image/') && !s.type.startsWith('video/');
-  });
+  const filtered = shares.filter((s) =>
+    !query || (s.name + (s.caption || '')).toLowerCase().includes(query.toLowerCase())
+  );
+
+  const pretty = (n: number) => {
+    if (n < 1024) return n + ' B';
+    if (n < 1048576) return Math.round(n / 1024) + ' KB';
+    return (n / 1048576).toFixed(1) + ' MB';
+  };
 
   return (
-    <div className="min-h-screen bg-[#0b0b0d] text-white pt-24 px-5 pb-16">
-      <div className="max-w-5xl mx-auto">
-        <motion.h1
+    <div className="mesh min-h-screen">
+      <Navbar />
+      <div className="pt-28 pb-20 px-6 max-w-6xl mx-auto">
+        <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 100, damping: 20 }}
-          className="text-4xl font-semibold tracking-tight mb-2"
+          transition={{ type: 'spring', stiffness: 110, damping: 22 }}
         >
-          quiet atlas
-        </motion.h1>
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.08 }}
-          className="text-neutral-400 mb-6"
-        >
-          A calm map of recent public shares. Spring-animated cards. Click to open. Professional Discord embeds on every link.
-        </motion.p>
+          <p className="text-[13px] font-medium tracking-wide mb-1" style={{ color: accent }}>Quiet Atlas</p>
+          <h1 className="text-[40px] font-semibold tracking-tight mb-3">Public shares.</h1>
+          <p className="text-neutral-400 text-[16px] leading-relaxed mb-8 max-w-2xl">
+            A living map of recent public files. Search, preview, and open. Every link unfurls a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style spring motion. All prior desks remain fully intact.
+          </p>
 
-        <div className="flex gap-2 mb-8">
-          {(['all', 'image', 'video', 'other'] as const).map(f => (
-            <motion.button
-              key={f}
-              whileTap={{ scale: 0.96 }}
-              onClick={() => setFilter(f)}
-              className={`px-4 py-1.5 rounded-full text-xs font-medium transition ${filter === f ? 'bg-white text-black' : 'bg-white/5 text-neutral-300 hover:bg-white/10'}`}
-            >
-              {f}
-            </motion.button>
-          ))}
-        </div>
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search names or captions…"
+            className="w-full max-w-md bg-black/20 border border-white/10 rounded-2xl px-4 py-3 text-[15px] text-white placeholder:text-neutral-500 mb-8 focus:outline-none focus:border-white/25 transition"
+          />
 
-        {loading ? (
-          <p className="text-neutral-500 text-sm">mapping shares…</p>
-        ) : filtered.length === 0 ? (
-          <p className="text-neutral-500 text-sm">no shares in this view yet.</p>
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-            {filtered.map((s, i) => (
-              <motion.button
-                key={s.id}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ type: 'spring', stiffness: 140, damping: 22, delay: i * 0.02 }}
-                whileHover={{ y: -4, scale: 1.02 }}
-                onClick={() => navigate('share', s.id)}
-                className="glass rounded-2xl p-4 text-left overflow-hidden"
-              >
-                {s.type.startsWith('image/') && s.url ? (
-                  <img src={s.url} alt="" className="w-full h-28 object-cover rounded-xl mb-3" />
-                ) : (
-                  <div className="w-full h-28 bg-white/5 rounded-xl mb-3 grid place-items-center text-xs text-neutral-500">
-                    {s.type.split('/')[0] || 'file'}
+          {loading ? (
+            <p className="text-neutral-500">Opening the atlas…</p>
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {filtered.map((s, i) => (
+                <motion.a
+                  key={s.id}
+                  href={`/s/${s.id}`}
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.03, type: 'spring', stiffness: 100, damping: 20 }}
+                  className="glass rounded-2xl p-5 block hover:bg-white/5 transition group"
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <p className="text-sm font-medium truncate pr-2">{s.name || 'untitled'}</p>
+                    <span className="text-[11px] text-neutral-500 shrink-0">{pretty(s.size)}</span>
                   </div>
-                )}
-                <div className="text-sm font-medium truncate">{s.name || 'untitled'}</div>
-                <div className="text-xs text-neutral-500 mt-1 truncate">{s.caption || s.author || 'public share'}</div>
-              </motion.button>
-            ))}
-          </div>
-        )}
+                  {s.caption && <p className="text-xs text-neutral-400 line-clamp-2 mb-3">{s.caption}</p>}
+                  <div className="flex items-center justify-between text-[11px] text-neutral-500">
+                    <span>{new Date(s.created_at).toLocaleDateString()}</span>
+                    <span>{s.download_count || 0} opens</span>
+                  </div>
+                </motion.a>
+              ))}
+            </div>
+          )}
+          {!loading && filtered.length === 0 && <p className="text-neutral-500 mt-8">Nothing matches yet.</p>}
+        </motion.div>
       </div>
     </div>
   );

@@ -39,6 +39,7 @@ const primary: NavItem[] = [
   { to: 'quietscriptorium', label: 'scriptorium' },
   { to: 'quiethaven', label: 'haven' },
   { to: 'quietzenith', label: 'zenith' },
+  { to: 'quieteclipse', label: 'eclipse' },
   { to: 'vault', label: 'vault' },
   { to: 'quietvellum', label: 'vellum' },
   { to: 'quietripple', label: 'ripple' },

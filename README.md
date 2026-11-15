@@ -2,6 +2,7 @@
 
 Private file hosting and sharing.
 
+- **Quiet Kindling** — drop local files. They settle as soft kindling of frosted glass with gentle spring flicker and live previews. Shared caption or per-file notes. Batch-publish to the database. Every link unfurls a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 - **Quiet Driftwood** — drop local files. They drift and settle as soft weathered wood on frosted glass with gentle spring motion and live previews. Shared caption and warm earth accent. Batch-publish to the database. Every link unfurls a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 - **Quiet Dawn** — choose one local file. It rises into a warm frosted card with live image preview when possible. Shared caption and warm accent. Publishes to the database. Every link unfurls a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style spring motion. All prior desks remain fully intact. No traces of boosting.
 - **Quiet Mirror** — drop local files. They settle as soft reflections on frosted glass with mirrored spring motion and live previews. Shared caption. Batch-publish to the database. Every link unfurls a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.

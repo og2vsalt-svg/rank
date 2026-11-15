@@ -30,9 +30,10 @@ export default function Hero() {
           transition={{ type: 'spring', stiffness: 80, damping: 20, delay: 0.1 }}
           className="text-neutral-400 text-lg leading-relaxed max-w-lg mb-10 mx-auto"
         >
-          Quiet Prism for refractive multi-file drops with spectral spring motion. Quiet Lattice for interlocking glass nodes. Quiet Aether, Quiet Studio, Quiet Mosaic, Quiet Canvas, Quiet Solace, Quiet Ember, and dozens more specialized desks. Professional Discord embeds on every link. Soft size warnings only. No hard limits. Sleek Apple-style spring animations. All prior features remain fully intact.
+          Quiet Harbor for still multi-file drops with gentle spring motion. Quiet Prism for refractive spectral glass. Quiet Lattice, Quiet Aether, Quiet Studio, Quiet Mosaic, Quiet Canvas, Quiet Solace, Quiet Ember, and dozens more specialized desks. Professional Discord embeds on every link. Soft size warnings only. No hard limits. Sleek Apple-style spring animations. All prior features remain fully intact.
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center">
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietharbor')} className="px-6 py-2.5 rounded-full bg-[#5AC8FA] text-black text-sm font-medium hover:bg-[#7ad4ff] transition">quiet harbor</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietprism')} className="px-6 py-2.5 rounded-full bg-[#A78BFA] text-black text-sm font-medium hover:bg-[#c4b5fd] transition">quiet prism</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietlattice')} className="px-6 py-2.5 rounded-full bg-[#34D399] text-black text-sm font-medium hover:bg-[#6ee7b7] transition">quiet lattice</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietaether')} className="px-6 py-2.5 rounded-full bg-[#5AC8FA] text-black text-sm font-medium hover:bg-[#7ad4ff] transition">quiet aether</motion.button>

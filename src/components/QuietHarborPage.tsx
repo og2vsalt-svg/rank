@@ -1,171 +1,197 @@
-import { useMemo, useState } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishLocalFile, shareUrls } from '../lib/cloudShare';
+import { publishLocalFile } from '../lib/cloudShare';
 
-type Row = {
-  name: string;
-  size: number;
-  id?: string;
-  embed?: string;
-  error?: string;
-  warn?: string | null;
+type Dropped = {
+  file: File;
+  caption: string;
+  preview?: string;
 };
 
 export default function QuietHarborPage() {
-  const [files, setFiles] = useState<File[]>([]);
-  const [author, setAuthor] = useState('');
-  const [caption, setCaption] = useState('');
-  const [color, setColor] = useState('#67E8F9');
+  const [drops, setDrops] = useState<Dropped[]>([]);
+  const [sharedCaption, setSharedCaption] = useState('');
+  const [accent, setAccent] = useState('#5AC8FA');
   const [busy, setBusy] = useState(false);
-  const [rows, setRows] = useState<Row[]>([]);
-  const [copied, setCopied] = useState('');
+  const [warn, setWarn] = useState<string | null>(null);
+  const [links, setLinks] = useState<{ name: string; embed: string }[]>([]);
+  const [err, setErr] = useState('');
 
-  const heavy = useMemo(() => files.reduce((n, f) => n + f.size, 0) > 40 * 1024 * 1024, [files]);
+  const onFiles = useCallback((list: FileList | null) => {
+    if (!list) return;
+    const next: Dropped[] = [];
+    let large = false;
+    for (const file of Array.from(list)) {
+      if (file.size > 40 * 1024 * 1024) large = true;
+      const item: Dropped = { file, caption: '' };
+      if (file.type.startsWith('image/')) {
+        item.preview = URL.createObjectURL(file);
+      }
+      next.push(item);
+    }
+    setDrops((prev) => [...prev, ...next]);
+    setWarn(large ? 'One or more files are large. Uploads may feel slow. No hard limit.' : null);
+  }, []);
 
-  const send = async () => {
-    if (!files.length && !caption.trim()) return;
+  const updateCaption = (i: number, v: string) => {
+    setDrops((prev) => prev.map((d, idx) => (idx === i ? { ...d, caption: v } : d)));
+  };
+
+  const remove = (i: number) => {
+    setDrops((prev) => {
+      const next = [...prev];
+      const gone = next.splice(i, 1)[0];
+      if (gone.preview) URL.revokeObjectURL(gone.preview);
+      return next;
+    });
+  };
+
+  const publish = async () => {
+    if (drops.length === 0) return setErr('drop at least one local file');
     setBusy(true);
-    const next: Row[] = [];
-    const toSend = files.length ? files : [new File([caption || 'note'], 'note.txt', { type: 'text/plain' })];
-    for (const file of toSend) {
-      const res = await publishLocalFile(file, {
-        author,
-        caption: caption ? `${caption} · ${file.name}` : file.name,
-        color,
-        cardTitle: caption || file.name,
-        meta: { accent: color, source: 'quietharbor' },
-      });
-      next.push({
-        name: file.name,
-        size: file.size,
-        id: res.id,
-        embed: res.id ? shareUrls(res.id).embed : undefined,
-        error: res.ok ? undefined : res.error,
-        warn: res.warn,
-      });
-      setRows([...next]);
+    setErr('');
+    setLinks([]);
+    const made: { name: string; embed: string }[] = [];
+    try {
+      for (const d of drops) {
+        const caption = d.caption.trim() || sharedCaption.trim() || 'from the quiet harbor';
+        const res = await publishLocalFile(d.file, {
+          caption,
+          color: accent,
+          cardTitle: d.file.name,
+          meta: { desk: 'quietharbor' },
+        });
+        if (res.ok && res.embed) {
+          made.push({ name: d.file.name, embed: res.embed });
+        } else {
+          setErr(res.error || `failed on ${d.file.name}`);
+          break;
+        }
+      }
+      setLinks(made);
+      if (made.length === drops.length) {
+        drops.forEach((d) => d.preview && URL.revokeObjectURL(d.preview));
+        setDrops([]);
+        setSharedCaption('');
+      }
+    } catch (e: any) {
+      setErr(e.message || 'something slowed');
     }
     setBusy(false);
   };
 
-  const copy = async (value: string) => {
-    await navigator.clipboard.writeText(value);
-    setCopied(value);
-    setTimeout(() => setCopied(''), 1200);
-  };
-
   return (
-    <div className="mesh min-h-screen">
+    <div className="mesh min-h-screen bg-[#0b0b0d]">
       <Navbar />
-      <main className="mx-auto max-w-2xl px-5 pb-24 pt-10 relative">
+      <div className="pt-32 pb-24 px-6 max-w-2xl mx-auto">
         <motion.div
-          className="absolute inset-0 pointer-events-none overflow-hidden"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: 'spring', stiffness: 110, damping: 22 }}
+          className="glass rounded-[32px] p-8 shadow-2xl"
         >
-          {[...Array(8)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute rounded-full"
-              style={{
-                left: `${15 + (i * 10) % 70}%`,
-                bottom: `${5 + (i * 4) % 20}%`,
-                width: 8 + (i % 3) * 3,
-                height: 8 + (i % 3) * 3,
-                background: color,
-                boxShadow: `0 0 16px ${color}80`,
-                opacity: 0.6,
-              }}
-              animate={{
-                y: [0, -8, 0],
-                opacity: [0.4, 0.9, 0.4],
-                scale: [0.9, 1.15, 0.9],
-              }}
-              transition={{
-                duration: 4 + (i % 3),
-                repeat: Infinity,
-                ease: 'easeInOut',
-                delay: i * 0.5,
-              }}
-            />
-          ))}
-          <motion.div
-            className="absolute left-1/2 top-1/3 h-32 w-32 -translate-x-1/2 rounded-full border border-white/10"
-            style={{ borderColor: color + '40' }}
-            animate={{ rotate: 360 }}
-            transition={{ duration: 40, repeat: Infinity, ease: 'linear' }}
-          />
-        </motion.div>
-
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 110, damping: 20 }} className="relative">
-          <p className="text-[12px] uppercase tracking-[0.16em] text-white/45">quietharbor</p>
-          <h1 className="mt-2 text-[34px] font-semibold tracking-[-0.04em]">quiet docking lights for what you carry</h1>
-          <p className="mt-3 text-[15px] leading-relaxed text-white/60">
-            Drop files or leave a note. Soft docking lights gently pulse and breathe along the lower edge in your color, with a slow circling ring above, like a quiet harbor at rest. Spring motion, glass surfaces. Each item lands in storage and the public_shares table. Professional Discord embeds on every link. Large files receive only a gentle slowness warning — never refused. All prior desks remain intact.
+          <p className="text-[13px] font-medium tracking-wide mb-1" style={{ color: accent }}>Quiet Harbor</p>
+          <h1 className="text-[32px] font-semibold tracking-tight mb-3 leading-tight">A still harbor for local files.</h1>
+          <p className="text-neutral-400 text-[15px] leading-relaxed mb-8">
+            Drop files. They settle with gentle spring motion on frosted glass. Each can carry its own note, or share one caption. Publish straight to the database. Every link unfurls a polished Discord embed. Soft size warnings only. No hard limits. Prior desks stay fully intact.
           </p>
+
+          <label className="block rounded-[24px] border border-dashed border-white/15 bg-black/20 p-10 text-center cursor-pointer hover:border-white/25 transition mb-6">
+            <input
+              type="file"
+              multiple
+              className="hidden"
+              onChange={(e) => onFiles(e.target.files)}
+            />
+            <p className="text-[15px] text-neutral-300">Drop local files or click to choose</p>
+            <p className="text-[12px] text-neutral-500 mt-1">Images show live previews. Large files warned, never refused.</p>
+          </label>
+
+          <AnimatePresence>
+            {drops.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="space-y-3 mb-6"
+              >
+                {drops.map((d, i) => (
+                  <motion.div
+                    key={d.file.name + i}
+                    layout
+                    initial={{ opacity: 0, scale: 0.96 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.96 }}
+                    transition={{ type: 'spring', stiffness: 140, damping: 18 }}
+                    className="glass rounded-[20px] p-4 flex gap-4 items-start"
+                  >
+                    {d.preview ? (
+                      <img src={d.preview} alt="" className="w-16 h-16 rounded-[12px] object-cover" />
+                    ) : (
+                      <div className="w-16 h-16 rounded-[12px] bg-white/5 grid place-items-center text-[11px] text-neutral-400">file</div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[14px] truncate">{d.file.name}</p>
+                      <p className="text-[11px] text-neutral-500">{(d.file.size / 1024 / 1024).toFixed(1)} MB</p>
+                      <input
+                        value={d.caption}
+                        onChange={(e) => updateCaption(i, e.target.value)}
+                        placeholder="optional note for this file"
+                        className="mt-2 w-full bg-transparent border-b border-white/10 text-[13px] py-1 focus:outline-none focus:border-white/30"
+                      />
+                    </div>
+                    <button onClick={() => remove(i)} className="text-neutral-500 hover:text-white text-sm">×</button>
+                  </motion.div>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <input
+            value={sharedCaption}
+            onChange={(e) => setSharedCaption(e.target.value)}
+            placeholder="shared caption (used when a file has none)"
+            className="w-full bg-black/20 border border-white/10 rounded-[16px] px-4 py-3 text-[14px] mb-5 focus:outline-none focus:border-white/20"
+          />
+
+          <div className="flex items-center gap-4 mb-6">
+            <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="w-10 h-10 rounded-full cursor-pointer border-0" />
+            <span className="text-[13px] text-neutral-400">accent for embeds</span>
+          </div>
+
+          {warn && <p className="text-[12px] text-amber-300/90 mb-4">{warn}</p>}
+
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            whileHover={{ scale: 1.02 }}
+            onClick={publish}
+            disabled={busy || drops.length === 0}
+            className="w-full rounded-[18px] py-3.5 text-[15px] font-medium text-black disabled:opacity-40 transition shadow-lg"
+            style={{ background: accent }}
+          >
+            {busy ? 'Settling into the harbor…' : `Publish ${drops.length || ''} file${drops.length === 1 ? '' : 's'}`}
+          </motion.button>
+
+          <AnimatePresence>
+            {links.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-6 space-y-2"
+              >
+                <p className="text-[13px] text-neutral-400">Share links (Discord embeds ready):</p>
+                {links.map((l) => (
+                  <a key={l.embed} href={l.embed} className="block text-[13px] break-all" style={{ color: accent }}>
+                    {l.name} — {l.embed}
+                  </a>
+                ))}
+              </motion.div>
+            )}
+            {err && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 text-[12px] text-red-400">{err}</motion.p>}
+          </AnimatePresence>
         </motion.div>
-
-        <label className="glass mt-8 block cursor-pointer rounded-3xl p-8 text-center relative">
-          <input className="hidden" type="file" multiple onChange={(e) => setFiles(Array.from(e.target.files || []))} />
-          <div className="text-[15px] text-white/80">{files.length ? `${files.length} files ready` : 'drop or choose files, or just leave a note'}</div>
-          <div className="mt-1 text-[12px] text-white/40">any type · soft warning only · no hard limits</div>
-        </label>
-
-        {!!files.length && (
-          <ul className="mt-4 space-y-1.5">
-            {files.map((f) => (
-              <li key={f.name + f.size} className="flex items-center justify-between rounded-2xl bg-white/[0.04] px-4 py-2.5 text-[13px]">
-                <span className="truncate pr-3">{f.name}</span>
-                <span className="shrink-0 text-white/40">{(f.size / 1024).toFixed(0)} kb</span>
-              </li>
-            ))}
-          </ul>
-        )}
-
-        <div className="mt-4 grid gap-3">
-          <textarea value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="shared note that rides every card (or stand alone)" rows={3} className="glass rounded-2xl px-4 py-3 text-[14px] outline-none resize-none" />
-          <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="name, optional" className="glass rounded-2xl px-4 py-3 text-[14px] outline-none" />
-          <div className="flex items-center gap-3">
-            <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="h-10 w-14 cursor-pointer rounded-xl border border-white/10 bg-transparent" />
-            <span className="text-[13px] text-white/50">accent for the harbor lights</span>
-          </div>
-        </div>
-
-        {heavy && <p className="mt-3 text-[13px] text-amber-200/80">large batch. sending may feel slow. nothing is refused.</p>}
-
-        <motion.button
-          whileTap={{ scale: 0.97 }}
-          whileHover={{ scale: 1.01 }}
-          onClick={send}
-          disabled={(!files.length && !caption.trim()) || busy}
-          className="mt-4 w-full rounded-full px-4 py-3 text-[15px] font-medium text-white disabled:opacity-40"
-          style={{ background: color }}
-        >
-          {busy ? 'sending…' : 'dock in the harbor'}
-        </motion.button>
-
-        {!!rows.length && (
-          <div className="mt-6 space-y-2">
-            {rows.map((r) => (
-              <div key={r.name + r.size} className="glass rounded-2xl px-4 py-3">
-                <div className="flex items-center justify-between gap-3">
-                  <p className="truncate text-[14px]">{r.name}</p>
-                  {r.embed ? (
-                    <button onClick={() => copy(r.embed!)} className="shrink-0 rounded-full bg-white/10 px-3 py-1 text-[12px]">
-                      {copied === r.embed ? 'copied' : 'copy link'}
-                    </button>
-                  ) : (
-                    <span className="text-[12px] text-red-300">{r.error || 'failed'}</span>
-                  )}
-                </div>
-                {r.embed && <p className="mt-1 break-all text-[12px] text-white/45">{r.embed}</p>}
-                {r.warn && <p className="mt-1 text-[12px] text-amber-200/80">{r.warn}</p>}
-              </div>
-            ))}
-          </div>
-        )}
-      </main>
+      </div>
     </div>
   );
 }

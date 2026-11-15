@@ -2,6 +2,7 @@
 
 Private file hosting and sharing.
 
+- **Quiet Dawn** — choose one local file. It rises into a warm frosted card with live image preview when possible. Shared caption and warm accent. Publishes to the database. Every link unfurls a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style spring motion. All prior desks remain fully intact. No traces of boosting.
 - **Quiet Mirror** — drop local files. They settle as soft reflections on frosted glass with mirrored spring motion and live previews. Shared caption. Batch-publish to the database. Every link unfurls a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 - **Quiet Silk** — drop local files. They drape as soft silk folds of frosted glass with fluid spring motion and live previews. Shared caption and warm accent. Batch-publish to the database. Every link unfurls a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 - **Quiet Pulse** — a still activity view of recent public shares with download counts and sizes. Soft spring-entry frosted cards. Professional Discord embeds on every link. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
@@ -20,7 +21,7 @@ Private file hosting and sharing.
 - **Quiet Paste** — a still surface for notes and snippets. Type or paste text and publish it as a quiet text file to the database. Every link unfurls a polished Discord embed. Soft warnings only for long pastes. No hard limits. Apple-style springs and frosted glass. All prior desks remain fully intact.
 - **Quiet QR** — turn any URL or short text into a clean QR code. Preview it live, then publish the image to the database for a polished Discord embed link. Soft warnings only. No hard limits. Prior features stay untouched.
 - **Quiet Veil** — drop local files. They settle under a soft layered veil of frosted glass with staggered spring reveals and progressive publishing status. Shared caption. Batch-publish to the database. Every link unfurls a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact.
-- And many more specialized desks (Quiet Anchor, Quiet Lumen Desk, Quiet Studio, Quiet Mosaic, Quiet Canvas, Quiet Solace, Quiet Ember, Quiet Vale, Quiet Link, Quiet Album, Quiet Nadir, Quiet Glen, Quiet Orchard, Quiet Notebook, Quiet Scriptorium, Lumen Hub, Quiet Vista, quiet portfolio, quiet compass, Quiet Cascade, Quiet Echo, Quiet Mirror, and dozens more) — all prior features preserved.
+- And many more specialized desks (Quiet Anchor, Quiet Lumen Desk, Quiet Studio, Quiet Mosaic, Quiet Canvas, Quiet Solace, Quiet Ember, Quiet Vale, Quiet Link, Quiet Album, Quiet Nadir, Quiet Glen, Quiet Orchard, Quiet Notebook, Quiet Scriptorium, Lumen Hub, Quiet Vista, quiet portfolio, quiet compass, Quiet Cascade, Quiet Echo, Quiet Mirror, Quiet Whisper, and dozens more) — all prior features preserved.
 
 - Local vault in the browser (IndexedDB).
 - Upload local files straight to the database (Supabase storage + public_shares).

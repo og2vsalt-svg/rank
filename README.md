@@ -2,6 +2,7 @@
 
 Private file hosting and sharing.
 
+- **Quiet Glacier** — drop local files. They settle as soft icy shards of frosted glass with gentle spring motion and cool light. Shared caption. Batch-publish to the database. Every link unfurls a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 - **Quiet Brook** — drop local files. They drift and settle as soft green leaves on frosted glass with gentle spring flow. Shared caption. Batch-publish to the database. Every link unfurls a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 - **Quiet Eclipse** — drop local files. They settle as soft occluded glass orbs with gentle spring motion on frosted glass, revealing as the shadow lifts. Shared caption and warm accent. Batch-publish to the database. Every link unfurls a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 - **Quiet Drop** — a clean central drop zone for local files. Live previews, shared caption, accent color, spring motion on frosted glass. Batch-publish to the database. Every link unfurls a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact.

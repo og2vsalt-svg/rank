@@ -2,6 +2,7 @@
 
 Private file hosting and sharing.
 
+- **Quiet Lumen** — drop local files. They settle as soft glowing orbs of frosted glass with gentle spring light. Shared caption, warm accent. Batch-publish to the database. Every link unfurls a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 - **Quiet Folio** — compose a quiet portfolio of local files. Each piece gets its own title and note, or share one caption. Spring-animated frosted glass grid. Batch-publish to the database. Every link unfurls a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 - **Quiet Stream** — a living stream of recent public shares. Search, filter by type, and drop new local files straight into the current. Publishes to the database with polished Discord embeds. Soft size warnings only. No hard limits. Spring-animated frosted glass cards. All prior desks remain fully intact. No traces of boosting.
 - **Quiet Ember** — drop local files into a warm hearth. Soft rising ember particles respond to your accent color. Shared title and note. Spring motion on frosted glass. Batch-publish to the database. Every link unfurls a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.

@@ -2,6 +2,7 @@
 
 Private file hosting and sharing.
 
+- **Quiet Pulse** — a still activity view of recent public shares with download counts and sizes. Soft spring-entry frosted cards. Professional Discord embeds on every link. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 - **Quiet Solstice** — drop local files under a turning sun of frosted glass. Radial spring motion, chosen accent color, shared caption. Batch-publish to the database. Every link unfurls a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact.
 - **Quiet Kaleidoscope** — drop local files into a refractive glass. Live previews fold in rotational spring orbits before publishing. Shared caption. Batch-publish to the database. Every link unfurls a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact.
 - **Quiet Timeline** — a still local sequence for notes and moments. Apple-style springs. Pair with vault or shares. No upload. All prior features preserved.

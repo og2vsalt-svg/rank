@@ -2,6 +2,8 @@
 
 Private file hosting and sharing.
 
+- **Quiet Fade** — drop a local file or write a quiet note that gently fades after a chosen number of hours. Settles into the database with a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style spring motion on frosted glass. All prior desks remain fully intact. No traces of boosting.
+- **Quiet Daily** — date a quiet note or attach a local file. It settles into the database with a polished Discord embed. Soft size warnings only. No hard limits. Apple-style springs and frosted glass. Prior desks remain fully intact. No traces of boosting.
 - **Quiet Lumen** — drop local files. They settle as soft glowing orbs of frosted glass with gentle spring light. Shared caption, warm accent. Batch-publish to the database. Every link unfurls a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 - **Quiet Folio** — compose a quiet portfolio of local files. Each piece gets its own title and note, or share one caption. Spring-animated frosted glass grid. Batch-publish to the database. Every link unfurls a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 - **Quiet Stream** — a living stream of recent public shares. Search, filter by type, and drop new local files straight into the current. Publishes to the database with polished Discord embeds. Soft size warnings only. No hard limits. Spring-animated frosted glass cards. All prior desks remain fully intact. No traces of boosting.

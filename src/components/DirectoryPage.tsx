@@ -4,6 +4,7 @@ import { useRouter } from './Router';
 import Navbar from './Navbar';
 
 const desks = [
+  { to: "quietbrook", label: "quiet brook", desc: "drop local files. they drift and settle as soft green leaves on frosted glass with gentle spring flow. shared caption. batch-publish to the database. every link unfurls a polished Discord embed. soft size warnings only. no hard limits. human-crafted Apple-style pacing. all prior desks remain fully intact. no traces of boosting." },
   { to: "quietcodex", label: "quiet codex", desc: "gather sequenced notes with optional local files into a still codex. each entry publishes to the database with a polished Discord embed. soft size warnings only. no hard limits. human-crafted Apple-style spring motion. all prior desks remain fully intact." },
   { to: "quietgallery", label: "quiet gallery", desc: "visual public archive of recent shares. drop local files to add them to the record. spring-animated frosted glass cards. polished Discord embeds on every link. soft size warnings only. no hard limits. human-crafted Apple-style pacing. all prior desks remain fully intact." },
   { to: "quietprism", label: "quiet prism", desc: "drop local files into a refractive prism of spectral frosted glass facets. gentle spring refraction, live previews, shared caption. batch-publish to the database. every link unfurls a polished Discord embed. soft size warnings only. no hard limits. human-crafted Apple-style pacing. all prior desks remain fully intact." },

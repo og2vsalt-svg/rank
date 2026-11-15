@@ -20,6 +20,7 @@ const primary: NavItem[] = [
   { to: 'quiettwilight', label: 'twilight' },
   { to: 'quietglen', label: 'glen' },
   { to: 'quietcascade', label: 'cascade' },
+  { to: 'quietveil', label: 'veil' },
   { to: 'quietmeridian', label: 'meridian' },
   { to: 'quietaurora', label: 'aurora' },
   { to: 'quietstillwater', label: 'stillwater' },

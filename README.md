@@ -2,6 +2,7 @@
 
 Private file hosting and sharing.
 
+- **Quiet Meadow** — drop local files. They settle as soft meadow grasses of frosted glass with gentle spring sway in the breeze. Shared caption, warm accent. Batch-publish to the database. Every link unfurls a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 - **Quiet Fade** — drop a local file or write a quiet note that gently fades after a chosen number of hours. Settles into the database with a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style spring motion on frosted glass. All prior desks remain fully intact. No traces of boosting.
 - **Quiet Daily** — date a quiet note or attach a local file. It settles into the database with a polished Discord embed. Soft size warnings only. No hard limits. Apple-style springs and frosted glass. Prior desks remain fully intact. No traces of boosting.
 - **Quiet Lumen** — drop local files. They settle as soft glowing orbs of frosted glass with gentle spring light. Shared caption, warm accent. Batch-publish to the database. Every link unfurls a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.

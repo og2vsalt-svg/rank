@@ -4,10 +4,14 @@ import { useRouter } from './Router';
 import Navbar from './Navbar';
 
 const desks = [
+  { to: "quietkeepsake", label: "quiet keepsake", desc: "drop files that matter. give each a short personal note. they settle into the database with polished Discord embeds. soft size warnings only. no hard limits." },
   { to: "quietframe", label: "quiet frame", desc: "drop an image. it settles into a soft polaroid frame and publishes with a polished Discord embed. soft size warnings only. no hard limits." },
   { to: "quietecho", label: "quiet echo", desc: "multi-file drop with soft expanding circular rings in your accent color. shared note. batch-publish to the database. every link unfurls a polished Discord embed. soft warnings only." },
   { to: "quietcanvas", label: "quiet canvas", desc: "freehand sketch on frosted glass. export as png and publish with a polished Discord embed. soft size warnings only." },
   { to: "quietnotes", label: "quiet notes", desc: "local collection of short notes. publish the whole set as a shared text file with a polished Discord embed. soft warnings only." },
+  { to: "quietmosaic", label: "quiet mosaic", desc: "drop local files into a living mosaic. images settle into a soft glass grid. shared note and accent. every link unfurls a polished Discord embed. soft warnings only." },
+  { to: "quietwhisper", label: "quiet whisper", desc: "multi-file drop that settles into soft floating glass cards. batch-publish with polished Discord embeds. soft size warnings only." },
+  { to: "quietlantern", label: "quiet lantern", desc: "drop local files. they hang as soft glowing lanterns with gentle floating motion. share to the database. polished Discord embeds. soft warnings only." },
   { to: "quietorchard", label: "quiet orchard", desc: "drop local files. they grow into soft frosted-glass trees with gentle spring growth, fruit-like previews, and a shared note. batch-publish to the database. every link unfurls a polished Discord embed. soft size warnings only. no hard limits. human-crafted Apple-style pacing. all prior desks remain fully intact." },
   { to: "quietfade", label: "quiet fade", desc: "drop a local file or write a quiet note that gently fades after a chosen number of hours. settles into the database with a polished Discord embed. soft size warnings only. no hard limits. human-crafted Apple-style spring motion on frosted glass. all prior desks remain fully intact." },
   { to: "quietdaily", label: "quiet daily", desc: "date a quiet note or attach a local file. it settles into the database with a polished Discord embed. soft size warnings only. no hard limits. apple-style springs and frosted glass. prior desks remain fully intact." },

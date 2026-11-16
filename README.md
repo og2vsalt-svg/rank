@@ -2,6 +2,7 @@
 
 Private file hosting and sharing.
 
+- **Quiet Binder** — gather local files into a quiet collection. Title the binder, add a shared caption, optional notes per file. Batch-publish to the database. Every link unfurls a polished Discord embed. Soft size warnings only. No hard limits. Spring-animated frosted glass. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 - **Quiet Nimbus** — drop local files. They settle as rising mist of frosted glass with gentle spring motion. Shared caption, accent color. Batch-publish to the database. Every link unfurls a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact.
 - **Quiet Meadow** — drop local files. They settle as soft meadow grasses of frosted glass with gentle spring sway in the breeze. Shared caption, warm accent. Batch-publish to the database. Every link unfurls a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact. No traces of boosting.
 - **Quiet Fade** — drop a local file or write a quiet note that gently fades after a chosen number of hours. Settles into the database with a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style spring motion on frosted glass. All prior desks remain fully intact. No traces of boosting.

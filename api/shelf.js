@@ -11,12 +11,14 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const FALLBACK = 'https://og2vsalt-svg.github.io/rank/og.png';
 
 const COPY = {
+  quietkeepsake: ["Quiet Keepsake — rankvault", "Drop files that matter. Give each a short personal note. They settle into the database with polished Discord embeds. Soft size warnings only. No hard limits."],
   quietframe: ["Quiet Frame — rankvault", "Drop an image. It settles into a soft polaroid frame and publishes with a polished Discord embed. Soft size warnings only. No hard limits."],
   quietecho: ["Quiet Echo — rankvault", "Multi-file drop with soft expanding circular rings in your accent color. Shared note. Batch-publish to the database. Every link unfurls a polished Discord embed. Soft warnings only."],
   quietcanvas: ["Quiet Canvas — rankvault", "Freehand sketch on frosted glass. Export and share with a polished Discord embed. Soft size warnings only. No hard limits."],
   quietnotes: ["Quiet Notes — rankvault", "Local collection of short notes. Publish the whole set as a shared text file with a polished Discord embed. Soft warnings only."],
   quietmosaic: ["Quiet Mosaic — rankvault", "Drop several images. They settle into a soft mosaic of frosted glass tiles. Publish the collection with a polished Discord embed. Soft size warnings only. No hard limits."],
   quietwhisper: ["Quiet Whisper — rankvault", "Write a short private note. Optionally lock it with a passphrase or set a soft expiry. Publishes with a polished Discord embed. Soft warnings only."],
+  quietlantern: ["Quiet Lantern — rankvault", "Drop local files. They hang as soft glowing lanterns with gentle floating motion. Share to the database. Polished Discord embeds. Soft warnings only."],
   quietdrop: ["Quiet Drop — rankvault", "A clean central drop zone for local files. Live previews, shared caption, accent color, spring motion on frosted glass. Soft size warnings only. No hard limits."],
   quietatlas: ["Quiet Atlas — rankvault", "Living map of recent public shares. Search, preview, and open. Soft spring-entry frosted cards. Professional Discord embeds on every link."],
   quietbeacon: ["Quiet Beacon — rankvault", "Still activity view of the latest public shares with open counts. Soft spring-entry frosted cards."],

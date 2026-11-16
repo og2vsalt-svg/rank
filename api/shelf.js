@@ -1,9 +1,9 @@
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"');
 }
 
 const SUPABASE_URL = 'https://tqfocdktvjuwoiyfgesb.supabase.co';
@@ -11,6 +11,8 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const FALLBACK = 'https://og2vsalt-svg.github.io/rank/og.png';
 
 const COPY = {
+  quietframe: ["Quiet Frame — rankvault", "Drop an image. It settles into a soft polaroid frame and publishes with a polished Discord embed. Soft size warnings only. No hard limits."],
+  quietecho: ["Quiet Echo — rankvault", "Multi-file drop with soft expanding circular rings in your accent color. Shared note. Batch-publish to the database. Every link unfurls a polished Discord embed. Soft warnings only."],
   quietcanvas: ["Quiet Canvas — rankvault", "Freehand sketch on frosted glass. Export and share with a polished Discord embed. Soft size warnings only. No hard limits."],
   quietnotes: ["Quiet Notes — rankvault", "Local collection of short notes. Publish the whole set as a shared text file with a polished Discord embed. Soft warnings only."],
   quietdrop: ["Quiet Drop — rankvault", "A clean central drop zone for local files. Live previews, shared caption, accent color, spring motion on frosted glass. Soft size warnings only. No hard limits."],

@@ -1,70 +1,63 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { listPublicShares, type CloudMeta } from '../lib/cloudShare';
+import { listPublicShares, shareUrls, type CloudMeta } from '../lib/cloudShare';
 
 export default function GalleryPage() {
-  const [items, setItems] = useState<CloudMeta[]>([]);
+  const [shares, setShares] = useState<CloudMeta[]>([]);
   const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState('');
 
   useEffect(() => {
-    listPublicShares(32).then((rows) => {
-      setItems(rows);
-      setLoading(false);
-    });
+    listPublicShares(36)
+      .then(setShares)
+      .catch((e) => setErr(e?.message || 'could not load gallery'))
+      .finally(() => setLoading(false));
   }, []);
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <main className="mx-auto max-w-5xl px-5 pb-24 pt-10">
+      <div className="pt-28 pb-20 px-5 max-w-5xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 12 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 100, damping: 18 }}
+          transition={{ type: 'spring', stiffness: 120, damping: 20 }}
         >
-          <p className="text-[12px] uppercase tracking-[0.18em] text-white/40">gallery</p>
-          <h1 className="mt-2 text-[32px] font-semibold tracking-[-0.035em]">recent public shares</h1>
-          <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-white/55">
-            A quiet gallery of files already shared. Open any card to view or download. No new uploads here — this is for browsing what others have left. Human-crafted Apple-style glass and spring motion. Discord embeds on every link. Prior features preserved.
+          <p className="text-[#0A84FF] text-sm font-medium mb-2 tracking-wide">gallery</p>
+          <h1 className="text-4xl font-semibold mb-4 tracking-tight">recent public shares.</h1>
+          <p className="text-neutral-400 text-sm mb-8 max-w-xl leading-relaxed">
+            A living gallery of files shared through rankvault desks. Each link carries a polished Discord embed. Soft size warnings only elsewhere. No boosting. All prior features remain.
           </p>
+          {loading && <p className="text-neutral-500 text-sm">opening gallery…</p>}
+          {err && <p className="text-red-400 text-sm mb-4">{err}</p>}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {shares.map((s) => {
+              const url = shareUrls(s.id).app;
+              const isImg = (s.type || '').startsWith('image/');
+              return (
+                <motion.a
+                  key={s.id}
+                  href={url}
+                  target="_blank"
+                  rel="noreferrer"
+                  whileHover={{ y: -4 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                  className="glass rounded-2xl p-4 block hover:bg-white/[0.07] transition"
+                >
+                  {isImg && s.fileUrl && (
+                    <img src={s.fileUrl} alt="" className="w-full h-32 object-cover rounded-xl mb-3" />
+                  )}
+                  <p className="text-sm font-medium truncate">{s.name || 'untitled'}</p>
+                  <p className="text-xs text-neutral-500 mt-1 truncate">{s.caption || 'shared file'}</p>
+                  <p className="text-[10px] text-neutral-600 mt-2">{s.size ? `${(s.size / 1024 / 1024).toFixed(1)} MB` : ''} · {s.downloads || 0} views</p>
+                </motion.a>
+              );
+            })}
+          </div>
+          {!loading && shares.length === 0 && <p className="text-neutral-500 text-sm mt-8">no public shares yet. drop one from any desk.</p>}
         </motion.div>
-
-        {loading && <p className="mt-10 text-sm text-white/40">gathering…</p>}
-
-        <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {items.map((item, i) => {
-            const isImage = item.type.startsWith('image/');
-            return (
-              <motion.a
-                key={item.id}
-                href={`/s/${item.id}`}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.03, type: 'spring', stiffness: 120, damping: 16 }}
-                className="glass group block overflow-hidden rounded-3xl p-4 transition-all hover:bg-white/[0.06]"
-              >
-                {isImage && item.fileUrl ? (
-                  <div className="mb-3 aspect-[4/3] overflow-hidden rounded-2xl bg-black/20">
-                    <img src={item.fileUrl} alt="" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                  </div>
-                ) : (
-                  <div className="mb-3 flex aspect-[4/3] items-center justify-center rounded-2xl bg-white/[0.03] text-[12px] text-white/30">
-                    {item.type.split('/')[0] || 'file'}
-                  </div>
-                )}
-                <p className="truncate text-[14px] font-medium">{item.name || item.id}</p>
-                <p className="mt-1 truncate text-[12px] text-white/40">{item.caption || 'no note'}</p>
-                <p className="mt-2 text-[11px] text-white/25">{(item.size / 1024).toFixed(0)} kb · {item.author || 'anonymous'}</p>
-              </motion.a>
-            );
-          })}
-        </div>
-
-        {!loading && !items.length && (
-          <p className="mt-10 text-sm text-white/40">nothing public yet. share something from another desk.</p>
-        )}
-      </main>
+      </div>
     </div>
   );
 }

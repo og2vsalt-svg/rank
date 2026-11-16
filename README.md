@@ -5,9 +5,9 @@ Private file hosting and sharing.
 Drop local files into specialized desks. They settle into the database with professional Discord embeds on every link. Soft size warnings only — no hard limits. Sleek Apple-style spring animations and frosted glass.
 
 New desk:
-- **Quiet Prism Desk** — drop local files through a prism of frosted glass. Shared caption, accent color, and polished Discord embeds on every share link.
+- **Quiet Nebula** — drop local files into drifting soft clouds of frosted glass. Shared caption, accent color, and polished Discord embeds on every share link.
 
-All prior desks remain fully intact (Quiet Keepsake, Spectrum, Ripple, Frame, Echo, Canvas, Notes, Orchard, Horizon, Harmony, Lumen, and dozens more). No traces of boosting.
+All prior desks remain fully intact (Quiet Keepsake, Spectrum, Ripple, Frame, Echo, Canvas, Notes, Orchard, Horizon, Harmony, Lumen, Prism, and dozens more). No traces of boosting.
 
 - Local vault in the browser (IndexedDB).
 - Upload local files straight to the database (Supabase + optional Vercel Blob).

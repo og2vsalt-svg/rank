@@ -5,6 +5,7 @@ Private file hosting and sharing.
 Drop local files into specialized desks. They settle into the database with professional Discord embeds on every link. Soft size warnings only — no hard limits. Sleek Apple-style spring animations and frosted glass.
 
 New desks:
+- **Quiet Keepsake** — drop files that matter, give each a short personal note, publish the collection with polished Discord embeds.
 - **Quiet Spectrum** — multi-file drop with soft rainbow spectrum bars that animate as files settle, shared note, polished Discord embeds.
 - **Quiet Ripple** — multi-file drop with soft expanding circular rings in your accent color and a shared note.
 - **Quiet Frame** — drop an image, it settles into a soft polaroid frame, publish with polished Discord embed.
@@ -12,7 +13,7 @@ New desks:
 - **Quiet Canvas** — freehand sketch on frosted glass, export and share.
 - **Quiet Notes** — local collection of short notes, publish the whole set.
 
-Plus Quiet Orchard, Quiet Horizon, Quiet Spiral, Quiet Harmony, and dozens more specialized desks. All prior features remain fully intact. No traces of boosting.
+Plus Quiet Orchard, Quiet Horizon, Quiet Spiral, Quiet Harmony, Quiet Mosaic, Quiet Whisper, Quiet Lantern, and dozens more specialized desks. All prior features remain fully intact. No traces of boosting.
 
 - Local vault in the browser (IndexedDB).
 - Upload local files straight to the database (Supabase + optional Vercel Blob).

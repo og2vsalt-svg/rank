@@ -29,6 +29,7 @@ const COPY = {
   quiethorizon: ["Quiet Horizon — rankvault", "Drop local files. They settle along a quiet glowing horizon of frosted glass."],
   quietpaste: ["Quiet Paste — rankvault", "A still surface for notes and snippets. Publish as a quiet text file."],
   quietqr: ["Quiet QR — rankvault", "Turn any URL or short text into a clean QR code and publish it."],
+  quietconstellation: ["Quiet Constellation — rankvault", "Drop local files. They settle as stars in a quiet constellation of frosted glass with gentle connecting lines and spring motion. Shared caption and accent. Batch-publish to the database. Every link carries a polished Discord embed. Soft size warnings only. No hard limits."],
   home: ['rankvault', 'Private file hosting and sharing. Upload local files, share with professional Discord embeds. Soft size warnings only. Sleek Apple-style interface with many specialized desks.'],
 };
 

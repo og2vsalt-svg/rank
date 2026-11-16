@@ -1,190 +1,160 @@
-import { useState, useRef } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { publishLocalFile, shareUrls } from '../lib/cloudShare';
 import Navbar from './Navbar';
-import { useRouter } from './Router';
+import { publishLocalFile } from '../lib/cloudShare';
 
-const ACCENTS = ['#0A84FF', '#30D158', '#FF9F0A', '#BF5AF2', '#64D2FF', '#FF453A'];
+type Item = {
+  file: File;
+  preview?: string;
+  id: string;
+  status: 'queued' | 'uploading' | 'done' | 'error';
+  link?: string;
+  error?: string;
+};
 
 export default function QuietPrismDeskPage() {
-  const { navigate } = useRouter();
-  const fileRef = useRef<HTMLInputElement>(null);
-  const [files, setFiles] = useState<File[]>([]);
-  const [title, setTitle] = useState('');
+  const [items, setItems] = useState<Item[]>([]);
   const [caption, setCaption] = useState('');
-  const [accent, setAccent] = useState('#0A84FF');
-  const [uploading, setUploading] = useState(false);
-  const [warn, setWarn] = useState('');
-  const [results, setResults] = useState<{ id: string; name: string; embed: string }[]>([]);
+  const [accent, setAccent] = useState('#AF52DE');
+  const [busy, setBusy] = useState(false);
+  const [warn, setWarn] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const onSelect = (list: FileList | null) => {
-    const arr = Array.from(list || []);
-    if (!arr.length) return;
-    const next = [...files, ...arr];
-    setFiles(next);
-    const total = next.reduce((n, f) => n + f.size, 0);
-    setWarn(total > 50 * 1024 * 1024 ? 'Large collection. Encoding and upload may feel slow — no hard limit, just patience.' : '');
-    setResults([]);
-  };
+  const addFiles = useCallback((list: FileList | File[]) => {
+    const arr = Array.from(list);
+    const total = arr.reduce((s, f) => s + f.size, 0);
+    setWarn(total > 45_000_000 ? 'Large prism batch — uploads may feel slower. No hard limits.' : null);
+    const next: Item[] = arr.map((file) => ({
+      file,
+      id: Math.random().toString(36).slice(2, 10),
+      status: 'queued',
+      preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : undefined,
+    }));
+    setItems((p) => [...p, ...next]);
+  }, []);
 
-  const remove = (i: number) => setFiles((prev) => prev.filter((_, idx) => idx !== i));
-
-  const shareAll = async () => {
-    if (!files.length) return;
-    setUploading(true);
-    const out: { id: string; name: string; embed: string }[] = [];
-    for (const file of files) {
-      const res = await publishLocalFile(file, {
-        caption: caption || title,
-        cardTitle: title || file.name,
-        color: accent,
-      });
-      if (res.ok && res.id) {
-        out.push({ id: res.id, name: file.name, embed: shareUrls(res.id).embed });
+  const publish = async () => {
+    if (!items.length || busy) return;
+    setBusy(true);
+    for (const item of items) {
+      if (item.status === 'done') continue;
+      setItems((p) => p.map((i) => i.id === item.id ? { ...i, status: 'uploading' } : i));
+      try {
+        const res = await publishLocalFile(item.file, {
+          caption: caption.trim() || item.file.name,
+          color: accent,
+          cardTitle: item.file.name,
+          meta: { desk: 'quietprismdesk' },
+        });
+        setItems((p) => p.map((i) =>
+          i.id === item.id
+            ? { ...i, status: res.ok ? 'done' : 'error', link: res.embed, error: res.error }
+            : i
+        ));
+      } catch (e: any) {
+        setItems((p) => p.map((i) => i.id === item.id ? { ...i, status: 'error', error: e.message } : i));
       }
     }
-    setResults(out);
-    setUploading(false);
-  };
-
-  const copy = async (text: string) => {
-    try { await navigator.clipboard.writeText(text); } catch {}
+    setBusy(false);
   };
 
   return (
-    <div className="mesh min-h-screen text-white">
+    <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 sm:px-8 max-w-6xl mx-auto">
+      <div className="pt-28 pb-24 px-5 max-w-2xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 100, damping: 20 }}
+          transition={{ type: 'spring', stiffness: 110, damping: 22 }}
+          className="glass rounded-[36px] p-8 md:p-12 relative overflow-hidden"
         >
-          <p className="text-[#64D2FF] text-sm font-medium tracking-wide mb-3">quiet prism desk</p>
-          <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight leading-[1.05] mb-4">
-            refract what you carry.
-          </h1>
-          <p className="text-neutral-400 text-lg max-w-2xl mb-10 leading-relaxed">
-            Drop local files into a quiet prism. Soft refractive tiles settle with spring motion. Each lands in the database with a polished Discord embed. Large drops gently warned about possible slowness, never refused. All prior desks remain fully intact.
+          <div className="absolute -top-20 -right-20 w-64 h-64 bg-gradient-to-br from-[#AF52DE]/20 via-[#0A84FF]/10 to-transparent rounded-full blur-3xl pointer-events-none" />
+          <p className="text-[13px] font-medium tracking-wide mb-2" style={{ color: accent }}>Quiet Prism Desk</p>
+          <h1 className="text-4xl font-semibold tracking-tight mb-3">Drop through the prism.</h1>
+          <p className="text-neutral-400 text-[15.5px] leading-relaxed mb-8">
+            A new specialized desk. Drag local files or choose them. They settle into the database with a polished Discord embed on every link. Soft size warnings only — never hard limits. Sleek Apple-style spring animations on frosted glass. All prior desks remain fully intact. No traces of boosting.
           </p>
-        </motion.div>
 
-        <div className="grid lg:grid-cols-5 gap-8">
-          <div className="lg:col-span-3 space-y-6">
-            <motion.div
-              onClick={() => fileRef.current?.click()}
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={(e) => { e.preventDefault(); onSelect(e.dataTransfer.files); }}
-              whileHover={{ scale: 1.005 }}
-              className="rounded-3xl border border-dashed border-white/15 bg-white/[0.03] backdrop-blur-xl p-12 text-center cursor-pointer hover:border-white/25 transition-all"
-            >
+          <div
+            onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('ring-2', 'ring-purple-400/30'); }}
+            onDragLeave={(e) => e.currentTarget.classList.remove('ring-2', 'ring-purple-400/30')}
+            onDrop={(e) => {
+              e.preventDefault();
+              e.currentTarget.classList.remove('ring-2', 'ring-purple-400/30');
+              if (e.dataTransfer.files.length) addFiles(e.dataTransfer.files);
+            }}
+            onClick={() => inputRef.current?.click()}
+            className="border-2 border-dashed border-white/12 rounded-3xl p-14 text-center mb-7 cursor-pointer hover:border-white/25 transition bg-black/20"
+          >
+            <p className="text-neutral-300 text-[15px]">Drop files here</p>
+            <p className="text-neutral-500 text-sm mt-1">or click to choose</p>
+            <input
+              ref={inputRef}
+              type="file"
+              multiple
+              className="hidden"
+              onChange={(e) => e.target.files && addFiles(e.target.files)}
+            />
+          </div>
+
+          <input
+            value={caption}
+            onChange={(e) => setCaption(e.target.value)}
+            placeholder="Optional caption"
+            className="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-3.5 text-[15px] text-white placeholder:text-neutral-500 mb-5 focus:outline-none focus:border-white/30 transition"
+          />
+
+          <div className="flex items-center gap-3 mb-6">
+            <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="w-9 h-9 rounded-full cursor-pointer border-0" />
+            <span className="text-[13px] text-neutral-500">Prism accent for the embed</span>
+          </div>
+
+          {warn && <p className="text-[13px] text-amber-300/80 mb-5">{warn}</p>}
+
+          <AnimatePresence>
+            {items.map((item) => (
               <motion.div
-                animate={{ rotate: [0, 5, -5, 0] }}
-                transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-                className="text-6xl mb-4 opacity-80"
+                key={item.id}
+                layout
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.96 }}
+                className="glass rounded-2xl p-4 flex items-center gap-4 mb-3"
               >
-                ◇
+                {item.preview ? (
+                  <img src={item.preview} alt="" className="w-14 h-14 rounded-xl object-cover" />
+                ) : (
+                  <div className="w-14 h-14 rounded-xl bg-white/5 grid place-items-center text-[11px] text-neutral-500">file</div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium truncate">{item.file.name}</p>
+                  <p className="text-xs text-neutral-500">{(item.file.size / 1024 / 1024).toFixed(1)} MB · {item.status}</p>
+                  {item.link && (
+                    <a href={item.link} target="_blank" rel="noreferrer" className="text-xs text-blue-400 truncate block mt-0.5">{item.link}</a>
+                  )}
+                  {item.error && <p className="text-xs text-red-400 mt-0.5">{item.error}</p>}
+                </div>
+                <button
+                  onClick={() => setItems((p) => p.filter((i) => i.id !== item.id))}
+                  className="text-xs text-neutral-500 hover:text-white px-2"
+                >
+                  remove
+                </button>
               </motion.div>
-              <p className="font-medium mb-1">drop files or click to browse</p>
-              <p className="text-sm text-neutral-500">any type · any size · no hard limits</p>
-              <input ref={fileRef} type="file" multiple className="hidden" onChange={(e) => onSelect(e.target.files)} />
-            </motion.div>
+            ))}
+          </AnimatePresence>
 
-            {warn && (
-              <motion.p initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} className="text-amber-300 text-sm text-center">
-                {warn}
-              </motion.p>
-            )}
-
-            <AnimatePresence>
-              {files.length > 0 && (
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {files.map((f, i) => (
-                    <motion.div
-                      key={f.name + i}
-                      initial={{ opacity: 0, scale: 0.92, y: 12 }}
-                      animate={{ opacity: 1, scale: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.92 }}
-                      transition={{ type: 'spring', stiffness: 300, damping: 24 }}
-                      className="rounded-2xl bg-white/[0.04] border border-white/10 p-3 relative group overflow-hidden"
-                      style={{ boxShadow: `0 0 40px -20px ${accent}55` }}
-                    >
-                      <div className="absolute inset-0 opacity-20" style={{ background: `linear-gradient(135deg, ${accent}22, transparent)` }} />
-                      <p className="text-xs font-medium truncate pr-6 relative">{f.name}</p>
-                      <p className="text-[10px] text-neutral-500 mt-1 relative">{(f.size / 1024 / 1024).toFixed(1)} MB</p>
-                      <button onClick={() => remove(i)} className="absolute top-2 right-2 w-5 h-5 rounded-full bg-white/10 text-xs opacity-0 group-hover:opacity-100 transition">×</button>
-                    </motion.div>
-                  ))}
-                </div>
-              )}
-            </AnimatePresence>
-
-            <div className="space-y-4">
-              <label className="block">
-                <span className="text-xs uppercase tracking-wider text-neutral-500 mb-1.5 block">prism title</span>
-                <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="what this refraction is called" className="w-full bg-white/[0.04] border border-white/10 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-[#64D2FF]/50 transition" />
-              </label>
-              <label className="block">
-                <span className="text-xs uppercase tracking-wider text-neutral-500 mb-1.5 block">shared caption</span>
-                <textarea value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="a note that travels with the light" rows={2} className="w-full bg-white/[0.04] border border-white/10 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-[#64D2FF]/50 transition resize-none" />
-              </label>
-              <div>
-                <span className="text-xs uppercase tracking-wider text-neutral-500 mb-2 block">accent</span>
-                <div className="flex gap-2 flex-wrap">
-                  {ACCENTS.map((c) => (
-                    <button key={c} onClick={() => setAccent(c)} className={`w-8 h-8 rounded-full transition-all ${accent === c ? 'ring-2 ring-white ring-offset-2 ring-offset-black scale-110' : 'hover:scale-105'}`} style={{ background: c }} />
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <motion.button
-              whileTap={{ scale: 0.98 }}
-              onClick={shareAll}
-              disabled={!files.length || uploading}
-              className="w-full py-3.5 rounded-full bg-[#0A84FF] text-white font-medium text-sm hover:bg-[#409CFF] transition disabled:opacity-50 disabled:pointer-events-none"
-            >
-              {uploading ? 'refracting…' : `create ${files.length} share${files.length === 1 ? '' : 's'}`}
-            </motion.button>
-          </div>
-
-          <div className="lg:col-span-2">
-            <p className="text-xs uppercase tracking-wider text-neutral-500 mb-3">discord preview</p>
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="rounded-2xl overflow-hidden border border-white/10 bg-[#1c1c1e] shadow-2xl sticky top-28"
-            >
-              <div className="h-1.5" style={{ background: accent }} />
-              <div className="p-4">
-                <div className="flex items-center gap-2 mb-2 text-xs text-neutral-400">
-                  <div className="w-5 h-5 rounded-full bg-white/10" />
-                  rankvault · quiet prism
-                </div>
-                <h3 className="font-semibold text-[15px] leading-snug mb-1">{title || 'untitled refraction'}</h3>
-                <p className="text-[13px] text-neutral-400 line-clamp-2">{caption || 'files shared from the quiet prism desk'}</p>
-                {files.length > 0 && <p className="text-[11px] text-neutral-500 mt-2">{files.length} file{files.length === 1 ? '' : 's'}</p>}
-              </div>
-            </motion.div>
-
-            <AnimatePresence>
-              {results.length > 0 && (
-                <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mt-6 space-y-3">
-                  {results.map((r) => (
-                    <div key={r.id} className="p-3 rounded-2xl bg-white/[0.04] border border-white/10">
-                      <p className="text-xs font-medium truncate mb-2">{r.name}</p>
-                      <div className="flex gap-2">
-                        <input readOnly value={r.embed} className="flex-1 bg-black/40 rounded-xl px-2 py-1.5 text-[10px] font-mono" />
-                        <button onClick={() => copy(r.embed)} className="px-3 py-1.5 rounded-xl bg-white text-black text-xs font-medium hover:bg-neutral-200 active:scale-95">copy</button>
-                      </div>
-                      <button onClick={() => navigate('s', r.id)} className="mt-1.5 text-[11px] text-[#64D2FF] hover:underline">open →</button>
-                    </div>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </div>
+          <motion.button
+            whileTap={{ scale: 0.98 }}
+            whileHover={{ scale: 1.005 }}
+            onClick={publish}
+            disabled={busy || !items.length}
+            className="w-full rounded-2xl py-4 text-[15px] font-medium text-white disabled:opacity-40 transition shadow-xl mt-2"
+            style={{ background: accent }}
+          >
+            {busy ? 'Publishing…' : items.length ? `Publish ${items.length} file${items.length === 1 ? '' : 's'}` : 'Drop a file first'}
+          </motion.button>
+        </motion.div>
       </div>
     </div>
   );

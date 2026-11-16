@@ -5,6 +5,7 @@ Private file hosting and sharing.
 Drop local files into specialized desks. They settle into the database with professional Discord embeds on every link. Soft size warnings only — no hard limits. Sleek Apple-style spring animations and frosted glass.
 
 New features:
+- **Quiet Quartz** — drop local files that crystallize into a quiet quartz formation of frosted glass with pulsing spring facets. Shared caption, accent color, and polished Discord embeds on every share link.
 - **Quiet Grove** — drop local files under quiet leaves of frosted glass. Shared caption, accent color, gentle spring leaf motions, and polished Discord embeds on every share link.
 - **Gallery** — a living view of recent public shares across desks. Each link carries a polished Discord embed.
 

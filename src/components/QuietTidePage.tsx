@@ -1,197 +1,157 @@
-import { useState, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useVault } from './VaultContext';
+import Navbar from './Navbar';
 import { publishLocalFile, shareUrls } from '../lib/cloudShare';
 
 export default function QuietTidePage() {
-  const { addFiles } = useVault();
   const [files, setFiles] = useState<File[]>([]);
-  const [caption, setCaption] = useState('');
-  const [color, setColor] = useState('#64D2FF');
-  const [status, setStatus] = useState<'idle' | 'uploading' | 'done' | 'error'>('idle');
-  const [results, setResults] = useState<{ id: string; name: string; embed: string; warn?: string | null }[]>([]);
-  const [error, setError] = useState('');
+  const [accent, setAccent] = useState('#5AC8FA');
+  const [note, setNote] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [warn, setWarn] = useState('');
+  const [links, setLinks] = useState<string[]>([]);
+  const [err, setErr] = useState('');
+  const [phase, setPhase] = useState(0);
 
-  const onDrop = useCallback((list: FileList | File[]) => {
-    const arr = Array.from(list);
-    setFiles((prev) => [...prev, ...arr]);
-    setStatus('idle');
-    setError('');
+  useEffect(() => {
+    const id = setInterval(() => setPhase((p) => p + 0.02), 16);
+    return () => clearInterval(id);
   }, []);
 
-  const onFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) onDrop(e.target.files);
+  const onDrop = (list: FileList | null) => {
+    const next = Array.from(list || []);
+    setFiles((prev) => [...prev, ...next].slice(0, 10));
+    const big = next.some((f) => f.size > 40 * 1024 * 1024);
+    setWarn(big ? 'some waves are heavy. the browser may pause while it settles. no hard limit.' : '');
   };
 
-  const remove = (idx: number) => setFiles((f) => f.filter((_, i) => i !== idx));
+  const remove = (i: number) => setFiles((prev) => prev.filter((_, idx) => idx !== i));
 
-  const shareAll = async () => {
-    if (!files.length) return;
-    setStatus('uploading');
-    setError('');
-    setResults([]);
+  const publish = async () => {
+    if (files.length === 0) {
+      setErr('drop at least one local file');
+      return;
+    }
+    setBusy(true);
+    setErr('');
+    setLinks([]);
+    const made: string[] = [];
     try {
-      await addFiles(files, 'tide');
-      const out: typeof results = [];
       for (const file of files) {
         const res = await publishLocalFile(file, {
-          caption: caption || undefined,
-          color,
+          caption: note.trim() || 'tidal drop',
           cardTitle: file.name,
-          author: 'rankvault',
+          color: accent,
+          meta: { desk: 'tide', note: note.trim() },
         });
-        if (res.ok && res.id) {
-          const urls = shareUrls(res.id);
-          out.push({ id: res.id, name: file.name, embed: urls.embed, warn: res.warn || null });
-        } else {
-          out.push({ id: '', name: file.name, embed: '', warn: res.error || 'failed' });
+        if (!res.ok || !res.id) {
+          setErr(res.error || `failed on ${file.name}`);
+          break;
         }
+        if (res.warn) setWarn(res.warn);
+        made.push(shareUrls(res.id).app);
       }
-      setResults(out);
-      setStatus('done');
+      setLinks(made);
+      if (made[0]) {
+        try { await navigator.clipboard.writeText(made.join('\n')); } catch {}
+      }
     } catch (e: any) {
-      setError(e?.message || 'something went wrong');
-      setStatus('error');
+      setErr(e?.message || 'publish failed');
+    } finally {
+      setBusy(false);
     }
   };
 
-  const large = files.some((f) => f.size > 40 * 1024 * 1024);
-
   return (
-    <div className="min-h-screen bg-[#0b0b0d] text-white pt-24 px-5 pb-20 relative overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none opacity-30">
+    <div className="mesh min-h-screen">
+      <Navbar />
+      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
         <motion.div
-          className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#64D2FF]/20 to-transparent"
-          animate={{ y: [0, -8, 0] }}
-          transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-        />
-      </div>
-      <div className="max-w-2xl mx-auto relative">
-        <motion.h1
-          initial={{ opacity: 0, y: 14 }}
+          initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 100, damping: 20 }}
-          className="text-4xl sm:text-5xl font-semibold tracking-tight mb-3"
+          transition={{ type: 'spring', stiffness: 110, damping: 16 }}
+          className="glass rounded-[32px] p-8"
         >
-          quiet tide
-        </motion.h1>
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.08 }}
-          className="text-neutral-400 mb-10 leading-relaxed"
-        >
-          Drop local files onto a soft rising tide. They wash in as spring-animated frosted glass cards that gently float with the water, then publish to the database with polished Discord embeds. Soft size warnings only. No hard limits.
-        </motion.p>
-
-        <div
-          className="glass rounded-3xl p-10 mb-6 text-center cursor-pointer border border-white/10 hover:border-[#64D2FF]/40 transition"
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={(e) => {
-            e.preventDefault();
-            if (e.dataTransfer.files) onDrop(e.dataTransfer.files);
-          }}
-        >
-          <input type="file" onChange={onFile} className="hidden" id="tide-file" multiple />
-          <label htmlFor="tide-file" className="cursor-pointer block">
-            <div className="text-neutral-500 text-sm mb-1">let files wash in with the tide or click</div>
-            <div className="text-xs text-neutral-600">multi-file · tidal spring cards · discord embeds</div>
+          <p className="text-sm mb-2 tracking-wide" style={{ color: accent }}>tide</p>
+          <h1 className="text-3xl font-semibold mb-3 tracking-tight">files wash in on a quiet tide.</h1>
+          <p className="text-neutral-400 text-sm mb-6 leading-relaxed">
+            Drop several local files. They settle into a soft tidal wave of frosted glass, rising and falling with a gentle spring. Share links unfurl with polished Discord cards. Large files receive only a soft warning of possible slowness. No hard limits. Prior desks stay fully intact.
+          </p>
+          <div className="flex items-center gap-3 mb-4">
+            <label className="text-xs text-neutral-500">accent</label>
+            <input
+              type="color"
+              value={accent}
+              onChange={(e) => setAccent(e.target.value)}
+              className="w-10 h-10 rounded-full border border-white/10 bg-transparent cursor-pointer"
+            />
+            <span className="text-xs text-neutral-400">{accent}</span>
+          </div>
+          <textarea
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="optional note for the tide…"
+            rows={2}
+            className="w-full mb-4 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm placeholder:text-neutral-500 focus:outline-none focus:border-[#5AC8FA]/50 transition resize-none"
+          />
+          <div className="relative h-64 mb-6 overflow-hidden rounded-2xl border border-white/10 bg-black/20">
+            <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none">
+              <path
+                d={`M0,${120 + Math.sin(phase) * 18} Q150,${90 + Math.sin(phase + 1) * 22} 300,${130 + Math.sin(phase + 0.5) * 16} T600,${110 + Math.sin(phase + 1.2) * 20} V256 H0 Z`}
+                fill={accent + '18'}
+                stroke={accent + '40'}
+                strokeWidth="1.5"
+              />
+            </svg>
+            <AnimatePresence>
+              {files.map((f, i) => {
+                const y = 40 + ((i * 28) % 140) + Math.sin(phase + i) * 12;
+                const x = 20 + (i * 48) % 280;
+                return (
+                  <motion.div
+                    key={f.name + i}
+                    initial={{ opacity: 0, y: 40 }}
+                    animate={{ opacity: 1, y, x }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ type: 'spring', stiffness: 70, damping: 12 }}
+                    className="absolute px-3 py-1.5 rounded-full glass text-xs max-w-[130px] truncate"
+                    style={{ borderColor: accent + '55', top: 0, left: 0 }}
+                  >
+                    {f.name}
+                    <button type="button" onClick={() => remove(i)} className="ml-1 text-neutral-500 hover:text-white">×</button>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
+          </div>
+          <label
+            className="block cursor-pointer rounded-2xl border border-dashed border-white/15 hover:border-[#5AC8FA]/40 p-6 text-center transition mb-4"
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => { e.preventDefault(); onDrop(e.dataTransfer.files); }}
+          >
+            <input type="file" multiple className="hidden" onChange={(e) => onDrop(e.target.files)} />
+            <p className="text-sm text-neutral-300">drop or click for local files (up to ten on the tide)</p>
           </label>
-        </div>
-
-        {large && (
-          <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} className="text-amber-400 text-xs mb-5">
-            a deep tide. the browser may feel slow while encoding or uploading. no hard limit.
-          </motion.div>
-        )}
-
-        <AnimatePresence>
-          {files.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="space-y-2 mb-6"
-            >
-              {files.map((f, i) => (
-                <motion.div
-                  key={f.name + i + f.size}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ type: 'spring', stiffness: 120, damping: 18, delay: i * 0.03 }}
-                  className="glass rounded-2xl px-4 py-3 flex items-center justify-between text-sm"
-                  style={{ animation: 'subtle-float 6s ease-in-out infinite' }}
-                >
-                  <span className="truncate pr-4">{f.name}</span>
-                  <button onClick={() => remove(i)} className="text-neutral-500 hover:text-white text-xs">ebb</button>
-                </motion.div>
+          {warn && <p className="text-xs text-amber-300/80 mb-3">{warn}</p>}
+          {err && <p className="text-xs text-red-400 mb-3">{err}</p>}
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            onClick={publish}
+            disabled={busy || files.length === 0}
+            className="w-full py-3 rounded-full text-white text-sm font-medium disabled:opacity-50 transition"
+            style={{ background: accent }}
+          >
+            {busy ? 'settling…' : 'publish tide'}
+          </motion.button>
+          {links.length > 0 && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-5 text-xs text-neutral-400 space-y-1">
+              <p>share links (copied):</p>
+              {links.map((l) => (
+                <div key={l} className="break-all">{l}</div>
               ))}
             </motion.div>
           )}
-        </AnimatePresence>
-
-        <input
-          value={caption}
-          onChange={(e) => setCaption(e.target.value)}
-          placeholder="optional shared caption for Discord cards"
-          className="w-full glass rounded-2xl px-4 py-3 text-sm mb-4 outline-none"
-        />
-
-        <div className="flex items-center gap-3 mb-8">
-          <label className="text-xs text-neutral-400">accent</label>
-          <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="w-10 h-10 rounded-full border-0 cursor-pointer" />
-        </div>
-
-        <motion.button
-          whileTap={{ scale: 0.97 }}
-          onClick={shareAll}
-          disabled={!files.length || status === 'uploading'}
-          className="w-full py-3.5 rounded-full bg-[#64D2FF] text-black font-medium disabled:opacity-50"
-        >
-          {status === 'uploading' ? 'rising…' : `publish ${files.length || ''} with the tide`}
-        </motion.button>
-
-        <AnimatePresence>
-          {status === 'done' && results.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mt-8 space-y-3"
-            >
-              {results.map((r, i) => (
-                <motion.div
-                  key={r.id || i}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.05 }}
-                  className="glass rounded-2xl p-4"
-                >
-                  <p className="text-sm font-medium mb-1 truncate">{r.name}</p>
-                  {r.embed ? (
-                    <>
-                      <p className="text-xs text-neutral-400 break-all mb-2">{r.embed}</p>
-                      {r.warn && <p className="text-amber-400 text-xs mb-1">{r.warn}</p>}
-                      <button
-                        onClick={() => navigator.clipboard.writeText(r.embed)}
-                        className="text-xs text-[#64D2FF]"
-                      >
-                        copy embed link
-                      </button>
-                    </>
-                  ) : (
-                    <p className="text-xs text-red-400">{r.warn}</p>
-                  )}
-                </motion.div>
-              ))}
-            </motion.div>
-          )}
-          {status === 'error' && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 text-red-400 text-sm">
-              {error}
-            </motion.div>
-          )}
-        </AnimatePresence>
+        </motion.div>
       </div>
     </div>
   );

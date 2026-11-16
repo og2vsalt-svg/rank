@@ -5,6 +5,7 @@ Private file hosting and sharing.
 Drop local files into specialized desks. They settle into the database with professional Discord embeds on every link. Soft size warnings only — no hard limits. Sleek Apple-style spring animations and frosted glass.
 
 New desks:
+- **Quiet Ripple** — multi-file drop with soft expanding circular rings in your accent color and a shared note.
 - **Quiet Frame** — drop an image, it settles into a soft polaroid frame, publish with polished Discord embed.
 - **Quiet Echo** — multi-file drop with soft expanding circular rings in your accent color and a shared note.
 - **Quiet Canvas** — freehand sketch on frosted glass, export and share.

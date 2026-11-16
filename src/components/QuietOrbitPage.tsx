@@ -1,116 +1,153 @@
-import { useState, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useVault } from './VaultContext';
-import { useRouter } from './Router';
 import Navbar from './Navbar';
 import { publishLocalFile, shareUrls } from '../lib/cloudShare';
 
 export default function QuietOrbitPage() {
-  const { addFiles } = useVault();
-  const { navigate } = useRouter();
-  const fileRef = useRef<HTMLInputElement>(null);
   const [files, setFiles] = useState<File[]>([]);
+  const [accent, setAccent] = useState('#0A84FF');
+  const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
-  const [links, setLinks] = useState<{name: string; url: string}[]>([]);
-  const [warning, setWarning] = useState('');
-  const [caption, setCaption] = useState('');
+  const [warn, setWarn] = useState('');
+  const [links, setLinks] = useState<string[]>([]);
+  const [err, setErr] = useState('');
+  const [angle, setAngle] = useState(0);
 
-  const handleFiles = (list: FileList | null) => {
-    if (!list) return;
-    const arr = Array.from(list);
-    setFiles(arr);
-    const total = arr.reduce((s, f) => s + f.size, 0);
-    setWarning(total > 50 * 1024 * 1024 ? 'Chunky batch. Sending may feel slow — never refused.' : '');
+  useEffect(() => {
+    const id = setInterval(() => setAngle((a) => a + 0.4), 16);
+    return () => clearInterval(id);
+  }, []);
+
+  const onDrop = (list: FileList | null) => {
+    const next = Array.from(list || []);
+    setFiles((prev) => [...prev, ...next].slice(0, 12));
+    const big = next.some((f) => f.size > 40 * 1024 * 1024);
+    setWarn(big ? 'some orbits are dense. encoding may feel slow. no hard limit.' : '');
   };
 
-  const process = async () => {
-    if (!files.length) return;
-    setBusy(true);
-    setLinks([]);
-    const newLinks: {name: string; url: string}[] = [];
-    try {
-      await addFiles(files, 'orbit');
-      for (const f of files.slice(0, 6)) {
-        const res = await publishLocalFile(f, { caption: caption || f.name, author: 'quiet orbit' });
-        if (res.ok && res.id) {
-          const u = shareUrls(res.id);
-          newLinks.push({ name: f.name, url: u.embed });
-        }
-      }
-      setLinks(newLinks);
-      if (newLinks[0]) try { await navigator.clipboard.writeText(newLinks[0].url); } catch {}
-    } catch (e: any) {
-      setWarning(e?.message || 'issue');
+  const remove = (i: number) => setFiles((prev) => prev.filter((_, idx) => idx !== i));
+
+  const publish = async () => {
+    if (files.length === 0) {
+      setErr('drop at least one local file');
+      return;
     }
-    setBusy(false);
+    setBusy(true);
+    setErr('');
+    setLinks([]);
+    const made: string[] = [];
+    try {
+      for (const file of files) {
+        const res = await publishLocalFile(file, {
+          caption: note.trim() || 'orbital drop',
+          cardTitle: file.name,
+          color: accent,
+          meta: { desk: 'orbit', note: note.trim() },
+        });
+        if (!res.ok || !res.id) {
+          setErr(res.error || `failed on ${file.name}`);
+          break;
+        }
+        if (res.warn) setWarn(res.warn);
+        made.push(shareUrls(res.id).app);
+      }
+      setLinks(made);
+      if (made[0]) {
+        try { await navigator.clipboard.writeText(made.join('\n')); } catch {}
+      }
+    } catch (e: any) {
+      setErr(e?.message || 'publish failed');
+    } finally {
+      setBusy(false);
+    }
   };
+
+  const radius = 120;
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto relative">
-        <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}>
-          <p className="text-[#0A84FF] text-sm font-medium mb-3 tracking-wide">quiet orbit</p>
-          <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-white mb-4">files in gentle orbit.</h1>
-          <p className="text-neutral-400 text-lg mb-8">Drop local files. They circle in a soft spring orbit before settling into the database. Every link unfurls a polished Discord embed. Soft size warnings only.</p>
-        </motion.div>
-
-        <div
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={(e) => { e.preventDefault(); handleFiles(e.dataTransfer.files); }}
-          className="glass rounded-3xl p-10 text-center apple-card mb-5 cursor-pointer relative overflow-hidden"
-          onClick={() => fileRef.current?.click()}
+      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: 'spring', stiffness: 110, damping: 16 }}
+          className="glass rounded-[32px] p-8"
         >
-          <input ref={fileRef} type="file" multiple className="hidden" onChange={(e) => handleFiles(e.target.files)} />
-          <div className="text-5xl mb-3 opacity-60">⚪</div>
-          <p className="text-white font-medium">Drop files into orbit</p>
-          <p className="text-sm text-neutral-500 mt-1">A handful get instant share cards</p>
-          {files.length > 0 && <p className="mt-3 text-sm text-[#0A84FF]">{files.length} in orbit</p>}
-
-          {/* Orbital indicators */}
-          {files.slice(0, 4).map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-3 h-3 rounded-full bg-[#0A84FF]/60"
-              style={{ left: '50%', top: '50%' }}
-              animate={{
-                x: Math.cos((i / files.length) * Math.PI * 2) * 80,
-                y: Math.sin((i / files.length) * Math.PI * 2) * 80,
-              }}
-              transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+          <p className="text-sm mb-2 tracking-wide" style={{ color: accent }}>orbit</p>
+          <h1 className="text-3xl font-semibold mb-3 tracking-tight">files in quiet orbit.</h1>
+          <p className="text-neutral-400 text-sm mb-6 leading-relaxed">
+            Drop several local files. They settle into a soft orbital path around a quiet center, tinted with your accent. Share links unfurl with polished Discord cards. Spring motion, frosted glass. Large files receive only a gentle warning of slowness. No hard limits. Prior desks remain intact.
+          </p>
+          <div className="flex items-center gap-3 mb-4">
+            <label className="text-xs text-neutral-500">accent</label>
+            <input
+              type="color"
+              value={accent}
+              onChange={(e) => setAccent(e.target.value)}
+              className="w-10 h-10 rounded-full border border-white/10 bg-transparent cursor-pointer"
             />
-          ))}
-        </div>
-
-        <input
-          value={caption}
-          onChange={(e) => setCaption(e.target.value)}
-          placeholder="shared caption (optional)"
-          className="w-full mb-4 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm outline-none focus:border-[#0A84FF]/50"
-        />
-
-        {warning && <p className="text-amber-300 text-sm mb-4 text-center">{warning}</p>}
-
-        <div className="flex justify-center gap-3 mb-8">
-          <button onClick={process} disabled={!files.length || busy} className="px-6 py-3 rounded-full bg-white text-black font-medium disabled:opacity-40 active:scale-95 transition">
+            <span className="text-xs text-neutral-400">{accent}</span>
+          </div>
+          <textarea
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="optional note for the orbit…"
+            rows={2}
+            className="w-full mb-4 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm placeholder:text-neutral-500 focus:outline-none focus:border-[#0A84FF]/50 transition resize-none"
+          />
+          <div className="relative h-72 mb-6 flex items-center justify-center">
+            <div className="absolute w-16 h-16 rounded-full bg-white/10 border border-white/20" style={{ boxShadow: `0 0 40px ${accent}40` }} />
+            <AnimatePresence>
+              {files.map((f, i) => {
+                const a = ((angle + (i * 360) / Math.max(files.length, 1)) * Math.PI) / 180;
+                const x = Math.cos(a) * radius;
+                const y = Math.sin(a) * radius;
+                return (
+                  <motion.div
+                    key={f.name + i}
+                    initial={{ opacity: 0, scale: 0.6 }}
+                    animate={{ opacity: 1, scale: 1, x, y }}
+                    exit={{ opacity: 0, scale: 0 }}
+                    transition={{ type: 'spring', stiffness: 80, damping: 14 }}
+                    className="absolute px-3 py-1.5 rounded-full glass text-xs max-w-[140px] truncate"
+                    style={{ borderColor: accent + '55' }}
+                  >
+                    {f.name}
+                    <button type="button" onClick={() => remove(i)} className="ml-1 text-neutral-500 hover:text-white">×</button>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
+          </div>
+          <label
+            className="block cursor-pointer rounded-2xl border border-dashed border-white/15 hover:border-[#0A84FF]/40 p-6 text-center transition mb-4"
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => { e.preventDefault(); onDrop(e.dataTransfer.files); }}
+          >
+            <input type="file" multiple className="hidden" onChange={(e) => onDrop(e.target.files)} />
+            <p className="text-sm text-neutral-300">drop or click for local files (up to twelve orbits)</p>
+          </label>
+          {warn && <p className="text-xs text-amber-300/80 mb-3">{warn}</p>}
+          {err && <p className="text-xs text-red-400 mb-3">{err}</p>}
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            onClick={publish}
+            disabled={busy || files.length === 0}
+            className="w-full py-3 rounded-full text-white text-sm font-medium disabled:opacity-50 transition"
+            style={{ background: accent }}
+          >
             {busy ? 'orbiting…' : 'publish orbit'}
-          </button>
-          <button onClick={() => navigate('vault')} className="px-6 py-3 rounded-full glass">vault</button>
-        </div>
-
-        <AnimatePresence>
+          </motion.button>
           {links.length > 0 && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-5 text-xs text-neutral-400 space-y-1">
+              <p>share links (copied):</p>
               {links.map((l) => (
-                <div key={l.url} className="glass rounded-2xl p-4">
-                  <p className="text-sm text-white truncate mb-1">{l.name}</p>
-                  <code className="text-xs text-[#0A84FF] break-all">{l.url}</code>
-                </div>
+                <div key={l} className="break-all">{l}</div>
               ))}
-              <p className="text-xs text-neutral-500 text-center">first link copied</p>
             </motion.div>
           )}
-        </AnimatePresence>
+        </motion.div>
       </div>
     </div>
   );

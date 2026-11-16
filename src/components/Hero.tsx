@@ -30,9 +30,10 @@ export default function Hero() {
           transition={{ type: 'spring', stiffness: 80, damping: 20, delay: 0.1 }}
           className="text-neutral-400 text-lg leading-relaxed max-w-lg mb-10 mx-auto"
         >
-          Quiet Harmony for pairing files with notes. Quiet Binder for collecting files with notes. Quiet Lumen for warm glowing multi-file drops. Quiet Folio for refined portfolios. Quiet Stream for living public shares. Quiet Drop, Quiet Flow, Quiet Codex, Quiet Gallery, Quiet Harbor, Quiet Prism, Quiet Studio, and dozens more specialized desks. Professional Discord embeds on every link. Soft size warnings only. No hard limits. Sleek Apple-style spring animations. All prior features remain fully intact. No traces of boosting.
+          Quiet Horizon for settling files along a warm horizon glow. Quiet Harmony for pairing files with notes. Quiet Binder for collecting files with notes. Quiet Lumen for warm glowing multi-file drops. Quiet Folio for refined portfolios. Quiet Stream for living public shares. Quiet Drop, Quiet Flow, Quiet Codex, Quiet Gallery, Quiet Harbor, Quiet Prism, Quiet Studio, and dozens more specialized desks. Professional Discord embeds on every link. Soft size warnings only. No hard limits. Sleek Apple-style spring animations. All prior features remain fully intact. No traces of boosting.
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center">
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quiethorizon')} className="px-6 py-2.5 rounded-full bg-[#FF9F0A] text-black text-sm font-medium hover:bg-[#ffb340] transition">quiet horizon</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietharmony')} className="px-6 py-2.5 rounded-full bg-[#AF52DE] text-white text-sm font-medium hover:bg-[#c084fc] transition">quiet harmony</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietbinder')} className="px-6 py-2.5 rounded-full bg-[#5AC8FA] text-black text-sm font-medium hover:bg-[#7ad4ff] transition">quiet binder</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietlumen')} className="px-6 py-2.5 rounded-full bg-[#FF9F0A] text-black text-sm font-medium hover:bg-[#ffb340] transition">quiet lumen</motion.button>
@@ -44,7 +45,7 @@ export default function Hero() {
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietgallery')} className="px-6 py-2.5 rounded-full bg-[#5AC8FA] text-black text-sm font-medium hover:bg-[#7ad4ff] transition">quiet gallery</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietharbor')} className="px-6 py-2.5 rounded-full bg-[#A78BFA] text-black text-sm font-medium hover:bg-[#c4b5fd] transition">quiet harbor</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietprism')} className="px-6 py-2.5 rounded-full bg-[#34D399] text-black text-sm font-medium hover:bg-[#6ee7b7] transition">quiet prism</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietstudio')} className="px-6 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-100 transition">quiet studio</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietstudio')} className="px-6 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-[#f5f5f5] transition">quiet studio</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('vault')} className="px-6 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition">open vault</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('directory')} className="px-6 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition">browse desks</motion.button>
         </div>

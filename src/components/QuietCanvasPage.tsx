@@ -1,164 +1,153 @@
-import { useState, useRef, useMemo } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
 import { publishLocalFile, shareUrls } from '../lib/cloudShare';
 
 export default function QuietCanvasPage() {
-  const [files, setFiles] = useState<File[]>([]);
-  const [note, setNote] = useState('');
-  const [color, setColor] = useState('#FB7185');
-  const [uploading, setUploading] = useState(false);
-  const [results, setResults] = useState<any[]>([]);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [drawing, setDrawing] = useState(false);
+  const [color, setColor] = useState('#0A84FF');
+  const [size, setSize] = useState(3);
+  const [caption, setCaption] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [link, setLink] = useState<string | null>(null);
   const [warn, setWarn] = useState<string | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
 
-  const strokes = useMemo(() =>
-    Array.from({ length: 6 }, (_, i) => ({
-      id: i,
-      rotate: -12 + i * 4,
-      y: 10 + (i % 3) * 25,
-      opacity: 0.1 + (i % 2) * 0.08,
-      duration: 5 + i * 0.6,
-      delay: i * 0.25,
-    })),
-  []);
+  const getCtx = () => canvasRef.current?.getContext('2d');
 
-  const onDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    const list = Array.from(e.dataTransfer.files);
-    if (list.some(f => f.size > 40 * 1024 * 1024)) {
-      setWarn('large drop. the browser may feel slow while it sends. no hard limit.');
-    } else setWarn(null);
-    setFiles(prev => [...prev, ...list]);
+  useEffect(() => {
+    const c = canvasRef.current;
+    if (!c) return;
+    const resize = () => {
+      const rect = c.getBoundingClientRect();
+      c.width = rect.width * window.devicePixelRatio;
+      c.height = rect.height * window.devicePixelRatio;
+      const ctx = getCtx();
+      if (ctx) {
+        ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+      }
+    };
+    resize();
+    window.addEventListener('resize', resize);
+    return () => window.removeEventListener('resize', resize);
+  }, []);
+
+  const start = (e: React.PointerEvent) => {
+    setDrawing(true);
+    const ctx = getCtx();
+    if (!ctx || !canvasRef.current) return;
+    const rect = canvasRef.current.getBoundingClientRect();
+    ctx.beginPath();
+    ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
   };
 
-  const onSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const list = Array.from(e.target.files || []);
-    if (list.some(f => f.size > 40 * 1024 * 1024)) {
-      setWarn('large drop. the browser may feel slow while it sends. no hard limit.');
-    } else setWarn(null);
-    setFiles(prev => [...prev, ...list]);
+  const move = (e: React.PointerEvent) => {
+    if (!drawing) return;
+    const ctx = getCtx();
+    if (!ctx || !canvasRef.current) return;
+    const rect = canvasRef.current.getBoundingClientRect();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = size;
+    ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+    ctx.stroke();
   };
 
-  const share = async () => {
-    if (!files.length) return;
-    setUploading(true);
-    const out: any[] = [];
-    for (const file of files) {
-      const res = await publishLocalFile(file, { caption: note, color, meta: { desk: 'quietcanvas' } });
-      if (res.ok) out.push({ ...res, name: file.name });
+  const end = () => setDrawing(false);
+
+  const clear = () => {
+    const c = canvasRef.current;
+    const ctx = getCtx();
+    if (c && ctx) ctx.clearRect(0, 0, c.width, c.height);
+  };
+
+  const publish = useCallback(async () => {
+    const c = canvasRef.current;
+    if (!c) return;
+    setBusy(true);
+    setWarn(null);
+    try {
+      const blob = await new Promise<Blob | null>((res) => c.toBlob(res, 'image/png'));
+      if (!blob) throw new Error('could not export canvas');
+      if (blob.size > 40_000_000) setWarn('Large canvas export. Upload may feel slower.');
+      const file = new File([blob], 'quiet-canvas.png', { type: 'image/png' });
+      const res = await publishLocalFile(file, {
+        caption: caption.trim() || 'quiet canvas',
+        color,
+        cardTitle: 'Quiet Canvas',
+        meta: { desk: 'quietcanvas', kind: 'drawing' },
+      });
+      if (res.ok && res.id) {
+        const urls = shareUrls(res.id);
+        setLink(urls?.embed || null);
+      }
+    } catch (e: any) {
+      setWarn(e.message || 'publish failed');
     }
-    setResults(out);
-    setFiles([]);
-    setUploading(false);
-  };
+    setBusy(false);
+  }, [caption, color]);
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <main className="max-w-3xl mx-auto px-5 pt-28 pb-20">
+      <div className="pt-28 pb-20 px-6 max-w-4xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 90, damping: 18 }}
-          className="glass rounded-[32px] p-8 mb-8 relative overflow-hidden"
+          transition={{ type: 'spring', stiffness: 100, damping: 20 }}
+          className="glass rounded-[32px] p-6 md:p-10 shadow-2xl"
         >
-          <div className="absolute inset-0 pointer-events-none">
-            {strokes.map((s) => (
-              <motion.div
-                key={s.id}
-                className="absolute left-[5%] right-[5%] h-1.5 rounded-full"
-                style={{
-                  top: `${s.y}%`,
-                  background: `linear-gradient(90deg, transparent, ${color}, transparent)`,
-                  opacity: s.opacity,
-                  transform: `rotate(${s.rotate}deg)`,
-                }}
-                animate={{
-                  scaleX: [0.7, 1.05, 0.7],
-                  opacity: [s.opacity * 0.5, s.opacity, s.opacity * 0.5],
-                  x: ['-4%', '4%', '-4%'],
-                }}
-                transition={{
-                  duration: s.duration,
-                  delay: s.delay,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                }}
-              />
-            ))}
+          <h1 className="text-3xl font-semibold tracking-tight text-white mb-2">Quiet Canvas</h1>
+          <p className="text-neutral-400 text-sm mb-6">Sketch freely on frosted glass. Export and share with a polished Discord embed. Soft warnings only.</p>
+
+          <div className="relative rounded-3xl overflow-hidden border border-white/10 bg-black/20 aspect-[16/9] mb-6">
+            <canvas
+              ref={canvasRef}
+              className="w-full h-full touch-none cursor-crosshair"
+              onPointerDown={start}
+              onPointerMove={move}
+              onPointerUp={end}
+              onPointerLeave={end}
+            />
           </div>
-          <p className="text-xs uppercase tracking-[0.2em] text-[#FB7185] mb-2 relative">quietcanvas</p>
-          <h1 className="text-3xl font-semibold tracking-tight mb-3 relative">quiet painted strokes</h1>
-          <p className="text-sm text-neutral-400 leading-relaxed relative">
-            Drop files onto a soft painted canvas. Gentle brush strokes of light that breathe, drift, and settle in your color, like quiet marks left on still paper. Spring motion, glass surfaces. Each file lands in storage and the public_shares table. Large files warned, never refused. Professional Discord embeds on every share link. Prior features preserved.
-          </p>
+
+          <div className="flex flex-wrap gap-4 items-center mb-6">
+            <label className="flex items-center gap-2 text-sm text-neutral-300">
+              color
+              <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="w-10 h-8 rounded-lg bg-transparent border-0" />
+            </label>
+            <label className="flex items-center gap-2 text-sm text-neutral-300">
+              size
+              <input type="range" min="1" max="20" value={size} onChange={(e) => setSize(Number(e.target.value))} className="accent-blue-500" />
+            </label>
+            <button onClick={clear} className="px-4 py-2 rounded-full text-sm bg-white/10 hover:bg-white/20 text-white transition">clear</button>
+          </div>
+
+          <input
+            value={caption}
+            onChange={(e) => setCaption(e.target.value)}
+            placeholder="quiet caption (optional)"
+            className="w-full mb-4 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-neutral-500 focus:outline-none focus:border-white/30"
+          />
+
+          <div className="flex items-center gap-4">
+            <button
+              onClick={publish}
+              disabled={busy}
+              className="px-6 py-3 rounded-full bg-white text-black font-medium text-sm hover:bg-neutral-100 disabled:opacity-50 transition"
+            >
+              {busy ? 'publishing…' : 'publish canvas'}
+            </button>
+            {link && (
+              <a href={link} target="_blank" rel="noreferrer" className="text-sm text-blue-400 hover:underline">
+                share link
+              </a>
+            )}
+          </div>
+          {warn && <p className="mt-3 text-xs text-amber-400">{warn}</p>}
         </motion.div>
-
-        <div
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={onDrop}
-          onClick={() => inputRef.current?.click()}
-          className="glass rounded-[28px] p-12 text-center cursor-pointer hover:bg-white/[0.04] transition-all duration-500 mb-6"
-        >
-          <p className="text-neutral-300 text-sm">drop files or click to choose</p>
-          <p className="text-xs text-neutral-500 mt-1">multiple welcome — no hard limits</p>
-          <input ref={inputRef} type="file" multiple className="hidden" onChange={onSelect} />
-        </div>
-
-        {warn && <p className="text-xs text-amber-400/80 mb-4 text-center">{warn}</p>}
-
-        {files.length > 0 && (
-          <div className="space-y-2 mb-6">
-            {files.map((f, i) => (
-              <div key={i} className="glass rounded-2xl px-4 py-3 text-sm flex justify-between">
-                <span className="truncate">{f.name}</span>
-                <span className="text-neutral-500 text-xs">{(f.size / 1024 / 1024).toFixed(1)} MB</span>
-              </div>
-            ))}
-          </div>
-        )}
-
-        <div className="flex flex-col sm:flex-row gap-3 mb-6">
-          <input
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            placeholder="shared note…"
-            className="glass flex-1 rounded-2xl px-4 py-3 text-sm outline-none"
-          />
-          <input
-            type="color"
-            value={color}
-            onChange={(e) => setColor(e.target.value)}
-            className="w-14 h-12 rounded-2xl cursor-pointer bg-transparent border-0"
-          />
-        </div>
-
-        <button
-          onClick={share}
-          disabled={!files.length || uploading}
-          className="w-full glass rounded-2xl py-3.5 text-sm font-medium disabled:opacity-40 hover:bg-white/10 transition"
-        >
-          {uploading ? 'settling into the canvas…' : 'share quietly'}
-        </button>
-
-        {results.length > 0 && (
-          <div className="mt-8 space-y-3">
-            {results.map((r) => (
-              <motion.a
-                key={r.id}
-                href={shareUrls(r.id).app}
-                initial={{ opacity: 0, scale: 0.98 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="glass rounded-2xl p-4 block hover:bg-white/[0.06] transition"
-              >
-                <p className="text-sm font-medium">{r.name}</p>
-                <p className="text-xs text-neutral-500 mt-1 truncate">{r.embed}</p>
-              </motion.a>
-            ))}
-          </div>
-        )}
-      </main>
+      </div>
     </div>
   );
 }

@@ -30,9 +30,10 @@ export default function Hero() {
           transition={{ type: 'spring', stiffness: 80, damping: 20, delay: 0.1 }}
           className="text-neutral-400 text-lg leading-relaxed max-w-lg mb-10 mx-auto"
         >
-          Quiet Spectrum for multi-file drops with soft rainbow spectrum bars. Quiet Ripple for expanding circular rings. Quiet Horizon for warm horizon glow. Quiet Harmony for pairing files with notes. Quiet Orchard, Quiet Binder, Quiet Lumen, Quiet Folio, Quiet Stream, and dozens more specialized desks. Professional Discord embeds on every link. Soft size warnings only. No hard limits. Sleek Apple-style spring animations. All prior features remain fully intact. No traces of boosting.
+          Quiet Keepsake for files that matter with personal notes. Quiet Spectrum for multi-file drops with soft rainbow spectrum bars. Quiet Ripple for expanding circular rings. Quiet Horizon for warm horizon glow. Quiet Harmony for pairing files with notes. Quiet Orchard, Quiet Binder, Quiet Lumen, Quiet Folio, Quiet Stream, and dozens more specialized desks. Professional Discord embeds on every link. Soft size warnings only. No hard limits. Sleek Apple-style spring animations. All prior features remain fully intact. No traces of boosting.
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center">
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietkeepsake')} className="px-6 py-2.5 rounded-full bg-[#F5F5F7] text-black text-sm font-medium hover:bg-white transition">quiet keepsake</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietspectrum')} className="px-6 py-2.5 rounded-full bg-gradient-to-r from-[#FF3B30] via-[#0A84FF] to-[#AF52DE] text-white text-sm font-medium hover:opacity-90 transition">quiet spectrum</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietripple')} className="px-6 py-2.5 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#3a9aff] transition">quiet ripple</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quiethorizon')} className="px-6 py-2.5 rounded-full bg-[#FF9F0A] text-black text-sm font-medium hover:bg-[#ffb340] transition">quiet horizon</motion.button>

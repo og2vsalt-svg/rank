@@ -30,14 +30,15 @@ export default function Hero() {
           transition={{ type: 'spring', stiffness: 80, damping: 20, delay: 0.1 }}
           className="text-neutral-400 text-lg leading-relaxed max-w-lg mb-10 mx-auto"
         >
-          Core for the cleanest drop. Quiet Tide, Orbit, Nebula, Keepsake, Spectrum, Ripple, Horizon, and dozens of specialized desks remain. Every share link carries a polished Discord embed. Soft size warnings only — no hard limits. Sleek Apple-style spring animations on frosted glass.
+          Core for the cleanest drop. Quiet Grove, Inlet, Tide, Orbit, Nebula, Keepsake, Spectrum, Ripple, Horizon, Gallery, and dozens of specialized desks remain. Every share link carries a polished Discord embed. Soft size warnings only — no hard limits. Sleek Apple-style spring animations on frosted glass.
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center">
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('core')} className="px-7 py-3 rounded-full bg-[#F5F5F7] text-black text-sm font-medium hover:bg-white transition shadow-lg">drop a file</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietgrove')} className="px-6 py-2.5 rounded-full bg-[#34C759]/80 text-white text-sm font-medium hover:bg-[#34C759] transition">quiet grove</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('gallery')} className="px-6 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition">gallery</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quiettide')} className="px-6 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition">quiet tide</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietorbit')} className="px-6 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition">quiet orbit</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietnebula')} className="px-6 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition">quiet nebula</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietkeepsake')} className="px-6 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition">quiet keepsake</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietspectrum')} className="px-6 py-2.5 rounded-full bg-gradient-to-r from-[#FF3B30] via-[#0A84FF] to-[#AF52DE] text-white text-sm font-medium hover:opacity-90 transition">quiet spectrum</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('directory')} className="px-6 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition">browse desks</motion.button>
         </div>

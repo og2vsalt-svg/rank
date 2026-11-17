@@ -10,6 +10,9 @@ Central surfaces:
 - **Nexus** — centered file hosting. Drop files, publish to the database, copy a Discord-ready link. Recent public shares live here.
 - **Quiet Solace** — calm drop with optional soft expiration. Frosted glass, gentle springs.
 - **Quiet Horizon** — the far edge of recent public shares, plus new drops.
+- **Quiet Solstice** — drop under a turning sun with soft radial motion and chosen warmth.
+- **Quiet Meridian** — precise still center with live time. Links copied for Discord.
+- **Quiet Equinox** — where files find balance in dual columns of frosted glass.
 - **Canvas Forge** — freehand sketching canvas. Draw, export as PNG, share with Discord embed.
 - **Weave** — multi-file drop where each file gets its own caption and accent before independent publish.
 - **Audio Desk** — record a voice memo in the browser and publish it as a file with a polished Discord embed.
@@ -22,7 +25,7 @@ No traces of boosting.
 
 - Local vault in the browser (IndexedDB).
 - Upload local files straight to the database (Supabase + optional Vercel Blob).
-- Professional Discord embeds on every share link.
+- Professional Discord embeds on every share link (improved HTML escaping).
 - Soft size warnings only. No hard file limits.
 
 Deployed on Vercel. Source under `og2vsalt-svg/rank`.

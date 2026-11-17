@@ -8,6 +8,8 @@ const primary: NavItem[] = [
   { to: 'core', label: 'core' },
   { to: 'nexus', label: 'nexus' },
   { to: 'studio', label: 'studio' },
+  { to: 'audiodesk', label: 'audio' },
+  { to: 'qrdesk', label: 'qr' },
   { to: 'quietsolace', label: 'solace' },
   { to: 'quiethorizon', label: 'horizon' },
   { to: 'quietharbor', label: 'harbor' },

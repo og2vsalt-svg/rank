@@ -1,9 +1,9 @@
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/\"/g, '"');
 }
 
 const SUPABASE_URL = 'https://tqfocdktvjuwoiyfgesb.supabase.co';
@@ -30,6 +30,8 @@ const COPY = {
   quietpaste: ["Quiet Paste — rankvault", "A still surface for notes and snippets. Publish as a quiet text file."],
   quietqr: ["Quiet QR — rankvault", "Turn any URL or short text into a clean QR code and publish it."],
   quietconstellation: ["Quiet Constellation — rankvault", "Drop local files. They settle as stars in a quiet constellation of frosted glass with gentle connecting lines and spring motion. Shared caption and accent. Batch-publish to the database. Every link carries a polished Discord embed. Soft size warnings only. No hard limits."],
+  canvasforge: ["Canvas Forge — rankvault", "Freehand sketch on a quiet dark canvas. Export as PNG and publish to the database. Every share link carries a professional Discord embed. Soft size warnings only. No hard limits. Apple spring motion on frosted glass."],
+  weave: ["Weave — rankvault", "Drop several local files. Give each its own caption and accent color. They publish independently with polished Discord embeds on every link. Soft warnings only. No hard limits."],
   home: ['rankvault', 'Private file hosting and sharing. Upload local files, share with professional Discord embeds. Soft size warnings only. Sleek Apple-style interface with many specialized desks.'],
 };
 

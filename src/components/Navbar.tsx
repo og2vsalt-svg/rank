@@ -5,19 +5,11 @@ import { useRouter, type Route } from './Router';
 type NavItem = { to: Route; label: string };
 
 const primary: NavItem[] = [
+  { to: 'core', label: 'core' },
+  { to: 'nexus', label: 'nexus' },
+  { to: 'quietharbor', label: 'harbor' },
   { to: 'quietember', label: 'ember' },
-  { to: 'quietpulse', label: 'pulse' },
-  { to: 'quietquartz', label: 'quartz' },
-  { to: 'quiettide', label: 'tide' },
-  { to: 'quietnebula', label: 'nebula' },
-  { to: 'quietkeepsake', label: 'keepsake' },
-  { to: 'quietspectrum', label: 'spectrum' },
-  { to: 'quietframe', label: 'frame' },
-  { to: 'quietecho', label: 'echo' },
-  { to: 'quietcanvas', label: 'canvas' },
-  { to: 'quietnotes', label: 'notes' },
-  { to: 'quietprism', label: 'prism' },
-  { to: 'quietlumen', label: 'lumen' },
+  { to: 'gallery', label: 'gallery' },
   { to: 'vault', label: 'vault' },
   { to: 'directory', label: 'desks' },
   { to: 'directshare', label: 'share' },

@@ -4,6 +4,8 @@ import { useRouter } from './Router';
 import Navbar from './Navbar';
 
 const desks = [
+  { to: "audiodesk", label: "audio desk", desc: "record a voice memo in the browser. it settles into the database as a file with a polished Discord embed on every link. soft size warnings only. no hard limits. apple-style springs on frosted glass." },
+  { to: "qrdesk", label: "qr desk", desc: "turn text or a link into a visual stamp. publish the image to the database with a polished Discord embed. soft warnings only. no hard limits. apple-style motion." },
   { to: "quietsolace", label: "quiet solace", desc: "drop local files into a calm harbor of frosted glass with optional soft expiration. shared caption and accent. settles into the database with polished Discord embeds on every link. soft size warnings only. no hard limits. gentle spring motion. all prior desks remain fully intact." },
   { to: "quiethorizon", label: "quiet horizon", desc: "drop local files onto a quiet horizon of frosted glass. watch recent public shares drift by. shared caption and accent. publishes to the database with polished Discord embeds on every link. soft size warnings only. no hard limits. apple-style springs." },
   { to: "quietharbor", label: "quiet harbor", desc: "drop local files. they moor at quiet docks of frosted glass, gently bobbing on soft waves with spring motion. shared caption, accent color. batch-publish to the database. every link carries a polished Discord embed. soft size warnings only. no hard limits. apple-style springs. all prior desks remain fully intact." },

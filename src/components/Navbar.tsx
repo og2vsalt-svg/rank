@@ -7,20 +7,15 @@ type NavItem = { to: Route; label: string };
 const primary: NavItem[] = [
   { to: 'core', label: 'core' },
   { to: 'nexus', label: 'nexus' },
+  { to: 'quietstream', label: 'stream' },
+  { to: 'quietforge', label: 'forge' },
   { to: 'studio', label: 'studio' },
   { to: 'quietcollage', label: 'collage' },
-  { to: 'quietaperture', label: 'aperture' },
   { to: 'audiodesk', label: 'audio' },
   { to: 'qrdesk', label: 'qr' },
-  { to: 'quietpin', label: 'pin' },
-  { to: 'quietsolace', label: 'solace' },
-  { to: 'quiethorizon', label: 'horizon' },
-  { to: 'quietsolstice', label: 'solstice' },
-  { to: 'quietharbor', label: 'harbor' },
   { to: 'gallery', label: 'gallery' },
   { to: 'vault', label: 'vault' },
   { to: 'directory', label: 'desks' },
-  { to: 'directshare', label: 'share' },
 ];
 
 export default function Navbar() {

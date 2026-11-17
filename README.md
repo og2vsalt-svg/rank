@@ -6,6 +6,7 @@ Drop local files into specialized desks. They settle into the database with prof
 
 Central surfaces:
 - **Core** — the quiet center. Drag local files or choose them. They settle into the database with a polished Discord embed on every link. Soft size warnings only — never hard limits. Apple-style spring motion on frosted glass.
+- **Quiet Void** — a still center for local files. Drop them into the void. Soft motion, polished Discord embeds. Soft size warnings only. No hard limits.
 - **Quiet Mosaic** — drop several images. They compose into a quiet mosaic grid with spring animations. Each publishes independently to the database with a polished Discord embed. Soft size warnings only. No hard limits.
 - **Quiet Chronicle** — place local files in time. Stamp each with a date and a quiet note. They settle into the database as dated journal entries. Every share link carries a polished Discord embed. Soft size warnings only. No hard limits.
 - **Quiet Sequence** — drop local files in order. Reorder into a filmstrip, give each a quiet caption. They settle into the database as an ordered sequence. Every share link carries a polished Discord embed. Soft size warnings only. No hard limits.
@@ -34,7 +35,7 @@ Central surfaces:
 - **Quiet Pin** — pin a local file to a place name or coordinates. Settles into the database with a polished Discord embed. Soft size warnings only. No hard limits.
 
 Specialized desks (all prior remain fully intact):
-- **Quiet Harbor**, **Quiet Lighthouse**, **Quiet Ember**, **Quiet Constellation**, **Quiet Aurora**, **Quiet Pulse**, **Quiet Quartz**, **Quiet Grove**, Gallery, Quiet Inlet, Quiet Tide, Quiet Orbit, Quiet Nebula, Keepsake, Spectrum, Ripple, Frame, Echo, Canvas, Notes, Orchard, Horizon, Harmony, Lumen, Prism, Harbor, Cove, Lantern, Cascade, and dozens more.
+- **Quiet Harbor**, **Quiet Lighthouse**, **Quiet Ember**, **Quiet Constellation**, **Quiet Aurora**, **Quiet Pulse**, **Quiet Quartz**, **Quiet Grove**, Gallery, Quiet Inlet, Quiet Tide, Quiet Orbit, Quiet Nebula, Keepsake, Spectrum, Ripple, Frame, Echo, Canvas, Notes, Orchard, Horizon, Harmony, Lumen, Prism, Harbor, Cove, Lantern, Cascade, Quiet Void, and dozens more.
 
 No traces of boosting.
 

@@ -1,174 +1,165 @@
-import { useEffect, useMemo, useState } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './Navbar';
-import { listPublicShares, publishLocalFile, shareUrls, type CloudMeta } from '../lib/cloudShare';
+import { publishLocalFile } from '../lib/cloudShare';
 
 export default function QuietMosaicPage() {
-  const [shares, setShares] = useState<CloudMeta[]>([]);
-  const [loading, setLoading] = useState(true);
   const [files, setFiles] = useState<File[]>([]);
-  const [author, setAuthor] = useState('');
+  const [previews, setPreviews] = useState<string[]>([]);
   const [caption, setCaption] = useState('');
-  const [color, setColor] = useState('#5EEAD4');
-  const [expires, setExpires] = useState('');
+  const [accent, setAccent] = useState('#0A84FF');
   const [busy, setBusy] = useState(false);
-  const [status, setStatus] = useState('');
-  const [lastLinks, setLastLinks] = useState<string[]>([]);
+  const [results, setResults] = useState<{ link?: string; error?: string; name: string }[]>([]);
+  const [warn, setWarn] = useState<string | null>(null);
 
-  const heavy = useMemo(() => files.reduce((n, f) => n + f.size, 0) > 40 * 1024 * 1024, [files]);
-
-  const refresh = async () => {
-    setLoading(true);
-    const rows = await listPublicShares(48);
-    setShares(rows.filter((s) => s.type?.startsWith('image/') || true)); // show all, prefer images in mosaic
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    refresh();
+  const onDrop = useCallback((e: React.DragEvent | React.ChangeEvent<HTMLInputElement>) => {
+    const list = 'dataTransfer' in e ? Array.from(e.dataTransfer.files) : Array.from((e.target as HTMLInputElement).files || []);
+    const images = list.filter(f => f.type.startsWith('image/'));
+    if (!images.length) return;
+    const totalSize = images.reduce((s, f) => s + f.size, 0);
+    setWarn(totalSize > 40 * 1024 * 1024 ? 'Large mosaic — may feel slow to send. No hard limits.' : null);
+    setFiles(prev => [...prev, ...images]);
+    images.forEach(f => {
+      const url = URL.createObjectURL(f);
+      setPreviews(prev => [...prev, url]);
+    });
   }, []);
 
-  const send = async () => {
-    if (!files.length) return;
-    setBusy(true);
-    setStatus('');
-    setLastLinks([]);
-    const links: string[] = [];
-    for (const file of files) {
-      const res = await publishLocalFile(file, {
-        author,
-        caption: caption ? `${caption} · ${file.name}` : file.name,
-        color,
-        cardTitle: caption || file.name,
-        expiresAt: expires || null,
-        meta: { accent: color, source: 'quietmosaic' },
-      });
-      if (!res.ok) {
-        setStatus(res.error || 'upload failed');
-        break;
-      }
-      if (res.embed) links.push(res.embed);
-    }
-    setLastLinks(links);
-    setFiles([]);
-    setBusy(false);
-    await refresh();
+  const remove = (i: number) => {
+    URL.revokeObjectURL(previews[i]);
+    setFiles(f => f.filter((_, idx) => idx !== i));
+    setPreviews(p => p.filter((_, idx) => idx !== i));
   };
 
-  const images = shares.filter((s) => String(s.type || '').startsWith('image/'));
-  const others = shares.filter((s) => !String(s.type || '').startsWith('image/'));
+  const publish = async () => {
+    if (!files.length || busy) return;
+    setBusy(true);
+    setResults([]);
+    const outs: typeof results = [];
+    for (const file of files) {
+      const res = await publishLocalFile(file, {
+        caption: caption.trim() || 'Quiet Mosaic',
+        color: accent,
+        cardTitle: caption.trim() || file.name,
+        meta: { desk: 'quietmosaic' },
+      });
+      outs.push({
+        name: file.name,
+        link: res.embed,
+        error: res.error,
+      });
+    }
+    setResults(outs);
+    setBusy(false);
+  };
+
+  const clear = () => {
+    previews.forEach(URL.revokeObjectURL);
+    setFiles([]);
+    setPreviews([]);
+    setResults([]);
+    setWarn(null);
+  };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <main className="mx-auto max-w-6xl px-5 pb-24 pt-10">
-        <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 100, damping: 18 }}>
-          <p className="text-[12px] uppercase tracking-[0.18em] text-white/40">quietmosaic</p>
-          <h1 className="mt-2 text-[36px] font-semibold tracking-[-0.045em] text-white">a quiet mosaic of shared light</h1>
-          <p className="mt-3 max-w-2xl text-[15.5px] leading-relaxed text-white/60">
-            Drop local files into a living mosaic. Images settle into a soft glass grid; other files sit beside them. Shared note, accent color, optional expiration. Every link unfurls a polished Discord card. Large drops warned, never refused. Spring motion, human pacing.
+      <div className="pt-28 pb-24 px-5 max-w-4xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: 'spring', stiffness: 110, damping: 22 }}
+          className="glass rounded-[36px] p-8 md:p-12"
+        >
+          <p className="text-[13px] font-medium tracking-wide mb-2" style={{ color: accent }}>Quiet Mosaic</p>
+          <h1 className="text-4xl font-semibold tracking-tight mb-3">Compose a quiet mosaic.</h1>
+          <p className="text-neutral-400 text-[15.5px] leading-relaxed mb-8">
+            Drop several images. They settle into the database as individual shares with polished Discord embeds on every link. Soft size warnings only — never hard limits. Apple-style springs on frosted glass.
           </p>
-        </motion.div>
 
-        <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_340px]">
-          <section>
-            {loading ? (
-              <p className="text-sm text-white/40">opening the mosaic…</p>
-            ) : !shares.length ? (
-              <p className="text-sm text-white/40">the mosaic is empty. the first drop will land here.</p>
-            ) : (
-              <>
-                {images.length > 0 && (
-                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-                    {images.map((s, i) => (
-                      <motion.a
-                        key={s.id}
-                        href={shareUrls(s.id).embed}
-                        initial={{ opacity: 0, scale: 0.96 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: i * 0.015, type: 'spring', stiffness: 140, damping: 16 }}
-                        className="group relative aspect-square overflow-hidden rounded-2xl glass"
-                      >
-                        <img
-                          src={s.fileUrl || s.url}
-                          alt={s.name || 'shared'}
-                          className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
-                          loading="lazy"
-                        />
-                        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-3 opacity-0 transition group-hover:opacity-100">
-                          <p className="truncate text-[12px] text-white">{s.name}</p>
-                        </div>
-                      </motion.a>
-                    ))}
-                  </div>
-                )}
-                {others.length > 0 && (
-                  <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                    {others.map((s, i) => (
-                      <motion.a
-                        key={s.id}
-                        href={shareUrls(s.id).embed}
-                        initial={{ opacity: 0, y: 6 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.02, type: 'spring', stiffness: 120, damping: 18 }}
-                        className="glass block rounded-2xl p-4 hover:bg-white/[0.05] transition"
-                      >
-                        <div className="flex items-start justify-between gap-3">
-                          <p className="truncate text-[14px] font-medium">{s.name || s.id}</p>
-                          <span className="shrink-0 text-[11px] text-white/40">{((s.size || 0) / 1024).toFixed(0)} kb</span>
-                        </div>
-                        {s.caption && <p className="mt-1 line-clamp-2 text-[12px] text-white/50">{s.caption}</p>}
-                        <p className="mt-2 text-[11px] text-white/30">{s.author || 'anonymous'} · {s.createdAt ? new Date(s.createdAt).toLocaleDateString() : 'recent'}</p>
-                      </motion.a>
-                    ))}
-                  </div>
-                )}
-              </>
-            )}
-          </section>
+          <div
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => { e.preventDefault(); onDrop(e); }}
+            className="border-2 border-dashed border-white/20 rounded-3xl p-12 text-center mb-8 hover:border-white/40 transition cursor-pointer"
+            onClick={() => document.getElementById('mosaic-input')?.click()}
+          >
+            <p className="text-neutral-400">Drop images or click to choose</p>
+            <input id="mosaic-input" type="file" multiple accept="image/*" className="hidden" onChange={onDrop} />
+          </div>
 
-          <aside className="glass h-fit rounded-3xl p-5">
-            <p className="text-[13px] font-medium">add to the mosaic</p>
-            <label className="mt-3 block cursor-pointer rounded-2xl bg-white/[0.04] p-6 text-center transition hover:bg-white/[0.06]">
-              <input className="hidden" type="file" multiple onChange={(e) => setFiles(Array.from(e.target.files || []))} />
-              <div className="text-[14px] text-white/80">{files.length ? `${files.length} files ready` : 'drop or choose local files'}</div>
-              <div className="mt-1 text-[11px] text-white/40">images settle in the grid · soft warning only</div>
-            </label>
-            {!!files.length && (
-              <ul className="mt-3 space-y-1 text-[12px] text-white/60">
-                {files.map((f) => (
-                  <li key={f.name + f.size} className="truncate">{f.name}</li>
+          {previews.length > 0 && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
+              <AnimatePresence>
+                {previews.map((src, i) => (
+                  <motion.div
+                    key={src}
+                    layout
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+                    className="relative aspect-square rounded-2xl overflow-hidden group"
+                  >
+                    <img src={src} alt="" className="w-full h-full object-cover" />
+                    <button
+                      onClick={() => remove(i)}
+                      className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 text-white text-xs opacity-0 group-hover:opacity-100 transition"
+                    >
+                      ×
+                    </button>
+                  </motion.div>
                 ))}
-              </ul>
-            )}
-            <input value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="shared note" className="mt-3 w-full rounded-2xl bg-white/[0.04] px-3 py-2.5 text-[13px] outline-none focus:bg-white/[0.07]" />
-            <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="name, optional" className="mt-2 w-full rounded-2xl bg-white/[0.04] px-3 py-2.5 text-[13px] outline-none focus:bg-white/[0.07]" />
-            <div className="mt-2 flex items-center gap-2">
-              <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="h-9 w-12 cursor-pointer rounded-lg border border-white/10 bg-transparent" />
-              <span className="text-[12px] text-white/45">accent</span>
+              </AnimatePresence>
             </div>
-            <input type="datetime-local" value={expires} onChange={(e) => setExpires(e.target.value)} className="mt-2 w-full rounded-2xl bg-white/[0.04] px-3 py-2.5 text-[13px] outline-none" />
-            {heavy && <p className="mt-2 text-[12px] text-amber-200/80">large batch. sending may feel slow. nothing is refused.</p>}
-            <motion.button
-              whileTap={{ scale: 0.97 }}
-              onClick={send}
-              disabled={!files.length || busy}
-              className="mt-3 w-full rounded-full px-4 py-2.5 text-[14px] font-medium text-black disabled:opacity-40"
-              style={{ background: color }}
-            >
-              {busy ? 'settling…' : 'share into the mosaic'}
-            </motion.button>
-            {status && <p className="mt-2 text-[12px] text-red-300">{status}</p>}
-            {lastLinks.length > 0 && (
-              <div className="mt-3 space-y-1 text-[11px] text-white/50">
-                {lastLinks.map((l) => (
-                  <a key={l} href={l} className="block truncate hover:text-white">{l}</a>
+          )}
+
+          <input
+            value={caption}
+            onChange={(e) => setCaption(e.target.value)}
+            placeholder="Shared caption for the mosaic"
+            className="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-3.5 text-[15px] text-white placeholder:text-neutral-500 mb-5 focus:outline-none focus:border-white/30 transition"
+          />
+
+          <div className="flex items-center gap-3 mb-6">
+            <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="w-9 h-9 rounded-full cursor-pointer border-0" />
+            <span className="text-[13px] text-neutral-500">Accent for the embeds</span>
+          </div>
+
+          {warn && <p className="text-[13px] text-amber-300/80 mb-5">{warn}</p>}
+
+          <AnimatePresence>
+            {results.length > 0 && (
+              <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="mb-5 space-y-2">
+                {results.map((r, i) => (
+                  <div key={i} className="text-sm">
+                    <span className="text-neutral-400">{r.name}: </span>
+                    {r.link ? (
+                      <a href={r.link} target="_blank" rel="noreferrer" className="text-blue-400 break-all">{r.link}</a>
+                    ) : (
+                      <span className="text-red-400">{r.error}</span>
+                    )}
+                  </div>
                 ))}
-              </div>
+              </motion.div>
             )}
-          </aside>
-        </div>
-      </main>
+          </AnimatePresence>
+
+          <div className="flex gap-3">
+            <motion.button
+              whileTap={{ scale: 0.98 }}
+              onClick={publish}
+              disabled={!files.length || busy}
+              className="flex-1 rounded-2xl py-4 text-[15px] font-medium text-white disabled:opacity-40 transition shadow-xl"
+              style={{ background: accent }}
+            >
+              {busy ? 'Publishing…' : `Publish ${files.length} image${files.length === 1 ? '' : 's'}`}
+            </motion.button>
+            {files.length > 0 && (
+              <button onClick={clear} className="px-5 rounded-2xl text-sm text-neutral-400 hover:text-white">clear</button>
+            )}
+          </div>
+        </motion.div>
+      </div>
     </div>
   );
 }

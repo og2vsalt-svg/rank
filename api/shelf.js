@@ -35,6 +35,7 @@ const COPY = {
   quietsolstice: ["Quiet Solstice — rankvault", "Drop local files under a turning sun. Soft radial motion, shared caption, chosen warmth. Discord cards on every link. Size notes only. No hard limits."],
   quietmeridian: ["Quiet Meridian — rankvault", "A still center for precise local file drops. Live time, soft warnings only. Every share link carries a polished Discord embed."],
   quietequinox: ["Quiet Equinox — rankvault", "Where files find balance. Dual columns of frosted glass. Batch-publish with polished Discord embeds. Soft size warnings only."],
+  quietpin: ["Quiet Pin — rankvault", "Pin a local file to a place name or coordinates. It settles into the database with a polished Discord embed on every link. Soft size warnings only. No hard limits. Apple-style springs on frosted glass."],
   home: ['rankvault', 'Private file hosting and sharing. Upload local files, share with professional Discord embeds. Soft size warnings only. Sleek Apple-style interface with many specialized desks.'],
 };
 

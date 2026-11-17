@@ -1,13 +1,12 @@
-import { useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishLocalFile } from '../lib/cloudShare';
+import { publishLocalFile, listPublicShares, type CloudMeta } from '../lib/cloudShare';
 
 type Item = {
   file: File;
   preview?: string;
   id: string;
-  progress: number;
   status: 'queued' | 'uploading' | 'done' | 'error';
   link?: string;
   error?: string;
@@ -15,143 +14,146 @@ type Item = {
 
 export default function QuietHorizonPage() {
   const [items, setItems] = useState<Item[]>([]);
+  const [recent, setRecent] = useState<CloudMeta[]>([]);
   const [caption, setCaption] = useState('');
-  const [accent, setAccent] = useState('#FF9F0A');
+  const [accent, setAccent] = useState('#AF52DE');
   const [busy, setBusy] = useState(false);
-  const [globalWarn, setGlobalWarn] = useState<string | null>(null);
+  const [warn, setWarn] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const onFiles = useCallback((files: FileList | File[]) => {
-    const arr = Array.from(files);
+  useEffect(() => {
+    listPublicShares(12).then(setRecent).catch(() => setRecent([]));
+  }, []);
+
+  const addFiles = useCallback((list: FileList | File[]) => {
+    const arr = Array.from(list);
     const total = arr.reduce((s, f) => s + f.size, 0);
-    setGlobalWarn(total > 50_000_000 ? 'Large batch. Uploads may feel slower. No hard limits.' : null);
-    const newItems: Item[] = arr.map((file) => ({
+    setWarn(total > 45_000_000 ? 'Large batch — uploads may feel slower. No hard limits.' : null);
+    const next: Item[] = arr.map((file) => ({
       file,
       id: Math.random().toString(36).slice(2, 10),
-      progress: 0,
       status: 'queued',
       preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : undefined,
     }));
-    setItems((prev) => [...prev, ...newItems]);
+    setItems((p) => [...p, ...next]);
   }, []);
 
-  const remove = (id: string) => setItems((prev) => prev.filter((i) => i.id !== id));
-
-  const publishAll = async () => {
-    if (!items.length) return;
+  const publish = async () => {
+    if (!items.length || busy) return;
     setBusy(true);
     for (const item of items) {
       if (item.status === 'done') continue;
-      setItems((prev) => prev.map((i) => i.id === item.id ? { ...i, status: 'uploading', progress: 10 } : i));
+      setItems((p) => p.map((i) => i.id === item.id ? { ...i, status: 'uploading' } : i));
       try {
         const res = await publishLocalFile(item.file, {
           caption: caption.trim() || item.file.name,
           color: accent,
           cardTitle: item.file.name,
-          meta: { desk: 'quiethorizon', kind: item.file.type.split('/')[0] || 'file' },
+          meta: { desk: 'quiethorizon' },
         });
-        setItems((prev) => prev.map((i) =>
+        setItems((p) => p.map((i) =>
           i.id === item.id
-            ? { ...i, status: res.ok ? 'done' : 'error', progress: 100, link: res.embed || undefined, error: res.error }
+            ? { ...i, status: res.ok ? 'done' : 'error', link: res.embed, error: res.error }
             : i
         ));
       } catch (e: any) {
-        setItems((prev) => prev.map((i) => i.id === item.id ? { ...i, status: 'error', error: e.message } : i));
+        setItems((p) => p.map((i) => i.id === item.id ? { ...i, status: 'error', error: e.message } : i));
       }
     }
     setBusy(false);
+    listPublicShares(12).then(setRecent).catch(() => {});
   };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-6 max-w-4xl mx-auto">
+      <div className="pt-28 pb-24 px-5 max-w-3xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 90, damping: 22 }}
-          className="glass rounded-[32px] p-8 md:p-12 shadow-2xl relative overflow-hidden"
+          transition={{ type: 'spring', stiffness: 110, damping: 22 }}
+          className="glass rounded-[36px] p-8 md:p-10 mb-8"
         >
-          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#FF9F0A]/10 to-transparent pointer-events-none" />
-          <p className="text-[13px] font-medium tracking-wide mb-1" style={{ color: accent }}>Quiet Horizon</p>
-          <h1 className="text-[40px] font-semibold tracking-tight mb-3">Settle on the horizon.</h1>
-          <p className="text-neutral-400 text-[16px] leading-relaxed mb-8 max-w-2xl">
-            Drop local files. They drift and settle along a soft horizon of frosted glass with a rising warm glow. Shared caption, accent color, live previews. Batch-publish to the database. Every link unfurls a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style spring motion. All prior desks remain fully intact. No traces of boosting.
+          <p className="text-[13px] font-medium tracking-wide mb-2" style={{ color: accent }}>Quiet Horizon</p>
+          <h1 className="text-3xl md:text-4xl font-semibold tracking-tight mb-3">The far edge of recent shares.</h1>
+          <p className="text-neutral-400 text-[15px] leading-relaxed mb-8">
+            Drop local files onto a quiet horizon of frosted glass. Watch recent public shares drift by. Shared caption and accent. Publishes to the database with polished Discord embeds on every link. Soft size warnings only. No hard limits. Apple-style springs.
           </p>
 
           <div
-            onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('ring-2', 'ring-[#FF9F0A]/30'); }}
-            onDragLeave={(e) => e.currentTarget.classList.remove('ring-2', 'ring-[#FF9F0A]/30')}
+            onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('ring-2', 'ring-white/20'); }}
+            onDragLeave={(e) => e.currentTarget.classList.remove('ring-2', 'ring-white/20')}
             onDrop={(e) => {
               e.preventDefault();
-              e.currentTarget.classList.remove('ring-2', 'ring-[#FF9F0A]/30');
-              if (e.dataTransfer.files.length) onFiles(e.dataTransfer.files);
+              e.currentTarget.classList.remove('ring-2', 'ring-white/20');
+              if (e.dataTransfer.files.length) addFiles(e.dataTransfer.files);
             }}
-            className="border-2 border-dashed border-white/15 rounded-3xl p-12 text-center mb-8 transition hover:border-white/25 bg-black/10 relative"
+            onClick={() => inputRef.current?.click()}
+            className="border-2 border-dashed border-white/12 rounded-3xl p-12 text-center mb-6 cursor-pointer hover:border-white/25 transition bg-black/20"
           >
-            <div className="absolute inset-x-0 bottom-4 h-px bg-gradient-to-r from-transparent via-[#FF9F0A]/40 to-transparent" />
-            <p className="text-neutral-300 mb-4">Drop files here or</p>
-            <label className="inline-block px-6 py-2.5 rounded-full bg-white/10 hover:bg-white/15 cursor-pointer text-sm font-medium transition">
-              choose files
-              <input type="file" multiple className="hidden" onChange={(e) => e.target.files && onFiles(e.target.files)} />
-            </label>
+            <p className="text-neutral-300 text-[15px]">Drop files here</p>
+            <p className="text-neutral-500 text-sm mt-1">or click to choose</p>
+            <input ref={inputRef} type="file" multiple className="hidden" onChange={(e) => e.target.files && addFiles(e.target.files)} />
           </div>
 
           <input
             value={caption}
             onChange={(e) => setCaption(e.target.value)}
-            placeholder="Shared caption (optional)"
-            className="w-full bg-black/20 border border-white/10 rounded-2xl px-4 py-3 text-[15px] text-white placeholder:text-neutral-500 mb-4 focus:outline-none focus:border-white/25 transition"
+            placeholder="Optional caption"
+            className="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-3 text-[15px] text-white placeholder:text-neutral-500 mb-4 focus:outline-none focus:border-white/30"
           />
 
-          <div className="flex items-center gap-4 mb-6">
-            <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="w-10 h-10 rounded-full cursor-pointer border-0 bg-transparent" />
-            <span className="text-[13px] text-neutral-400">Accent color for embeds</span>
+          <div className="flex items-center gap-3 mb-5">
+            <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="w-9 h-9 rounded-full cursor-pointer border-0" />
+            <span className="text-[13px] text-neutral-500">Accent</span>
           </div>
 
-          {globalWarn && <p className="text-[13px] text-amber-300/90 mb-6">{globalWarn}</p>}
+          {warn && <p className="text-[13px] text-amber-300/80 mb-4">{warn}</p>}
 
           <AnimatePresence>
-            {items.length > 0 && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3 mb-8">
-                {items.map((item, idx) => (
-                  <motion.div
-                    key={item.id}
-                    layout
-                    initial={{ opacity: 0, y: 12, scale: 0.98 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.96 }}
-                    transition={{ delay: idx * 0.03, type: 'spring', stiffness: 120, damping: 18 }}
-                    className="glass rounded-2xl p-4 flex items-center gap-4"
-                  >
-                    {item.preview ? (
-                      <img src={item.preview} alt="" className="w-16 h-16 rounded-xl object-cover" />
-                    ) : (
-                      <div className="w-16 h-16 rounded-xl bg-white/5 grid place-items-center text-xs text-neutral-500">file</div>
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">{item.file.name}</p>
-                      <p className="text-xs text-neutral-500">{(item.file.size / 1024 / 1024).toFixed(1)} MB · {item.status}</p>
-                      {item.link && <a href={item.link} target="_blank" rel="noreferrer" className="text-xs text-blue-400 truncate block">{item.link}</a>}
-                      {item.error && <p className="text-xs text-red-400">{item.error}</p>}
-                    </div>
-                    <button onClick={() => remove(item.id)} className="text-xs text-neutral-500 hover:text-white">remove</button>
-                  </motion.div>
-                ))}
+            {items.map((item) => (
+              <motion.div key={item.id} layout initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="glass rounded-2xl p-3 flex items-center gap-3 mb-2">
+                {item.preview ? <img src={item.preview} alt="" className="w-12 h-12 rounded-xl object-cover" /> : <div className="w-12 h-12 rounded-xl bg-white/5 grid place-items-center text-[11px] text-neutral-500">file</div>}
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm truncate">{item.file.name}</p>
+                  <p className="text-xs text-neutral-500">{item.status}{item.link ? ' · ' : ''}{item.link && <a href={item.link} className="text-blue-400">{item.link.split('/').pop()}</a>}</p>
+                  {item.error && <p className="text-xs text-red-400">{item.error}</p>}
+                </div>
               </motion.div>
-            )}
+            ))}
           </AnimatePresence>
 
           <motion.button
             whileTap={{ scale: 0.98 }}
-            whileHover={{ scale: 1.01 }}
-            onClick={publishAll}
+            onClick={publish}
             disabled={busy || !items.length}
-            className="w-full rounded-2xl py-4 text-[15px] font-medium text-black disabled:opacity-40 transition shadow-lg"
+            className="w-full rounded-2xl py-3.5 text-[15px] font-medium text-white disabled:opacity-40 mt-2"
             style={{ background: accent }}
           >
-            {busy ? 'Publishing…' : `Publish ${items.length || ''} file${items.length === 1 ? '' : 's'}`}
+            {busy ? 'Publishing…' : items.length ? `Publish ${items.length}` : 'Drop a file first'}
           </motion.button>
         </motion.div>
+
+        <div>
+          <h2 className="text-sm font-medium text-neutral-400 mb-4 px-1">recent on the horizon</h2>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {recent.map((s) => (
+              <motion.a
+                key={s.id}
+                href={`/s/${s.id}`}
+                target="_blank"
+                rel="noreferrer"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="glass rounded-2xl p-4 hover:bg-white/5 transition block"
+              >
+                <p className="text-sm font-medium truncate">{s.name}</p>
+                <p className="text-xs text-neutral-500 mt-0.5">{s.caption || 'shared'} · {(s.size / 1024 / 1024).toFixed(1)} MB</p>
+              </motion.a>
+            ))}
+            {!recent.length && <p className="text-neutral-500 text-sm">nothing recent yet.</p>}
+          </div>
+        </div>
       </div>
     </div>
   );

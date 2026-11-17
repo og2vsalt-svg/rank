@@ -12,6 +12,7 @@ const primary: NavItem[] = [
   { to: 'quietaperture', label: 'aperture' },
   { to: 'audiodesk', label: 'audio' },
   { to: 'qrdesk', label: 'qr' },
+  { to: 'quietpin', label: 'pin' },
   { to: 'quietsolace', label: 'solace' },
   { to: 'quiethorizon', label: 'horizon' },
   { to: 'quietsolstice', label: 'solstice' },

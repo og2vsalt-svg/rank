@@ -6,6 +6,7 @@ Drop local files into specialized desks. They settle into the database with prof
 
 Central surfaces:
 - **Core** — the quiet center. Drag local files or choose them. They settle into the database with a polished Discord embed on every link. Soft size warnings only — never hard limits. Apple-style spring motion on frosted glass.
+- **Quiet Timeline** — place files in time. Stamp each with a moment and a quiet note. Chronological shares with polished Discord embeds.
 - **Quiet Stream** — living feed of recent public shares plus a fresh drop zone. Search and filter. Spring-animated cards.
 - **Quiet Forge** — write a note or markdown. It becomes a file, publishes to the database, and carries a polished Discord embed.
 - **Studio** — multi-file crafting. Drop several files, give each its own caption and accent color. Publishes to the database with professional Discord embeds on every link. Soft size warnings only. No hard limits.
@@ -26,7 +27,7 @@ Central surfaces:
 - **Quiet Pin** — pin a local file to a place name or coordinates. Settles into the database with a polished Discord embed. Soft size warnings only. No hard limits.
 
 Specialized desks (all prior remain fully intact):
-- **Quiet Harbor**, **Quiet Lighthouse**, **Quiet Ember**, **Quiet Constellation**, **Quiet Aurora**, **Quiet Pulse**, **Quiet Quartz**, **Quiet Grove**, **Gallery**, Quiet Inlet, Quiet Tide, Quiet Orbit, Quiet Nebula, Keepsake, Spectrum, Ripple, Frame, Echo, Canvas, Notes, Orchard, Horizon, Harmony, Lumen, Prism, Harbor, Cove, Lantern, Cascade, and dozens more.
+- **Quiet Harbor**, **Quiet Lighthouse**, **Quiet Ember**, **Quiet Constellation**, **Quiet Aurora**, **Quiet Pulse**, **Quiet Quartz**, **Quiet Grove**, Gallery, Quiet Inlet, Quiet Tide, Quiet Orbit, Quiet Nebula, Keepsake, Spectrum, Ripple, Frame, Echo, Canvas, Notes, Orchard, Horizon, Harmony, Lumen, Prism, Harbor, Cove, Lantern, Cascade, and dozens more.
 
 No traces of boosting.
 

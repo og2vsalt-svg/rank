@@ -32,6 +32,9 @@ const COPY = {
   quietconstellation: ["Quiet Constellation — rankvault", "Drop local files. They settle as stars in a quiet constellation of frosted glass with gentle connecting lines and spring motion. Shared caption and accent. Batch-publish to the database. Every link carries a polished Discord embed. Soft size warnings only. No hard limits."],
   canvasforge: ["Canvas Forge — rankvault", "Freehand sketch on a quiet dark canvas. Export as PNG and publish to the database. Every share link carries a professional Discord embed. Soft size warnings only. No hard limits. Apple spring motion on frosted glass."],
   weave: ["Weave — rankvault", "Drop several local files. Give each its own caption and accent color. They publish independently with polished Discord embeds on every link. Soft warnings only. No hard limits."],
+  quietsolstice: ["Quiet Solstice — rankvault", "Drop local files under a turning sun. Soft radial motion, shared caption, chosen warmth. Discord cards on every link. Size notes only. No hard limits."],
+  quietmeridian: ["Quiet Meridian — rankvault", "A still center for precise local file drops. Live time, soft warnings only. Every share link carries a polished Discord embed."],
+  quietequinox: ["Quiet Equinox — rankvault", "Where files find balance. Dual columns of frosted glass. Batch-publish with polished Discord embeds. Soft size warnings only."],
   home: ['rankvault', 'Private file hosting and sharing. Upload local files, share with professional Discord embeds. Soft size warnings only. Sleek Apple-style interface with many specialized desks.'],
 };
 

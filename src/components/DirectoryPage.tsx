@@ -32,6 +32,9 @@ const desks = [
   { to: "quietdaily", label: "quiet daily", desc: "date a quiet note or attach a local file. it settles into the database with a polished Discord embed. soft size warnings only. no hard limits. apple-style springs and frosted glass. prior desks remain fully intact." },
   { to: "quietlumen", label: "quiet lumen", desc: "drop local files. they settle as soft glowing orbs of frosted glass with gentle spring light. shared caption, warm accent. batch-publish to the database. every link unfurls a polished Discord embed. soft size warnings only. no hard limits. human-crafted Apple-style pacing. all prior desks remain fully intact." },
   { to: "quietfolio", label: "quiet folio", desc: "compose a quiet portfolio of local files. each piece gets its own title and note, or share one caption. spring-animated frosted glass grid. batch-publish to the database. every link unfurls a polished Discord embed. soft size warnings only. no hard limits. human-crafted Apple-style pacing. all prior desks remain fully intact." },
+  { to: "quietsolstice", label: "quiet solstice", desc: "drop local files under a turning sun. soft radial motion, shared caption, chosen warmth. discord cards on every link. size notes only. no hard limits." },
+  { to: "quietmeridian", label: "quiet meridian", desc: "a still center for precise local file drops. live time display. soft warnings only. every share link carries a polished discord embed and is copied when ready." },
+  { to: "quietequinox", label: "quiet equinox", desc: "where files find balance. dual columns of frosted glass. batch-publish with polished discord embeds. soft size warnings only. no hard limits." },
   { to: "vault", label: "vault", desc: "main local vault" },
   { to: "directory", label: "desks", desc: "this page" },
 ];

@@ -7,6 +7,7 @@ type NavItem = { to: Route; label: string };
 const primary: NavItem[] = [
   { to: 'core', label: 'core' },
   { to: 'nexus', label: 'nexus' },
+  { to: 'studio', label: 'studio' },
   { to: 'quietharbor', label: 'harbor' },
   { to: 'quietember', label: 'ember' },
   { to: 'gallery', label: 'gallery' },

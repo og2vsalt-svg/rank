@@ -3,7 +3,7 @@ function esc(s) {
     .replace(/&/g, '&')
     .replace(/</g, '<')
     .replace(/>/g, '>')
-    .replace(/\"/g, '"');
+    .replace(/"/g, '"');
 }
 
 const SUPABASE_URL = 'https://tqfocdktvjuwoiyfgesb.supabase.co';
@@ -22,7 +22,7 @@ const COPY = {
   quietwhisper: ["Quiet Whisper — rankvault", "Write a short private note. Optionally lock it with a passphrase or set a soft expiry. Publishes with a polished Discord embed. Soft warnings only."],
   quietlantern: ["Quiet Lantern — rankvault", "Drop local files. They hang as soft glowing lanterns with gentle floating motion. Share to the database. Polished Discord embeds. Soft warnings only."],
   quietdrop: ["Quiet Drop — rankvault", "A clean central drop zone for local files. Live previews, shared caption, accent color, spring motion on frosted glass. Soft size warnings only. No hard limits."],
-  quietatlas: ["Quiet Atlas — rankvault", "Living map of recent public shares. Search, preview, and open. Soft spring-entry frosted cards. Professional Discord embeds on every link."],
+  quietatlas: ["Quiet Atlas — rankvault", "Living map of recent public shares. Search, preview, and open. Soft spring-entry frosted cards. Professional Discord embeds on every link. Drop new files into the atlas."],
   quietbeacon: ["Quiet Beacon — rankvault", "Still activity view of the latest public shares with open counts. Soft spring-entry frosted cards."],
   quietflow: ["Quiet Flow — rankvault", "Drop local files. They drift into place with staggered spring motion on frosted glass. Soft size warnings only."],
   quietgallery: ["Quiet Gallery — rankvault", "Visual public archive of recent shares. Spring-animated frosted glass cards."],
@@ -36,6 +36,7 @@ const COPY = {
   quietmeridian: ["Quiet Meridian — rankvault", "A still center for precise local file drops. Live time, soft warnings only. Every share link carries a polished Discord embed."],
   quietequinox: ["Quiet Equinox — rankvault", "Where files find balance. Dual columns of frosted glass. Batch-publish with polished Discord embeds. Soft size warnings only."],
   quietpin: ["Quiet Pin — rankvault", "Pin a local file to a place name or coordinates. It settles into the database with a polished Discord embed on every link. Soft size warnings only. No hard limits. Apple-style springs on frosted glass."],
+  quietstack: ["Quiet Stack — rankvault", "Stack local files with individual captions. Layered frosted previews, spring motion. Each publishes independently to the database with a polished Discord embed. Soft size warnings only. No hard limits."],
   home: ['rankvault', 'Private file hosting and sharing. Upload local files, share with professional Discord embeds. Soft size warnings only. Sleek Apple-style interface with many specialized desks.'],
 };
 

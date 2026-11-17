@@ -30,10 +30,11 @@ export default function Hero() {
           transition={{ type: 'spring', stiffness: 80, damping: 20, delay: 0.1 }}
           className="text-neutral-400 text-lg leading-relaxed max-w-lg mb-10 mx-auto"
         >
-          Core for the cleanest drop. Studio for multi-file crafting. Nexus for recent public shares. Quiet Solace for calm optional expiration. Quiet Horizon for the far edge of recent shares. Quiet Harbor, Ember, Constellation, Aurora, Grove, Inlet, Tide, Orbit, Nebula, Keepsake, Spectrum, Ripple, Gallery, and dozens of specialized desks remain fully intact. Every share link carries a polished Discord embed. Soft size warnings only — no hard limits. Sleek Apple-style spring animations on frosted glass.
+          Core for the cleanest drop. Quiet Collage for multi-image compositions. Studio for multi-file crafting. Nexus for recent public shares. Quiet Solace for calm optional expiration. Quiet Horizon for the far edge of recent shares. Quiet Harbor, Ember, Constellation, Aurora, Grove, Inlet, Tide, Orbit, Nebula, Keepsake, Spectrum, Ripple, Gallery, and dozens of specialized desks remain fully intact. Every share link carries a polished Discord embed. Soft size warnings only — no hard limits. Sleek Apple-style spring animations on frosted glass.
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center">
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('core')} className="px-7 py-3 rounded-full bg-[#F5F5F7] text-black text-sm font-medium hover:bg-white transition shadow-lg">drop a file</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietcollage')} className="px-6 py-2.5 rounded-full bg-[#0A84FF]/80 text-white text-sm font-medium hover:bg-[#0A84FF] transition">collage</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietsolace')} className="px-6 py-2.5 rounded-full bg-[#5AC8FA]/80 text-white text-sm font-medium hover:bg-[#5AC8FA] transition">solace</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quiethorizon')} className="px-6 py-2.5 rounded-full bg-[#AF52DE]/80 text-white text-sm font-medium hover:bg-[#AF52DE] transition">horizon</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('studio')} className="px-6 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition">studio</motion.button>

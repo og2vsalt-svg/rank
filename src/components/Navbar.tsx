@@ -11,6 +11,7 @@ const primary: NavItem[] = [
   { to: 'quietforge', label: 'forge' },
   { to: 'studio', label: 'studio' },
   { to: 'quietcollage', label: 'collage' },
+  { to: 'quietglow', label: 'glow' },
   { to: 'audiodesk', label: 'audio' },
   { to: 'qrdesk', label: 'qr' },
   { to: 'gallery', label: 'gallery' },

@@ -6,6 +6,8 @@ Drop local files into specialized desks. They settle into the database with prof
 
 Central surfaces:
 - **Core** — the quiet center. Drag local files or choose them. They settle into the database with a polished Discord embed on every link. Soft size warnings only — never hard limits. Apple-style spring motion on frosted glass.
+- **Quiet Stream** — living feed of recent public shares plus a fresh drop zone. Search and filter. Spring-animated cards.
+- **Quiet Forge** — write a note or markdown. It becomes a file, publishes to the database, and carries a polished Discord embed.
 - **Studio** — multi-file crafting. Drop several files, give each its own caption and accent color. Publishes to the database with professional Discord embeds on every link. Soft size warnings only. No hard limits.
 - **Nexus** — centered file hosting. Drop files, publish to the database, copy a Discord-ready link. Recent public shares live here.
 - **Quiet Solace** — calm drop with optional soft expiration. Frosted glass, gentle springs.

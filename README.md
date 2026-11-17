@@ -21,6 +21,7 @@ Central surfaces:
 - **Weave** — multi-file drop where each file gets its own caption and accent before independent publish.
 - **Audio Desk** — record a voice memo in the browser and publish it as a file with a polished Discord embed.
 - **QR Desk** — stamp text or a link into a visual image and publish it with a Discord embed.
+- **Quiet Pin** — pin a local file to a place name or coordinates. Settles into the database with a polished Discord embed. Soft size warnings only. No hard limits.
 
 Specialized desks (all prior remain fully intact):
 - **Quiet Harbor**, **Quiet Lighthouse**, **Quiet Ember**, **Quiet Constellation**, **Quiet Aurora**, **Quiet Pulse**, **Quiet Quartz**, **Quiet Grove**, **Gallery**, Quiet Inlet, Quiet Tide, Quiet Orbit, Quiet Nebula, Keepsake, Spectrum, Ripple, Frame, Echo, Canvas, Notes, Orchard, Horizon, Harmony, Lumen, Prism, Harbor, Cove, Lantern, Cascade, and dozens more.

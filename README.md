@@ -10,6 +10,8 @@ Central surfaces:
 - **Nexus** — centered file hosting. Drop files, publish to the database, copy a Discord-ready link. Recent public shares live here.
 - **Quiet Solace** — calm drop with optional soft expiration. Frosted glass, gentle springs.
 - **Quiet Horizon** — the far edge of recent public shares, plus new drops.
+- **Canvas Forge** — freehand sketching canvas. Draw, export as PNG, share with Discord embed.
+- **Weave** — multi-file drop where each file gets its own caption and accent before independent publish.
 
 Specialized desks (all prior remain fully intact):
 - **Quiet Harbor**, **Quiet Lighthouse**, **Quiet Ember**, **Quiet Constellation**, **Quiet Aurora**, **Quiet Pulse**, **Quiet Quartz**, **Quiet Grove**, **Gallery**, Quiet Inlet, Quiet Tide, Quiet Orbit, Quiet Nebula, Keepsake, Spectrum, Ripple, Frame, Echo, Canvas, Notes, Orchard, Horizon, Harmony, Lumen, Prism, Harbor, Cove, Lantern, Cascade, and dozens more.

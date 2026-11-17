@@ -6,6 +6,7 @@ Drop local files into specialized desks. They settle into the database with prof
 
 Central surfaces:
 - **Core** — the quiet center. Drag local files or choose them. They settle into the database with a polished Discord embed on every link. Soft size warnings only — never hard limits. Apple-style spring motion on frosted glass.
+- **Quiet Chronicle** — place local files in time. Stamp each with a date and a quiet note. They settle into the database as dated journal entries. Every share link carries a polished Discord embed. Soft size warnings only. No hard limits.
 - **Quiet Sequence** — drop local files in order. Reorder into a filmstrip, give each a quiet caption. They settle into the database as an ordered sequence. Every share link carries a polished Discord embed. Soft size warnings only. No hard limits.
 - **Quiet Stack** — stack local files with individual captions. Layered frosted previews, spring motion. Each publishes independently to the database with a polished Discord embed. Soft size warnings only. No hard limits.
 - **Quiet Glow** — write a quiet note or drop a local file. Choose a warm accent glow. Settles into the database with a polished Discord embed. Soft size warnings only. No hard limits. Apple-style springs on frosted glass.

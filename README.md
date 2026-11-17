@@ -14,6 +14,7 @@ Central surfaces:
 - **Quiet Meridian** — precise still center with live time. Links copied for Discord.
 - **Quiet Equinox** — where files find balance in dual columns of frosted glass.
 - **Quiet Quill** — write a quiet note or drop a local file. The words settle with the file into the database. Every share link carries a polished Discord embed. Soft size warnings only. No hard limits. Apple-style springs on frosted glass.
+- **Quiet Collage** — drop several images. They compose into a single quiet collage. Choose grid, row, or column layout. Shared caption and accent. Publishes to the database with a polished Discord embed on every link. Soft size warnings only. No hard limits. Apple-style springs on frosted glass.
 - **Canvas Forge** — freehand sketching canvas. Draw, export as PNG, share with Discord embed.
 - **Weave** — multi-file drop where each file gets its own caption and accent before independent publish.
 - **Audio Desk** — record a voice memo in the browser and publish it as a file with a polished Discord embed.

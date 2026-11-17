@@ -5,6 +5,7 @@ Private file hosting and sharing.
 Drop local files into specialized desks. They settle into the database with professional Discord embeds on every link. Soft size warnings only — no hard limits. Sleek Apple-style spring animations and frosted glass.
 
 New features:
+- **Quiet Harbor** — drop local files. They moor at quiet docks of frosted glass, gently bobbing on soft waves with spring motion. Shared caption, accent color. Publishes to the database with polished Discord embeds on every link. Soft size warnings only. No hard limits. Apple-style springs. All prior desks remain fully intact.
 - **Quiet Lighthouse** — drop local files or watch recent public shares light up. Soft rotating lighthouse beam on frosted glass. Shared caption, accent color. Publishes to the database with polished Discord embeds on every link. Soft size warnings only. No hard limits. Apple-style springs. All prior desks remain fully intact.
 - **Quiet Ember** — drop local files. They settle as glowing embers in a quiet hearth of frosted glass with soft pulsing heat, rising shimmer, and gentle sparks. Shared caption, warm accent color, and polished Discord embeds on every share link.
 - **Quiet Constellation** — drop local files. They settle as stars in a quiet constellation of frosted glass with gentle connecting lines and spring motion. Shared caption, accent color, and polished Discord embeds on every share link.

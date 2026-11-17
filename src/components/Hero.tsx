@@ -30,10 +30,11 @@ export default function Hero() {
           transition={{ type: 'spring', stiffness: 80, damping: 20, delay: 0.1 }}
           className="text-neutral-400 text-lg leading-relaxed max-w-lg mb-10 mx-auto"
         >
-          Core for the cleanest drop. Nexus for recent public shares. Quiet Harbor, Ember, Constellation, Aurora, Grove, Inlet, Tide, Orbit, Nebula, Keepsake, Spectrum, Ripple, Horizon, Gallery, and dozens of specialized desks remain fully intact. Every share link carries a polished Discord embed. Soft size warnings only — no hard limits. Sleek Apple-style spring animations on frosted glass.
+          Core for the cleanest drop. Studio for multi-file crafting with individual captions and accents. Nexus for recent public shares. Quiet Harbor, Ember, Constellation, Aurora, Grove, Inlet, Tide, Orbit, Nebula, Keepsake, Spectrum, Ripple, Horizon, Gallery, and dozens of specialized desks remain fully intact. Every share link carries a polished Discord embed. Soft size warnings only — no hard limits. Sleek Apple-style spring animations on frosted glass.
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center">
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('core')} className="px-7 py-3 rounded-full bg-[#F5F5F7] text-black text-sm font-medium hover:bg-white transition shadow-lg">drop a file</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('studio')} className="px-6 py-2.5 rounded-full bg-[#AF52DE]/80 text-white text-sm font-medium hover:bg-[#AF52DE] transition">studio</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('nexus')} className="px-6 py-2.5 rounded-full bg-[#0A84FF]/80 text-white text-sm font-medium hover:bg-[#0A84FF] transition">nexus</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietharbor')} className="px-6 py-2.5 rounded-full bg-[#5AC8FA]/80 text-white text-sm font-medium hover:bg-[#5AC8FA] transition">quiet harbor</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('gallery')} className="px-6 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition">gallery</motion.button>

@@ -6,6 +6,8 @@ Drop local files into specialized desks. They settle into the database with prof
 
 Central surfaces:
 - **Core** — the quiet center. Drag local files or choose them. They settle into the database with a polished Discord embed on every link. Soft size warnings only — never hard limits. Apple-style spring motion on frosted glass.
+- **Quiet Loom** — write a quiet narrative and drop local files into the weave. The words and files settle together into the database. Every share link carries a polished Discord embed. Soft size warnings only. No hard limits.
+- **Quiet Spectrum** — choose a base color. A quiet spectrum unfolds into a visual image. Caption it and publish to the database with a polished Discord embed. Soft warnings only. No hard limits.
 - **Quiet Timeline** — place files in time. Stamp each with a moment and a quiet note. Chronological shares with polished Discord embeds.
 - **Quiet Stream** — living feed of recent public shares plus a fresh drop zone. Search and filter. Spring-animated cards.
 - **Quiet Forge** — write a note or markdown. It becomes a file, publishes to the database, and carries a polished Discord embed.

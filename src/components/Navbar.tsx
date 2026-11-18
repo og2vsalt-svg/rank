@@ -12,6 +12,7 @@ const primary: NavItem[] = [
   { to: 'quietsequence', label: 'sequence' },
   { to: 'quietstack', label: 'stack' },
   { to: 'quietvoid', label: 'void' },
+  { to: 'quietpalette', label: 'palette' },
   { to: 'nexus', label: 'nexus' },
   { to: 'quietstream', label: 'stream' },
   { to: 'quietforge', label: 'forge' },

@@ -35,9 +35,10 @@ Central surfaces:
 - **Audio Desk** — record a voice memo in the browser and publish it as a file with a polished Discord embed.
 - **QR Desk** — stamp text or a link into a visual image and publish it with a Discord embed.
 - **Quiet Pin** — pin a local file to a place name or coordinates. Settles into the database with a polished Discord embed. Soft size warnings only. No hard limits.
+- **Quiet Echoes** — drop local files and add a personal note to each. They publish independently to the database as sequential echoes with polished Discord embeds on every link. Soft size warnings only. No hard limits. Apple-style springs on frosted glass.
 
 Specialized desks (all prior remain fully intact):
-- **Quiet Harbor**, **Quiet Lighthouse**, **Quiet Ember**, **Quiet Constellation**, **Quiet Aurora**, **Quiet Pulse**, **Quiet Quartz**, **Quiet Grove**, Gallery, Quiet Inlet, Quiet Tide, Quiet Orbit, Quiet Nebula, Keepsake, Spectrum, Ripple, Frame, Echo, Canvas, Notes, Orchard, Horizon, Harmony, Lumen, Prism, Harbor, Cove, Lantern, Cascade, Quiet Void, Quiet Annotate, Quiet Timestamp, and dozens more.
+- **Quiet Harbor**, **Quiet Lighthouse**, **Quiet Ember**, **Quiet Constellation**, **Quiet Aurora**, **Quiet Pulse**, **Quiet Quartz**, **Quiet Grove**, Gallery, Quiet Inlet, Quiet Tide, Quiet Orbit, Quiet Nebula, Keepsake, Spectrum, Ripple, Frame, Echo, Canvas, Notes, Orchard, Horizon, Harmony, Lumen, Prism, Harbor, Cove, Lantern, Cascade, Quiet Void, Quiet Annotate, Quiet Timestamp, Quiet Echoes, and dozens more.
 
 No traces of boosting.
 

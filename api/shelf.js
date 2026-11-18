@@ -12,6 +12,7 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const FALLBACK = 'https://og2vsalt-svg.github.io/rank/og.png';
 
 const COPY = {
+  quietlumenfold: ["Quiet Lumen Fold — rankvault", "Drop local files into layered soft light folds. Warm glow, spring motion on frosted glass. Individual or shared captions. They settle into the database with a polished Discord embed on every link. Soft size warnings only. No hard limits. Apple-style springs."],
   quietsearch: ["Quiet Search — rankvault", "Discover recent public shares. Search by name or caption. Filter by type. Each opens with a polished Discord embed. Soft spring motion on frosted glass. Soft size warnings only. No hard limits."],
   quietstamp: ["Quiet Stamp — rankvault", "Drop local images. A quiet caption is stamped onto a polished polaroid-style version. The stamped image settles into the database with a polished Discord embed on every link. Soft size warnings only. No hard limits. Apple-style springs on frosted glass."],
   quietpulse: ["Quiet Pulse — rankvault", "Drop a local file. It joins a living pulse of recent public shares with gentle heartbeat motion. Shared caption and accent. Publishes to the database. Every link carries a polished Discord embed. Soft size warnings only. No hard limits."],

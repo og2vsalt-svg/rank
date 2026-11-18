@@ -21,6 +21,7 @@ const primary: NavItem[] = [
   { to: 'quietatlas', label: 'atlas' },
   { to: 'quietlattice', label: 'lattice' },
   { to: 'quietlumenveil', label: 'lumenveil' },
+  { to: 'quietbridge', label: 'bridge' },
   { to: 'nexus', label: 'nexus' },
   { to: 'quietstream', label: 'stream' },
   { to: 'quietforge', label: 'forge' },

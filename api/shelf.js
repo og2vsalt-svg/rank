@@ -12,6 +12,7 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const FALLBACK = 'https://og2vsalt-svg.github.io/rank/og.png';
 
 const COPY = {
+  quietsearch: ["Quiet Search — rankvault", "Discover recent public shares. Search by name or caption. Filter by type. Each opens with a polished Discord embed. Soft spring motion on frosted glass. Soft size warnings only. No hard limits."],
   quietstamp: ["Quiet Stamp — rankvault", "Drop local images. A quiet caption is stamped onto a polished polaroid-style version. The stamped image settles into the database with a polished Discord embed on every link. Soft size warnings only. No hard limits. Apple-style springs on frosted glass."],
   quietpulse: ["Quiet Pulse — rankvault", "Drop a local file. It joins a living pulse of recent public shares with gentle heartbeat motion. Shared caption and accent. Publishes to the database. Every link carries a polished Discord embed. Soft size warnings only. No hard limits."],
   quiettide: ["Quiet Tide — rankvault", "Drop local files onto a soft tidal wave of frosted glass. Shared note and accent. Batch-publish to the database. Every link unfurls a polished Discord embed. Soft size warnings only. No hard limits."],
@@ -113,6 +114,7 @@ export default async function handler(req, res) {
   <meta property="og:image" content="${esc(image)}" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="rankvault" />
+  <meta property="og:url" content="${esc(url.href)}" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="${esc(title)}" />
   <meta name="twitter:description" content="${esc(description)}" />

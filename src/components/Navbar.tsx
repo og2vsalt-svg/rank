@@ -37,6 +37,7 @@ const primary: NavItem[] = [
   { to: 'qrdesk', label: 'qr' },
   { to: 'gallery', label: 'gallery' },
   { to: 'vault', label: 'vault' },
+  { to: 'quietmoodboard', label: 'moodboard' },
   { to: 'directory', label: 'desks' },
 ];
 

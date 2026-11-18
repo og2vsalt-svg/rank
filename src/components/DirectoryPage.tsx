@@ -4,6 +4,7 @@ import { useRouter } from './Router';
 import Navbar from './Navbar';
 
 const desks = [
+  { to: "quietstamp", label: "quiet stamp", desc: "drop local images. a quiet caption is stamped onto a polished polaroid-style version. the stamped image settles into the database with a polished Discord embed on every link. soft size warnings only. no hard limits. apple-style springs on frosted glass." },
   { to: "quietbinder", label: "quiet binder", desc: "drop several local files into one quiet binder. each settles independently into the database. a single binder note lists them all with a polished Discord embed. soft size warnings only. no hard limits. apple-style springs on frosted glass." },
   { to: "quietannotate", label: "quiet annotate", desc: "drop a local image. click to place quiet notes. the annotated version settles into the database with a polished Discord embed on every link. soft size warnings only. no hard limits. apple-style springs on frosted glass." },
   { to: "quiettimestamp", label: "quiet timestamp", desc: "drop local files. each is stamped with the current time and an optional quiet note. they settle into the database with a polished Discord embed on every link. soft size warnings only. no hard limits. apple-style springs on frosted glass." },

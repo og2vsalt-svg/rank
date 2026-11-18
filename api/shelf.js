@@ -3,7 +3,7 @@ function esc(s) {
     .replace(/&/g, '&')
     .replace(/</g, '<')
     .replace(/>/g, '>')
-    .replace(/\"/g, '\"');
+    .replace(/"/g, '"');
 }
 
 const SUPABASE_URL = 'https://tqfocdktvjuwoiyfgesb.supabase.co';

@@ -44,9 +44,10 @@ Central surfaces:
 - **Quiet Pin** — pin a local file to a place name or coordinates. Settles into the database with a polished Discord embed. Soft size warnings only. No hard limits.
 - **Quiet Echoes** — drop local files and add a personal note to each. They publish independently to the database as sequential echoes with polished Discord embeds on every link. Soft size warnings only. No hard limits. Apple-style springs on frosted glass.
 - **Quiet Palette** — drop local images. A soft client-side palette is sampled and shown. Each settles into the database with its colors and a polished Discord embed on every link. Soft size warnings only. No hard limits. Apple-style springs on frosted glass.
+- **Quiet Bridge** — drop a local file and connect it to a quiet note or an optional prior share id. The bridged share settles into the database with a polished Discord embed on the link. Soft size warnings only. No hard limits. Apple-style springs on frosted glass.
 
 Specialized desks (all prior remain fully intact):
-- **Quiet Stamp**, **Quiet Harbor**, **Quiet Lighthouse**, **Quiet Ember**, **Quiet Constellation**, **Quiet Aurora**, **Quiet Pulse**, **Quiet Quartz**, **Quiet Grove**, Gallery, Quiet Inlet, Quiet Tide, Quiet Orbit, Quiet Nebula, Keepsake, Spectrum, Ripple, Frame, Echo, Canvas, Notes, Orchard, Horizon, Harmony, Lumen, Prism, Harbor, Cove, Lantern, Cascade, Quiet Void, Quiet Annotate, Quiet Timestamp, Quiet Echoes, Quiet Palette, Quiet Prism, Quiet Atlas, Quiet Lattice, Quiet Hush, Quiet Lumenveil, Quiet Search, and dozens more.
+- **Quiet Stamp**, **Quiet Harbor**, **Quiet Lighthouse**, **Quiet Ember**, **Quiet Constellation**, **Quiet Aurora**, **Quiet Pulse**, **Quiet Quartz**, **Quiet Grove**, Gallery, Quiet Inlet, Quiet Tide, Quiet Orbit, Quiet Nebula, Keepsake, Spectrum, Ripple, Frame, Echo, Canvas, Notes, Orchard, Horizon, Harmony, Lumen, Prism, Harbor, Cove, Lantern, Cascade, Quiet Void, Quiet Annotate, Quiet Timestamp, Quiet Echoes, Quiet Palette, Quiet Prism, Quiet Atlas, Quiet Lattice, Quiet Hush, Quiet Lumenveil, Quiet Search, Quiet Bridge, and dozens more.
 
 No traces of boosting.
 

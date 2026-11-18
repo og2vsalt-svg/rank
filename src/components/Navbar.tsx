@@ -40,6 +40,7 @@ const primary: NavItem[] = [
   { to: 'gallery', label: 'gallery' },
   { to: 'vault', label: 'vault' },
   { to: 'quietmoodboard', label: 'moodboard' },
+  { to: 'quietxenon', label: 'xenon' },
   { to: 'directory', label: 'desks' },
 ];
 

@@ -1,91 +1,106 @@
-import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useRef, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './Navbar';
-import { listShares } from '../lib/db';
+import { publishLocalFile } from '../lib/cloudShare';
 
-type Share = {
-  id: string;
-  name: string;
-  mime?: string;
-  size: number;
-  file_url?: string;
-  caption?: string | null;
-  created_at: string;
-  download_count?: number;
-};
+type Item = { file: File; id: string; place: string; status: string; link?: string; error?: string };
 
 export default function QuietAtlasPage() {
-  const [shares, setShares] = useState<Share[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [query, setQuery] = useState('');
-  const [accent] = useState('#5AC8FA');
+  const [items, setItems] = useState<Item[]>([]);
+  const [place, setPlace] = useState('');
+  const [busy, setBusy] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    listShares(48)
-      .then(setShares)
-      .catch(() => setShares([]))
-      .finally(() => setLoading(false));
-  }, []);
+  const addFiles = useCallback((list: FileList | File[]) => {
+    const arr = Array.from(list);
+    const next: Item[] = arr.map((file) => ({
+      file,
+      id: Math.random().toString(36).slice(2, 10),
+      place: place || 'somewhere quiet',
+      status: 'queued',
+    }));
+    setItems((p) => [...p, ...next]);
+  }, [place]);
 
-  const filtered = shares.filter((s) =>
-    !query || (s.name + (s.caption || '')).toLowerCase().includes(query.toLowerCase())
-  );
-
-  const pretty = (n: number) => {
-    if (n < 1024) return n + ' B';
-    if (n < 1048576) return Math.round(n / 1024) + ' KB';
-    return (n / 1048576).toFixed(1) + ' MB';
+  const publish = async () => {
+    if (!items.length || busy) return;
+    setBusy(true);
+    for (const item of items) {
+      if (item.status === 'done') continue;
+      setItems((p) => p.map((i) => i.id === item.id ? { ...i, status: 'uploading' } : i));
+      try {
+        const res = await publishLocalFile(item.file, {
+          caption: item.place,
+          cardTitle: item.file.name,
+          meta: { desk: 'quietatlas', place: item.place },
+        });
+        setItems((p) => p.map((i) =>
+          i.id === item.id
+            ? { ...i, status: res.ok ? 'done' : 'error', link: res.embed, error: res.error }
+            : i
+        ));
+      } catch (e: any) {
+        setItems((p) => p.map((i) => i.id === item.id ? { ...i, status: 'error', error: e.message } : i));
+      }
+    }
+    setBusy(false);
   };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-6 max-w-6xl mx-auto">
+      <div className="pt-28 pb-24 px-5 max-w-2xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 12 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ type: 'spring', stiffness: 110, damping: 22 }}
+          className="glass rounded-[36px] p-8 md:p-12"
         >
-          <p className="text-[13px] font-medium tracking-wide mb-1" style={{ color: accent }}>Quiet Atlas</p>
-          <h1 className="text-[40px] font-semibold tracking-tight mb-3">Public shares.</h1>
-          <p className="text-neutral-400 text-[16px] leading-relaxed mb-8 max-w-2xl">
-            A living map of recent public files. Search, preview, and open. Every link unfurls a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style spring motion. All prior desks remain fully intact.
+          <p className="text-[13px] font-medium tracking-wide mb-2 text-[#30D158]">Quiet Atlas</p>
+          <h1 className="text-4xl font-semibold tracking-tight mb-3">Pin a place.</h1>
+          <p className="text-neutral-400 text-[15.5px] leading-relaxed mb-8">
+            Drop a local file and give it a place name or coordinates. It settles into the database with a polished Discord embed. Soft size warnings only. No hard limits.
           </p>
 
           <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search names or captions…"
-            className="w-full max-w-md bg-black/20 border border-white/10 rounded-2xl px-4 py-3 text-[15px] text-white placeholder:text-neutral-500 mb-8 focus:outline-none focus:border-white/25 transition"
+            value={place}
+            onChange={(e) => setPlace(e.target.value)}
+            placeholder="Place name or coordinates"
+            className="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-3.5 text-[15px] text-white placeholder:text-neutral-500 mb-5 focus:outline-none focus:border-white/30 transition"
           />
 
-          {loading ? (
-            <p className="text-neutral-500">Opening the atlas…</p>
-          ) : (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {filtered.map((s, i) => (
-                <motion.a
-                  key={s.id}
-                  href={`/s/${s.id}`}
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.03, type: 'spring', stiffness: 100, damping: 20 }}
-                  className="glass rounded-2xl p-5 block hover:bg-white/5 transition group"
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <p className="text-sm font-medium truncate pr-2">{s.name || 'untitled'}</p>
-                    <span className="text-[11px] text-neutral-500 shrink-0">{pretty(s.size)}</span>
-                  </div>
-                  {s.caption && <p className="text-xs text-neutral-400 line-clamp-2 mb-3">{s.caption}</p>}
-                  <div className="flex items-center justify-between text-[11px] text-neutral-500">
-                    <span>{new Date(s.created_at).toLocaleDateString()}</span>
-                    <span>{s.download_count || 0} opens</span>
-                  </div>
-                </motion.a>
-              ))}
-            </div>
-          )}
-          {!loading && filtered.length === 0 && <p className="text-neutral-500 mt-8">Nothing matches yet.</p>}
+          <div
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => {
+              e.preventDefault();
+              if (e.dataTransfer.files.length) addFiles(e.dataTransfer.files);
+            }}
+            onClick={() => inputRef.current?.click()}
+            className="border-2 border-dashed border-white/12 rounded-3xl p-12 text-center mb-7 cursor-pointer hover:border-white/25 transition bg-black/20"
+          >
+            <p className="text-neutral-300 text-[15px]">Drop files to pin</p>
+            <input ref={inputRef} type="file" multiple className="hidden" onChange={(e) => e.target.files && addFiles(e.target.files)} />
+          </div>
+
+          <AnimatePresence>
+            {items.map((item) => (
+              <motion.div key={item.id} layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="glass rounded-2xl p-4 mb-3">
+                <p className="text-sm font-medium truncate">{item.file.name}</p>
+                <p className="text-xs text-neutral-500">{item.place} · {item.status}</p>
+                {item.link && <a href={item.link} target="_blank" rel="noreferrer" className="text-xs text-blue-400 block truncate">{item.link}</a>}
+                {item.error && <p className="text-xs text-red-400">{item.error}</p>}
+              </motion.div>
+            ))}
+          </AnimatePresence>
+
+          <motion.button
+            whileTap={{ scale: 0.98 }}
+            onClick={publish}
+            disabled={busy || !items.length}
+            className="w-full rounded-2xl py-4 text-[15px] font-medium text-white disabled:opacity-40 transition shadow-xl mt-2 bg-[#30D158]"
+          >
+            {busy ? 'Pinning…' : items.length ? `Publish ${items.length}` : 'Drop a file first'}
+          </motion.button>
         </motion.div>
       </div>
     </div>

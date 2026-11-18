@@ -1,46 +1,47 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useVault } from './VaultContext';
-import { useRouter } from './Router';
 import Navbar from './Navbar';
-import { publishLocalFile, shareUrls } from '../lib/cloudShare';
+import { publishLocalFile } from '../lib/cloudShare';
+
+type Item = { file: File; id: string; caption: string; status: string; link?: string; error?: string; preview?: string };
 
 export default function QuietLatticePage() {
-  const { addFiles } = useVault();
-  const { navigate } = useRouter();
-  const fileRef = useRef<HTMLInputElement>(null);
-  const [files, setFiles] = useState<File[]>([]);
+  const [items, setItems] = useState<Item[]>([]);
   const [busy, setBusy] = useState(false);
-  const [links, setLinks] = useState<{name: string; url: string}[]>([]);
-  const [warning, setWarning] = useState('');
-  const [caption, setCaption] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleFiles = (list: FileList | null) => {
-    if (!list) return;
+  const addFiles = useCallback((list: FileList | File[]) => {
     const arr = Array.from(list);
-    setFiles(arr);
-    const total = arr.reduce((s, f) => s + f.size, 0);
-    setWarning(total > 50 * 1024 * 1024 ? 'Chunky batch. Sending may feel slow — never refused.' : '');
-  };
+    const next: Item[] = arr.map((file) => ({
+      file,
+      id: Math.random().toString(36).slice(2, 10),
+      caption: '',
+      status: 'queued',
+      preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : undefined,
+    }));
+    setItems((p) => [...p, ...next]);
+  }, []);
 
-  const process = async () => {
-    if (!files.length) return;
+  const publish = async () => {
+    if (!items.length || busy) return;
     setBusy(true);
-    setLinks([]);
-    const newLinks: {name: string; url: string}[] = [];
-    try {
-      await addFiles(files, 'lattice');
-      for (const f of files.slice(0, 6)) {
-        const res = await publishLocalFile(f, { caption: caption || f.name, author: 'lattice', color: '#34D399' });
-        if (res.ok && res.id) {
-          const u = shareUrls(res.id);
-          newLinks.push({ name: f.name, url: u.embed });
-        }
+    for (const item of items) {
+      if (item.status === 'done') continue;
+      setItems((p) => p.map((i) => i.id === item.id ? { ...i, status: 'uploading' } : i));
+      try {
+        const res = await publishLocalFile(item.file, {
+          caption: item.caption.trim() || item.file.name,
+          cardTitle: item.file.name,
+          meta: { desk: 'quietlattice' },
+        });
+        setItems((p) => p.map((i) =>
+          i.id === item.id
+            ? { ...i, status: res.ok ? 'done' : 'error', link: res.embed, error: res.error }
+            : i
+        ));
+      } catch (e: any) {
+        setItems((p) => p.map((i) => i.id === item.id ? { ...i, status: 'error', error: e.message } : i));
       }
-      setLinks(newLinks);
-      if (newLinks[0]) try { await navigator.clipboard.writeText(newLinks[0].url); } catch {}
-    } catch (e: any) {
-      setWarning(e?.message || 'issue');
     }
     setBusy(false);
   };
@@ -48,56 +49,60 @@ export default function QuietLatticePage() {
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 100, damping: 20 }}>
-          <p className="text-[#34D399] text-sm font-medium mb-3 tracking-wide">quiet lattice</p>
-          <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-white mb-4">interlocked drops.</h1>
-          <p className="text-neutral-400 text-lg mb-8">Local files settle into a quiet interlocking lattice of frosted glass nodes with gentle spring connections. Batch-publish to the database. Every link unfurls a polished Discord embed. Soft size warnings only.</p>
-        </motion.div>
-
-        <div
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={(e) => { e.preventDefault(); handleFiles(e.dataTransfer.files); }}
-          className="glass rounded-3xl p-10 text-center apple-card mb-5 cursor-pointer relative overflow-hidden"
-          onClick={() => fileRef.current?.click()}
+      <div className="pt-28 pb-24 px-5 max-w-4xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: 'spring', stiffness: 110, damping: 22 }}
+          className="glass rounded-[36px] p-8 md:p-12"
         >
-          <div className="absolute inset-0 opacity-15 bg-[radial-gradient(circle_at_30%_30%,#34D399,transparent_50%),radial-gradient(circle_at_70%_70%,#10B981,transparent_50%)]" />
-          <input ref={fileRef} type="file" multiple className="hidden" onChange={(e) => handleFiles(e.target.files)} />
-          <div className="text-5xl mb-3 opacity-60 relative">▦</div>
-          <p className="text-white font-medium relative">Drop files into the lattice</p>
-          <p className="text-sm text-neutral-500 mt-1 relative">Interlocking nodes with spring motion</p>
-          {files.length > 0 && <p className="mt-3 text-sm text-[#34D399] relative">{files.length} selected</p>}
-        </div>
+          <p className="text-[13px] font-medium tracking-wide mb-2 text-[#FF9F0A]">Quiet Lattice</p>
+          <h1 className="text-4xl font-semibold tracking-tight mb-3">Arrange the weave.</h1>
+          <p className="text-neutral-400 text-[15.5px] leading-relaxed mb-8">
+            Drop several files. Give each its own quiet caption. They publish independently to the database with polished Discord embeds. Soft size warnings only. No hard limits. Apple-style springs on frosted glass.
+          </p>
 
-        <input
-          value={caption}
-          onChange={(e) => setCaption(e.target.value)}
-          placeholder="shared caption (optional)"
-          className="w-full mb-4 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm outline-none focus:border-[#34D399]/50"
-        />
+          <div
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => {
+              e.preventDefault();
+              if (e.dataTransfer.files.length) addFiles(e.dataTransfer.files);
+            }}
+            onClick={() => inputRef.current?.click()}
+            className="border-2 border-dashed border-white/12 rounded-3xl p-12 text-center mb-7 cursor-pointer hover:border-white/25 transition bg-black/20"
+          >
+            <p className="text-neutral-300 text-[15px]">Drop files for the lattice</p>
+            <input ref={inputRef} type="file" multiple className="hidden" onChange={(e) => e.target.files && addFiles(e.target.files)} />
+          </div>
 
-        {warning && <p className="text-amber-300 text-sm mb-4 text-center">{warning}</p>}
-
-        <div className="flex justify-center gap-3 mb-8">
-          <button onClick={process} disabled={!files.length || busy} className="px-6 py-3 rounded-full bg-white text-black font-medium disabled:opacity-40 active:scale-95 transition">
-            {busy ? 'linking…' : 'drop & embed'}
-          </button>
-          <button onClick={() => navigate('vault')} className="px-6 py-3 rounded-full glass">vault</button>
-        </div>
-
-        <AnimatePresence>
-          {links.length > 0 && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
-              {links.map((l) => (
-                <div key={l.url} className="glass rounded-2xl p-4">
-                  <p className="text-sm text-white truncate mb-1">{l.name}</p>
-                  <code className="text-xs text-[#34D399] break-all">{l.url}</code>
-                </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+            <AnimatePresence>
+              {items.map((item) => (
+                <motion.div key={item.id} layout initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} className="glass rounded-2xl p-3">
+                  {item.preview && <img src={item.preview} alt="" className="w-full h-24 object-cover rounded-xl mb-2" />}
+                  <p className="text-xs truncate mb-1">{item.file.name}</p>
+                  <input
+                    value={item.caption}
+                    onChange={(e) => setItems((p) => p.map((i) => i.id === item.id ? { ...i, caption: e.target.value } : i))}
+                    placeholder="caption"
+                    className="w-full bg-black/30 border border-white/10 rounded-xl px-2 py-1 text-xs mb-1"
+                  />
+                  <p className="text-[10px] text-neutral-500">{item.status}</p>
+                  {item.link && <a href={item.link} className="text-[10px] text-blue-400 truncate block">{item.link}</a>}
+                </motion.div>
               ))}
-              <p className="text-xs text-neutral-500 text-center">first link copied</p>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            </AnimatePresence>
+          </div>
+
+          <motion.button
+            whileTap={{ scale: 0.98 }}
+            onClick={publish}
+            disabled={busy || !items.length}
+            className="w-full rounded-2xl py-4 text-[15px] font-medium text-white disabled:opacity-40 transition shadow-xl bg-[#FF9F0A]"
+          >
+            {busy ? 'Weaving…' : items.length ? `Publish lattice (${items.length})` : 'Drop files first'}
+          </motion.button>
+        </motion.div>
       </div>
     </div>
   );

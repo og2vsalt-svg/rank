@@ -4,6 +4,7 @@ import { useRouter } from './Router';
 import Navbar from './Navbar';
 
 const desks = [
+  { to: "quietmoodboard", label: "quiet moodboard", desc: "arrange images and notes on a freeform board. drag to compose. files settle into the database with polished Discord embeds on every link. soft size warnings only. no hard limits. apple-style springs on frosted glass." },
   { to: "quietsearch", label: "quiet search", desc: "discover recent public shares. search by name or caption. filter by type. each opens with a polished Discord embed. soft spring motion on frosted glass. soft size warnings only. no hard limits." },
   { to: "quietstamp", label: "quiet stamp", desc: "drop local images. a quiet caption is stamped onto a polished polaroid-style version. the stamped image settles into the database with a polished Discord embed on every link. soft size warnings only. no hard limits. apple-style springs on frosted glass." },
   { to: "quietbinder", label: "quiet binder", desc: "drop several local files into one quiet binder. each settles independently into the database. a single binder note lists them all with a polished Discord embed. soft size warnings only. no hard limits. apple-style springs on frosted glass." },

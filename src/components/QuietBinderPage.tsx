@@ -20,6 +20,7 @@ export default function QuietBinderPage() {
   const [accent, setAccent] = useState('#5AC8FA');
   const [busy, setBusy] = useState(false);
   const [warn, setWarn] = useState<string | null>(null);
+  const [binderLink, setBinderLink] = useState<string | null>(null);
 
   const onFiles = useCallback((list: FileList | File[]) => {
     const arr = Array.from(list);
@@ -41,6 +42,9 @@ export default function QuietBinderPage() {
   const bindAndPublish = async () => {
     if (!files.length) return;
     setBusy(true);
+    setBinderLink(null);
+    const published: { name: string; link: string; note: string }[] = [];
+
     for (const item of files) {
       if (item.status === 'done') continue;
       setFiles((p) => p.map((f) => f.id === item.id ? { ...f, status: 'uploading' } : f));
@@ -52,13 +56,41 @@ export default function QuietBinderPage() {
           cardTitle: title || item.file.name,
           meta: { desk: 'quietbinder', binderTitle: title, note: item.note },
         });
+        const link = res.embed || '';
         setFiles((p) => p.map((f) =>
-          f.id === item.id ? { ...f, status: res.ok ? 'done' : 'error', link: res.embed, error: res.error } : f
+          f.id === item.id ? { ...f, status: res.ok ? 'done' : 'error', link, error: res.error } : f
         ));
+        if (res.ok && link) published.push({ name: item.file.name, link, note: item.note });
       } catch (e: any) {
         setFiles((p) => p.map((f) => f.id === item.id ? { ...f, status: 'error', error: e.message } : f));
       }
     }
+
+    if (published.length) {
+      const binderText = [
+        title || 'Quiet Binder',
+        caption ? `\n${caption}\n` : '',
+        ...published.map((p, i) => `${i + 1}. ${p.name}${p.note ? ` — ${p.note}` : ''}\n${p.link}`),
+      ].join('\n');
+
+      const blob = new Blob([binderText], { type: 'text/plain' });
+      const binderFile = new File(
+        [blob],
+        `${(title || 'binder').replace(/[^a-z0-9]+/gi, '-').slice(0, 48)}.txt`,
+        { type: 'text/plain' }
+      );
+
+      try {
+        const res = await publishLocalFile(binderFile, {
+          caption: `Binder: ${title || 'collection'} · ${published.length} files`,
+          color: accent,
+          cardTitle: title || 'Quiet Binder',
+          meta: { desk: 'quietbinder', kind: 'binder' },
+        });
+        if (res.ok && res.embed) setBinderLink(res.embed);
+      } catch {}
+    }
+
     setBusy(false);
   };
 
@@ -75,7 +107,7 @@ export default function QuietBinderPage() {
           <p className="text-[13px] font-medium tracking-[0.1em] uppercase mb-2" style={{ color: accent }}>Quiet Binder</p>
           <h1 className="text-4xl sm:text-[44px] font-semibold tracking-tight text-white mb-4 leading-[1.05]">Bind files into a quiet collection.</h1>
           <p className="text-neutral-400 text-lg leading-relaxed mb-10 max-w-2xl">
-            Gather local files, give the binder a title and shared caption, add optional notes per piece. Publish them together to the database. Every share link unfurls a polished Discord embed. Soft size warnings only. No hard limits. Spring motion on frosted glass. Human-crafted Apple-style pacing. All prior features remain fully intact. No traces of boosting.
+            Gather local files, give the binder a title and shared caption, add optional notes per piece. Each publishes independently. A single binder note lists them all with a polished Discord embed. Soft size warnings only. No hard limits. Spring motion on frosted glass.
           </p>
 
           <div
@@ -152,6 +184,17 @@ export default function QuietBinderPage() {
               </motion.div>
             )}
           </AnimatePresence>
+
+          {binderLink && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="glass rounded-2xl p-5 mb-6"
+            >
+              <p className="text-xs uppercase tracking-wider text-neutral-500 mb-1">Collection link</p>
+              <a href={binderLink} target="_blank" rel="noreferrer" className="text-sm text-blue-400 break-all">{binderLink}</a>
+            </motion.div>
+          )}
 
           <motion.button
             whileHover={{ scale: 1.01 }}

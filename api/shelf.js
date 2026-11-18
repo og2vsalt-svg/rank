@@ -43,6 +43,8 @@ const COPY = {
   quietpin: ["Quiet Pin — rankvault", "Pin a local file to a place name or coordinates. It settles into the database with a polished Discord embed on every link. Soft size warnings only. No hard limits. Apple-style springs on frosted glass."],
   quietstack: ["Quiet Stack — rankvault", "Stack local files with individual captions. Layered frosted previews, spring motion. Each publishes independently to the database with a polished Discord embed. Soft size warnings only. No hard limits."],
   quietbinder: ["Quiet Binder — rankvault", "Drop several local files into one quiet binder. Each settles independently into the database. A single binder note lists them all with a polished Discord embed. Soft size warnings only. No hard limits. Apple-style springs on frosted glass."],
+  quietlens: ["Quiet Lens — rankvault", "Drop local images. A soft focus lens settles over them with spring motion on frosted glass. Shared caption, accent color. They publish to the database with a polished Discord embed on every link. Soft size warnings only. No hard limits."],
+  quietdiary: ["Quiet Diary — rankvault", "Drop local files into a dated diary. Each entry carries the day and a shared note. They settle into the database with a polished Discord embed on every link. Soft size warnings only. No hard limits. Apple-style springs on frosted glass."],
   home: ['rankvault', 'Private file hosting and sharing. Upload local files, share with professional Discord embeds. Soft size warnings only. Sleek Apple-style interface with many specialized desks.'],
 };
 

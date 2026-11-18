@@ -4,6 +4,7 @@ import { useRouter } from './Router';
 import Navbar from './Navbar';
 
 const desks = [
+  { to: "quietlumenpath", label: "quiet lumen path", desc: "drop local files in sequence. they settle along a flowing path of soft light with staggered spring reveals on frosted glass. individual or shared captions, accent color. publish independently to the database. every share link carries a polished Discord embed. soft size warnings only. no hard limits. apple-style springs. all prior desks remain fully intact." },
   { to: "quietgradient", label: "quiet gradient", desc: "pick two colors. a soft linear gradient settles onto frosted glass. caption it and publish to the database. every share link carries a polished Discord embed. soft size warnings only. no hard limits. apple-style springs." },
   { to: "quietlens", label: "quiet lens", desc: "drop local images. a soft focus lens settles over them with spring motion on frosted glass. shared caption, accent color. they publish to the database with a polished Discord embed on every link. soft size warnings only. no hard limits." },
   { to: "quietdiary", label: "quiet diary", desc: "drop local files into a dated diary. each entry carries the day and a shared note. they settle into the database with a polished Discord embed on every link. soft size warnings only. no hard limits. apple-style springs on frosted glass." },

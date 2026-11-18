@@ -3,7 +3,7 @@ function esc(s) {
     .replace(/&/g, '&')
     .replace(/</g, '<')
     .replace(/>/g, '>')
-    .replace(/"/g, '"');
+    .replace(/\"/g, '\"');
 }
 
 const SUPABASE_URL = 'https://tqfocdktvjuwoiyfgesb.supabase.co';
@@ -16,6 +16,7 @@ const COPY = {
   quietkeepsake: ["Quiet Keepsake — rankvault", "Drop files that matter. Give each a short personal note. They settle into the database with polished Discord embeds. Soft size warnings only. No hard limits."],
   quietframe: ["Quiet Frame — rankvault", "Drop an image. It settles into a soft polaroid frame and publishes with a polished Discord embed. Soft size warnings only. No hard limits."],
   quietecho: ["Quiet Echo — rankvault", "Multi-file drop with soft expanding circular rings in your accent color. Shared note. Batch-publish to the database. Every link unfurls a polished Discord embed. Soft warnings only."],
+  quietechoes: ["Quiet Echoes — rankvault", "Drop local files and add a personal note to each. They publish independently to the database as sequential echoes with polished Discord embeds on every link. Soft size warnings only. No hard limits. Apple-style springs on frosted glass."],
   quietcanvas: ["Quiet Canvas — rankvault", "Freehand sketch on frosted glass. Export and share with a polished Discord embed. Soft size warnings only. No hard limits."],
   quietnotes: ["Quiet Notes — rankvault", "Local collection of short notes. Publish the whole set as a shared text file with a polished Discord embed. Soft warnings only."],
   quietmosaic: ["Quiet Mosaic — rankvault", "Drop several images. They settle into a soft mosaic of frosted glass tiles. Publish the collection with a polished Discord embed. Soft size warnings only. No hard limits."],

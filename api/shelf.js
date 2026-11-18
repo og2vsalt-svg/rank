@@ -1,9 +1,10 @@
 function esc(s) {
+  const amp = String.fromCharCode(38);
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"');
+    .split(amp).join(amp + 'amp;')
+    .split('<').join(amp + 'lt;')
+    .split('>').join(amp + 'gt;')
+    .split('"').join(amp + 'quot;');
 }
 
 const SUPABASE_URL = 'https://tqfocdktvjuwoiyfgesb.supabase.co';
@@ -38,6 +39,7 @@ const COPY = {
   quietequinox: ["Quiet Equinox — rankvault", "Where files find balance. Dual columns of frosted glass. Batch-publish with polished Discord embeds. Soft size warnings only."],
   quietpin: ["Quiet Pin — rankvault", "Pin a local file to a place name or coordinates. It settles into the database with a polished Discord embed on every link. Soft size warnings only. No hard limits. Apple-style springs on frosted glass."],
   quietstack: ["Quiet Stack — rankvault", "Stack local files with individual captions. Layered frosted previews, spring motion. Each publishes independently to the database with a polished Discord embed. Soft size warnings only. No hard limits."],
+  quietbinder: ["Quiet Binder — rankvault", "Drop several local files into one quiet binder. Each settles independently into the database. A single binder note lists them all with a polished Discord embed. Soft size warnings only. No hard limits. Apple-style springs on frosted glass."],
   home: ['rankvault', 'Private file hosting and sharing. Upload local files, share with professional Discord embeds. Soft size warnings only. Sleek Apple-style interface with many specialized desks.'],
 };
 

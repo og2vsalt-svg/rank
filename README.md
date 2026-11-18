@@ -5,6 +5,8 @@ Private file hosting and sharing.
 Drop local files into specialized desks. They settle into the database with professional Discord embeds on every link. Soft size warnings only — no hard limits. Sleek Apple-style spring animations and frosted glass.
 
 Central surfaces:
+- **Quiet Lens** — drop local images. A soft focus lens settles over them with spring motion on frosted glass. Shared caption, accent color. They publish to the database with a polished Discord embed on every link. Soft size warnings only. No hard limits.
+- **Quiet Diary** — drop local files into a dated diary. Each entry carries the day and a shared note. They settle into the database with a polished Discord embed on every link. Soft size warnings only. No hard limits. Apple-style springs on frosted glass.
 - **Quiet Lumen Fold** — drop local files into layered soft light folds. Warm glow, spring motion on frosted glass. Individual or shared captions. They settle into the database with a polished Discord embed on every link. Soft size warnings only. No hard limits. Apple-style springs.
 - **Quiet Moodboard** — arrange images and notes on a freeform board. Drag to compose. Files settle into the database with polished Discord embeds on every link. Soft size warnings only. No hard limits. Apple-style springs on frosted glass.
 - **Quiet Library** — browse and search recent public shares with type filters. Each opens with a polished Discord embed. Soft spring motion on frosted glass.
@@ -53,7 +55,7 @@ Central surfaces:
 - **Quiet Bridge** — drop a local file and connect it to a quiet note or an optional prior share id. The bridged share settles into the database with a polished Discord embed on the link. Soft size warnings only. No hard limits. Apple-style springs on frosted glass.
 
 Specialized desks (all prior remain fully intact):
-- **Quiet Lumen Fold**, **Quiet Library**, **Quiet Composer**, **Quiet Sanctuary**, **Quiet Stamp**, **Quiet Harbor**, **Quiet Lighthouse**, **Quiet Ember**, **Quiet Constellation**, **Quiet Aurora**, **Quiet Pulse**, **Quiet Quartz**, **Quiet Grove**, Gallery, Quiet Inlet, Quiet Tide, Quiet Orbit, Quiet Nebula, Keepsake, Spectrum, Ripple, Frame, Echo, Canvas, Notes, Orchard, Horizon, Harmony, Lumen, Prism, Harbor, Cove, Lantern, Cascade, Quiet Void, Quiet Annotate, Quiet Timestamp, Quiet Echoes, Quiet Palette, Quiet Prism, Quiet Atlas, Quiet Lattice, Quiet Hush, Quiet Whisper, Quiet Lumenveil, Quiet Search, Quiet Bridge, Quiet Moodboard, and dozens more.
+- **Quiet Lens**, **Quiet Diary**, **Quiet Lumen Fold**, **Quiet Library**, **Quiet Composer**, **Quiet Sanctuary**, **Quiet Stamp**, **Quiet Harbor**, **Quiet Lighthouse**, **Quiet Ember**, **Quiet Constellation**, **Quiet Aurora**, **Quiet Pulse**, **Quiet Quartz**, **Quiet Grove**, Gallery, Quiet Inlet, Quiet Tide, Quiet Orbit, Quiet Nebula, Keepsake, Spectrum, Ripple, Frame, Echo, Canvas, Notes, Orchard, Horizon, Harmony, Lumen, Prism, Harbor, Cove, Lantern, Cascade, Quiet Void, Quiet Annotate, Quiet Timestamp, Quiet Echoes, Quiet Palette, Quiet Prism, Quiet Atlas, Quiet Lattice, Quiet Hush, Quiet Whisper, Quiet Lumenveil, Quiet Search, Quiet Bridge, Quiet Moodboard, and dozens more.
 
 No traces of boosting.
 

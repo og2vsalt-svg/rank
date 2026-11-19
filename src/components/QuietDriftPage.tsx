@@ -1,206 +1,181 @@
 import { useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useVault } from './VaultContext';
-import { publishLocalFile, shareUrls } from '../lib/cloudShare';
+import Navbar from './Navbar';
+import { publishLocalFile } from '../lib/cloudShare';
+
+type Item = {
+  file: File;
+  preview?: string;
+  id: string;
+  caption: string;
+  status: 'queued' | 'uploading' | 'done' | 'error';
+  link?: string;
+  error?: string;
+};
 
 export default function QuietDriftPage() {
-  const { addFiles } = useVault();
-  const [files, setFiles] = useState<File[]>([]);
-  const [caption, setCaption] = useState('');
-  const [color, setColor] = useState('#5AC8FA');
-  const [status, setStatus] = useState<'idle' | 'uploading' | 'done' | 'error'>('idle');
-  const [results, setResults] = useState<{ id: string; name: string; embed: string; warn?: string | null }[]>([]);
-  const [error, setError] = useState('');
+  const [items, setItems] = useState<Item[]>([]);
+  const [sharedCaption, setSharedCaption] = useState('');
+  const [accent, setAccent] = useState('#5AC8FA');
+  const [busy, setBusy] = useState(false);
+  const [warn, setWarn] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const onDrop = useCallback((list: FileList | File[]) => {
+  const addFiles = useCallback((list: FileList | File[]) => {
     const arr = Array.from(list);
-    setFiles((prev) => [...prev, ...arr]);
-    setStatus('idle');
-    setError('');
+    const total = arr.reduce((s, f) => s + f.size, 0);
+    setWarn(total > 45_000_000 ? 'Large batch — uploads may feel slower. No hard limits.' : null);
+    const next: Item[] = arr.map((file) => ({
+      file,
+      id: Math.random().toString(36).slice(2, 10),
+      caption: '',
+      status: 'queued',
+      preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : undefined,
+    }));
+    setItems((p) => [...p, ...next]);
   }, []);
 
-  const onFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) onDrop(e.target.files);
-    if (inputRef.current) inputRef.current.value = '';
+  const updateCaption = (id: string, caption: string) => {
+    setItems((p) => p.map((i) => i.id === id ? { ...i, caption } : i));
   };
 
-  const remove = (idx: number) => setFiles((prev) => prev.filter((_, i) => i !== idx));
-
-  const shareAll = async () => {
-    if (!files.length) return;
-    setStatus('uploading');
-    setError('');
-    setResults([]);
-    try {
-      await addFiles(files, 'drift');
-      const out: typeof results = [];
-      for (const file of files) {
-        const res = await publishLocalFile(file, {
-          caption: caption || undefined,
-          color,
-          cardTitle: file.name,
-          author: 'rankvault',
+  const publish = async () => {
+    if (!items.length || busy) return;
+    setBusy(true);
+    for (const item of items) {
+      if (item.status === 'done') continue;
+      setItems((p) => p.map((i) => i.id === item.id ? { ...i, status: 'uploading' } : i));
+      try {
+        const cap = item.caption.trim() || sharedCaption.trim() || item.file.name;
+        const res = await publishLocalFile(item.file, {
+          caption: cap,
+          color: accent,
+          cardTitle: item.file.name,
+          meta: { desk: 'quiet-drift' },
         });
-        if (res.ok && res.id) {
-          const urls = shareUrls(res.id);
-          out.push({ id: res.id, name: file.name, embed: urls.embed, warn: res.warn || null });
-        } else {
-          out.push({ id: '', name: file.name, embed: '', warn: res.error || 'failed' });
-        }
+        setItems((p) => p.map((i) =>
+          i.id === item.id
+            ? { ...i, status: res.ok ? 'done' : 'error', link: res.embed, error: res.error }
+            : i
+        ));
+      } catch (e: any) {
+        setItems((p) => p.map((i) => i.id === item.id ? { ...i, status: 'error', error: e.message } : i));
       }
-      setResults(out);
-      setStatus('done');
-    } catch (e: any) {
-      setError(e?.message || 'something went wrong');
-      setStatus('error');
     }
+    setBusy(false);
   };
-
-  const large = files.some((f) => f.size > 40 * 1024 * 1024);
 
   return (
-    <div className="min-h-screen bg-[#0b0b0d] text-white pt-24 px-5 pb-16">
-      <div className="max-w-2xl mx-auto">
-        <motion.h1
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 100, damping: 20 }}
-          className="text-4xl font-semibold tracking-tight mb-2"
-        >
-          quiet drift
-        </motion.h1>
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.08 }}
-          className="text-neutral-400 mb-8"
-        >
-          Multi-file drop that drifts like soft clouds. Gentle floating motion, spring animations on frosted glass. Each file publishes to the database with a polished Discord embed. Soft slow warnings only. No hard limits.
-        </motion.p>
-
+    <div className="mesh min-h-screen">
+      <Navbar />
+      <div className="pt-28 pb-24 px-5 max-w-2xl mx-auto">
         <motion.div
-          className="glass rounded-3xl p-10 mb-6 text-center cursor-pointer border border-white/10 hover:border-white/25 transition-all relative overflow-hidden"
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={(e) => {
-            e.preventDefault();
-            if (e.dataTransfer.files) onDrop(e.dataTransfer.files);
-          }}
-          whileHover={{ scale: 1.005 }}
-          whileTap={{ scale: 0.995 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: 'spring', stiffness: 80, damping: 22 }}
+          className="glass rounded-[36px] p-8 md:p-12 relative"
         >
-          <div className="absolute inset-0 opacity-25 pointer-events-none">
-            {[...Array(5)].map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute w-16 h-8 rounded-full bg-cyan-400/30 blur-md"
-                style={{ left: `${10 + i * 18}%`, top: `${25 + (i % 2) * 25}%` }}
-                animate={{ x: [0, 12, 0], y: [0, -6, 0], opacity: [0.3, 0.7, 0.3] }}
-                transition={{ duration: 5 + i * 0.6, repeat: Infinity, ease: 'easeInOut' }}
-              />
-            ))}
+          <motion.div
+            className="absolute -inset-px rounded-[36px] opacity-30 pointer-events-none"
+            style={{ background: `radial-gradient(ellipse at 30% 20%, ${accent}33, transparent 60%)` }}
+            animate={{ opacity: [0.2, 0.4, 0.2] }}
+            transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
+          />
+          <p className="text-[13px] font-medium tracking-wide mb-2 relative" style={{ color: accent }}>Quiet Drift</p>
+          <h1 className="text-4xl font-semibold tracking-tight mb-3 relative">Files that drift into place.</h1>
+          <p className="text-neutral-400 text-[15.5px] leading-relaxed mb-8 relative">
+            Drop local files. They settle with staggered spring drift on frosted glass. Give each its own quiet caption, or share one. They publish independently to the database with a polished Discord embed on every link. Soft size warnings only — never hard limits.
+          </p>
+
+          <div
+            onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('ring-2', 'ring-white/20'); }}
+            onDragLeave={(e) => e.currentTarget.classList.remove('ring-2', 'ring-white/20')}
+            onDrop={(e) => {
+              e.preventDefault();
+              e.currentTarget.classList.remove('ring-2', 'ring-white/20');
+              if (e.dataTransfer.files.length) addFiles(e.dataTransfer.files);
+            }}
+            onClick={() => inputRef.current?.click()}
+            className="border-2 border-dashed border-white/12 rounded-3xl p-14 text-center mb-7 cursor-pointer hover:border-white/25 transition bg-black/20 relative"
+          >
+            <p className="text-neutral-300 text-[15px]">Drop files to drift</p>
+            <p className="text-neutral-500 text-sm mt-1">or click to choose</p>
+            <input
+              ref={inputRef}
+              type="file"
+              multiple
+              className="hidden"
+              onChange={(e) => e.target.files && addFiles(e.target.files)}
+            />
           </div>
-          <input ref={inputRef} type="file" onChange={onFile} className="hidden" id="drift-file" multiple />
-          <label htmlFor="drift-file" className="cursor-pointer block relative z-10">
-            <div className="text-neutral-400 text-sm mb-1">drop files here to drift</div>
-            <div className="text-xs text-neutral-500">or click to browse · multiple ok</div>
-          </label>
-        </motion.div>
 
-        {large && (
-          <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="text-amber-400 text-xs mb-4 px-1">
-            large files detected. encoding and upload may feel slow. no hard limit enforced.
-          </motion.div>
-        )}
+          <input
+            value={sharedCaption}
+            onChange={(e) => setSharedCaption(e.target.value)}
+            placeholder="Optional shared caption for all"
+            className="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-3.5 text-[15px] text-white placeholder:text-neutral-500 mb-5 focus:outline-none focus:border-white/30 transition relative"
+          />
 
-        <AnimatePresence>
-          {files.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="mb-6 space-y-3"
-            >
-              {files.map((f, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 8, scale: 0.96 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ type: 'spring', stiffness: 120, damping: 18 }}
-                  className="glass rounded-2xl px-4 py-3 flex items-center justify-between text-sm relative overflow-hidden"
-                >
-                  <motion.div
-                    className="absolute left-3 w-3 h-2 rounded-full bg-cyan-400/60 blur-[1px]"
-                    animate={{ x: [0, 4, 0], opacity: [0.5, 1, 0.5] }}
-                    transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                  />
-                  <span className="truncate max-w-[70%] pl-6">{f.name}</span>
-                  <div className="flex items-center gap-3 text-xs text-neutral-400">
-                    <span>{(f.size / 1024 / 1024).toFixed(1)} MB</span>
-                    <button onClick={() => remove(i)} className="text-neutral-500 hover:text-white">remove</button>
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
+          <div className="flex items-center gap-3 mb-6 relative">
+            <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="w-9 h-9 rounded-full cursor-pointer border-0" />
+            <span className="text-[13px] text-neutral-500">Accent glow for embeds</span>
+          </div>
 
-        <input
-          value={caption}
-          onChange={(e) => setCaption(e.target.value)}
-          placeholder="optional caption for Discord cards"
-          className="w-full glass rounded-2xl px-4 py-3 text-sm mb-4 outline-none focus:border-white/30"
-        />
+          {warn && <p className="text-[13px] text-amber-300/80 mb-5 relative">{warn}</p>}
 
-        <div className="flex items-center gap-3 mb-6">
-          <label className="text-xs text-neutral-400">drift accent</label>
-          <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="w-10 h-10 rounded-full border-0 cursor-pointer" />
-        </div>
-
-        <motion.button
-          whileTap={{ scale: 0.97 }}
-          onClick={shareAll}
-          disabled={!files.length || status === 'uploading'}
-          className="w-full py-3.5 rounded-full bg-[#5AC8FA] text-black font-medium disabled:opacity-50 transition"
-        >
-          {status === 'uploading' ? 'drifting into the database…' : `share ${files.length || ''} cloud${files.length === 1 ? '' : 's'}`}
-        </motion.button>
-
-        <AnimatePresence>
-          {status === 'done' && results.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mt-8 space-y-3"
-            >
-              {results.map((r, i) => (
-                <div key={i} className="glass rounded-2xl p-4">
-                  <p className="text-sm font-medium mb-1 truncate">{r.name}</p>
-                  {r.embed ? (
-                    <>
-                      <p className="text-xs text-neutral-400 break-all mb-2">{r.embed}</p>
-                      <button
-                        onClick={() => navigator.clipboard.writeText(r.embed)}
-                        className="text-xs text-[#5AC8FA]"
-                      >
-                        copy embed link
-                      </button>
-                    </>
+          <AnimatePresence>
+            {items.map((item, idx) => (
+              <motion.div
+                key={item.id}
+                layout
+                initial={{ opacity: 0, x: -20, y: 10 }}
+                animate={{ opacity: 1, x: 0, y: 0 }}
+                exit={{ opacity: 0, scale: 0.96 }}
+                transition={{ type: 'spring', stiffness: 100, damping: 18, delay: idx * 0.05 }}
+                className="glass rounded-2xl p-4 flex flex-col gap-3 mb-3 relative"
+              >
+                <div className="flex items-center gap-4">
+                  {item.preview ? (
+                    <img src={item.preview} alt="" className="w-14 h-14 rounded-xl object-cover" />
                   ) : (
-                    <p className="text-xs text-red-400">{r.warn}</p>
+                    <div className="w-14 h-14 rounded-xl bg-white/5 grid place-items-center text-[11px] text-neutral-500">file</div>
                   )}
-                  {r.warn && r.embed && <p className="text-amber-400 text-xs mt-1">{r.warn}</p>}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">{item.file.name}</p>
+                    <p className="text-xs text-neutral-500">{(item.file.size / 1024 / 1024).toFixed(1)} MB · {item.status}</p>
+                    {item.link && (
+                      <a href={item.link} target="_blank" rel="noreferrer" className="text-xs text-blue-400 truncate block mt-0.5">{item.link}</a>
+                    )}
+                    {item.error && <p className="text-xs text-red-400 mt-0.5">{item.error}</p>}
+                  </div>
+                  <button
+                    onClick={() => setItems((p) => p.filter((i) => i.id !== item.id))}
+                    className="text-xs text-neutral-500 hover:text-white px-2"
+                  >
+                    remove
+                  </button>
                 </div>
-              ))}
-            </motion.div>
-          )}
-          {status === 'error' && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 text-red-400 text-sm">
-              {error}
-            </motion.div>
-          )}
-        </AnimatePresence>
+                <input
+                  value={item.caption}
+                  onChange={(e) => updateCaption(item.id, e.target.value)}
+                  placeholder="Quiet caption for this one"
+                  className="w-full bg-black/20 border border-white/5 rounded-xl px-3 py-2 text-sm text-white placeholder:text-neutral-600 focus:outline-none focus:border-white/20"
+                />
+              </motion.div>
+            ))}
+          </AnimatePresence>
+
+          <motion.button
+            whileTap={{ scale: 0.98 }}
+            whileHover={{ scale: 1.005 }}
+            onClick={publish}
+            disabled={busy || !items.length}
+            className="w-full rounded-2xl py-4 text-[15px] font-medium text-white disabled:opacity-40 transition shadow-xl mt-2 relative"
+            style={{ background: accent }}
+          >
+            {busy ? 'Drifting…' : items.length ? `Drift ${items.length} file${items.length === 1 ? '' : 's'}` : 'Drop a file first'}
+          </motion.button>
+        </motion.div>
       </div>
     </div>
   );

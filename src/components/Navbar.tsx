@@ -11,6 +11,7 @@ export default function Navbar() {
   const links = [
     { to: 'home', label: 'home' },
     { to: 'core', label: 'core' },
+    { to: 'notebook', label: 'notes' },
     { to: 'sketch', label: 'sketch' },
     { to: 'pulse', label: 'pulse' },
     { to: 'gallery', label: 'gallery' },

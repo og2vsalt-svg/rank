@@ -1,60 +1,38 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
+import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishLocalFile, shareUrls } from '../lib/cloudShare';
-
-type Note = { id: string; text: string; created: number };
-
-const KEY = 'rankvault-quietnotes';
+import { publishLocalFile } from '../lib/cloudShare';
 
 export default function QuietNotesPage() {
-  const [notes, setNotes] = useState<Note[]>([]);
-  const [draft, setDraft] = useState('');
+  const [title, setTitle] = useState('');
+  const [body, setBody] = useState('');
+  const [link, setLink] = useState('');
   const [busy, setBusy] = useState(false);
-  const [link, setLink] = useState<string | null>(null);
-  const [warn, setWarn] = useState<string | null>(null);
+  const [warn, setWarn] = useState('');
+  const [err, setErr] = useState('');
 
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(KEY);
-      if (raw) setNotes(JSON.parse(raw));
-    } catch {}
-  }, []);
-
-  const saveLocal = (next: Note[]) => {
-    setNotes(next);
-    localStorage.setItem(KEY, JSON.stringify(next));
-  };
-
-  const add = () => {
-    if (!draft.trim()) return;
-    const next = [{ id: Math.random().toString(36).slice(2, 10), text: draft.trim(), created: Date.now() }, ...notes];
-    saveLocal(next);
-    setDraft('');
-  };
-
-  const remove = (id: string) => saveLocal(notes.filter((n) => n.id !== id));
-
-  const publishAll = async () => {
-    if (!notes.length) return;
+  const publish = async () => {
+    if (!body.trim() || busy) return;
     setBusy(true);
-    setWarn(null);
+    setErr('');
+    setLink('');
+    const name = (title.trim() || 'note') + '.txt';
+    const file = new File([body], name, { type: 'text/plain' });
+    if (file.size > 2 * 1024 * 1024) setWarn('Long note — the browser may feel slower. No hard limit.');
     try {
-      const text = notes.map((n) => `— ${new Date(n.created).toLocaleString()}\n${n.text}`).join('\n\n');
-      const blob = new Blob([text], { type: 'text/plain' });
-      if (blob.size > 5_000_000) setWarn('Long collection. Upload may feel slower.');
-      const file = new File([blob], 'quiet-notes.txt', { type: 'text/plain' });
       const res = await publishLocalFile(file, {
-        caption: 'quiet notes collection',
-        cardTitle: 'Quiet Notes',
-        meta: { desk: 'quietnotes', count: notes.length },
+        caption: title.trim() || 'quiet note',
+        cardTitle: name,
+        color: '#5AC8FA',
+        meta: { desk: 'quietnotes' },
       });
-      if (res.ok && res.id) {
-        const urls = shareUrls(res.id);
-        setLink(urls?.embed || null);
+      if (res.ok && res.embed) {
+        setLink(res.embed);
+      } else {
+        setErr(res.error || 'could not publish');
       }
     } catch (e: any) {
-      setWarn(e.message || 'publish failed');
+      setErr(e?.message || 'failed');
     }
     setBusy(false);
   };
@@ -62,62 +40,54 @@ export default function QuietNotesPage() {
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-6 max-w-2xl mx-auto">
+      <div className="pt-28 pb-24 px-5 max-w-2xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
+          initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 110, damping: 22 }}
-          className="glass rounded-[32px] p-6 md:p-10 shadow-2xl"
+          transition={{ type: 'spring', stiffness: 100, damping: 20 }}
+          className="glass rounded-[32px] p-8 md:p-10"
         >
-          <h1 className="text-3xl font-semibold tracking-tight text-white mb-2">Quiet Notes</h1>
-          <p className="text-neutral-400 text-sm mb-6">A local collection of short notes. Publish the whole set as a shared text file with a polished Discord embed. Soft warnings only.</p>
+          <p className="text-[#5AC8FA] text-sm font-medium mb-2 tracking-wide">quiet notes</p>
+          <h1 className="text-4xl font-semibold tracking-tight mb-3">write something soft.</h1>
+          <p className="text-neutral-400 text-sm mb-8 leading-relaxed">
+            A note desk. It becomes a file, lands in the same database, and every link carries a polished Discord embed. Soft size warnings only. All other desks stay exactly as they were.
+          </p>
+
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="title (optional)"
+            className="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white placeholder:text-neutral-500 mb-4 focus:outline-none focus:border-white/25"
+          />
 
           <textarea
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            placeholder="a quiet note…"
-            rows={3}
-            className="w-full mb-3 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-neutral-500 focus:outline-none focus:border-white/30 resize-none"
+            value={body}
+            onChange={(e) => setBody(e.target.value)}
+            placeholder="the note…"
+            rows={8}
+            className="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white placeholder:text-neutral-500 mb-5 focus:outline-none focus:border-white/25 resize-none"
           />
-          <button onClick={add} className="mb-6 px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-neutral-100 transition">
-            add note
-          </button>
 
-          <AnimatePresence>
-            {notes.map((n) => (
-              <motion.div
-                key={n.id}
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="mb-3 p-4 rounded-2xl bg-white/5 border border-white/5"
-              >
-                <p className="text-sm text-white whitespace-pre-wrap">{n.text}</p>
-                <div className="mt-2 flex justify-between text-xs text-neutral-500">
-                  <span>{new Date(n.created).toLocaleString()}</span>
-                  <button onClick={() => remove(n.id)} className="hover:text-white">remove</button>
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
+          {warn && <p className="text-xs text-amber-300/80 mb-4">{warn}</p>}
+          {err && <p className="text-xs text-red-400 mb-4">{err}</p>}
 
-          {notes.length > 0 && (
-            <div className="mt-6 flex items-center gap-4">
-              <button
-                onClick={publishAll}
-                disabled={busy}
-                className="px-6 py-3 rounded-full bg-white text-black font-medium text-sm hover:bg-neutral-100 disabled:opacity-50 transition"
-              >
-                {busy ? 'publishing…' : `publish ${notes.length} notes`}
-              </button>
-              {link && (
-                <a href={link} target="_blank" rel="noreferrer" className="text-sm text-blue-400 hover:underline">
-                  share link
-                </a>
-              )}
-            </div>
+          <motion.button
+            whileTap={{ scale: 0.98 }}
+            onClick={publish}
+            disabled={busy || !body.trim()}
+            className="w-full rounded-2xl py-3.5 text-sm font-medium text-black bg-[#5AC8FA] disabled:opacity-40 transition"
+          >
+            {busy ? 'publishing…' : 'publish note'}
+          </motion.button>
+
+          {link && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-6 text-sm">
+              <p className="text-neutral-500 mb-1">share link</p>
+              <a href={link} target="_blank" rel="noreferrer" className="text-[#5AC8FA] break-all hover:underline">
+                {link}
+              </a>
+            </motion.div>
           )}
-          {warn && <p className="mt-3 text-xs text-amber-400">{warn}</p>}
         </motion.div>
       </div>
     </div>

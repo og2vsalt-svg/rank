@@ -3,11 +3,11 @@ import { motion } from 'framer-motion';
 import Navbar from './Navbar';
 import { useRouter } from './Router';
 
-// Hand-curated list of notable desks. The app still lazy-loads every *Page.tsx that exists.
 const DESKS = [
   { route: 'core', title: 'Core', blurb: 'The quiet center. Drop local files. Soft warnings only.' },
   { route: 'gallery', title: 'Gallery', blurb: 'Living view of recent public shares.' },
   { route: 'timeline', title: 'Timeline', blurb: 'What happened in this vault lately.' },
+  { route: 'quietnotes', title: 'Quiet Notes', blurb: 'Write a note. It becomes a shareable file.' },
   { route: 'quietharbor', title: 'Quiet Harbor', blurb: 'A softer place to leave things.' },
   { route: 'quietsignal', title: 'Quiet Signal', blurb: 'Minimal signal desk.' },
   { route: 'lens', title: 'Lens', blurb: 'Closer look at media.' },

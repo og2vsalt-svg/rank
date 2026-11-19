@@ -4,6 +4,8 @@ import { useRouter } from './Router';
 import Navbar from './Navbar';
 
 const desks = [
+  { to: "quietrelic", label: "quiet relic", desc: "drop one local file. stamp it with a year and a short lore note. it settles into the database as a relic with a polished Discord embed on every link. soft size warnings only. no hard limits. apple-style springs on frosted glass. all prior desks remain fully intact." },
+  { to: "quietlink", label: "quiet link", desc: "paste any URL. give it a title and a short note. it becomes a shareable card that settles into the database with a polished Discord embed. soft warnings only. no hard limits. apple-style springs on frosted glass. all prior desks remain fully intact." },
   { to: "quietbeacon", label: "quiet beacon", desc: "drop one local file. add a short message. it settles as a quiet glowing beacon into the database with a polished Discord embed on every link. soft size warnings only. no hard limits. apple-style springs on frosted glass." },
   { to: "quietnotebook", label: "quiet notebook", desc: "write a longer note. attach local files if the words need company. the note and each file settle independently into the database with polished Discord embeds on every link. soft size warnings only. no hard limits. apple-style springs on frosted glass." },
   { to: "quietlumenpath", label: "quiet lumen path", desc: "drop local files in sequence. they settle along a flowing path of soft light with staggered spring reveals on frosted glass. individual or shared captions, accent color. publish independently to the database. every share link carries a polished Discord embed. soft size warnings only. no hard limits. apple-style springs. all prior desks remain fully intact." },

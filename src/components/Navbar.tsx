@@ -55,6 +55,7 @@ const primary: NavItem[] = [
   { to: 'quietzen', label: 'zen' },
   { to: 'quietfocus', label: 'focus' },
   { to: 'quietresonance', label: 'resonance' },
+  { to: 'quietapex', label: 'apex' },
   { to: 'directory', label: 'desks' },
 ];
 

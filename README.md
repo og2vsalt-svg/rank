@@ -6,7 +6,7 @@ Drop local files. They upload to Supabase storage and public_shares. Optional no
 
 Soft size warnings only — never hard limits. Apple-style spring animations on frosted glass. Human-crafted UI.
 
-Desks include Core, Gallery, Timeline, Quiet Notes, Quiet Harbor, Quiet Signal, Quiet Inspector, Lens, Diary, Sketch, Pulse and many more. All prior desks remain fully intact.
+Desks include Core, Notebook (text notes), Gallery, Timeline, Quiet Notes, Quiet Harbor, Quiet Signal, Quiet Inspector, Lens, Diary, Sketch, Pulse and many more. All prior desks remain fully intact.
 
 ## Stack
 
@@ -15,4 +15,4 @@ Desks include Core, Gallery, Timeline, Quiet Notes, Quiet Harbor, Quiet Signal, 
 - Vercel (serverless APIs, Blob optional)
 - Discord / social embeds on all share links
 
-No boosting. Just quiet, reliable file sharing.
+No boosting. Just quiet, reliable file sharing and notes.

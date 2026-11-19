@@ -3,7 +3,11 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const FALLBACK = 'https://og2vsalt-svg.github.io/rank/og.png';
 
 function esc(s) {
-  return String(s || '').replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/"/g, '"');
+  return String(s || '')
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"');
 }
 
 function prettySize(n) {
@@ -60,6 +64,9 @@ export default async function handler(req, res) {
   } else if (page === 'core') {
     title = 'Core — rankvault';
     desc = 'The cleanest drop. Soft size warnings only. No hard limits.';
+  } else if (page === 'prism') {
+    title = 'Prism — rankvault';
+    desc = 'Color each drop. Multi-file sharing with per-accent Discord embeds. Soft warnings only.';
   }
 
   const url = `${proto}://${host}${path}`;

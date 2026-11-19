@@ -5,6 +5,7 @@ import { useRouter } from './Router';
 
 const DESKS = [
   { route: 'core', title: 'Core', blurb: 'The quiet center. Drop local files. Soft warnings only.' },
+  { route: 'prism', title: 'Prism', blurb: 'Color each drop. Per-file accents on Discord embeds.' },
   { route: 'gallery', title: 'Gallery', blurb: 'Living view of recent public shares.' },
   { route: 'timeline', title: 'Timeline', blurb: 'What happened in this vault lately.' },
   { route: 'quietnotes', title: 'Quiet Notes', blurb: 'Write a note. It becomes a shareable file.' },

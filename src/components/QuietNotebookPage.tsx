@@ -1,147 +1,162 @@
-import { useState } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { publishLocalFile, shareUrls } from '../lib/cloudShare';
+import Navbar from './Navbar';
+import { publishLocalFile } from '../lib/cloudShare';
 
-type Entry = { id: string; note: string; file: File | null; title: string };
+type Attachment = { file: File; id: string; preview?: string };
 
 export default function QuietNotebookPage() {
-  const [entries, setEntries] = useState<Entry[]>([{ id: '1', note: '', file: null, title: '' }]);
-  const [color, setColor] = useState('#0A84FF');
-  const [status, setStatus] = useState<'idle' | 'uploading' | 'done'>('idle');
-  const [results, setResults] = useState<{ id: string; embed: string; title: string; warn?: string | null }[]>([]);
+  const [note, setNote] = useState('');
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
+  const [accent, setAccent] = useState('#5E5CE6');
+  const [busy, setBusy] = useState(false);
+  const [results, setResults] = useState<{ link: string; name: string }[]>([]);
+  const [warn, setWarn] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const addEntry = () => setEntries((p) => [...p, { id: Date.now().toString(), note: '', file: null, title: '' }]);
+  const addFiles = useCallback((list: FileList | File[]) => {
+    const arr = Array.from(list);
+    const total = arr.reduce((s, f) => s + f.size, 0) + attachments.reduce((s, a) => s + a.file.size, 0);
+    setWarn(total > 45_000_000 ? 'Large collection — uploads may feel slower. No hard limits.' : null);
+    const next: Attachment[] = arr.map((file) => ({
+      file,
+      id: Math.random().toString(36).slice(2, 10),
+      preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : undefined,
+    }));
+    setAttachments((p) => [...p, ...next]);
+  }, [attachments]);
 
-  const update = (id: string, patch: Partial<Entry>) =>
-    setEntries((p) => p.map((e) => (e.id === id ? { ...e, ...patch } : e)));
+  const publish = async () => {
+    if (busy) return;
+    setBusy(true);
+    setResults([]);
+    const published: { link: string; name: string }[] = [];
 
-  const publishAll = async () => {
-    const valid = entries.filter((e) => e.note.trim() || e.file);
-    if (!valid.length || status === 'uploading') return;
-    setStatus('uploading');
-    const next: typeof results = [];
-    for (const e of valid) {
-      let res;
-      if (e.file) {
-        res = await publishLocalFile(e.file, {
-          caption: e.note || undefined,
-          color,
-          cardTitle: e.title.trim() || e.file.name,
-          author: 'rankvault',
+    // Publish the note as a text file if present
+    if (note.trim()) {
+      const noteFile = new File([note.trim()], 'notebook-note.txt', { type: 'text/plain' });
+      try {
+        const res = await publishLocalFile(noteFile, {
+          caption: note.trim().slice(0, 120),
+          color: accent,
+          cardTitle: 'Quiet notebook entry',
+          meta: { desk: 'notebook', kind: 'note' },
         });
-      } else {
-        const blob = new Blob([e.note], { type: 'text/plain' });
-        const textFile = new File([blob], `${e.title.trim() || 'note'}.txt`, { type: 'text/plain' });
-        res = await publishLocalFile(textFile, {
-          caption: e.note,
-          color,
-          cardTitle: e.title.trim() || 'notebook entry',
-          author: 'rankvault',
-        });
-      }
-      if (res.ok && res.id) {
-        next.push({
-          id: res.id,
-          embed: shareUrls(res.id).embed,
-          title: e.title || e.file?.name || 'note',
-          warn: res.warn || (e.file && e.file.size > 40 * 1024 * 1024 ? 'large file — may feel slow' : null),
-        });
-      }
+        if (res.ok && res.embed) published.push({ link: res.embed, name: 'note' });
+      } catch {}
     }
-    setResults(next);
-    setEntries([{ id: Date.now().toString(), note: '', file: null, title: '' }]);
-    setStatus('done');
+
+    // Publish each attachment
+    for (const att of attachments) {
+      try {
+        const res = await publishLocalFile(att.file, {
+          caption: note.trim().slice(0, 80) || att.file.name,
+          color: accent,
+          cardTitle: att.file.name,
+          meta: { desk: 'notebook', kind: 'attachment' },
+        });
+        if (res.ok && res.embed) published.push({ link: res.embed, name: att.file.name });
+      } catch {}
+    }
+
+    setResults(published);
+    setBusy(false);
   };
 
   return (
-    <div className="min-h-screen bg-[#0b0b0d] text-white pt-24 px-5 pb-20">
-      <div className="max-w-2xl mx-auto">
-        <motion.h1
+    <div className="mesh min-h-screen">
+      <Navbar />
+      <div className="pt-28 pb-24 px-5 max-w-2xl mx-auto">
+        <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 100, damping: 20 }}
-          className="text-4xl sm:text-5xl font-semibold tracking-tight mb-2"
+          transition={{ type: 'spring', stiffness: 110, damping: 22 }}
+          className="glass rounded-[36px] p-8 md:p-12"
         >
-          quiet notebook
-        </motion.h1>
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.08 }}
-          className="text-neutral-400 mb-10"
-        >
-          Keep multiple quiet entries. Compose notes or drop local files. They settle as soft pages on frosted glass with spring motion. Batch-publish to the database with polished Discord embeds. Soft size warnings only. No hard limits. All prior desks remain fully intact.
-        </motion.p>
+          <p className="text-[13px] font-medium tracking-wide mb-2" style={{ color: accent }}>Quiet Notebook</p>
+          <h1 className="text-4xl font-semibold tracking-tight mb-3">Write, then share.</h1>
+          <p className="text-neutral-400 text-[15.5px] leading-relaxed mb-8">
+            A still surface for longer notes. Attach local files if the words need company. The note and each file settle independently into the database with polished Discord embeds on every link. Soft size warnings only — never hard limits. Apple-style springs on frosted glass.
+          </p>
 
-        <AnimatePresence>
-          {entries.map((entry, idx) => (
-            <motion.div
-              key={entry.id}
-              layout
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ type: 'spring', stiffness: 110, damping: 18 }}
-              className="glass rounded-3xl p-5 mb-4"
-            >
-              <input
-                value={entry.title}
-                onChange={(e) => update(entry.id, { title: e.target.value })}
-                placeholder={`entry ${idx + 1} title`}
-                className="w-full bg-transparent text-base font-medium outline-none mb-2 placeholder:text-neutral-600"
-              />
-              <textarea
-                value={entry.note}
-                onChange={(e) => update(entry.id, { note: e.target.value })}
-                placeholder="write a quiet note…"
-                rows={4}
-                className="w-full bg-transparent text-sm outline-none resize-none placeholder:text-neutral-600 mb-3"
-              />
-              <label className="block text-xs text-neutral-500 mb-1 cursor-pointer">
-                optional file
-                <input
-                  type="file"
-                  className="hidden"
-                  onChange={(e) => update(entry.id, { file: e.target.files?.[0] || null })}
-                />
-              </label>
-              {entry.file && <p className="text-xs text-neutral-300 mb-2">{entry.file.name}</p>}
-              {entry.file && entry.file.size > 40 * 1024 * 1024 && (
-                <p className="text-amber-400 text-xs">large file. may feel slow. no hard limit.</p>
-              )}
-            </motion.div>
-          ))}
-        </AnimatePresence>
+          <textarea
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="Write your quiet note…"
+            rows={8}
+            className="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-4 text-[15px] text-white placeholder:text-neutral-500 mb-6 focus:outline-none focus:border-white/30 transition resize-none leading-relaxed"
+          />
 
-        <div className="flex items-center gap-4 mb-6">
-          <button onClick={addEntry} className="text-sm text-[#0A84FF] hover:underline">+ add entry</button>
-          <label className="text-xs text-neutral-500 flex items-center gap-2">
-            accent
-            <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="w-7 h-7 rounded-full border-0 cursor-pointer" />
-          </label>
-        </div>
+          <div
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => {
+              e.preventDefault();
+              if (e.dataTransfer.files.length) addFiles(e.dataTransfer.files);
+            }}
+            onClick={() => inputRef.current?.click()}
+            className="border-2 border-dashed border-white/12 rounded-3xl p-8 text-center mb-6 cursor-pointer hover:border-white/25 transition bg-black/20"
+          >
+            <p className="text-neutral-300 text-[15px]">Attach files (optional)</p>
+            <p className="text-neutral-500 text-sm mt-1">drop or click</p>
+            <input
+              ref={inputRef}
+              type="file"
+              multiple
+              className="hidden"
+              onChange={(e) => e.target.files && addFiles(e.target.files)}
+            />
+          </div>
 
-        <motion.button
-          whileTap={{ scale: 0.97 }}
-          onClick={publishAll}
-          disabled={status === 'uploading' || !entries.some((e) => e.note.trim() || e.file)}
-          className="w-full py-3 rounded-full bg-[#0A84FF] text-white font-medium disabled:opacity-40 transition"
-        >
-          {status === 'uploading' ? 'publishing…' : 'publish notebook to database'}
-        </motion.button>
-
-        {results.length > 0 && (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-2xl p-5 mt-6">
-            <p className="text-sm font-medium mb-3">notebook shares</p>
-            {results.map((r) => (
-              <div key={r.id} className="mb-3 last:mb-0">
-                <p className="text-sm">{r.title}</p>
-                <button onClick={() => navigator.clipboard.writeText(r.embed)} className="text-xs text-[#0A84FF] hover:underline">copy discord link</button>
-                {r.warn && <p className="text-amber-400 text-xs mt-1">{r.warn}</p>}
-              </div>
+          <AnimatePresence>
+            {attachments.map((att) => (
+              <motion.div
+                key={att.id}
+                layout
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="glass rounded-2xl p-3 flex items-center gap-3 mb-2"
+              >
+                {att.preview ? (
+                  <img src={att.preview} alt="" className="w-10 h-10 rounded-lg object-cover" />
+                ) : (
+                  <div className="w-10 h-10 rounded-lg bg-white/5 grid place-items-center text-[10px] text-neutral-500">file</div>
+                )}
+                <p className="text-sm truncate flex-1">{att.file.name}</p>
+                <button onClick={() => setAttachments((p) => p.filter((a) => a.id !== att.id))} className="text-xs text-neutral-500 hover:text-white">remove</button>
+              </motion.div>
             ))}
-          </motion.div>
-        )}
+          </AnimatePresence>
+
+          <div className="flex items-center gap-3 my-5">
+            <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="w-9 h-9 rounded-full cursor-pointer border-0" />
+            <span className="text-[13px] text-neutral-500">Accent</span>
+          </div>
+
+          {warn && <p className="text-[13px] text-amber-300/80 mb-4">{warn}</p>}
+
+          <motion.button
+            whileTap={{ scale: 0.98 }}
+            onClick={publish}
+            disabled={busy || (!note.trim() && !attachments.length)}
+            className="w-full rounded-2xl py-4 text-[15px] font-medium text-white disabled:opacity-40 transition shadow-xl"
+            style={{ background: accent }}
+          >
+            {busy ? 'Publishing…' : 'Share notebook'}
+          </motion.button>
+
+          {results.length > 0 && (
+            <div className="mt-6 space-y-2">
+              {results.map((r, i) => (
+                <div key={i} className="glass rounded-xl p-3">
+                  <p className="text-xs text-neutral-500">{r.name}</p>
+                  <a href={r.link} target="_blank" rel="noreferrer" className="text-sm text-blue-400 break-all">{r.link}</a>
+                </div>
+              ))}
+              <p className="text-xs text-neutral-500">Each link carries a polished Discord embed.</p>
+            </div>
+          )}
+        </motion.div>
       </div>
     </div>
   );

@@ -1,54 +1,54 @@
-import { useRef, useState, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { publishLocalFile, shareUrls } from '../lib/cloudShare';
+import Navbar from './Navbar';
+import { publishLocalFile } from '../lib/cloudShare';
 
 export default function QuietSketchPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [drawing, setDrawing] = useState(false);
-  const [caption, setCaption] = useState('');
   const [color, setColor] = useState('#0A84FF');
-  const [status, setStatus] = useState<'idle' | 'uploading' | 'done' | 'error'>('idle');
-  const [result, setResult] = useState<{ embed: string; warn?: string | null } | null>(null);
-  const [error, setError] = useState('');
+  const [size, setSize] = useState(4);
+  const [caption, setCaption] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [link, setLink] = useState<string | null>(null);
+  const [warn, setWarn] = useState<string | null>(null);
 
   useEffect(() => {
-    const c = canvasRef.current;
-    if (!c) return;
-    const ctx = c.getContext('2d');
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
     if (!ctx) return;
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.scale(dpr, dpr);
     ctx.fillStyle = '#0b0b0d';
-    ctx.fillRect(0, 0, c.width, c.height);
+    ctx.fillRect(0, 0, rect.width, rect.height);
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
   }, []);
 
-  const getPos = (e: React.MouseEvent | React.TouchEvent) => {
-    const c = canvasRef.current!;
-    const rect = c.getBoundingClientRect();
-    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
-    return {
-      x: ((clientX - rect.left) / rect.width) * c.width,
-      y: ((clientY - rect.top) / rect.height) * c.height,
-    };
+  const getPos = (e: React.PointerEvent) => {
+    const canvas = canvasRef.current!;
+    const rect = canvas.getBoundingClientRect();
+    return { x: e.clientX - rect.left, y: e.clientY - rect.top };
   };
 
-  const start = (e: React.MouseEvent | React.TouchEvent) => {
+  const start = (e: React.PointerEvent) => {
     setDrawing(true);
-    const ctx = canvasRef.current?.getContext('2d');
-    if (!ctx) return;
+    const ctx = canvasRef.current!.getContext('2d')!;
     const { x, y } = getPos(e);
     ctx.beginPath();
     ctx.moveTo(x, y);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = size;
   };
 
-  const move = (e: React.MouseEvent | React.TouchEvent) => {
+  const move = (e: React.PointerEvent) => {
     if (!drawing) return;
-    const ctx = canvasRef.current?.getContext('2d');
-    if (!ctx) return;
+    const ctx = canvasRef.current!.getContext('2d')!;
     const { x, y } = getPos(e);
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 3;
     ctx.lineTo(x, y);
     ctx.stroke();
   };
@@ -56,113 +56,104 @@ export default function QuietSketchPage() {
   const end = () => setDrawing(false);
 
   const clear = () => {
-    const c = canvasRef.current;
-    const ctx = c?.getContext('2d');
-    if (!c || !ctx) return;
+    const canvas = canvasRef.current!;
+    const ctx = canvas.getContext('2d')!;
+    const rect = canvas.getBoundingClientRect();
     ctx.fillStyle = '#0b0b0d';
-    ctx.fillRect(0, 0, c.width, c.height);
-    setResult(null);
-    setStatus('idle');
+    ctx.fillRect(0, 0, rect.width, rect.height);
+    setLink(null);
   };
 
-  const publish = async () => {
-    const c = canvasRef.current;
-    if (!c) return;
-    setStatus('uploading');
-    setError('');
-    setResult(null);
+  const publish = useCallback(async () => {
+    const canvas = canvasRef.current;
+    if (!canvas || busy) return;
+    setBusy(true);
+    setWarn(null);
     try {
-      const blob = await new Promise<Blob | null>((resolve) => c.toBlob(resolve, 'image/png'));
-      if (!blob) throw new Error('could not export sketch');
+      const blob = await new Promise<Blob | null>((res) => canvas.toBlob(res, 'image/png'));
+      if (!blob) throw new Error('could not export');
       const file = new File([blob], 'quiet-sketch.png', { type: 'image/png' });
+      if (file.size > 40 * 1024 * 1024) setWarn('Large sketch — may feel slow. No hard limits.');
       const res = await publishLocalFile(file, {
-        caption: caption || 'quiet sketch',
+        caption: caption.trim() || 'A quiet sketch',
         color,
-        cardTitle: caption.slice(0, 40) || 'quiet sketch',
-        author: 'rankvault',
-        meta: { kind: 'sketch' },
+        cardTitle: 'Quiet Sketch',
+        meta: { desk: 'quiet-sketch' },
       });
-      if (res.ok && res.id) {
-        const urls = shareUrls(res.id);
-        setResult({ embed: urls.embed, warn: res.warn || null });
-        setStatus('done');
-      } else {
-        throw new Error(res.error || 'publish failed');
-      }
+      if (res.ok && res.embed) setLink(res.embed);
+      else setWarn(res.error || 'publish failed');
     } catch (e: any) {
-      setError(e?.message || 'something went wrong');
-      setStatus('error');
+      setWarn(e.message || 'failed');
     }
-  };
+    setBusy(false);
+  }, [caption, color, busy]);
 
   return (
-    <div className="min-h-screen bg-[#0b0b0d] text-white pt-24 px-5 pb-20">
-      <div className="max-w-2xl mx-auto">
-        <motion.h1
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 100, damping: 20 }}
-          className="text-4xl sm:text-5xl font-semibold tracking-tight mb-3"
+    <div className="mesh min-h-screen">
+      <Navbar />
+      <div className="pt-28 pb-24 px-5 max-w-2xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ type: 'spring', stiffness: 90, damping: 24 }}
+          className="glass rounded-[36px] p-6 md:p-8 relative"
         >
-          quiet sketch
-        </motion.h1>
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.08 }}
-          className="text-neutral-400 mb-8 leading-relaxed"
-        >
-          Draw freely on dark glass. Publish the sketch straight to the database with a polished Discord embed. Soft warnings only if the export feels heavy. No hard limits.
-        </motion.p>
+          <p className="text-[13px] font-medium tracking-wide mb-2" style={{ color }}>Quiet Sketch</p>
+          <h1 className="text-4xl font-semibold tracking-tight mb-3">Draw freely.</h1>
+          <p className="text-neutral-400 text-[15.5px] leading-relaxed mb-6">
+            Freehand sketch on a quiet dark canvas. Export and publish with a polished Discord embed. Soft size warnings only — never hard limits. Apple-style springs on frosted glass.
+          </p>
 
-        <div className="glass rounded-3xl p-4 mb-6 overflow-hidden">
-          <canvas
-            ref={canvasRef}
-            width={800}
-            height={500}
-            className="w-full rounded-2xl touch-none bg-[#0b0b0d] cursor-crosshair"
-            onMouseDown={start}
-            onMouseMove={move}
-            onMouseUp={end}
-            onMouseLeave={end}
-            onTouchStart={start}
-            onTouchMove={move}
-            onTouchEnd={end}
+          <div className="relative mb-5 rounded-3xl overflow-hidden border border-white/10 bg-black/40">
+            <canvas
+              ref={canvasRef}
+              onPointerDown={start}
+              onPointerMove={move}
+              onPointerUp={end}
+              onPointerLeave={end}
+              className="w-full h-80 touch-none cursor-crosshair block"
+            />
+          </div>
+
+          <div className="flex flex-wrap items-center gap-4 mb-5">
+            <label className="flex items-center gap-2 text-sm text-neutral-400">
+              color
+              <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="w-8 h-8 rounded-full border-0 cursor-pointer" />
+            </label>
+            <label className="flex items-center gap-2 text-sm text-neutral-400">
+              size
+              <input type="range" min={1} max={24} value={size} onChange={(e) => setSize(Number(e.target.value))} className="w-24" />
+            </label>
+            <button onClick={clear} className="text-sm text-neutral-400 hover:text-white px-3 py-1.5 rounded-full bg-white/5">clear</button>
+          </div>
+
+          <input
+            value={caption}
+            onChange={(e) => setCaption(e.target.value)}
+            placeholder="Optional quiet caption"
+            className="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-3.5 text-[15px] text-white placeholder:text-neutral-500 mb-5 focus:outline-none focus:border-white/30 transition"
           />
-        </div>
 
-        <div className="flex items-center gap-3 mb-4">
-          <label className="text-xs text-neutral-400">ink</label>
-          <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="w-10 h-10 rounded-full border-0 cursor-pointer" />
-          <button onClick={clear} className="ml-auto text-xs text-neutral-400 hover:text-white">clear</button>
-        </div>
+          {warn && <p className="text-[13px] text-amber-300/80 mb-4">{warn}</p>}
 
-        <input
-          value={caption}
-          onChange={(e) => setCaption(e.target.value)}
-          placeholder="optional caption for the Discord card"
-          className="w-full glass rounded-2xl px-4 py-3 text-sm mb-6 outline-none"
-        />
+          <motion.button
+            whileTap={{ scale: 0.98 }}
+            whileHover={{ scale: 1.005 }}
+            onClick={publish}
+            disabled={busy}
+            className="w-full rounded-2xl py-4 text-[15px] font-medium text-white disabled:opacity-40 transition shadow-xl"
+            style={{ background: color }}
+          >
+            {busy ? 'Publishing…' : 'Publish sketch'}
+          </motion.button>
 
-        <motion.button
-          whileTap={{ scale: 0.97 }}
-          onClick={publish}
-          disabled={status === 'uploading'}
-          className="w-full py-3.5 rounded-full bg-[#0A84FF] text-white font-medium disabled:opacity-50"
-        >
-          {status === 'uploading' ? 'publishing…' : 'publish sketch'}
-        </motion.button>
-
-        {status === 'done' && result && (
-          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mt-6 glass rounded-2xl p-4">
-            <p className="text-xs text-neutral-400 break-all mb-2">{result.embed}</p>
-            {result.warn && <p className="text-amber-400 text-xs mb-1">{result.warn}</p>}
-            <button onClick={() => navigator.clipboard.writeText(result.embed)} className="text-xs text-[#0A84FF]">
-              copy embed link
-            </button>
-          </motion.div>
-        )}
-        {status === 'error' && <p className="mt-4 text-red-400 text-sm">{error}</p>}
+          {link && (
+            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mt-5 text-center">
+              <a href={link} target="_blank" rel="noreferrer" className="text-sm text-blue-400 break-all">{link}</a>
+              <p className="text-xs text-neutral-500 mt-1">Discord-ready link</p>
+            </motion.div>
+          )}
+        </motion.div>
       </div>
     </div>
   );

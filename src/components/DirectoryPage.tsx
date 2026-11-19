@@ -56,6 +56,7 @@ const desks = [
   { to: "quietsolstice", label: "quiet solstice", desc: "drop local files under a turning sun. soft radial motion, shared caption, chosen warmth. discord cards on every link. size notes only. no hard limits." },
   { to: "quietmeridian", label: "quiet meridian", desc: "a still center for precise local file drops. live time display. soft warnings only. every share link carries a polished discord embed and is copied when ready." },
   { to: "quietequinox", label: "quiet equinox", desc: "where files find balance. dual columns of frosted glass. batch-publish with polished discord embeds. soft size warnings only. no hard limits." },
+  { to: "quietradiance", label: "quiet radiance", desc: "drop local files into soft radiance. give each its own quiet caption or share one. they settle into the database with a polished Discord embed on every link. soft size warnings only. no hard limits. apple-style springs on frosted glass with soft glow. all prior desks remain fully intact." },
   { to: "vault", label: "vault", desc: "main local vault" },
   { to: "directory", label: "desks", desc: "this page" },
 ];

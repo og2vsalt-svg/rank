@@ -30,18 +30,31 @@ async function row(table, id) {
   return rows && rows[0] ? rows[0] : null;
 }
 
+const DESK_TITLES = {
+  quietharbor: 'Quiet Harbor',
+  quietsignal: 'Quiet Signal',
+  quietinspector: 'Quiet Inspector',
+  quietlens: 'Quiet Lens',
+  quietdiary: 'Quiet Diary',
+  core: 'Core',
+};
+
 export default async function handler(req, res) {
   const page = String(req.query.page || 'home');
   const id = String(req.query.id || '');
   const proto = String(req.headers['x-forwarded-proto'] || 'https');
   const host = String(req.headers['x-forwarded-host'] || req.headers.host || 'rank-six-iota.vercel.app');
   const url = proto + '://' + host + '/' + page + (id ? '/' + encodeURIComponent(id) : '');
-  let title = page === 'impost' ? 'impost — rankvault' : page === 'reading' ? 'reading — rankvault' : 'rankvault';
+  let title = DESK_TITLES[page] || page === 'impost' ? 'impost — rankvault' : page === 'reading' ? 'reading — rankvault' : 'rankvault';
   let desc = page === 'impost'
     ? 'A seat for one local file and a short note. Large drops are warned, never refused.'
     : page === 'reading'
       ? 'A quiet reading slip. Not a file cabinet.'
-      : 'Private file hosting. Discord cards on every link.';
+      : page === 'quietharbor'
+        ? 'Calm docks for local files. Soft warnings only. Discord embeds on every link.'
+        : page === 'quietsignal'
+          ? 'Soft pulsing signals. Files and notes with Apple springs. No hard limits.'
+          : 'Private file hosting. Discord cards on every link. Soft size warnings only.';
   let image = FALLBACK;
 
   if (page === 'impost' && id) {
@@ -59,10 +72,10 @@ export default async function handler(req, res) {
       desc = String(slip.body || '').slice(0, 180);
     }
   }
-  if ((page === 's' || page === 'share') && id) {
+  if ((page === 's' || page === 'share' || page === 'quietharbor' || page === 'quietsignal') && id) {
     const share = await row('public_shares', id);
     if (share) {
-      title = share.name;
+      title = (share.name || 'shared file') + (DESK_TITLES[page] ? ' — ' + DESK_TITLES[page] : '');
       desc = (share.caption || 'shared file') + ' · ' + prettySize(share.size);
       if (String(share.mime || '').indexOf('image/') === 0 && /^https?:/i.test(share.file_url || '')) image = share.file_url;
     }

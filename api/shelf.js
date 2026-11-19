@@ -50,6 +50,7 @@ const COPY = {
   quietquote: ["Quiet Quote — rankvault", "Write a short quote or note with optional attribution. It settles into the database as a text file with a polished Discord embed on every link. Soft size warnings only. No hard limits. Apple-style springs on frosted glass."],
   quietzen: ["Quiet Zen — rankvault", "A still center with soft breathing motion on frosted glass. Drop a local file or write a quiet note. Settles into the database with a polished Discord embed. Soft size warnings only. No hard limits."],
   quietfocus: ["Quiet Focus — rankvault", "A still timer for focus sessions. Optional file or note. Share the moment to the database with a polished Discord embed. Soft size warnings only. No hard limits. Apple-style springs."],
+  quietradiance: ["Quiet Radiance — rankvault", "Drop local files into soft radiance. Give each its own quiet caption or share one. They settle into the database with a polished Discord embed on every link. Soft size warnings only — never hard limits. Apple-style spring motion on frosted glass with soft glow."],
   home: ['rankvault', 'Private file hosting and sharing. Upload local files, share with professional Discord embeds. Soft size warnings only. Sleek Apple-style interface with many specialized desks.'],
 };
 

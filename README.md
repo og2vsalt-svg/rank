@@ -46,7 +46,7 @@ Central surfaces:
 - **Studio** — multi-file crafting. Drop several files, give each its own caption and accent color. Publishes to the database with professional Discord embeds on every link. Soft size warnings only. No hard limits.
 - **Nexus** — centered file hosting. Drop files, publish to the database, copy a Discord-ready link. Recent public shares live here.
 - **Quiet Solace** — calm drop with optional soft expiration. Frosted glass, gentle springs.
-- **Quiet Horizon** — the far edge of recent public shares, plus new drops.
+- **Quiet Horizon** — the far edge of recent public shares, plus new drops with soft radial glow. Settles into the database with a polished Discord embed on every link. Soft size warnings only. No hard limits. Apple-style springs on frosted glass.
 - **Quiet Solstice** — drop under a turning sun with soft radial motion and chosen warmth.
 - **Quiet Meridian** — precise still center with live time. Links copied for Discord.
 - **Quiet Equinox** — where files find balance in dual columns of frosted glass.
@@ -72,7 +72,7 @@ Central surfaces:
 - **Quiet Custom** — drop local files. Give each its own quiet caption. They publish independently to the database with a polished Discord embed on every link. Soft size warnings only — never hard limits. Apple-style spring motion on frosted glass.
 
 Specialized desks (all prior remain fully intact):
-- **Quiet Apex**, **Quiet Beacon**, **Quiet Notebook**, **Quiet Inspector**, **Quiet Drift**, **Quiet Still**, **Quiet Spark**, **Quiet Gradient**, **Quiet Collection**, **Quiet Lens**, **Quiet Diary**, **Quiet Lumen Fold**, **Quiet Library**, **Quiet Composer**, **Quiet Sanctuary**, **Quiet Stamp**, **Quiet Harbor**, **Quiet Lighthouse**, **Quiet Ember**, **Quiet Constellation**, **Quiet Aurora**, **Quiet Pulse**, **Quiet Quartz**, **Quiet Grove**, Gallery, Quiet Inlet, Quiet Tide, Quiet Orbit, Quiet Nebula, Keepsake, Spectrum, Ripple, Frame, Echo, Canvas, Notes, Orchard, Horizon, Harmony, Lumen, Prism, Harbor, Cove, Lantern, Cascade, Quiet Void, Quiet Annotate, Quiet Timestamp, Quiet Echoes, Quiet Palette, Quiet Prism, Quiet Atlas, Quiet Lattice, Quiet Hush, Quiet Whisper, Quiet Lumenveil, Quiet Search, Quiet Bridge, Quiet Moodboard, Quiet Xenon, Quiet Cascade, Quiet Sketch, Quiet Quote, Quiet Mood, Quiet Capsule, Quiet Resonance, Quiet Custom, and dozens more.
+- **Quiet Apex**, **Quiet Beacon**, **Quiet Notebook**, **Quiet Inspector**, **Quiet Drift**, **Quiet Still**, **Quiet Spark**, **Quiet Gradient**, **Quiet Collection**, **Quiet Lens**, **Quiet Diary**, **Quiet Lumen Fold**, **Quiet Library**, **Quiet Composer**, **Quiet Sanctuary**, **Quiet Stamp**, **Quiet Harbor**, **Quiet Lighthouse**, **Quiet Ember**, **Quiet Constellation**, **Quiet Aurora**, **Quiet Pulse**, **Quiet Quartz**, **Quiet Grove**, Gallery, Quiet Inlet, Quiet Tide, Quiet Orbit, Quiet Nebula, Keepsake, Spectrum, Ripple, Frame, Echo, Canvas, Notes, Orchard, Horizon, Harmony, Lumen, Prism, Harbor, Cove, Lantern, Cascade, Quiet Void, Quiet Annotate, Quiet Timestamp, Quiet Echoes, Quiet Palette, Quiet Prism, Quiet Atlas, Quiet Lattice, Quiet Hush, Quiet Whisper, Quiet Lumenveil, Quiet Search, Quiet Bridge, Quiet Moodboard, Quiet Xenon, Quiet Cascade, Quiet Sketch, Quiet Quote, Quiet Mood, Quiet Capsule, Quiet Resonance, Quiet Custom, **Quiet Horizon**, and dozens more.
 
 No traces of boosting.
 

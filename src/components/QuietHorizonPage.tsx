@@ -1,159 +1,156 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './Navbar';
 import { publishLocalFile, listPublicShares, type CloudMeta } from '../lib/cloudShare';
 
-type Item = {
-  file: File;
-  preview?: string;
-  id: string;
-  status: 'queued' | 'uploading' | 'done' | 'error';
-  link?: string;
-  error?: string;
-};
-
 export default function QuietHorizonPage() {
-  const [items, setItems] = useState<Item[]>([]);
-  const [recent, setRecent] = useState<CloudMeta[]>([]);
+  const [shares, setShares] = useState<CloudMeta[]>([]);
+  const [file, setFile] = useState<File | null>(null);
   const [caption, setCaption] = useState('');
-  const [accent, setAccent] = useState('#AF52DE');
+  const [accent, setAccent] = useState('#5AC8FA');
   const [busy, setBusy] = useState(false);
   const [warn, setWarn] = useState<string | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [err, setErr] = useState('');
+  const [link, setLink] = useState('');
+
+  const refresh = async () => {
+    const list = await listPublicShares(16);
+    setShares(list);
+  };
 
   useEffect(() => {
-    listPublicShares(12).then(setRecent).catch(() => setRecent([]));
+    refresh();
   }, []);
 
-  const addFiles = useCallback((list: FileList | File[]) => {
-    const arr = Array.from(list);
-    const total = arr.reduce((s, f) => s + f.size, 0);
-    setWarn(total > 45_000_000 ? 'Large batch — uploads may feel slower. No hard limits.' : null);
-    const next: Item[] = arr.map((file) => ({
-      file,
-      id: Math.random().toString(36).slice(2, 10),
-      status: 'queued',
-      preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : undefined,
-    }));
-    setItems((p) => [...p, ...next]);
-  }, []);
+  const onFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0] || null;
+    setFile(f);
+    setWarn(f && f.size > 40 * 1024 * 1024 ? 'Large file. The horizon may take a moment. No hard limit.' : null);
+  };
 
-  const publish = async () => {
-    if (!items.length || busy) return;
+  const share = async () => {
+    if (!file) return setErr('choose a file to settle on the horizon');
     setBusy(true);
-    for (const item of items) {
-      if (item.status === 'done') continue;
-      setItems((p) => p.map((i) => i.id === item.id ? { ...i, status: 'uploading' } : i));
-      try {
-        const res = await publishLocalFile(item.file, {
-          caption: caption.trim() || item.file.name,
-          color: accent,
-          cardTitle: item.file.name,
-          meta: { desk: 'quiethorizon' },
-        });
-        setItems((p) => p.map((i) =>
-          i.id === item.id
-            ? { ...i, status: res.ok ? 'done' : 'error', link: res.embed, error: res.error }
-            : i
-        ));
-      } catch (e: any) {
-        setItems((p) => p.map((i) => i.id === item.id ? { ...i, status: 'error', error: e.message } : i));
+    setErr('');
+    setLink('');
+    try {
+      const res = await publishLocalFile(file, {
+        caption: caption.trim() || 'horizon drop',
+        color: accent,
+        cardTitle: file.name,
+        meta: { desk: 'quiethorizon' },
+      });
+      if (res.ok && res.embed) {
+        setLink(res.embed);
+        setFile(null);
+        setCaption('');
+        await refresh();
+      } else {
+        setErr(res.error || 'could not settle');
       }
+    } catch (e: any) {
+      setErr(e.message || 'something slowed');
     }
     setBusy(false);
-    listPublicShares(12).then(setRecent).catch(() => {});
   };
 
   return (
-    <div className="mesh min-h-screen">
+    <div className="mesh min-h-screen bg-[#050507]">
       <Navbar />
-      <div className="pt-28 pb-24 px-5 max-w-3xl mx-auto">
+      <div className="pt-28 pb-32 px-5 max-w-4xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 22 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 110, damping: 22 }}
-          className="glass rounded-[36px] p-8 md:p-10 mb-8"
+          transition={{ type: 'spring', stiffness: 90, damping: 20 }}
+          className="text-center mb-12"
         >
-          <p className="text-[13px] font-medium tracking-wide mb-2" style={{ color: accent }}>Quiet Horizon</p>
-          <h1 className="text-3xl md:text-4xl font-semibold tracking-tight mb-3">The far edge of recent shares.</h1>
-          <p className="text-neutral-400 text-[15px] leading-relaxed mb-8">
-            Drop local files onto a quiet horizon of frosted glass. Watch recent public shares drift by. Shared caption and accent. Publishes to the database with polished Discord embeds on every link. Soft size warnings only. No hard limits. Apple-style springs.
+          <p className="text-[13px] font-medium tracking-[0.2em] uppercase mb-2" style={{ color: accent }}>Quiet Horizon</p>
+          <h1 className="text-[40px] font-semibold tracking-tight text-white mb-3">Settle on the far edge.</h1>
+          <p className="text-neutral-400 text-[16px] leading-relaxed max-w-xl mx-auto">
+            Drop one local file. A soft radial glow meets the horizon on frosted glass. It settles into the database with a polished Discord embed on every link. Soft size warnings only. No hard limits. Apple-style springs. All prior desks remain fully intact. No traces of boosting.
           </p>
-
-          <div
-            onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('ring-2', 'ring-white/20'); }}
-            onDragLeave={(e) => e.currentTarget.classList.remove('ring-2', 'ring-white/20')}
-            onDrop={(e) => {
-              e.preventDefault();
-              e.currentTarget.classList.remove('ring-2', 'ring-white/20');
-              if (e.dataTransfer.files.length) addFiles(e.dataTransfer.files);
-            }}
-            onClick={() => inputRef.current?.click()}
-            className="border-2 border-dashed border-white/12 rounded-3xl p-12 text-center mb-6 cursor-pointer hover:border-white/25 transition bg-black/20"
-          >
-            <p className="text-neutral-300 text-[15px]">Drop files here</p>
-            <p className="text-neutral-500 text-sm mt-1">or click to choose</p>
-            <input ref={inputRef} type="file" multiple className="hidden" onChange={(e) => e.target.files && addFiles(e.target.files)} />
-          </div>
-
-          <input
-            value={caption}
-            onChange={(e) => setCaption(e.target.value)}
-            placeholder="Optional caption"
-            className="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-3 text-[15px] text-white placeholder:text-neutral-500 mb-4 focus:outline-none focus:border-white/30"
-          />
-
-          <div className="flex items-center gap-3 mb-5">
-            <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="w-9 h-9 rounded-full cursor-pointer border-0" />
-            <span className="text-[13px] text-neutral-500">Accent</span>
-          </div>
-
-          {warn && <p className="text-[13px] text-amber-300/80 mb-4">{warn}</p>}
-
-          <AnimatePresence>
-            {items.map((item) => (
-              <motion.div key={item.id} layout initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="glass rounded-2xl p-3 flex items-center gap-3 mb-2">
-                {item.preview ? <img src={item.preview} alt="" className="w-12 h-12 rounded-xl object-cover" /> : <div className="w-12 h-12 rounded-xl bg-white/5 grid place-items-center text-[11px] text-neutral-500">file</div>}
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm truncate">{item.file.name}</p>
-                  <p className="text-xs text-neutral-500">{item.status}{item.link ? ' · ' : ''}{item.link && <a href={item.link} className="text-blue-400">{item.link.split('/').pop()}</a>}</p>
-                  {item.error && <p className="text-xs text-red-400">{item.error}</p>}
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-
-          <motion.button
-            whileTap={{ scale: 0.98 }}
-            onClick={publish}
-            disabled={busy || !items.length}
-            className="w-full rounded-2xl py-3.5 text-[15px] font-medium text-white disabled:opacity-40 mt-2"
-            style={{ background: accent }}
-          >
-            {busy ? 'Publishing…' : items.length ? `Publish ${items.length}` : 'Drop a file first'}
-          </motion.button>
         </motion.div>
 
-        <div>
-          <h2 className="text-sm font-medium text-neutral-400 mb-4 px-1">recent on the horizon</h2>
-          <div className="grid gap-3 sm:grid-cols-2">
-            {recent.map((s) => (
-              <motion.a
-                key={s.id}
-                href={`/s/${s.id}`}
-                target="_blank"
-                rel="noreferrer"
+        <motion.div
+          initial={{ opacity: 0, scale: 0.97 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.08, type: 'spring', stiffness: 110, damping: 22 }}
+          className="glass rounded-[32px] p-8 mb-16 shadow-2xl max-w-xl mx-auto relative overflow-hidden"
+        >
+          <div className="absolute inset-0 opacity-30 pointer-events-none" style={{ background: `radial-gradient(ellipse at bottom, ${accent}40, transparent 70%)` }} />
+          <label className="relative block cursor-pointer rounded-[24px] border-2 border-dashed border-white/10 p-10 text-center mb-6 hover:border-white/20 transition-colors">
+            <p className="text-[15px] text-neutral-300">{file ? file.name : 'Drop or choose a local file'}</p>
+            <p className="text-[12px] text-neutral-500 mt-1">No size limits. Soft warning only if it may feel slow.</p>
+            <input type="file" className="hidden" onChange={onFile} />
+          </label>
+
+          <textarea
+            value={caption}
+            onChange={(e) => setCaption(e.target.value)}
+            placeholder="Optional quiet note for the horizon…"
+            rows={2}
+            className="w-full bg-black/20 border border-white/10 rounded-[20px] px-4 py-3 text-[15px] text-white placeholder:text-neutral-500 mb-5 resize-none focus:outline-none focus:border-white/25"
+          />
+
+          <div className="flex items-center gap-4 mb-6">
+            <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="w-10 h-10 rounded-full cursor-pointer border-0" />
+            <span className="text-[13px] text-neutral-400">Horizon accent</span>
+          </div>
+
+          {warn && <p className="text-[13px] text-amber-300/90 mb-4">{warn}</p>}
+
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            whileHover={{ scale: 1.02 }}
+            onClick={share}
+            disabled={busy || !file}
+            className="w-full rounded-[22px] py-4 text-[16px] font-medium text-white disabled:opacity-40 transition shadow-xl"
+            style={{ background: accent }}
+          >
+            {busy ? 'Settling on the horizon…' : 'Share to the horizon'}
+          </motion.button>
+
+          <AnimatePresence>
+            {link && (
+              <motion.div
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="glass rounded-2xl p-4 hover:bg-white/5 transition block"
+                className="mt-6 text-center"
               >
-                <p className="text-sm font-medium truncate">{s.name}</p>
-                <p className="text-xs text-neutral-500 mt-0.5">{s.caption || 'shared'} · {(s.size / 1024 / 1024).toFixed(1)} MB</p>
-              </motion.a>
-            ))}
-            {!recent.length && <p className="text-neutral-500 text-sm">nothing recent yet.</p>}
-          </div>
+                <a href={link} target="_blank" rel="noreferrer" className="text-[14px] break-all" style={{ color: accent }}>{link}</a>
+              </motion.div>
+            )}
+            {err && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 text-[13px] text-red-400 text-center">{err}</motion.p>}
+          </AnimatePresence>
+        </motion.div>
+
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {shares.map((s, i) => (
+            <motion.a
+              key={s.id}
+              href={`/s/${s.id}`}
+              target="_blank"
+              rel="noreferrer"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.04, type: 'spring', stiffness: 70, damping: 16 }}
+              whileHover={{ y: -8, scale: 1.02 }}
+              className="glass rounded-[20px] p-4 apple-card shadow-lg"
+            >
+              <div className="aspect-[4/5] rounded-[12px] mb-3 overflow-hidden" style={{ backgroundColor: (s.color || accent) + '18' }}>
+                {s.type?.startsWith('image/') && s.url ? (
+                  <img src={s.url} alt={s.name} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full grid place-items-center text-[13px] text-neutral-400">{s.type?.split('/')[1] || 'file'}</div>
+                )}
+              </div>
+              <p className="text-[15px] font-medium text-white truncate px-1">{s.name || 'untitled'}</p>
+              {s.caption && <p className="text-[13px] text-neutral-400 mt-1 line-clamp-2 px-1">{s.caption}</p>}
+              <p className="text-[11px] text-neutral-500 mt-2 px-1">{new Date(s.createdAt || '').toLocaleDateString()}</p>
+            </motion.a>
+          ))}
         </div>
+        {shares.length === 0 && <p className="text-neutral-500 text-center py-12 text-[15px]">The horizon is clear. Share the first settlement.</p>}
       </div>
     </div>
   );

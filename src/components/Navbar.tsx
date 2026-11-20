@@ -24,6 +24,7 @@ export default function Navbar() {
     { to: 'prism', label: 'prism' },
     { to: 'gallery', label: 'gallery' },
     { to: 'lumen', label: 'lumen' },
+    { to: 'collection', label: 'collection' },
     { to: 'directory', label: 'desks' },
   ];
 

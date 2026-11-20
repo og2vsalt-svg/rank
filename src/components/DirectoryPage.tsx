@@ -35,6 +35,7 @@ const DESKS = [
   { route: 'listening', title: 'Listening', blurb: 'Audio-focused desk.' },
   { route: 'palette', title: 'Palette', blurb: 'Color and form.' },
   { route: 'quill', title: 'Quill', blurb: 'Write and share text.' },
+  { route: 'collection', title: 'Collection', blurb: 'Browse and search recent public shares with filters. Polished Discord embeds.' },
 ];
 
 export default function DirectoryPage() {

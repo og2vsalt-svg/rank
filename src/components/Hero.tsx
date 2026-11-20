@@ -30,10 +30,11 @@ export default function Hero() {
           transition={{ type: 'spring', stiffness: 80, damping: 20, delay: 0.1 }}
           className="text-neutral-400 text-lg leading-relaxed max-w-lg mb-10 mx-auto"
         >
-          Core for the cleanest drop. Horizon for a quiet share with a polished Discord embed. Calm Line for recent activity. Quill for pure writing. Soft size warnings only — no hard limits. Sleek Apple-style spring animations on frosted glass.
+          Core for the cleanest drop. Horizon for a quiet share with a polished Discord embed. Velvet for soft layered notes. Calm Line for recent activity. Quill for pure writing. Soft size warnings only — no hard limits. Sleek Apple-style spring animations on frosted glass.
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center">
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('core')} className="px-7 py-3 rounded-full bg-[#F5F5F7] text-black text-sm font-medium hover:bg-white transition shadow-lg">drop a file</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('velvet')} className="px-6 py-2.5 rounded-full bg-[#C084FC]/80 text-black text-sm font-medium hover:bg-[#C084FC] transition">velvet</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('horizon')} className="px-6 py-2.5 rounded-full bg-[#5AC8FA]/80 text-black text-sm font-medium hover:bg-[#5AC8FA] transition">horizon</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('calmline')} className="px-6 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition">calm line</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('directory')} className="px-6 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition">browse desks</motion.button>

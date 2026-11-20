@@ -4,6 +4,7 @@ import Navbar from './Navbar';
 import { useRouter } from './Router';
 
 const DESKS = [
+  { route: 'hub', title: 'Hub', blurb: 'Central drop. Browse recent public shares. Soft warnings only.' },
   { route: 'core', title: 'Core', blurb: 'The quiet center. Drop local files. Soft warnings only.' },
   { route: 'nexus', title: 'Nexus', blurb: 'Central file hub. Drop and browse recent public shares.' },
   { route: 'workshop', title: 'Workshop', blurb: 'Multi-file drops with per-file notes and accent colors.' },

@@ -4,10 +4,10 @@ const FALLBACK = 'https://og2vsalt-svg.github.io/rank/og.png';
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 }
 
@@ -53,6 +53,9 @@ export default async function handler(req, res) {
         image = share.file_url;
       }
     }
+  } else if (page === 'hub') {
+    title = 'Hub — rankvault';
+    desc = 'Central drop for local files. Browse recent shares. Polished Discord embeds. Soft size warnings only.';
   } else if (page === 'workshop') {
     title = 'Workshop — rankvault';
     desc = 'Multi-file drops with notes and accents. Polished Discord embeds on every link. Soft size warnings only.';

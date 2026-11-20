@@ -10,6 +10,7 @@ export default function Navbar() {
 
   const links = [
     { to: 'home', label: 'home' },
+    { to: 'hub', label: 'hub' },
     { to: 'core', label: 'core' },
     { to: 'nexus', label: 'nexus' },
     { to: 'workshop', label: 'workshop' },

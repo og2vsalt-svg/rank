@@ -25,7 +25,7 @@ async function fetchShare(id) {
       headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
     });
     if (!r.ok) return null;
-    const rows = await res.json();
+    const rows = await r.json();
     return rows && rows[0] ? rows[0] : null;
   } catch {
     return null;

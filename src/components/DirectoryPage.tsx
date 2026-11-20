@@ -4,6 +4,7 @@ import Navbar from './Navbar';
 import { useRouter } from './Router';
 
 const DESKS = [
+  { route: 'studio', title: 'Studio', blurb: 'Multi-layer notes and files. Per-layer accents. Polished Discord embeds.' },
   { route: 'luminafold', title: 'Luminafold', blurb: 'Fold light around notes and files. Shared title, polished Discord embeds.' },
   { route: 'softweave', title: 'Softweave', blurb: 'Layer quiet notes with optional files. Polished Discord embeds.' },
   { route: 'hub', title: 'Hub', blurb: 'Central drop. Browse recent public shares. Soft warnings only.' },

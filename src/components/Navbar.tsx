@@ -10,6 +10,7 @@ export default function Navbar() {
 
   const links = [
     { to: 'home', label: 'home' },
+    { to: 'studio', label: 'studio' },
     { to: 'hub', label: 'hub' },
     { to: 'luminafold', label: 'fold' },
     { to: 'core', label: 'core' },

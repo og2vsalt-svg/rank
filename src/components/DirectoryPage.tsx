@@ -4,6 +4,7 @@ import Navbar from './Navbar';
 import { useRouter } from './Router';
 
 const DESKS = [
+  { route: 'softweave', title: 'Softweave', blurb: 'Layer quiet notes with optional files. Polished Discord embeds.' },
   { route: 'hub', title: 'Hub', blurb: 'Central drop. Browse recent public shares. Soft warnings only.' },
   { route: 'core', title: 'Core', blurb: 'The quiet center. Drop local files. Soft warnings only.' },
   { route: 'nexus', title: 'Nexus', blurb: 'Central file hub. Drop and browse recent public shares.' },

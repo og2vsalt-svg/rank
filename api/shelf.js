@@ -7,7 +7,8 @@ function esc(s) {
     .replace(/&/g, '&')
     .replace(/</g, '<')
     .replace(/>/g, '>')
-    .replace(/"/g, '"');
+    .replace(/"/g, '"')
+    .replace(/'/g, '&#39;');
 }
 
 function prettySize(n) {
@@ -70,6 +71,9 @@ export default async function handler(req, res) {
   } else if (page === 'prism') {
     title = 'Prism — rankvault';
     desc = 'Color each drop. Multi-file sharing with per-accent Discord embeds. Soft warnings only.';
+  } else if (page === 'quill') {
+    title = 'Quill — rankvault';
+    desc = 'Write quietly. Publish a note as a shareable text drop with a polished Discord embed. Soft size warnings only.';
   }
 
   const url = `${proto}://${host}${path}`;

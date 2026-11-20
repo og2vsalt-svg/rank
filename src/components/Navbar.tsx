@@ -11,6 +11,7 @@ export default function Navbar() {
   const links = [
     { to: 'home', label: 'home' },
     { to: 'hub', label: 'hub' },
+    { to: 'luminafold', label: 'fold' },
     { to: 'core', label: 'core' },
     { to: 'aetherpulse', label: 'pulse' },
     { to: 'silk', label: 'silk' },

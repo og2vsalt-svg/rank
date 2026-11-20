@@ -30,12 +30,12 @@ export default function Hero() {
           transition={{ type: 'spring', stiffness: 80, damping: 20, delay: 0.1 }}
           className="text-neutral-400 text-lg leading-relaxed max-w-lg mb-10 mx-auto"
         >
-          Core for the cleanest drop. Aether Pulse for multi-file with notes and accents. Horizon for a quiet share with a polished Discord embed. Soft size warnings only — no hard limits. Sleek Apple-style spring animations on frosted glass.
+          Stillpath for a quiet path of files. Quietstream to join the recent flow. Core for the cleanest drop. Soft size warnings only — no hard limits. Sleek Apple-style spring animations on frosted glass.
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center">
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('core')} className="px-7 py-3 rounded-full bg-[#F5F5F7] text-black text-sm font-medium hover:bg-white transition shadow-lg">drop a file</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('aetherpulse')} className="px-6 py-2.5 rounded-full bg-[#AF52DE]/80 text-black text-sm font-medium hover:bg-[#AF52DE] transition">pulse</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('horizon')} className="px-6 py-2.5 rounded-full bg-[#5AC8FA]/80 text-black text-sm font-medium hover:bg-[#5AC8FA] transition">horizon</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('stillpath')} className="px-7 py-3 rounded-full bg-[#F5F5F7] text-black text-sm font-medium hover:bg-white transition shadow-lg">stillpath</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietstream')} className="px-6 py-2.5 rounded-full bg-[#AF52DE]/80 text-black text-sm font-medium hover:bg-[#AF52DE] transition">stream</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('core')} className="px-6 py-2.5 rounded-full bg-[#5AC8FA]/80 text-black text-sm font-medium hover:bg-[#5AC8FA] transition">core</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('directory')} className="px-6 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition">browse desks</motion.button>
         </div>
       </div>

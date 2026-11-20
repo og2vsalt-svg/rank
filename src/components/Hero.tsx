@@ -30,12 +30,12 @@ export default function Hero() {
           transition={{ type: 'spring', stiffness: 80, damping: 20, delay: 0.1 }}
           className="text-neutral-400 text-lg leading-relaxed max-w-lg mb-10 mx-auto"
         >
-          Core for the cleanest drop. Solace for a file with a quiet note. Notebook for text. Gallery and Timeline for public views. Every share link carries a polished Discord embed. Soft size warnings only — no hard limits. Sleek Apple-style spring animations on frosted glass.
+          Core for the cleanest drop. Solace for a file with a quiet note. Quill for pure writing. Notebook, Gallery and Timeline for more. Every share link carries a polished Discord embed. Soft size warnings only — no hard limits. Sleek Apple-style spring animations on frosted glass.
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center">
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('core')} className="px-7 py-3 rounded-full bg-[#F5F5F7] text-black text-sm font-medium hover:bg-white transition shadow-lg">drop a file</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('solace')} className="px-6 py-2.5 rounded-full bg-[#5AC8FA]/80 text-black text-sm font-medium hover:bg-[#5AC8FA] transition">solace</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('notebook')} className="px-6 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition">notebook</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quill')} className="px-6 py-2.5 rounded-full bg-[#5AC8FA]/80 text-black text-sm font-medium hover:bg-[#5AC8FA] transition">quill</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('solace')} className="px-6 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition">solace</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('directory')} className="px-6 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition">browse desks</motion.button>
         </div>
       </div>

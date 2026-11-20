@@ -12,6 +12,7 @@ export default function Navbar() {
     { to: 'home', label: 'home' },
     { to: 'hub', label: 'hub' },
     { to: 'core', label: 'core' },
+    { to: 'silk', label: 'silk' },
     { to: 'nexus', label: 'nexus' },
     { to: 'workshop', label: 'workshop' },
     { to: 'solace', label: 'solace' },

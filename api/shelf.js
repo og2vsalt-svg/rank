@@ -77,6 +77,9 @@ export default async function handler(req, res) {
   } else if (page === 'harbor') {
     title = 'Harbor — rankvault';
     desc = 'A calm berth for recent shares. Soft size warnings. Polished Discord embeds.';
+  } else if (page === 'velvet') {
+    title = 'Velvet — rankvault';
+    desc = 'Soft, layered notes with optional files. Calm drops that unfurl beautifully on Discord. Soft size warnings only.';
   }
 
   const url = `${proto}://${host}${path}`;

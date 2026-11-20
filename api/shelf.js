@@ -25,7 +25,7 @@ async function fetchShare(id) {
       headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
     });
     if (!r.ok) return null;
-    const rows = await r.json();
+    const rows = await res.json();
     return rows && rows[0] ? rows[0] : null;
   } catch {
     return null;
@@ -53,36 +53,27 @@ export default async function handler(req, res) {
         image = share.file_url;
       }
     }
-  } else if (page === 'sketch') {
-    title = 'Sketch — rankvault';
-    desc = 'Draw freely. Share the moment with a polished Discord embed. Soft warnings only.';
-  } else if (page === 'pulse') {
-    title = 'Pulse — rankvault';
-    desc = 'Quiet activity of recent shares. Professional unfurls on every link.';
-  } else if (page === 'solace') {
-    title = 'Solace — rankvault';
-    desc = 'A quiet place to leave a file and a short note. Polished Discord embeds. Soft size warnings only.';
+  } else if (page === 'workshop') {
+    title = 'Workshop — rankvault';
+    desc = 'Multi-file drops with notes and accents. Polished Discord embeds on every link. Soft size warnings only.';
   } else if (page === 'nexus') {
     title = 'Nexus — rankvault';
     desc = 'Central file hub. Drop, browse recent shares, publish with Discord-ready links. Soft size warnings only.';
   } else if (page === 'core') {
     title = 'Core — rankvault';
     desc = 'The cleanest drop. Soft size warnings only. No hard limits.';
-  } else if (page === 'prism') {
-    title = 'Prism — rankvault';
-    desc = 'Color each drop. Multi-file sharing with per-accent Discord embeds. Soft warnings only.';
+  } else if (page === 'lumen') {
+    title = 'Lumen — rankvault';
+    desc = 'Public gallery of recent shares. Professional Discord unfurls. Soft warnings only.';
+  } else if (page === 'canvas') {
+    title = 'Canvas — rankvault';
+    desc = 'Arrange files with captions. Floating accents. Discord-ready links.';
+  } else if (page === 'solace') {
+    title = 'Solace — rankvault';
+    desc = 'A quiet place to leave a file and a short note. Polished Discord embeds. Soft size warnings only.';
   } else if (page === 'quill') {
     title = 'Quill — rankvault';
     desc = 'Write quietly. Publish a note as a shareable text drop with a polished Discord embed. Soft size warnings only.';
-  } else if (page === 'harbor') {
-    title = 'Harbor — rankvault';
-    desc = 'A calm berth for recent shares. Soft size warnings. Polished Discord embeds.';
-  } else if (page === 'velvet') {
-    title = 'Velvet — rankvault';
-    desc = 'Soft, layered notes with optional files. Calm drops that unfurl beautifully on Discord. Soft size warnings only.';
-  } else if (page === 'studio') {
-    title = 'Studio — rankvault';
-    desc = 'A focused workspace for files and notes. Human-crafted, Apple-style motion. Soft warnings only.';
   }
 
   const url = `${proto}://${host}${path}`;

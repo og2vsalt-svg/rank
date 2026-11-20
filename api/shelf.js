@@ -64,7 +64,7 @@ export default async function handler(req, res) {
     desc = 'A quiet place to leave a file and a short note. Polished Discord embeds. Soft size warnings only.';
   } else if (page === 'nexus') {
     title = 'Nexus — rankvault';
-    desc = 'Centered file hosting. Drop, publish, share with Discord-ready links.';
+    desc = 'Central file hub. Drop, browse recent shares, publish with Discord-ready links. Soft size warnings only.';
   } else if (page === 'core') {
     title = 'Core — rankvault';
     desc = 'The cleanest drop. Soft size warnings only. No hard limits.';
@@ -80,6 +80,9 @@ export default async function handler(req, res) {
   } else if (page === 'velvet') {
     title = 'Velvet — rankvault';
     desc = 'Soft, layered notes with optional files. Calm drops that unfurl beautifully on Discord. Soft size warnings only.';
+  } else if (page === 'studio') {
+    title = 'Studio — rankvault';
+    desc = 'A focused workspace for files and notes. Human-crafted, Apple-style motion. Soft warnings only.';
   }
 
   const url = `${proto}://${host}${path}`;

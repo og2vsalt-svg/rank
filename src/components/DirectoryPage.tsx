@@ -4,6 +4,8 @@ import Navbar from './Navbar';
 import { useRouter } from './Router';
 
 const DESKS = [
+  { route: 'stillpath', title: 'Stillpath', blurb: 'A quiet path for local files. They settle one by one with a shared note. Polished Discord embeds. Soft warnings only.' },
+  { route: 'quietstream', title: 'Quietstream', blurb: 'Drop a file into the quiet stream of recent shares. Polished Discord embeds. Soft size warnings only.' },
   { route: 'constellation', title: 'Constellation', blurb: 'Multi-file orbital layout. Files settle around a shared note. Each gets a polished Discord embed. Soft warnings only.' },
   { route: 'stillwater', title: 'Stillwater', blurb: 'Calm reflective surface for a single drop. Gentle ripples on contact. Soft warnings only. Polished Discord embeds.' },
   { route: 'focus', title: 'Focus', blurb: 'Focused single-file drop with live preview. Soft warnings only. Polished Discord embeds.' },

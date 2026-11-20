@@ -22,6 +22,7 @@ export default function Navbar() {
     { to: 'pulse', label: 'pulse' },
     { to: 'gallery', label: 'gallery' },
     { to: 'timeline', label: 'timeline' },
+    { to: 'harbor', label: 'harbor' },
     { to: 'directory', label: 'desks' },
   ];
 

@@ -4,10 +4,10 @@ const FALLBACK = 'https://og2vsalt-svg.github.io/rank/og.png';
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 }
 
@@ -53,6 +53,9 @@ export default async function handler(req, res) {
         image = share.file_url;
       }
     }
+  } else if (page === 'focus') {
+    title = 'Focus — rankvault';
+    desc = 'A focused single-file drop with live preview. Soft size warnings only. Polished Discord embeds.';
   } else if (page === 'mosaic') {
     title = 'Mosaic — rankvault';
     desc = 'Compose a visual grid of local files with shared title and per-tile notes. One accent color. Polished Discord embeds. Soft size warnings only.';

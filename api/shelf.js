@@ -101,6 +101,9 @@ export default async function handler(req, res) {
   } else if (page === 'directory') {
     title = 'Desks — rankvault';
     desc = 'Every specialized surface for private file hosting. Soft size warnings only. Polished Discord embeds.';
+  } else if (page === 'notesvault') {
+    title = 'Notes Vault — rankvault';
+    desc = 'Write a quiet note or attach files. Pure text becomes a shareable file. Polished Discord embeds. Soft size warnings only.';
   }
 
   const url = `${proto}://${host}${path}`;

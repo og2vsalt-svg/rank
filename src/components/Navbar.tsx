@@ -13,6 +13,8 @@ export default function Navbar() {
     { to: 'core', label: 'core' },
     { to: 'solace', label: 'solace' },
     { to: 'quill', label: 'quill' },
+    { to: 'horizon', label: 'horizon' },
+    { to: 'calmline', label: 'line' },
     { to: 'prism', label: 'prism' },
     { to: 'notebook', label: 'notes' },
     { to: 'sketch', label: 'sketch' },

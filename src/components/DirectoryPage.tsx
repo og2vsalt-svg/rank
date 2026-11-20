@@ -4,6 +4,7 @@ import Navbar from './Navbar';
 import { useRouter } from './Router';
 
 const DESKS = [
+  { route: 'constellation', title: 'Constellation', blurb: 'Multi-file orbital layout. Files settle around a shared note. Each gets a polished Discord embed. Soft warnings only.' },
   { route: 'stillwater', title: 'Stillwater', blurb: 'Calm reflective surface for a single drop. Gentle ripples on contact. Soft warnings only. Polished Discord embeds.' },
   { route: 'focus', title: 'Focus', blurb: 'Focused single-file drop with live preview. Soft warnings only. Polished Discord embeds.' },
   { route: 'mosaic', title: 'Mosaic', blurb: 'Compose a visual grid of files with shared title, per-tile notes, and one accent. Polished Discord embeds.' },

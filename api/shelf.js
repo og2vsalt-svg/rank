@@ -86,6 +86,21 @@ export default async function handler(req, res) {
   } else if (page === 'collection') {
     title = 'Collection — rankvault';
     desc = 'Browse and search recent public shares. Soft size warnings only. Polished Discord embeds on every link.';
+  } else if (page === 'orbit') {
+    title = 'Orbit — rankvault';
+    desc = 'Files circle a binding note. Per-item notes, accent color, polished Discord embeds. Soft size warnings only.';
+  } else if (page === 'cascade') {
+    title = 'Cascade — rankvault';
+    desc = 'Soft falling multi-file drop with shared note and drifting accent lines. Polished Discord embeds.';
+  } else if (page === 'zenith') {
+    title = 'Zenith — rankvault';
+    desc = 'Ascend files to the highest point. Peak note, accent, polished Discord embeds. Soft warnings only.';
+  } else if (page === 'nimbus') {
+    title = 'Nimbus — rankvault';
+    desc = 'Soft cloud drop. Files settle as rising mist. Shared caption and accent. Discord-ready links.';
+  } else if (page === 'directory') {
+    title = 'Desks — rankvault';
+    desc = 'Every specialized surface for private file hosting. Soft size warnings only. Polished Discord embeds.';
   }
 
   const url = `${proto}://${host}${path}`;

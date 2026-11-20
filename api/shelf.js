@@ -4,10 +4,10 @@ const FALLBACK = 'https://og2vsalt-svg.github.io/rank/og.png';
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"')
     .replace(/'/g, '&#39;');
 }
 
@@ -65,6 +65,9 @@ export default async function handler(req, res) {
   } else if (page === 'core') {
     title = 'Core — rankvault';
     desc = 'The cleanest drop. Soft size warnings only. No hard limits.';
+  } else if (page === 'aetherpulse') {
+    title = 'Aether Pulse — rankvault';
+    desc = 'Pulse local files with per-item notes and accents. A thread binds them. Polished Discord embeds. Soft size warnings only.';
   } else if (page === 'lumen') {
     title = 'Lumen — rankvault';
     desc = 'Public gallery of recent shares. Professional Discord unfurls. Soft warnings only.';

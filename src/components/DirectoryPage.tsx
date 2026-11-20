@@ -37,6 +37,12 @@ const DESKS = [
   { route: 'palette', title: 'Palette', blurb: 'Color and form.' },
   { route: 'quill', title: 'Quill', blurb: 'Write and share text.' },
   { route: 'collection', title: 'Collection', blurb: 'Browse and search recent public shares with filters. Polished Discord embeds.' },
+  { route: 'orbit', title: 'Orbit', blurb: 'Files circle a binding note. Per-item notes and one accent. Polished Discord embeds.' },
+  { route: 'cascade', title: 'Cascade', blurb: 'Soft falling multi-file drop with shared note and drifting accent lines.' },
+  { route: 'zenith', title: 'Zenith', blurb: 'Ascend files to the highest point. Peak note and accent. Discord-ready links.' },
+  { route: 'nimbus', title: 'Nimbus', blurb: 'Soft cloud drop. Files settle as rising mist with shared caption.' },
+  { route: 'halo', title: 'Halo', blurb: 'A quiet single drop with a soft glow. Polished Discord embeds.' },
+  { route: 'drift', title: 'Drift', blurb: 'Files float into the current with a shared note and accent.' },
 ];
 
 export default function DirectoryPage() {

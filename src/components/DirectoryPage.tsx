@@ -15,6 +15,7 @@ const DESKS = [
   { route: 'solace', title: 'Solace', blurb: 'Quiet file + short note. Polished Discord embeds.' },
   { route: 'horizon', title: 'Horizon', blurb: 'Drop a file. Get a clean Discord embed link.' },
   { route: 'lumen', title: 'Lumen', blurb: 'Public light. Gallery of recent shares with image previews.' },
+  { route: 'lumenripple', title: 'Lumen Ripple', blurb: 'Glowing concentric rings of recent shares. Soft springs and Discord embeds.' },
   { route: 'canvas', title: 'Canvas', blurb: 'Arrange files with individual captions and floating accents.' },
   { route: 'calmline', title: 'Calm Line', blurb: 'Still view of recent public shares. Soft springs.' },
   { route: 'bundle', title: 'Bundle', blurb: 'Group several files into one shareable collection with Discord embeds.' },

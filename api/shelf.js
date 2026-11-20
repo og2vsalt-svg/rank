@@ -4,10 +4,10 @@ const FALLBACK = 'https://og2vsalt-svg.github.io/rank/og.png';
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/\"/g, '&quot;')
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/\"/g, '"')
     .replace(/'/g, '&#39;');
 }
 
@@ -53,6 +53,12 @@ export default async function handler(req, res) {
         image = share.file_url;
       }
     }
+  } else if (page === 'stillpath') {
+    title = 'Stillpath — rankvault';
+    desc = 'A quiet path for local files. They settle one by one with a shared note. Polished Discord embeds. Soft size warnings only.';
+  } else if (page === 'quietstream') {
+    title = 'Quietstream — rankvault';
+    desc = 'Drop a local file into the quiet stream of recent shares. Polished Discord embeds. Soft size warnings only.';
   } else if (page === 'stillwater') {
     title = 'Stillwater — rankvault';
     desc = 'Calm reflective surface for a single drop. Gentle ripples on contact. Soft size warnings only. Polished Discord embeds.';

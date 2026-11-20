@@ -7,7 +7,7 @@ function esc(s) {
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
+    .replace(/\"/g, '&quot;')
     .replace(/'/g, '&#39;');
 }
 
@@ -35,7 +35,7 @@ async function fetchShare(id) {
 export default async function handler(req, res) {
   const proto = req.headers['x-forwarded-proto'] || 'https';
   const host = req.headers['x-forwarded-host'] || req.headers.host || 'rank-six-iota.vercel.app';
-  const path = (req.url || '/').split('?')[0].replace(/\/+$/, '') || '/';
+  const path = (req.url || '/').split('?')[0].replace(/\\/+$/, '') || '/';
   const parts = path.split('/').filter(Boolean);
   const page = parts[0] || 'home';
   const id = parts[1] || '';
@@ -53,6 +53,9 @@ export default async function handler(req, res) {
         image = share.file_url;
       }
     }
+  } else if (page === 'stillwater') {
+    title = 'Stillwater — rankvault';
+    desc = 'Calm reflective surface for a single drop. Gentle ripples on contact. Soft size warnings only. Polished Discord embeds.';
   } else if (page === 'focus') {
     title = 'Focus — rankvault';
     desc = 'A focused single-file drop with live preview. Soft size warnings only. Polished Discord embeds.';

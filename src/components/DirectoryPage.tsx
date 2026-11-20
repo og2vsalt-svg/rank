@@ -5,6 +5,7 @@ import { useRouter } from './Router';
 
 const DESKS = [
   { route: 'core', title: 'Core', blurb: 'The quiet center. Drop local files. Soft warnings only.' },
+  { route: 'solace', title: 'Solace', blurb: 'Quiet file + short note. Polished Discord embeds.' },
   { route: 'bundle', title: 'Bundle', blurb: 'Group several files into one shareable collection with Discord embeds.' },
   { route: 'prism', title: 'Prism', blurb: 'Color each drop. Per-file accents on Discord embeds.' },
   { route: 'gallery', title: 'Gallery', blurb: 'Living view of recent public shares.' },

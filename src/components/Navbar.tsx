@@ -11,6 +11,7 @@ export default function Navbar() {
   const links = [
     { to: 'home', label: 'home' },
     { to: 'core', label: 'core' },
+    { to: 'echo', label: 'echo' },
     { to: 'solace', label: 'solace' },
     { to: 'quill', label: 'quill' },
     { to: 'horizon', label: 'horizon' },

@@ -6,7 +6,7 @@ Drop local files. They upload to Supabase storage and public_shares. Optional no
 
 Soft size warnings only — never hard limits. Apple-style spring animations on frosted glass. Human-crafted UI.
 
-Desks include Core, Solace (file + quiet note), Quill (pure writing desk with optional file), Horizon (quiet drop with Discord embed), Calm Line (still view of recent shares), Bundle (group multiple files into one collection), Prism (per-file accent colors for embeds), Notebook (text notes), Gallery, Timeline, Quiet Notes, Quiet Harbor, Quiet Signal, Quiet Inspector, Lens, Diary, Sketch, Pulse and many more. All prior desks remain fully intact.
+Desks include Core, Echo (recent shares view), Solace (file + quiet note), Quill (pure writing desk with optional file), Horizon (quiet drop with Discord embed), Calm Line (still view of recent shares), Bundle (group multiple files into one collection), Prism (per-file accent colors for embeds), Notebook (text notes), Gallery, Timeline, Quiet Notes, Quiet Harbor, Quiet Signal, Quiet Inspector, Lens, Diary, Sketch, Pulse and many more. All prior desks remain fully intact.
 
 ## Stack
 

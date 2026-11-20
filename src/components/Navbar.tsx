@@ -28,6 +28,7 @@ export default function Navbar() {
     { to: 'lumenripple', label: 'ripple' },
     { to: 'collection', label: 'collection' },
     { to: 'directory', label: 'desks' },
+    { to: 'notesvault', label: 'notes' },
   ];
 
   return (

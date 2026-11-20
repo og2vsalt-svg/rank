@@ -28,6 +28,7 @@ const DESKS = [
   { route: 'quietsignal', title: 'Quiet Signal', blurb: 'Minimal signal desk.' },
   { route: 'lens', title: 'Lens', blurb: 'Closer look at media.' },
   { route: 'diary', title: 'Diary', blurb: 'Notes that stay quiet until shared.' },
+  { route: 'notesvault', title: 'Notes Vault', blurb: 'Write a note or attach files. Pure text becomes a shareable file with Discord embeds. Soft warnings only.' },
   { route: 'atelier', title: 'Atelier', blurb: 'A working surface for making.' },
   { route: 'aurora', title: 'Aurora', blurb: 'Soft light on shared files.' },
   { route: 'beacon', title: 'Beacon', blurb: 'Something others can find.' },

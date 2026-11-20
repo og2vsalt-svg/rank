@@ -11,18 +11,14 @@ export default function Navbar() {
   const links = [
     { to: 'home', label: 'home' },
     { to: 'core', label: 'core' },
-    { to: 'echo', label: 'echo' },
+    { to: 'nexus', label: 'nexus' },
+    { to: 'workshop', label: 'workshop' },
     { to: 'solace', label: 'solace' },
     { to: 'quill', label: 'quill' },
     { to: 'horizon', label: 'horizon' },
-    { to: 'calmline', label: 'line' },
     { to: 'prism', label: 'prism' },
-    { to: 'notebook', label: 'notes' },
-    { to: 'sketch', label: 'sketch' },
-    { to: 'pulse', label: 'pulse' },
     { to: 'gallery', label: 'gallery' },
-    { to: 'timeline', label: 'timeline' },
-    { to: 'harbor', label: 'harbor' },
+    { to: 'lumen', label: 'lumen' },
     { to: 'directory', label: 'desks' },
   ];
 

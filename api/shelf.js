@@ -53,6 +53,9 @@ export default async function handler(req, res) {
         image = share.file_url;
       }
     }
+  } else if (page === 'echochamber') {
+    title = 'Echo Chamber — rankvault';
+    desc = 'Living feed that refreshes. Multi-drop with per-item notes under a shared line. Polished Discord embeds. Soft size warnings only. Apple-style springs.';
   } else if (page === 'mistharbor') {
     title = 'Mist Harbor — rankvault';
     desc = 'Files settle in soft mist. Per-item notes, shared mist line, Apple-style springs. Soft size warnings only. Polished Discord embeds.';

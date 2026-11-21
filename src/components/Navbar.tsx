@@ -35,6 +35,9 @@ export default function Navbar() {
     { to: 'collection', label: 'collection' },
     { to: 'directory', label: 'desks' },
     { to: 'notesvault', label: 'notes' },
+    { to: 'softmist', label: 'mist' },
+    { to: 'quietthread', label: 'thread' },
+    { to: 'driftlight', label: 'drift' },
   ];
 
   return (

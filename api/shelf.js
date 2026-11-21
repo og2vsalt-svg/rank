@@ -53,6 +53,9 @@ export default async function handler(req, res) {
         image = share.file_url;
       }
     }
+  } else if (page === 'signal') {
+    title = 'Signal — rankvault';
+    desc = 'Live feed of recent public shares. Quick note or file compose. Polished Discord embeds. Soft size warnings only. Apple-style springs.';
   } else if (page === 'stillpath') {
     title = 'Stillpath — rankvault';
     desc = 'A quiet path for local files. They settle one by one with a shared note. Polished Discord embeds. Soft size warnings only.';

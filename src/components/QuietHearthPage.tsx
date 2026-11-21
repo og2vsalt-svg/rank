@@ -1,242 +1,191 @@
-import { useState, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishLocalFile, shareUrls } from '../lib/cloudShare';
-import { supabaseConfig } from '../lib/supabase';
+import { publishLocalFile } from '../lib/cloudShare';
 
-type Recent = { id: string; name: string; caption: string | null; created_at: string };
+type Item = {
+  file: File;
+  preview?: string;
+  id: string;
+  note: string;
+  accent: string;
+  status: 'queued' | 'uploading' | 'done' | 'error';
+  link?: string;
+  error?: string;
+};
 
 export default function QuietHearthPage() {
-  const [files, setFiles] = useState<File[]>([]);
-  const [captions, setCaptions] = useState<string[]>([]);
-  const [note, setNote] = useState('');
-  const [accent, setAccent] = useState('#FF6B35');
+  const [items, setItems] = useState<Item[]>([]);
+  const [sharedNote, setSharedNote] = useState('');
   const [busy, setBusy] = useState(false);
-  const [warn, setWarn] = useState('');
-  const [links, setLinks] = useState<string[]>([]);
-  const [err, setErr] = useState('');
-  const [recent, setRecent] = useState<Recent[]>([]);
+  const [warn, setWarn] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const noteRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    (async () => {
-      try {
-        const res = await fetch(
-          `${supabaseConfig.url}/rest/v1/public_shares?is_public=eq.true&select=id,name,caption,created_at&order=created_at.desc&limit=6`,
-          {
-            headers: {
-              apikey: supabaseConfig.anonKey,
-              Authorization: `Bearer ${supabaseConfig.anonKey}`,
-            },
-          },
-        );
-        if (res.ok) {
-          const rows = await res.json();
-          setRecent(Array.isArray(rows) ? rows : []);
-        }
-      } catch {}
-    })();
+    if (noteRef.current) {
+      noteRef.current.style.height = 'auto';
+      noteRef.current.style.height = Math.min(noteRef.current.scrollHeight, 140) + 'px';
+    }
+  }, [sharedNote]);
+
+  const addFiles = useCallback((list: FileList | File[]) => {
+    const arr = Array.from(list);
+    const total = arr.reduce((s, f) => s + f.size, 0);
+    setWarn(total > 48_000_000 ? 'Large batch — uploads may feel slower. No hard limits.' : null);
+    const next: Item[] = arr.map((file) => ({
+      file,
+      id: Math.random().toString(36).slice(2, 10),
+      note: '',
+      accent: '#D97706',
+      status: 'queued',
+      preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : undefined,
+    }));
+    setItems((p) => [...p, ...next]);
   }, []);
 
-  const onFiles = (list: FileList | null) => {
-    const arr = list ? Array.from(list) : [];
-    setFiles(arr);
-    setCaptions(arr.map(() => ''));
-    const big = arr.some((f) => f.size > 40 * 1024 * 1024);
-    setWarn(
-      big
-        ? 'one or more large files. the browser may feel slow while sending. no hard limit — only a gentle warning.'
-        : '',
-    );
-  };
-
-  const setCaption = (i: number, v: string) => {
-    setCaptions((prev) => {
-      const next = [...prev];
-      next[i] = v;
-      return next;
-    });
+  const updateItem = (id: string, patch: Partial<Item>) => {
+    setItems((p) => p.map((i) => i.id === id ? { ...i, ...patch } : i));
   };
 
   const publish = async () => {
-    if (!files.length) {
-      setErr('drop at least one file');
-      return;
-    }
+    if (!items.length || busy) return;
     setBusy(true);
-    setErr('');
-    setLinks([]);
-    const newLinks: string[] = [];
-    try {
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const fileCaption = captions[i]?.trim() || note.trim() || 'quiet hearth';
-        const res = await publishLocalFile(file, {
-          caption: fileCaption,
-          cardTitle: file.name,
-          color: accent,
-          meta: { desk: 'quiethearth', accent, dedication: note.trim() || null, fileCaption },
-        });
-        if (!res.ok || !res.id) {
-          setErr(res.error || 'publish failed for ' + file.name);
-          return;
-        }
-        if (res.warn) setWarn(res.warn);
-        const urls = shareUrls(res.id);
-        newLinks.push(urls.app);
-      }
-      setLinks(newLinks);
+    for (const item of items) {
+      if (item.status === 'done') continue;
+      setItems((p) => p.map((i) => i.id === item.id ? { ...i, status: 'uploading' } : i));
       try {
-        await navigator.clipboard.writeText(newLinks.join('\n'));
-      } catch {}
-    } catch (e: any) {
-      setErr(e?.message || 'error');
-    } finally {
-      setBusy(false);
+        const caption = [sharedNote.trim(), item.note.trim()].filter(Boolean).join(' · ') || item.file.name;
+        const res = await publishLocalFile(item.file, {
+          caption,
+          color: item.accent,
+          cardTitle: item.file.name,
+          meta: { desk: 'quiethearth', sharedNote: sharedNote.trim() || null, itemNote: item.note.trim() || null },
+        });
+        setItems((p) => p.map((i) =>
+          i.id === item.id
+            ? { ...i, status: res.ok ? 'done' : 'error', link: res.embed, error: res.error }
+            : i
+        ));
+      } catch (e: any) {
+        setItems((p) => p.map((i) => i.id === item.id ? { ...i, status: 'error', error: e.message } : i));
+      }
     }
+    setBusy(false);
   };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-3xl mx-auto space-y-10">
+      <div className="pt-28 pb-24 px-5 max-w-2xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, scale: 0.96, y: 16 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 100, damping: 18 }}
-          className="glass rounded-[36px] p-8 relative overflow-hidden"
+          initial={{ opacity: 0, y: 22 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: 'spring', stiffness: 100, damping: 20 }}
+          className="glass rounded-[36px] p-8 md:p-12 apple-card"
         >
-          <motion.div
-            className="absolute -bottom-32 -left-32 w-80 h-80 rounded-full blur-3xl pointer-events-none opacity-40"
-            style={{ background: accent }}
-            animate={{ scale: [1, 1.08, 1], opacity: [0.35, 0.5, 0.35] }}
-            transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-          />
-          <div className="absolute -top-24 -right-24 w-64 h-64 bg-white/5 rounded-full blur-3xl pointer-events-none" />
-          <p className="text-sm mb-2 tracking-wide" style={{ color: accent }}>
-            quiet hearth
-          </p>
-          <h1 className="text-3xl font-semibold mb-3 tracking-tight">a warm place for shared light.</h1>
-          <p className="text-neutral-400 text-sm mb-6 leading-relaxed">
-            Drop one or more local files. Each can carry its own caption. Lands in storage and the public share table with your dedication and accent. Share links carry polished Discord embeds. Large files are warned, never refused. Prior features preserved. No traces of boosting.
+          <p className="text-[13px] font-medium tracking-wide mb-2" style={{ color: '#D97706' }}>Quiet Hearth</p>
+          <h1 className="text-4xl font-semibold tracking-tight mb-3">Files settle by the quiet hearth.</h1>
+          <p className="text-neutral-400 text-[15.5px] leading-relaxed mb-8">
+            Drop local files. Warm shared note and per-item notes with amber accents. Soft size warnings only. Every share carries a polished Discord embed. Apple-style springs on frosted glass.
           </p>
 
-          <div className="flex items-center gap-3 mb-4">
-            <label className="text-xs text-neutral-400">accent</label>
+          <div
+            onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('ring-2', 'ring-amber-400/30'); }}
+            onDragLeave={(e) => e.currentTarget.classList.remove('ring-2', 'ring-amber-400/30')}
+            onDrop={(e) => {
+              e.preventDefault();
+              e.currentTarget.classList.remove('ring-2', 'ring-amber-400/30');
+              if (e.dataTransfer.files.length) addFiles(e.dataTransfer.files);
+            }}
+            onClick={() => inputRef.current?.click()}
+            className="border-2 border-dashed border-white/12 rounded-3xl p-14 text-center mb-7 cursor-pointer hover:border-white/25 transition bg-black/20"
+          >
+            <p className="text-neutral-300 text-[15px]">Drop files by the hearth</p>
+            <p className="text-neutral-500 text-sm mt-1">or click to choose</p>
             <input
-              type="color"
-              value={accent}
-              onChange={(e) => setAccent(e.target.value)}
-              className="w-10 h-10 rounded-xl border border-white/10 bg-transparent cursor-pointer"
+              ref={inputRef}
+              type="file"
+              multiple
+              className="hidden"
+              onChange={(e) => e.target.files && addFiles(e.target.files)}
             />
-            <span className="text-xs text-neutral-500 font-mono">{accent}</span>
           </div>
 
           <textarea
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            placeholder="optional shared dedication that travels with every drop"
-            rows={3}
-            className="w-full mb-4 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm placeholder:text-neutral-500 focus:outline-none transition resize-none"
+            ref={noteRef}
+            value={sharedNote}
+            onChange={(e) => setSharedNote(e.target.value)}
+            placeholder="Optional shared note for the hearth"
+            rows={2}
+            className="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-3.5 text-[15px] text-white placeholder:text-neutral-500 mb-6 focus:outline-none focus:border-white/30 transition resize-none"
           />
 
-          <label
-            className="block cursor-pointer rounded-2xl border border-dashed border-white/15 hover:border-white/30 p-8 text-center transition mb-4"
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => {
-              e.preventDefault();
-              onFiles(e.dataTransfer.files);
-            }}
-          >
-            <input type="file" multiple className="hidden" onChange={(e) => onFiles(e.target.files)} />
-            <p className="text-sm text-neutral-300">
-              {files.length
-                ? `${files.length} file${files.length > 1 ? 's' : ''} ready`
-                : 'drop or click for one or more files'}
-            </p>
-          </label>
+          {warn && <p className="text-[13px] text-amber-300/80 mb-5">{warn}</p>}
 
           <AnimatePresence>
-            {files.length > 0 && (
+            {items.map((item, idx) => (
               <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="mb-4 space-y-2"
+                key={item.id}
+                layout
+                initial={{ opacity: 0, y: 16, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.96 }}
+                transition={{ type: 'spring', stiffness: 120, damping: 18, delay: idx * 0.04 }}
+                className="glass rounded-2xl p-4 mb-3 relative overflow-hidden"
               >
-                {files.map((f, i) => (
-                  <div key={i} className="flex items-center gap-2 text-xs text-neutral-400">
-                    <span className="truncate flex-1">
-                      {f.name} · {(f.size / 1024 / 1024).toFixed(1)} MB
-                    </span>
+                <div className="absolute left-0 top-0 bottom-0 w-1" style={{ background: item.accent }} />
+                <div className="flex items-start gap-4 pl-2">
+                  {item.preview ? (
+                    <img src={item.preview} alt="" className="w-14 h-14 rounded-xl object-cover shrink-0" />
+                  ) : (
+                    <div className="w-14 h-14 rounded-xl bg-white/5 grid place-items-center text-[11px] text-neutral-500 shrink-0">file</div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">{item.file.name}</p>
+                    <p className="text-xs text-neutral-500 mb-2">{(item.file.size / 1024 / 1024).toFixed(1)} MB · {item.status}</p>
                     <input
-                      value={captions[i] || ''}
-                      onChange={(e) => setCaption(i, e.target.value)}
-                      placeholder="caption"
-                      className="w-40 px-2 py-1 rounded-lg bg-white/5 border border-white/10 text-xs"
+                      value={item.note}
+                      onChange={(e) => updateItem(item.id, { note: e.target.value })}
+                      placeholder="Per-item note"
+                      className="w-full bg-black/40 border border-white/8 rounded-xl px-3 py-2 text-xs text-white placeholder:text-neutral-600 mb-2 focus:outline-none focus:border-white/20"
                     />
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="color"
+                        value={item.accent}
+                        onChange={(e) => updateItem(item.id, { accent: e.target.value })}
+                        className="w-7 h-7 rounded-full cursor-pointer border-0"
+                      />
+                      <span className="text-[11px] text-neutral-500">accent</span>
+                    </div>
+                    {item.link && (
+                      <a href={item.link} target="_blank" rel="noreferrer" className="text-xs text-blue-400 truncate block mt-1">{item.link}</a>
+                    )}
+                    {item.error && <p className="text-xs text-red-400 mt-1">{item.error}</p>}
                   </div>
-                ))}
+                  <button
+                    onClick={() => setItems((p) => p.filter((i) => i.id !== item.id))}
+                    className="text-xs text-neutral-500 hover:text-white px-2 shrink-0"
+                  >
+                    remove
+                  </button>
+                </div>
               </motion.div>
-            )}
+            ))}
           </AnimatePresence>
 
-          {warn && <p className="text-xs text-amber-300/80 mb-3">{warn}</p>}
-          {err && <p className="text-xs text-red-400 mb-3">{err}</p>}
-
           <motion.button
-            whileTap={{ scale: 0.97 }}
-            whileHover={{ scale: 1.015 }}
+            whileTap={{ scale: 0.975 }}
+            whileHover={{ scale: 1.004 }}
             onClick={publish}
-            disabled={busy || !files.length}
-            className="w-full py-3 rounded-full text-white text-sm font-medium disabled:opacity-50 transition"
-            style={{ background: accent }}
+            disabled={busy || !items.length}
+            className="w-full rounded-2xl py-4 text-[15px] font-medium text-white disabled:opacity-40 transition shadow-xl mt-2"
+            style={{ background: '#D97706' }}
           >
-            {busy ? 'warming…' : 'place on the hearth'}
+            {busy ? 'Settling by the hearth…' : items.length ? `Publish ${items.length} file${items.length === 1 ? '' : 's'}` : 'Drop a file first'}
           </motion.button>
-
-          {links.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mt-5 text-xs text-neutral-400 space-y-1"
-            >
-              <p>copied share links:</p>
-              {links.map((l, i) => (
-                <p key={i} className="break-all">
-                  {l}
-                </p>
-              ))}
-            </motion.div>
-          )}
         </motion.div>
-
-        {recent.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="mt-4"
-          >
-            <h2 className="text-sm text-neutral-400 mb-4 tracking-wide">recent public drops</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {recent.map((r) => (
-                <a
-                  key={r.id}
-                  href={`/s/${r.id}`}
-                  className="glass rounded-2xl p-4 block hover:scale-[1.02] transition-transform"
-                >
-                  <p className="text-sm font-medium truncate">{r.name}</p>
-                  {r.caption && (
-                    <p className="text-xs text-neutral-500 mt-1 line-clamp-2">{r.caption}</p>
-                  )}
-                  <p className="text-[10px] text-neutral-600 mt-2">
-                    {new Date(r.created_at).toLocaleDateString()}
-                  </p>
-                </a>
-              ))}
-            </div>
-          </motion.div>
-        )}
       </div>
     </div>
   );

@@ -30,12 +30,12 @@ export default function Hero() {
           transition={{ type: 'spring', stiffness: 80, damping: 20, delay: 0.1 }}
           className="text-neutral-400 text-lg leading-relaxed max-w-lg mb-10 mx-auto"
         >
-          Mist Harbor for a soft misty multi-file berth with per-item notes. Quiet Bay for calm multi-file drops. Core for the cleanest drop. Soft size warnings only — no hard limits. Sleek Apple-style spring animations on frosted glass.
+          PrismWeave for layered files with per-item notes and colors. Mist Harbor for soft misty multi-file berths. Core for the cleanest drop. Soft size warnings only — no hard limits. Sleek Apple-style spring animations on frosted glass.
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center">
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('mistharbor')} className="px-7 py-3 rounded-full bg-[#64D2FF] text-black text-sm font-medium hover:bg-[#7AD8FF] transition shadow-lg">mist harbor</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietbay')} className="px-6 py-2.5 rounded-full bg-[#F5F5F7] text-black text-sm font-medium hover:bg-white transition">quiet bay</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('core')} className="px-6 py-2.5 rounded-full bg-[#5AC8FA]/80 text-black text-sm font-medium hover:bg-[#5AC8FA] transition">core</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('prismweave')} className="px-7 py-3 rounded-full bg-[#AF52DE] text-white text-sm font-medium hover:bg-[#BF6EE8] transition shadow-lg">prism weave</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('mistharbor')} className="px-6 py-2.5 rounded-full bg-[#64D2FF] text-black text-sm font-medium hover:bg-[#7AD8FF] transition">mist harbor</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('core')} className="px-6 py-2.5 rounded-full bg-[#F5F5F7] text-black text-sm font-medium hover:bg-white transition">core</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('directory')} className="px-6 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition">browse desks</motion.button>
         </div>
       </div>

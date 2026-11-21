@@ -4,10 +4,10 @@ const FALLBACK = 'https://og2vsalt-svg.github.io/rank/og.png';
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 }
 
@@ -53,6 +53,9 @@ export default async function handler(req, res) {
         image = share.file_url;
       }
     }
+  } else if (page === 'prismweave') {
+    title = 'PrismWeave — rankvault';
+    desc = 'Weave local files with per-item notes and colors under a shared note. Polished Discord embeds. Soft size warnings only. Apple-style springs.';
   } else if (page === 'echochamber') {
     title = 'Echo Chamber — rankvault';
     desc = 'Living feed that refreshes. Multi-drop with per-item notes under a shared line. Polished Discord embeds. Soft size warnings only. Apple-style springs.';

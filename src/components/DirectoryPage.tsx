@@ -4,6 +4,7 @@ import Navbar from './Navbar';
 import { useRouter } from './Router';
 
 const DESKS = [
+  { route: 'aetherwhisper', title: 'AetherWhisper', blurb: 'Multi-file drop with ethereal whisper notes, shared caption, live previews, soft glow animations. Apple-style springs. Polished Discord embeds. Soft size warnings only.' },
   { route: 'echoforge', title: 'EchoForge', blurb: 'Multi-file forge with shared note and per-item echoes. Live previews, Apple-style springs. Polished Discord embeds. Soft size warnings only.' },
   { route: 'quietember', title: 'Quiet Ember', blurb: 'Files settle as glowing embers in a quiet hearth. Shared caption, warm accent, pulsing soft heat with gentle shimmer. Spring motion. Polished Discord embeds. Soft size warnings only.' },
   { route: 'quiethearth', title: 'Quiet Hearth', blurb: 'Files settle by a warm hearth. Shared note, per-item notes and amber accents. Spring motion. Polished Discord embeds. Soft size warnings only.' },

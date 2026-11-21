@@ -4,10 +4,10 @@ const FALLBACK = 'https://og2vsalt-svg.github.io/rank/og.png';
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"')
     .replace(/'/g, '&#39;');
 }
 
@@ -53,6 +53,9 @@ export default async function handler(req, res) {
         image = share.file_url;
       }
     }
+  } else if (page === 'quietember') {
+    title = 'Quiet Ember — rankvault';
+    desc = 'Files settle as glowing embers in a quiet hearth. Shared caption, warm accent, pulsing soft heat with gentle shimmer. Polished Discord embeds. Soft size warnings only. Apple-style springs.';
   } else if (page === 'lumenlane') {
     title = 'Lumen Lane — rankvault';
     desc = 'Files flow in a quiet lane with a shared flow note. Live previews, soft size warnings only. Polished Discord embeds. Apple-style springs on frosted glass.';

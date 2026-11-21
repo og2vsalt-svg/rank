@@ -4,6 +4,7 @@ import Navbar from './Navbar';
 import { useRouter } from './Router';
 
 const DESKS = [
+  { route: 'aureatepath', title: 'Aureate Path', blurb: 'Files settle along a quiet gold path. Shared note, per-item notes and accents. Spring motion. Polished Discord embeds. Soft size warnings only.' },
   { route: 'prismweave', title: 'PrismWeave', blurb: 'Weave local files with per-item notes and colors under a shared note. Spring motion. Polished Discord embeds. Soft size warnings only.' },
   { route: 'layer', title: 'Layer', blurb: 'Multi-layer file drop with per-layer notes and a shared title. Spring motion. Polished Discord embeds. Soft size warnings only.' },
   { route: 'softmist', title: 'SoftMist', blurb: 'Files settle into soft mist around a shared note. Polished Discord embeds. Soft warnings only.' },

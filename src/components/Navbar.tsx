@@ -10,6 +10,8 @@ export default function Navbar() {
 
   const links = [
     { to: 'home', label: 'home' },
+    { to: 'quiethearth', label: 'hearth' },
+    { to: 'gossamer', label: 'gossamer' },
     { to: 'aureatepath', label: 'path' },
     { to: 'lumenlane', label: 'lane' },
     { to: 'velvetforge', label: 'velvet' },

@@ -4,10 +4,10 @@ const FALLBACK = 'https://og2vsalt-svg.github.io/rank/og.png';
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"')
     .replace(/'/g, '&#39;');
 }
 
@@ -53,6 +53,9 @@ export default async function handler(req, res) {
         image = share.file_url;
       }
     }
+  } else if (page === 'mistharbor') {
+    title = 'Mist Harbor — rankvault';
+    desc = 'Files settle in soft mist. Per-item notes, shared mist line, Apple-style springs. Soft size warnings only. Polished Discord embeds.';
   } else if (page === 'signal') {
     title = 'Signal — rankvault';
     desc = 'Live feed of recent public shares. Quick note or file compose. Polished Discord embeds. Soft size warnings only. Apple-style springs.';

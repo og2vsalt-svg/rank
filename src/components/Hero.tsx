@@ -30,9 +30,10 @@ export default function Hero() {
           transition={{ type: 'spring', stiffness: 80, damping: 20, delay: 0.1 }}
           className="text-neutral-400 text-lg leading-relaxed max-w-lg mb-10 mx-auto"
         >
-          Aether Desk for refined multi-file drops with shared notes and live previews. Velvet Forge for soft layered notes. Soft size warnings only — no hard limits. Sleek Apple-style spring animations on frosted glass.
+          Quiet Ember for files that settle as glowing embers with warm accents and soft shimmer. Aether Desk for refined multi-file drops. Soft size warnings only — no hard limits. Sleek Apple-style spring animations on frosted glass.
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center">
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietember')} className="px-7 py-3 rounded-full bg-[#F97316] text-white text-sm font-medium hover:bg-[#FB923C] transition shadow-lg">quiet ember</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('aetherdesk')} className="px-7 py-3 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#3A9BFF] transition shadow-lg">aether desk</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('velvetforge')} className="px-7 py-3 rounded-full bg-[#AF52DE] text-white text-sm font-medium hover:bg-[#BF6EE8] transition shadow-lg">velvet forge</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('auroraquay')} className="px-6 py-2.5 rounded-full bg-[#BF5AF2] text-white text-sm font-medium hover:bg-[#C96EF5] transition">aurora quay</motion.button>

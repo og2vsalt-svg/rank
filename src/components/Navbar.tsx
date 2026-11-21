@@ -41,6 +41,7 @@ export default function Navbar() {
     { to: 'quietthread', label: 'thread' },
     { to: 'driftlight', label: 'drift' },
     { to: 'mistharbor', label: 'harbor' },
+    { to: 'layer', label: 'layer' },
   ];
 
   return (

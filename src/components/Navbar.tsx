@@ -21,6 +21,7 @@ export default function Navbar() {
     { to: 'hub', label: 'hub' },
     { to: 'luminafold', label: 'fold' },
     { to: 'core', label: 'core' },
+    { to: 'frostline', label: 'frostline' },
     { to: 'aetherpulse', label: 'pulse' },
     { to: 'silk', label: 'silk' },
     { to: 'nexus', label: 'nexus' },

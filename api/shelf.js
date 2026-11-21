@@ -53,6 +53,9 @@ export default async function handler(req, res) {
         image = share.file_url;
       }
     }
+  } else if (page === 'echoforge') {
+    title = 'EchoForge — rankvault';
+    desc = 'Multi-file forge with shared note and per-item echoes. Live previews, Apple-style springs. Polished Discord embeds. Soft size warnings only.';
   } else if (page === 'quietember') {
     title = 'Quiet Ember — rankvault';
     desc = 'Files settle as glowing embers in a quiet hearth. Shared caption, warm accent, pulsing soft heat with gentle shimmer. Polished Discord embeds. Soft size warnings only. Apple-style springs.';

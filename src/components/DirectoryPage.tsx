@@ -4,6 +4,7 @@ import Navbar from './Navbar';
 import { useRouter } from './Router';
 
 const DESKS = [
+  { route: 'mistline', title: 'Mistline', blurb: 'Files settle in a soft mist line with a shared note. Drifting light. Polished Discord embeds. Soft warnings only.' },
   { route: 'quietcanvas', title: 'Quiet Canvas', blurb: 'Arrange files on a calm surface with per-tile notes. Shared title and accent. Polished Discord embeds. Soft warnings only.' },
   { route: 'softpath', title: 'Softpath', blurb: 'Files settle one after another along a quiet path with a shared note. Spring motion. Discord-ready links.' },
   { route: 'stillpath', title: 'Stillpath', blurb: 'A quiet path for local files. They settle one by one with a shared note. Polished Discord embeds. Soft warnings only.' },

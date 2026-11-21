@@ -4,10 +4,10 @@ const FALLBACK = 'https://og2vsalt-svg.github.io/rank/og.png';
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/\"/g, '"')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 }
 
@@ -119,6 +119,15 @@ export default async function handler(req, res) {
   } else if (page === 'notesvault') {
     title = 'Notes Vault — rankvault';
     desc = 'Write a quiet note or attach files. Pure text becomes a shareable file. Polished Discord embeds. Soft size warnings only.';
+  } else if (page === 'softmist') {
+    title = 'SoftMist — rankvault';
+    desc = 'Files settle into soft mist around a shared note. Polished Discord embeds. Soft size warnings only.';
+  } else if (page === 'quietthread') {
+    title = 'QuietThread — rankvault';
+    desc = 'A quiet thread of notes and optional files. Each share carries a polished Discord embed. Soft warnings only.';
+  } else if (page === 'driftlight') {
+    title = 'DriftLight — rankvault';
+    desc = 'A single file under drifting light. Polished Discord embeds. Soft size warnings only.';
   }
 
   const url = `${proto}://${host}${path}`;

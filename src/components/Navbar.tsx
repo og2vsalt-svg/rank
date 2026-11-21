@@ -10,6 +10,7 @@ export default function Navbar() {
 
   const links = [
     { to: 'home', label: 'home' },
+    { to: 'lumenlane', label: 'lane' },
     { to: 'velvetforge', label: 'velvet' },
     { to: 'lumenforge', label: 'forge' },
     { to: 'auroraquay', label: 'quay' },

@@ -4,10 +4,10 @@ const FALLBACK = 'https://og2vsalt-svg.github.io/rank/og.png';
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 }
 
@@ -53,6 +53,9 @@ export default async function handler(req, res) {
         image = share.file_url;
       }
     }
+  } else if (page === 'lumenlane') {
+    title = 'Lumen Lane — rankvault';
+    desc = 'Files flow in a quiet lane with a shared flow note. Live previews, soft size warnings only. Polished Discord embeds. Apple-style springs on frosted glass.';
   } else if (page === 'aetherdesk') {
     title = 'Aether Desk — rankvault';
     desc = 'Refined multi-file drop with shared note, live image previews, and soft size warnings only. Every link carries a polished Discord embed. Apple-style springs on frosted glass.';

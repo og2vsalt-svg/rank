@@ -4,6 +4,9 @@ import Navbar from './Navbar';
 import { useRouter } from './Router';
 
 const DESKS = [
+  { route: 'softmist', title: 'SoftMist', blurb: 'Files settle into soft mist around a shared note. Polished Discord embeds. Soft warnings only.' },
+  { route: 'quietthread', title: 'QuietThread', blurb: 'A quiet thread of notes with optional file attachments. Each share has a polished Discord embed. Soft warnings only.' },
+  { route: 'driftlight', title: 'DriftLight', blurb: 'A single file under drifting light. Polished Discord embeds. Soft size warnings only.' },
   { route: 'mistline', title: 'Mistline', blurb: 'Files settle in a soft mist line with a shared note. Drifting light. Polished Discord embeds. Soft warnings only.' },
   { route: 'quietcanvas', title: 'Quiet Canvas', blurb: 'Arrange files on a calm surface with per-tile notes. Shared title and accent. Polished Discord embeds. Soft warnings only.' },
   { route: 'softpath', title: 'Softpath', blurb: 'Files settle one after another along a quiet path with a shared note. Spring motion. Discord-ready links.' },

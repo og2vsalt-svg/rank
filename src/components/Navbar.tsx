@@ -40,6 +40,7 @@ export default function Navbar() {
     { to: 'softmist', label: 'mist' },
     { to: 'quietthread', label: 'thread' },
     { to: 'driftlight', label: 'drift' },
+    { to: 'mistharbor', label: 'harbor' },
   ];
 
   return (

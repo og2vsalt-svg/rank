@@ -4,6 +4,7 @@ import Navbar from './Navbar';
 import { useRouter } from './Router';
 
 const DESKS = [
+  { route: 'quietember', title: 'Quiet Ember', blurb: 'Files settle as glowing embers in a quiet hearth. Shared caption, warm accent, pulsing soft heat with gentle shimmer. Spring motion. Polished Discord embeds. Soft size warnings only.' },
   { route: 'quiethearth', title: 'Quiet Hearth', blurb: 'Files settle by a warm hearth. Shared note, per-item notes and amber accents. Spring motion. Polished Discord embeds. Soft size warnings only.' },
   { route: 'gossamer', title: 'Gossamer', blurb: 'Delicate multi-file thread. Fine notes and silver accents under a shared note. Spring motion. Polished Discord embeds. Soft warnings only.' },
   { route: 'aureatepath', title: 'Aureate Path', blurb: 'Files settle along a quiet gold path. Shared note, per-item notes and accents. Spring motion. Polished Discord embeds. Soft size warnings only.' },

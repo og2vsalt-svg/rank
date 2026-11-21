@@ -4,10 +4,10 @@ const FALLBACK = 'https://og2vsalt-svg.github.io/rank/og.png';
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"')
     .replace(/'/g, '&#39;');
 }
 
@@ -53,6 +53,9 @@ export default async function handler(req, res) {
         image = share.file_url;
       }
     }
+  } else if (page === 'velvetforge') {
+    title = 'Velvet Forge — rankvault';
+    desc = 'Soft layered notes and files. Draft a note that becomes a shareable file, attach anything, choose an accent. Polished Discord embeds. Soft size warnings only. Apple-style springs.';
   } else if (page === 'prismweave') {
     title = 'PrismWeave — rankvault';
     desc = 'Weave local files with per-item notes and colors under a shared note. Polished Discord embeds. Soft size warnings only. Apple-style springs.';
@@ -137,6 +140,9 @@ export default async function handler(req, res) {
   } else if (page === 'driftlight') {
     title = 'DriftLight — rankvault';
     desc = 'A single file under drifting light. Polished Discord embeds. Soft size warnings only.';
+  } else if (page === 'lumenforge') {
+    title = 'Lumen Forge — rankvault';
+    desc = 'Draft text that becomes a shareable file, with optional attachments and live word count. Polished Discord embeds. Soft size warnings only.';
   }
 
   const url = `${proto}://${host}${path}`;

@@ -1,151 +1,167 @@
-import { useRef, useState, useEffect, useCallback } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useCallback, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishLocalFile, shareUrls } from '../lib/cloudShare';
+import { publishLocalFile } from '../lib/cloudShare';
+
+type Tile = {
+  file: File;
+  preview?: string;
+  id: string;
+  note: string;
+  status: 'queued' | 'uploading' | 'done' | 'error';
+  link?: string;
+  error?: string;
+};
 
 export default function QuietCanvasPage() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [drawing, setDrawing] = useState(false);
-  const [color, setColor] = useState('#0A84FF');
-  const [size, setSize] = useState(3);
-  const [caption, setCaption] = useState('');
+  const [tiles, setTiles] = useState<Tile[]>([]);
+  const [title, setTitle] = useState('');
+  const [accent, setAccent] = useState('#5AC8FA');
   const [busy, setBusy] = useState(false);
-  const [link, setLink] = useState<string | null>(null);
   const [warn, setWarn] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const getCtx = () => canvasRef.current?.getContext('2d');
-
-  useEffect(() => {
-    const c = canvasRef.current;
-    if (!c) return;
-    const resize = () => {
-      const rect = c.getBoundingClientRect();
-      c.width = rect.width * window.devicePixelRatio;
-      c.height = rect.height * window.devicePixelRatio;
-      const ctx = getCtx();
-      if (ctx) {
-        ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-      }
-    };
-    resize();
-    window.addEventListener('resize', resize);
-    return () => window.removeEventListener('resize', resize);
+  const addFiles = useCallback((list: FileList | File[]) => {
+    const arr = Array.from(list);
+    const total = arr.reduce((s, f) => s + f.size, 0);
+    setWarn(total > 45_000_000 ? 'Large batch — uploads may feel slower. No hard limits.' : null);
+    const next: Tile[] = arr.map((file) => ({
+      file,
+      id: Math.random().toString(36).slice(2, 10),
+      note: '',
+      status: 'queued',
+      preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : undefined,
+    }));
+    setTiles((p) => [...p, ...next]);
   }, []);
 
-  const start = (e: React.PointerEvent) => {
-    setDrawing(true);
-    const ctx = getCtx();
-    if (!ctx || !canvasRef.current) return;
-    const rect = canvasRef.current.getBoundingClientRect();
-    ctx.beginPath();
-    ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
-  };
-
-  const move = (e: React.PointerEvent) => {
-    if (!drawing) return;
-    const ctx = getCtx();
-    if (!ctx || !canvasRef.current) return;
-    const rect = canvasRef.current.getBoundingClientRect();
-    ctx.strokeStyle = color;
-    ctx.lineWidth = size;
-    ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
-    ctx.stroke();
-  };
-
-  const end = () => setDrawing(false);
-
-  const clear = () => {
-    const c = canvasRef.current;
-    const ctx = getCtx();
-    if (c && ctx) ctx.clearRect(0, 0, c.width, c.height);
-  };
-
-  const publish = useCallback(async () => {
-    const c = canvasRef.current;
-    if (!c) return;
+  const publish = async () => {
+    if (!tiles.length || busy) return;
     setBusy(true);
-    setWarn(null);
-    try {
-      const blob = await new Promise<Blob | null>((res) => c.toBlob(res, 'image/png'));
-      if (!blob) throw new Error('could not export canvas');
-      if (blob.size > 40_000_000) setWarn('Large canvas export. Upload may feel slower.');
-      const file = new File([blob], 'quiet-canvas.png', { type: 'image/png' });
-      const res = await publishLocalFile(file, {
-        caption: caption.trim() || 'quiet canvas',
-        color,
-        cardTitle: 'Quiet Canvas',
-        meta: { desk: 'quietcanvas', kind: 'drawing' },
-      });
-      if (res.ok && res.id) {
-        const urls = shareUrls(res.id);
-        setLink(urls?.embed || null);
+    for (const tile of tiles) {
+      if (tile.status === 'done') continue;
+      setTiles((p) => p.map((t) => t.id === tile.id ? { ...t, status: 'uploading' } : t));
+      try {
+        const res = await publishLocalFile(tile.file, {
+          caption: tile.note.trim() || title.trim() || tile.file.name,
+          color: accent,
+          cardTitle: title.trim() || tile.file.name,
+          meta: { desk: 'quietcanvas', note: tile.note },
+        });
+        setTiles((p) => p.map((t) =>
+          t.id === tile.id
+            ? { ...t, status: res.ok ? 'done' : 'error', link: res.embed, error: res.error }
+            : t
+        ));
+      } catch (e: any) {
+        setTiles((p) => p.map((t) => t.id === tile.id ? { ...t, status: 'error', error: e.message } : t));
       }
-    } catch (e: any) {
-      setWarn(e.message || 'publish failed');
     }
     setBusy(false);
-  }, [caption, color]);
+  };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-6 max-w-4xl mx-auto">
+      <div className="pt-28 pb-24 px-5 max-w-3xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 100, damping: 20 }}
-          className="glass rounded-[32px] p-6 md:p-10 shadow-2xl"
+          transition={{ type: 'spring', stiffness: 100, damping: 22 }}
+          className="glass rounded-[36px] p-8 md:p-12"
         >
-          <h1 className="text-3xl font-semibold tracking-tight text-white mb-2">Quiet Canvas</h1>
-          <p className="text-neutral-400 text-sm mb-6">Sketch freely on frosted glass. Export and share with a polished Discord embed. Soft warnings only.</p>
+          <p className="text-[13px] font-medium tracking-wide mb-2" style={{ color: accent }}>Quiet Canvas</p>
+          <h1 className="text-4xl font-semibold tracking-tight mb-3">Arrange quietly.</h1>
+          <p className="text-neutral-400 text-[15.5px] leading-relaxed mb-8">
+            Drop files onto a calm surface. Each tile can hold a short note. Everything publishes with a polished Discord embed. Soft size warnings only. Spring animations on frosted glass.
+          </p>
 
-          <div className="relative rounded-3xl overflow-hidden border border-white/10 bg-black/20 aspect-[16/9] mb-6">
-            <canvas
-              ref={canvasRef}
-              className="w-full h-full touch-none cursor-crosshair"
-              onPointerDown={start}
-              onPointerMove={move}
-              onPointerUp={end}
-              onPointerLeave={end}
+          <div
+            onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('ring-2', 'ring-white/20'); }}
+            onDragLeave={(e) => e.currentTarget.classList.remove('ring-2', 'ring-white/20')}
+            onDrop={(e) => {
+              e.preventDefault();
+              e.currentTarget.classList.remove('ring-2', 'ring-white/20');
+              if (e.dataTransfer.files.length) addFiles(e.dataTransfer.files);
+            }}
+            onClick={() => inputRef.current?.click()}
+            className="border-2 border-dashed border-white/12 rounded-3xl p-12 text-center mb-7 cursor-pointer hover:border-white/25 transition bg-black/20"
+          >
+            <p className="text-neutral-300 text-[15px]">Drop files onto the canvas</p>
+            <p className="text-neutral-500 text-sm mt-1">or click to choose</p>
+            <input
+              ref={inputRef}
+              type="file"
+              multiple
+              className="hidden"
+              onChange={(e) => e.target.files && addFiles(e.target.files)}
             />
           </div>
 
-          <div className="flex flex-wrap gap-4 items-center mb-6">
-            <label className="flex items-center gap-2 text-sm text-neutral-300">
-              color
-              <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="w-10 h-8 rounded-lg bg-transparent border-0" />
-            </label>
-            <label className="flex items-center gap-2 text-sm text-neutral-300">
-              size
-              <input type="range" min="1" max="20" value={size} onChange={(e) => setSize(Number(e.target.value))} className="accent-blue-500" />
-            </label>
-            <button onClick={clear} className="px-4 py-2 rounded-full text-sm bg-white/10 hover:bg-white/20 text-white transition">clear</button>
-          </div>
-
           <input
-            value={caption}
-            onChange={(e) => setCaption(e.target.value)}
-            placeholder="quiet caption (optional)"
-            className="w-full mb-4 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-neutral-500 focus:outline-none focus:border-white/30"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Shared title (optional)"
+            className="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-3.5 text-[15px] text-white placeholder:text-neutral-500 mb-5 focus:outline-none focus:border-white/30 transition"
           />
 
-          <div className="flex items-center gap-4">
-            <button
-              onClick={publish}
-              disabled={busy}
-              className="px-6 py-3 rounded-full bg-white text-black font-medium text-sm hover:bg-neutral-100 disabled:opacity-50 transition"
-            >
-              {busy ? 'publishing…' : 'publish canvas'}
-            </button>
-            {link && (
-              <a href={link} target="_blank" rel="noreferrer" className="text-sm text-blue-400 hover:underline">
-                share link
-              </a>
-            )}
+          <div className="flex items-center gap-3 mb-6">
+            <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="w-9 h-9 rounded-full cursor-pointer border-0" />
+            <span className="text-[13px] text-neutral-500">Accent for embeds</span>
           </div>
-          {warn && <p className="mt-3 text-xs text-amber-400">{warn}</p>}
+
+          {warn && <p className="text-[13px] text-amber-300/80 mb-5">{warn}</p>}
+
+          <div className="grid sm:grid-cols-2 gap-4 mb-6">
+            <AnimatePresence>
+              {tiles.map((tile) => (
+                <motion.div
+                  key={tile.id}
+                  layout
+                  initial={{ opacity: 0, scale: 0.96 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.96 }}
+                  transition={{ type: 'spring', stiffness: 260, damping: 24 }}
+                  className="glass rounded-2xl p-4"
+                >
+                  {tile.preview ? (
+                    <img src={tile.preview} alt="" className="w-full h-32 rounded-xl object-cover mb-3" />
+                  ) : (
+                    <div className="w-full h-32 rounded-xl bg-white/5 grid place-items-center text-[11px] text-neutral-500 mb-3">file</div>
+                  )}
+                  <p className="text-sm font-medium truncate mb-1">{tile.file.name}</p>
+                  <p className="text-xs text-neutral-500 mb-2">{(tile.file.size / 1024 / 1024).toFixed(1)} MB · {tile.status}</p>
+                  <input
+                    value={tile.note}
+                    onChange={(e) => setTiles((p) => p.map((t) => t.id === tile.id ? { ...t, note: e.target.value } : t))}
+                    placeholder="Tile note"
+                    className="w-full bg-black/20 border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder:text-neutral-500 mb-2 focus:outline-none"
+                  />
+                  {tile.link && (
+                    <a href={tile.link} target="_blank" rel="noreferrer" className="text-xs text-blue-400 truncate block">{tile.link}</a>
+                  )}
+                  {tile.error && <p className="text-xs text-red-400">{tile.error}</p>}
+                  <button
+                    onClick={() => setTiles((p) => p.filter((t) => t.id !== tile.id))}
+                    className="text-xs text-neutral-500 hover:text-white mt-2"
+                  >
+                    remove
+                  </button>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+
+          <motion.button
+            whileTap={{ scale: 0.98 }}
+            whileHover={{ scale: 1.005 }}
+            onClick={publish}
+            disabled={busy || !tiles.length}
+            className="w-full rounded-2xl py-4 text-[15px] font-medium text-white disabled:opacity-40 transition shadow-xl"
+            style={{ background: accent }}
+          >
+            {busy ? 'Publishing…' : tiles.length ? `Publish ${tiles.length} tile${tiles.length === 1 ? '' : 's'}` : 'Drop a file first'}
+          </motion.button>
         </motion.div>
       </div>
     </div>

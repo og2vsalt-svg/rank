@@ -4,6 +4,8 @@ import Navbar from './Navbar';
 import { useRouter } from './Router';
 
 const DESKS = [
+  { route: 'quiethearth', title: 'Quiet Hearth', blurb: 'Files settle by a warm hearth. Shared note, per-item notes and amber accents. Spring motion. Polished Discord embeds. Soft size warnings only.' },
+  { route: 'gossamer', title: 'Gossamer', blurb: 'Delicate multi-file thread. Fine notes and silver accents under a shared note. Spring motion. Polished Discord embeds. Soft warnings only.' },
   { route: 'aureatepath', title: 'Aureate Path', blurb: 'Files settle along a quiet gold path. Shared note, per-item notes and accents. Spring motion. Polished Discord embeds. Soft size warnings only.' },
   { route: 'prismweave', title: 'PrismWeave', blurb: 'Weave local files with per-item notes and colors under a shared note. Spring motion. Polished Discord embeds. Soft size warnings only.' },
   { route: 'layer', title: 'Layer', blurb: 'Multi-layer file drop with per-layer notes and a shared title. Spring motion. Polished Discord embeds. Soft size warnings only.' },

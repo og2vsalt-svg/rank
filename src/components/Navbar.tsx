@@ -10,6 +10,7 @@ export default function Navbar() {
 
   const links = [
     { to: 'home', label: 'home' },
+    { to: 'quietlibrary', label: 'library' },
     { to: 'portal', label: 'portal' },
     { to: 'signal', label: 'signal' },
     { to: 'stillpath', label: 'stillpath' },

@@ -53,6 +53,9 @@ export default async function handler(req, res) {
         image = share.file_url;
       }
     }
+  } else if (page === 'aetherdesk') {
+    title = 'Aether Desk — rankvault';
+    desc = 'Refined multi-file drop with shared note, live image previews, and soft size warnings only. Every link carries a polished Discord embed. Apple-style springs on frosted glass.';
   } else if (page === 'velvetforge') {
     title = 'Velvet Forge — rankvault';
     desc = 'Soft layered notes and files. Draft a note that becomes a shareable file, attach anything, choose an accent. Polished Discord embeds. Soft size warnings only. Apple-style springs.';

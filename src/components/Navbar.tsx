@@ -10,6 +10,7 @@ export default function Navbar() {
 
   const links = [
     { to: 'home', label: 'home' },
+    { to: 'auroraquay', label: 'quay' },
     { to: 'echochamber', label: 'chamber' },
     { to: 'quietlibrary', label: 'library' },
     { to: 'portal', label: 'portal' },

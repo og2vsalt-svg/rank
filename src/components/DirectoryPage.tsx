@@ -4,6 +4,7 @@ import Navbar from './Navbar';
 import { useRouter } from './Router';
 
 const DESKS = [
+  { route: 'layer', title: 'Layer', blurb: 'Multi-layer file drop with per-layer notes and a shared title. Spring motion. Polished Discord embeds. Soft size warnings only.' },
   { route: 'softmist', title: 'SoftMist', blurb: 'Files settle into soft mist around a shared note. Polished Discord embeds. Soft warnings only.' },
   { route: 'quietthread', title: 'QuietThread', blurb: 'A quiet thread of notes with optional file attachments. Each share has a polished Discord embed. Soft warnings only.' },
   { route: 'driftlight', title: 'DriftLight', blurb: 'A single file under drifting light. Polished Discord embeds. Soft size warnings only.' },

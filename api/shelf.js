@@ -68,6 +68,9 @@ export default async function handler(req, res) {
   } else if (page === 'qrdesk') {
     title = 'QR Desk — rankvault';
     desc = 'Generate real QR codes from any link and publish them as permanent shares. Polished Discord embeds. Soft warnings only.';
+  } else if (page === 'snippet') {
+    title = 'Snippet Desk — rankvault';
+    desc = 'Share code and text snippets that become permanent files with polished Discord embeds. Soft size warnings only. Apple-style springs.';
   }
 
   const url = `${proto}://${host}${path}`;

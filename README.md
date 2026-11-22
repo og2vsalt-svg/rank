@@ -8,7 +8,11 @@ Soft size warnings only — never hard limits. Apple-style spring animations on 
 
 **Central experience: Drop** — clean multi-file drop with shared note, per-item notes, live previews, soft size warnings only, Apple-style springs, polished Discord embeds. Accessible at `/drop`.
 
-**New: Library** at `/library` — calm browser for all public shares with search and type filters. Same soft warnings, same embeds, same prior desks intact.
+**New: Note Studio** at `/notestudio` — write quiet text notes that become shareable files with polished Discord embeds.
+
+**New: QR Desk** at `/qrdesk` — generate real QR codes from any link and publish them as permanent shares.
+
+**Library** at `/library` — calm browser for all public shares with search and type filters. Same soft warnings, same embeds, same prior desks intact.
 
 All prior desks remain fully intact (QuietVault, AetherVault, Stillpoint, Weave, Horizon, Lumen Fold, and the full constellation).
 

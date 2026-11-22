@@ -4,6 +4,8 @@ import Navbar from './Navbar';
 import { useRouter } from './Router';
 
 const DESKS = [
+  { route: 'notestudio', title: 'Note Studio', blurb: 'Write a quiet note. It becomes a shareable text file with a polished Discord embed. Soft size warnings only. Apple-style springs.' },
+  { route: 'qrdesk', title: 'QR Desk', blurb: 'Turn any link into a scannable QR code and publish it as a permanent share. Real QR generation. Polished Discord embeds. Soft warnings only.' },
   { route: 'lumenorbit', title: 'LumenOrbit', blurb: 'Circular multi-file orbit. Shared note, per-item notes, live previews, soft glow. Apple-style springs on frosted glass. Polished Discord embeds. Soft size warnings only.' },
   { route: 'aetherharbor', title: 'AetherHarbor', blurb: 'Luminous multi-file harbor. Shared note, soft glowing accents, live previews, Apple-style springs on frosted glass. Polished Discord embeds. Soft size warnings only.' },
   { route: 'vortex', title: 'Vortex', blurb: 'Files swirl into a quiet vortex. Shared note, per-item notes, live previews, spring animations. Polished Discord embeds. Soft size warnings only.' },

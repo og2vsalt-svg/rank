@@ -11,6 +11,7 @@ export default function Navbar() {
   const links = [
     { to: 'home', label: 'home' },
     { to: 'quietvault', label: 'vault' },
+    { to: 'aethervault', label: 'aethervault' },
     { to: 'stillpoint', label: 'stillpoint' },
     { to: 'weave', label: 'weave' },
     { to: 'stillatlas', label: 'atlas' },

@@ -53,6 +53,12 @@ export default async function handler(req, res) {
         image = share.file_url;
       }
     }
+  } else if (page === 'stillpoint') {
+    title = 'Stillpoint — rankvault';
+    desc = 'A single focused drop. Large live preview, optional timed reveal, soft pulse. Polished Discord embeds. Soft size warnings only. Apple-style springs.';
+  } else if (page === 'weave') {
+    title = 'Weave — rankvault';
+    desc = 'Connect files with quiet threads. Shared note, per-item notes, visual links, live previews. Polished Discord embeds. Soft size warnings only.';
   } else if (page === 'vortex') {
     title = 'Vortex — rankvault';
     desc = 'Files swirl into a quiet vortex. Shared note, per-item notes, live previews, spring animations. Polished Discord embeds. Soft size warnings only.';

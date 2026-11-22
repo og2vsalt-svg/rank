@@ -13,6 +13,7 @@ export default function Navbar() {
     { to: 'snippet', label: 'snippet' },
     { to: 'notestudio', label: 'notes' },
     { to: 'qrdesk', label: 'qr' },
+    { to: 'chroma', label: 'chroma' },
     { to: 'library', label: 'library' },
     { to: 'gallery', label: 'gallery' },
     { to: 'directory', label: 'desks' },

@@ -71,6 +71,9 @@ export default async function handler(req, res) {
   } else if (page === 'snippet') {
     title = 'Snippet Desk — rankvault';
     desc = 'Share code and text snippets that become permanent files with polished Discord embeds. Soft size warnings only. Apple-style springs.';
+  } else if (page === 'chroma') {
+    title = 'Chroma Desk — rankvault';
+    desc = 'Compose color palettes and publish them as clean image shares. Soft size warnings only. Polished Discord embeds. Apple-style springs.';
   }
 
   const url = `${proto}://${host}${path}`;

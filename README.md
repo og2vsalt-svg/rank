@@ -8,7 +8,9 @@ Soft size warnings only — never hard limits. Apple-style spring animations on 
 
 **Central experience: Drop** — clean multi-file drop with shared note, per-item notes, live previews, soft size warnings only, Apple-style springs, polished Discord embeds. Accessible at `/drop`.
 
-New desk: **LumenOrbit** at `/lumenorbit` — circular multi-file orbit with shared caption, per-item notes, soft glow, and live previews.
+New desk: **Prism** at `/prism` — multi-file grid with live image previews, per-item notes, shared caption, soft size warnings only, and refined Apple-style spring animations. Discord embeds polished on every share.
+
+Prior desk: **LumenOrbit** at `/lumenorbit` — circular multi-file orbit with shared caption, per-item notes, soft glow, and live previews.
 
 All prior desks remain fully intact (QuietVault, AetherVault, Stillpoint, Weave, and the full constellation).
 

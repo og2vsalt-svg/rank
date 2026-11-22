@@ -10,6 +10,7 @@ export default function Navbar() {
 
   const links = [
     { to: 'home', label: 'home' },
+    { to: 'lumenatlas', label: 'atlas' },
     { to: 'aetherharbor', label: 'aetherharbor' },
     { to: 'stillharbor', label: 'stillharbor' },
     { to: 'vortex', label: 'vortex' },
@@ -81,7 +82,9 @@ export default function Navbar() {
               <button
                 key={l.to}
                 onClick={() => navigate(l.to)}
-                className={`px-3.5 py-1.5 rounded-full text-[13px] transition whitespace-nowrap ${route === l.to || (l.to === 'home' && route === 'home') ? 'bg-white/10 text-white' : 'text-neutral-400 hover:text-white'}`}
+                className={`px-3.5 py-1.5 rounded-full text-[13px] transition whitespace-nowrap ${
+                  route === l.to || (l.to === 'home' && route === 'home') ? 'bg-white/10 text-white' : 'text-neutral-400 hover:text-white'
+                }`}
               >
                 {l.label}
               </button>

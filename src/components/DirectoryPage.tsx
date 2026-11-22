@@ -4,6 +4,7 @@ import Navbar from './Navbar';
 import { useRouter } from './Router';
 
 const DESKS = [
+  { route: 'lumenorbit', title: 'LumenOrbit', blurb: 'Circular multi-file orbit. Shared note, per-item notes, live previews, soft glow. Apple-style springs on frosted glass. Polished Discord embeds. Soft size warnings only.' },
   { route: 'aetherharbor', title: 'AetherHarbor', blurb: 'Luminous multi-file harbor. Shared note, soft glowing accents, live previews, Apple-style springs on frosted glass. Polished Discord embeds. Soft size warnings only.' },
   { route: 'vortex', title: 'Vortex', blurb: 'Files swirl into a quiet vortex. Shared note, per-item notes, live previews, spring animations. Polished Discord embeds. Soft size warnings only.' },
   { route: 'aetherlane', title: 'AetherLane', blurb: 'Sequential multi-file lane with shared flow note, per-item notes, live previews, and accent. Apple-style springs. Polished Discord embeds. Soft size warnings only.' },

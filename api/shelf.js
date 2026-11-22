@@ -4,10 +4,10 @@ const FALLBACK = 'https://og2vsalt-svg.github.io/rank/og.png';
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"')
     .replace(/'/g, '&#39;');
 }
 
@@ -62,6 +62,12 @@ export default async function handler(req, res) {
   } else if (page === 'gallery') {
     title = 'Gallery — rankvault';
     desc = 'Recent public shares, presented quietly. Soft size warnings only. Polished Discord embeds.';
+  } else if (page === 'notestudio') {
+    title = 'Note Studio — rankvault';
+    desc = 'Write quiet notes that become shareable files. Soft size warnings only. Polished Discord embeds. Apple-style springs.';
+  } else if (page === 'qrdesk') {
+    title = 'QR Desk — rankvault';
+    desc = 'Generate real QR codes from any link and publish them as permanent shares. Polished Discord embeds. Soft warnings only.';
   }
 
   const url = `${proto}://${host}${path}`;

@@ -10,6 +10,7 @@ export default function Navbar() {
 
   const links = [
     { to: 'home', label: 'home' },
+    { to: 'aetherlane', label: 'lane' },
     { to: 'aetherwhisper', label: 'whisper' },
     { to: 'applelumen', label: 'lumen' },
     { to: 'echoforge', label: 'echoforge' },
@@ -17,7 +18,7 @@ export default function Navbar() {
     { to: 'quiethearth', label: 'hearth' },
     { to: 'gossamer', label: 'gossamer' },
     { to: 'aureatepath', label: 'path' },
-    { to: 'lumenlane', label: 'lane' },
+    { to: 'lumenlane', label: 'lane2' },
     { to: 'velvetforge', label: 'velvet' },
     { to: 'lumenforge', label: 'forge' },
     { to: 'auroraquay', label: 'quay' },

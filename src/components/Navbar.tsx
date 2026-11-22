@@ -10,6 +10,7 @@ export default function Navbar() {
 
   const links = [
     { to: 'drop', label: 'drop' },
+    { to: 'lumencore', label: 'lumen' },
     { to: 'aurora', label: 'aurora' },
     { to: 'zenith', label: 'zenith' },
     { to: 'stillwater', label: 'stillwater' },

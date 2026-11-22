@@ -33,6 +33,7 @@ export default function Hero() {
           LumenCore for quiet light drops. AetherVault for ethereal luminous notes. Soft size warnings only — no hard limits. Sleek Apple-style spring animations on frosted glass.
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center">
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('horizon')} className="px-7 py-3 rounded-full bg-[#5AC8FA] text-black text-sm font-medium hover:bg-[#7AD4FF] transition shadow-lg">horizon</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('lumencore')} className="px-7 py-3 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#3A9DFF] transition shadow-lg">lumen core</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('aethervault')} className="px-7 py-3 rounded-full bg-[#AF52DE] text-white text-sm font-medium hover:bg-[#C07BFF] transition shadow-lg">aether vault</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietvault')} className="px-7 py-3 rounded-full bg-[#5AC8FA] text-white text-sm font-medium hover:bg-[#7AD4FF] transition shadow-lg">quiet vault</motion.button>

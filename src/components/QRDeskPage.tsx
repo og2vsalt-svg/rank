@@ -1,58 +1,52 @@
-import { useState, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishLocalFile } from '../lib/cloudShare';
+import { publishLocalFile, shareUrls } from '../lib/cloudShare';
+import { useRouter } from './Router';
 
 export default function QRDeskPage() {
+  const { navigate } = useRouter();
   const [text, setText] = useState('');
   const [caption, setCaption] = useState('');
   const [accent, setAccent] = useState('#0A84FF');
-  const [qrData, setQrData] = useState<string | null>(null);
+  const [size, setSize] = useState(300);
+  const [qrUrl, setQrUrl] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<{ link?: string; error?: string } | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const generate = () => {
-    if (!text.trim()) return;
-    // Lightweight QR via a simple canvas approximation for demo; real QR would use a lib, but keep zero-deps
-    const c = canvasRef.current;
-    if (!c) return;
-    const ctx = c.getContext('2d');
-    if (!ctx) return;
-    const size = 280;
-    c.width = size;
-    c.height = size;
-    ctx.fillStyle = '#050506';
-    ctx.fillRect(0, 0, size, size);
-    ctx.fillStyle = accent;
-    // Simple visual pattern (not a true QR encoder — for a production QR use a proper library; this is a placeholder stamp)
-    for (let i = 0; i < 12; i++) {
-      for (let j = 0; j < 12; j++) {
-        if ((i + j + text.length) % 3 === 0) {
-          ctx.fillRect(20 + i * 20, 20 + j * 20, 16, 16);
-        }
-      }
+  useEffect(() => {
+    if (!text.trim()) {
+      setQrUrl(null);
+      return;
     }
-    ctx.fillStyle = '#fff';
-    ctx.font = '12px Inter, system-ui';
-    ctx.textAlign = 'center';
-    ctx.fillText(text.slice(0, 28), size / 2, size - 18);
-    setQrData(c.toDataURL('image/png'));
-  };
+    const encoded = encodeURIComponent(text.trim());
+    const fg = accent.replace('#', '');
+    setQrUrl(`https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encoded}&color=${fg}&bgcolor=ffffff`);
+  }, [text, size, accent]);
 
   const publish = async () => {
-    if (!qrData || busy) return;
+    if (!qrUrl || busy) return;
     setBusy(true);
-    const resBlob = await (await fetch(qrData)).blob();
-    const file = new File([resBlob], `qr-${Date.now()}.png`, { type: 'image/png' });
-    const shareRes = await publishLocalFile(file, {
-      caption: caption.trim() || text.trim() || 'QR share',
-      color: accent,
-      cardTitle: caption.trim() || 'QR code',
-      meta: { desk: 'qrdesk', target: text.trim() },
-    });
-    setResult({ link: shareRes.embed, error: shareRes.error });
-    setBusy(false);
+    setResult(null);
+    try {
+      const resBlob = await (await fetch(qrUrl)).blob();
+      const file = new File([resBlob], `qr-${Date.now()}.png`, { type: 'image/png' });
+      const shareRes = await publishLocalFile(file, {
+        caption: caption.trim() || text.trim() || 'QR share',
+        color: accent,
+        cardTitle: caption.trim() || 'QR code',
+        meta: { desk: 'qrdesk', target: text.trim() },
+      });
+      if (shareRes.ok && shareRes.id) {
+        setResult({ link: shareUrls(shareRes.id).app });
+      } else {
+        setResult({ error: shareRes.error });
+      }
+    } catch (e: any) {
+      setResult({ error: e.message });
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -60,21 +54,21 @@ export default function QRDeskPage() {
       <Navbar />
       <div className="pt-28 pb-24 px-5 max-w-2xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 110, damping: 22 }}
-          className="glass rounded-[36px] p-8 md:p-12"
+          transition={{ type: 'spring', stiffness: 90, damping: 20 }}
+          className="glass rounded-[36px] p-8 md:p-12 border border-white/5"
         >
           <p className="text-[13px] font-medium tracking-wide mb-2" style={{ color: accent }}>QR Desk</p>
-          <h1 className="text-4xl font-semibold tracking-tight mb-3">Stamp a QR.</h1>
+          <h1 className="text-4xl font-semibold tracking-tight mb-3 text-white">Make a link scannable.</h1>
           <p className="text-neutral-400 text-[15.5px] leading-relaxed mb-8">
-            Turn any text or link into a visual stamp. Export and publish it as a file that settles into the database with a polished Discord embed. Soft warnings only. No hard limits. Apple-style motion on frosted glass.
+            Paste any share link or URL. Generate a real QR code, then publish it as a permanent file with a polished Discord embed. Soft size warnings only. Apple-style springs on frosted glass.
           </p>
 
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
-            placeholder="Text or URL to stamp"
+            placeholder="Paste a rankvault share link or any URL…"
             rows={3}
             className="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-3.5 text-[15px] text-white placeholder:text-neutral-500 mb-5 focus:outline-none focus:border-white/30 transition resize-none"
           />
@@ -86,28 +80,27 @@ export default function QRDeskPage() {
             className="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-3.5 text-[15px] text-white placeholder:text-neutral-500 mb-5 focus:outline-none focus:border-white/30 transition"
           />
 
-          <div className="flex items-center gap-3 mb-6">
-            <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="w-9 h-9 rounded-full cursor-pointer border-0" />
-            <span className="text-[13px] text-neutral-500">Accent</span>
+          <div className="flex flex-wrap items-center gap-4 mb-6">
+            <label className="flex items-center gap-2 text-sm text-neutral-400">
+              size
+              <input type="range" min={128} max={512} value={size} onChange={(e) => setSize(Number(e.target.value))} className="w-32" />
+              <span className="text-white">{size}px</span>
+            </label>
+            <label className="flex items-center gap-2 text-sm text-neutral-400">
+              accent
+              <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="w-10 h-8 rounded" />
+            </label>
           </div>
 
-          <canvas ref={canvasRef} className="hidden" />
-
-          <motion.button
-            whileTap={{ scale: 0.98 }}
-            onClick={generate}
-            disabled={!text.trim()}
-            className="w-full rounded-2xl py-3.5 text-[15px] font-medium text-white mb-6 disabled:opacity-40"
-            style={{ background: accent }}
-          >
-            Generate stamp
-          </motion.button>
-
-          {qrData && (
-            <motion.div initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center gap-4 mb-6">
-              <img src={qrData} alt="QR stamp" className="rounded-2xl border border-white/10" width={280} height={280} />
+          {qrUrl && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="flex flex-col items-center gap-4 mb-6"
+            >
+              <img src={qrUrl} alt="QR code" className="rounded-2xl border border-white/10 shadow-xl" />
               <motion.button
-                whileTap={{ scale: 0.98 }}
+                whileTap={{ scale: 0.985 }}
                 onClick={publish}
                 disabled={busy}
                 className="rounded-2xl px-8 py-3 text-sm font-medium text-white disabled:opacity-40"
@@ -119,9 +112,18 @@ export default function QRDeskPage() {
           )}
 
           {result?.link && (
-            <a href={result.link} target="_blank" rel="noreferrer" className="text-sm text-blue-400 break-all block">{result.link}</a>
+            <div className="text-center">
+              <p className="text-sm text-neutral-400 mb-2">live share</p>
+              <button onClick={() => navigate('share', result.link!.split('/').pop() || '')} className="text-[#0A84FF] text-sm underline">
+                {result.link}
+              </button>
+            </div>
           )}
           {result?.error && <p className="text-sm text-red-400 mt-2">{result.error}</p>}
+
+          <p className="text-xs text-neutral-500 mt-6">
+            QR codes use a public generation service. The published file lives in the database with full Discord embeds.
+          </p>
         </motion.div>
       </div>
     </div>

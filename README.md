@@ -8,6 +8,8 @@ Soft size warnings only — never hard limits. Apple-style spring animations on 
 
 **Central experience: Drop** — clean multi-file drop with shared note, per-item notes, live previews, soft size warnings only, Apple-style springs, polished Discord embeds. Accessible at `/drop`.
 
+New desk: **LumenCore** at `/lumencore` — quiet light multi-file drop with shared caption, per-item notes, live previews, soft size warnings only, and refined Apple-style spring animations. Discord embeds polished on every share.
+
 New desk: **Aurora** at `/aurora` — flowing light drop with shifting gradient aurora, shared and per-file notes, live previews, soft size warnings only, and refined Apple-style spring animations. Discord embeds polished on every share.
 
 New desk: **Zenith** at `/zenith` — highest point drop with rising motion, shared and per-file notes, live previews, soft size warnings only, and refined Apple-style spring animations. Discord embeds polished on every share.

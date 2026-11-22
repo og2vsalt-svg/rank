@@ -30,9 +30,10 @@ export default function Hero() {
           transition={{ type: 'spring', stiffness: 80, damping: 20, delay: 0.1 }}
           className="text-neutral-400 text-lg leading-relaxed max-w-lg mb-10 mx-auto"
         >
-          Stillharbor for calm multi-file drops with shared notes and soft glows. Vortex for swirling multi-file. Soft size warnings only — no hard limits. Sleek Apple-style spring animations on frosted glass.
+          AetherHarbor for luminous multi-file drops with shared notes and soft glows. Stillharbor for calm multi-file. Soft size warnings only — no hard limits. Sleek Apple-style spring animations on frosted glass.
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center">
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('aetherharbor')} className="px-7 py-3 rounded-full bg-[#5AC8FA] text-white text-sm font-medium hover:bg-[#7AD4FF] transition shadow-lg">aether harbor</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('stillharbor')} className="px-7 py-3 rounded-full bg-[#5AC8FA] text-white text-sm font-medium hover:bg-[#7AD4FF] transition shadow-lg">stillharbor</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('vortex')} className="px-7 py-3 rounded-full bg-[#BF5AF2] text-white text-sm font-medium hover:bg-[#C96EF5] transition shadow-lg">vortex</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('aetherlane')} className="px-7 py-3 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#3A9BFF] transition shadow-lg">aether lane</motion.button>

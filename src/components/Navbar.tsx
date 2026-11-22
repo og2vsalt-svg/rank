@@ -10,6 +10,7 @@ export default function Navbar() {
 
   const links = [
     { to: 'home', label: 'home' },
+    { to: 'vortex', label: 'vortex' },
     { to: 'aetherlane', label: 'lane' },
     { to: 'aetherwhisper', label: 'whisper' },
     { to: 'applelumen', label: 'lumen' },
@@ -73,12 +74,12 @@ export default function Navbar() {
             rank<span className="text-[#0A84FF]">vault</span>
           </button>
 
-          <div className="hidden md:flex items-center gap-1">
+          <div className="hidden md:flex items-center gap-1 overflow-x-auto">
             {links.map((l) => (
               <button
                 key={l.to}
                 onClick={() => navigate(l.to)}
-                className={`px-3.5 py-1.5 rounded-full text-[13px] transition ${route === l.to || (l.to === 'home' && route === 'home') ? 'bg-white/10 text-white' : 'text-neutral-400 hover:text-white'}`}
+                className={`px-3.5 py-1.5 rounded-full text-[13px] transition whitespace-nowrap ${route === l.to || (l.to === 'home' && route === 'home') ? 'bg-white/10 text-white' : 'text-neutral-400 hover:text-white'}`}
               >
                 {l.label}
               </button>

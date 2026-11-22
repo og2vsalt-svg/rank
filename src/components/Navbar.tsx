@@ -10,6 +10,7 @@ export default function Navbar() {
 
   const links = [
     { to: 'drop', label: 'drop' },
+    { to: 'meridian', label: 'meridian' },
     { to: 'lumencore', label: 'lumen' },
     { to: 'aurora', label: 'aurora' },
     { to: 'zenith', label: 'zenith' },

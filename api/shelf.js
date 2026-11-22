@@ -53,6 +53,12 @@ export default async function handler(req, res) {
         image = share.file_url;
       }
     }
+  } else if (page === 'helix') {
+    title = 'Helix — rankvault';
+    desc = 'Files spiral into a living helix. Shared note, per-item notes, live previews, rotating spring animations. Polished Discord embeds. Soft size warnings only.';
+  } else if (page === 'aetherlane') {
+    title = 'AetherLane — rankvault';
+    desc = 'Sequential multi-file lane with shared flow note, per-item notes, live previews, and accent. Apple-style springs. Polished Discord embeds. Soft size warnings only.';
   } else if (page === 'echoforge') {
     title = 'EchoForge — rankvault';
     desc = 'Multi-file forge with shared note and per-item echoes. Live previews, Apple-style springs. Polished Discord embeds. Soft size warnings only.';

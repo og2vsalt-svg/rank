@@ -10,23 +10,10 @@ export default function Navbar() {
 
   const links = [
     { to: 'drop', label: 'drop' },
-    { to: 'horizonfold', label: 'horizon fold' },
-    { to: 'zenithfold', label: 'zenith fold' },
-    { to: 'meridian', label: 'meridian' },
-    { to: 'lumencore', label: 'lumen' },
-    { to: 'aurora', label: 'aurora' },
-    { to: 'zenith', label: 'zenith' },
-    { to: 'stillwater', label: 'stillwater' },
-    { to: 'home', label: 'home' },
+    { to: 'library', label: 'library' },
     { to: 'gallery', label: 'gallery' },
-    { to: 'quietvault', label: 'vault' },
     { to: 'directory', label: 'desks' },
-    { to: 'notesvault', label: 'notes' },
-    { to: 'quill', label: 'quill' },
-    { to: 'hub', label: 'hub' },
-    { to: 'nexus', label: 'nexus' },
-    { to: 'collection', label: 'collection' },
-    { to: 'signal', label: 'signal' },
+    { to: 'home', label: 'home' },
   ];
 
   return (
@@ -50,7 +37,9 @@ export default function Navbar() {
               <button
                 key={l.to}
                 onClick={() => navigate(l.to)}
-                className={`px-3.5 py-1.5 rounded-full text-[13px] transition whitespace-nowrap ${route === l.to || (l.to === 'home' && route === 'home') ? 'bg-white/10 text-white' : 'text-neutral-400 hover:text-white'}`}
+                className={`px-3.5 py-1.5 rounded-full text-[13px] transition whitespace-nowrap ${
+                  route === l.to || (l.to === 'home' && route === 'home') ? 'bg-white/10 text-white' : 'text-neutral-400 hover:text-white'
+                }`}
               >
                 {l.label}
               </button>

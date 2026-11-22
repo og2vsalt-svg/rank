@@ -8,6 +8,8 @@ Soft size warnings only — never hard limits. Apple-style spring animations on 
 
 **Central experience: Drop** — clean multi-file drop with shared note, per-item notes, live previews, soft size warnings only, Apple-style springs, polished Discord embeds. Accessible at `/drop`.
 
+New desk: **Lumen Fold** at `/lumenfold` — layered multi-file drop with folding spring motion, shared caption, per-item notes, live previews, soft size warnings only, and refined Apple-style animations. Discord embeds polished on every share.
+
 New desk: **Meridian** at `/meridian` — quiet center multi-file drop with rising meridian line, shared and per-file notes, live previews, soft size warnings only, and refined Apple-style spring animations. Discord embeds polished on every share.
 
 New desk: **Horizon** at `/horizon` — wide calm multi-file drop with rising horizon line, shared and per-file notes, live previews, soft size warnings only, and refined Apple-style spring animations. Discord embeds polished on every share.

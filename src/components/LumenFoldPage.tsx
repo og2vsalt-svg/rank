@@ -1,171 +1,171 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Navbar from './Navbar';
 import { publishLocalFile, shareUrls } from '../lib/cloudShare';
+import { useRouter } from './Router';
+
+type Item = {
+  file: File;
+  preview?: string;
+  id: string;
+  status: 'queued' | 'uploading' | 'done' | 'error';
+  link?: string;
+  error?: string;
+  note: string;
+};
 
 export default function LumenFoldPage() {
-  const [files, setFiles] = useState<File[]>([]);
-  const [title, setTitle] = useState('');
-  const [caption, setCaption] = useState('');
-  const [color, setColor] = useState('#0A84FF');
-  const [status, setStatus] = useState<'idle' | 'uploading' | 'done' | 'error'>('idle');
-  const [result, setResult] = useState<{ embed: string; warn?: string | null } | null>(null);
-  const [error, setError] = useState('');
+  const { navigate } = useRouter();
+  const [items, setItems] = useState<Item[]>([]);
+  const [sharedNote, setSharedNote] = useState('');
+  const [accent, setAccent] = useState('#AF52DE');
+  const [busy, setBusy] = useState(false);
+  const [warn, setWarn] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const onDrop = useCallback((list: FileList | File[]) => {
-    setFiles(Array.from(list));
-    setStatus('idle');
-    setResult(null);
-    setError('');
+  const addFiles = useCallback((list: FileList | File[]) => {
+    const arr = Array.from(list);
+    const total = arr.reduce((s, f) => s + f.size, 0);
+    setWarn(total > 48_000_000 ? 'Large batch — may fold more slowly. No hard limits.' : null);
+    const next: Item[] = arr.map((file) => ({
+      file,
+      id: Math.random().toString(36).slice(2, 10),
+      status: 'queued',
+      note: '',
+      preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : undefined,
+    }));
+    setItems((p) => [...p, ...next]);
   }, []);
 
-  const share = async () => {
-    if (!files.length) return;
-    setStatus('uploading');
-    setError('');
-    try {
-      const primary = files[0];
-      const names = files.map(f => f.name).join(', ');
-      const fullCaption = [title && `Fold: ${title}`, caption, names && `Files: ${names}`].filter(Boolean).join('\n');
-      const res = await publishLocalFile(primary, {
-        caption: fullCaption || undefined,
-        color,
-        cardTitle: title || primary.name,
-        author: 'rankvault',
-        meta: { fold: files.map(f => ({ name: f.name, size: f.size, type: f.type })) },
-      });
-      if (!res.ok || !res.id) {
-        setError(res.error || 'upload failed');
-        setStatus('error');
-        return;
+  const publish = async () => {
+    if (!items.length || busy) return;
+    setBusy(true);
+    for (const item of items) {
+      if (item.status === 'done') continue;
+      setItems((p) => p.map((i) => i.id === item.id ? { ...i, status: 'uploading' } : i));
+      try {
+        const caption = [sharedNote.trim(), item.note.trim()].filter(Boolean).join(' · ') || item.file.name;
+        const res = await publishLocalFile(item.file, {
+          caption,
+          color: accent,
+          cardTitle: item.file.name,
+          meta: { desk: 'lumenfold', sharedNote: sharedNote.trim() || null },
+        });
+        const link = res.ok && res.id ? shareUrls(res.id).app : undefined;
+        setItems((p) => p.map((i) =>
+          i.id === item.id
+            ? { ...i, status: res.ok ? 'done' : 'error', link, error: res.error }
+            : i
+        ));
+      } catch (e: any) {
+        setItems((p) => p.map((i) => i.id === item.id ? { ...i, status: 'error', error: e.message } : i));
       }
-      const urls = shareUrls(res.id);
-      setResult({ embed: urls.embed, warn: res.warn || null });
-      setStatus('done');
-    } catch (e: any) {
-      setError(e?.message || 'something went wrong');
-      setStatus('error');
     }
+    setBusy(false);
   };
 
-  const totalSize = files.reduce((a, f) => a + f.size, 0);
-  const slow = totalSize > 50 * 1024 * 1024;
-
   return (
-    <div className="min-h-screen bg-[#0b0b0d] text-white pt-24 px-5 pb-16">
-      <div className="max-w-2xl mx-auto">
-        <motion.h1
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 100, damping: 20 }}
-          className="text-4xl font-semibold tracking-tight mb-2"
-        >
-          lumen fold
-        </motion.h1>
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.08 }}
-          className="text-neutral-400 mb-8"
-        >
-          Fold several local files into one quiet share. The primary file uploads to the database with a polished Discord embed that lists the companions. Soft warnings only.
-        </motion.p>
-
+    <div className="mesh min-h-screen">
+      <Navbar />
+      <div className="pt-28 pb-24 px-5 max-w-2xl mx-auto">
         <motion.div
-          className="glass rounded-3xl p-8 mb-6 text-center cursor-pointer border border-white/10 hover:border-white/20 transition"
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={(e) => {
-            e.preventDefault();
-            if (e.dataTransfer.files) onDrop(e.dataTransfer.files);
-          }}
-          whileHover={{ scale: 1.005 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          initial={{ opacity: 0, y: 24, rotateX: 8 }}
+          animate={{ opacity: 1, y: 0, rotateX: 0 }}
+          transition={{ type: 'spring', stiffness: 90, damping: 18 }}
+          className="relative mb-10 origin-top"
         >
-          <input type="file" onChange={(e) => e.target.files && onDrop(e.target.files)} className="hidden" id="fold-files" multiple />
-          <label htmlFor="fold-files" className="cursor-pointer block">
-            <div className="text-neutral-500 text-sm mb-3">drop files to fold · or click</div>
-            {files.length === 0 && <div className="text-xs text-neutral-600">no hard limits · large drops may feel slow</div>}
-          </label>
+          <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-48 h-px bg-gradient-to-r from-transparent via-[#AF52DE]/50 to-transparent" />
+          <h1 className="text-4xl font-semibold text-white tracking-tight mb-2">Lumen Fold</h1>
+          <p className="text-neutral-400 text-sm leading-relaxed">
+            Drop local files with a shared caption and accent. Items fold into layered glass with spring motion. Lands in storage and public_shares. Every share link unfurls a polished Discord card. Large drops gently warned about possible slowness, never refused. Human-crafted Apple-style pacing. All prior desks remain fully intact.
+          </p>
         </motion.div>
 
-        <AnimatePresence>
-          {files.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6"
-            >
-              {files.map((f, i) => (
-                <motion.div
-                  key={f.name + i}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ type: 'spring', stiffness: 200, damping: 22, delay: i * 0.03 }}
-                  className="glass rounded-2xl p-3 text-xs"
-                >
-                  <div className="font-medium truncate">{f.name}</div>
-                  <div className="text-neutral-500 mt-1">{(f.size / 1024 / 1024).toFixed(1)} mb</div>
-                </motion.div>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <div
+          onDragOver={(e) => { e.preventDefault(); }}
+          onDrop={(e) => { e.preventDefault(); addFiles(e.dataTransfer.files); }}
+          onClick={() => inputRef.current?.click()}
+          className="glass rounded-3xl border-2 border-dashed border-white/10 hover:border-[#AF52DE]/40 transition-colors p-12 text-center cursor-pointer mb-6"
+        >
+          <p className="text-white/80 text-sm">Drop files or click to select</p>
+          <p className="text-neutral-500 text-xs mt-1">Soft size warnings only</p>
+          <input
+            ref={inputRef}
+            type="file"
+            multiple
+            className="hidden"
+            onChange={(e) => e.target.files && addFiles(e.target.files)}
+          />
+        </div>
 
-        {slow && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-amber-400 text-xs mb-4">
-            large fold. the browser may feel slow while uploading. no hard limit.
-          </motion.div>
-        )}
-
-        <input
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="optional fold title"
-          className="w-full glass rounded-2xl px-4 py-3 text-sm mb-3 outline-none"
-        />
         <textarea
-          value={caption}
-          onChange={(e) => setCaption(e.target.value)}
-          placeholder="optional caption for the Discord card"
-          rows={3}
-          className="w-full glass rounded-2xl px-4 py-3 text-sm mb-4 outline-none resize-none"
+          value={sharedNote}
+          onChange={(e) => setSharedNote(e.target.value)}
+          placeholder="Optional shared fold caption"
+          rows={2}
+          className="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-3.5 text-[15px] text-white placeholder:text-neutral-500 mb-5 focus:outline-none focus:border-[#AF52DE]/40 transition resize-none"
         />
 
         <div className="flex items-center gap-3 mb-6">
-          <label className="text-xs text-neutral-400">accent</label>
-          <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="w-10 h-10 rounded-full border-0 cursor-pointer" />
+          <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="w-9 h-9 rounded-full cursor-pointer border-0" />
+          <span className="text-[13px] text-neutral-500">Fold accent</span>
         </div>
 
-        <motion.button
-          whileTap={{ scale: 0.97 }}
-          onClick={share}
-          disabled={!files.length || status === 'uploading'}
-          className="w-full py-3 rounded-full bg-[#0A84FF] text-white font-medium disabled:opacity-50"
-        >
-          {status === 'uploading' ? 'folding…' : 'fold and share'}
-        </motion.button>
+        {warn && <p className="text-[13px] text-amber-300/80 mb-5">{warn}</p>}
 
         <AnimatePresence>
-          {status === 'done' && result && (
+          {items.map((item, idx) => (
             <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mt-6 glass rounded-2xl p-5"
+              key={item.id}
+              layout
+              initial={{ opacity: 0, y: 16, rotateX: -12, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, rotateX: 0, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.94, rotateX: 8 }}
+              transition={{ type: 'spring', stiffness: 180, damping: 22, delay: idx * 0.03 }}
+              className="glass rounded-2xl p-4 flex flex-col gap-3 mb-3 border border-white/5 origin-top"
+              style={{ perspective: 800 }}
             >
-              <p className="text-sm font-medium mb-2">folded</p>
-              <p className="text-xs text-neutral-400 break-all mb-3">{result.embed}</p>
-              {result.warn && <p className="text-amber-400 text-xs mb-2">{result.warn}</p>}
-              <button onClick={() => navigator.clipboard.writeText(result.embed)} className="text-xs text-[#0A84FF]">
-                copy Discord link
-              </button>
+              <div className="flex items-center gap-4">
+                {item.preview ? (
+                  <img src={item.preview} alt="" className="w-14 h-14 rounded-xl object-cover" />
+                ) : (
+                  <div className="w-14 h-14 rounded-xl bg-white/5 grid place-items-center text-[11px] text-neutral-500">file</div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium truncate text-white">{item.file.name}</p>
+                  <p className="text-xs text-neutral-500">{(item.file.size / 1024 / 1024).toFixed(1)} MB · {item.status}</p>
+                  {item.link && (
+                    <button onClick={() => navigate('share', item.link!.split('/').pop() || '')} className="text-xs text-blue-400 truncate block mt-0.5 text-left">{item.link}</button>
+                  )}
+                  {item.error && <p className="text-xs text-red-400 mt-0.5">{item.error}</p>}
+                </div>
+                <button
+                  onClick={() => setItems((p) => p.filter((i) => i.id !== item.id))}
+                  className="text-xs text-neutral-500 hover:text-white px-2"
+                >
+                  remove
+                </button>
+              </div>
+              <input
+                value={item.note}
+                onChange={(e) => setItems((p) => p.map((i) => i.id === item.id ? { ...i, note: e.target.value } : i))}
+                placeholder="Optional note for this file"
+                className="w-full bg-black/20 border border-white/5 rounded-xl px-3 py-2 text-sm text-white placeholder:text-neutral-600 focus:outline-none focus:border-white/20"
+              />
             </motion.div>
-          )}
-          {status === 'error' && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 text-red-400 text-sm">
-              {error}
-            </motion.div>
-          )}
+          ))}
         </AnimatePresence>
+
+        {items.length > 0 && (
+          <motion.button
+            whileTap={{ scale: 0.98 }}
+            onClick={publish}
+            disabled={busy}
+            className="w-full mt-6 py-3.5 rounded-full bg-[#AF52DE] text-white text-sm font-medium hover:bg-[#C07BFF] disabled:opacity-50 transition shadow-lg"
+          >
+            {busy ? 'folding…' : 'share to lumen fold'}
+          </motion.button>
+        )}
       </div>
     </div>
   );

@@ -53,6 +53,9 @@ export default async function handler(req, res) {
         image = share.file_url;
       }
     }
+  } else if (page === 'vortex') {
+    title = 'Vortex — rankvault';
+    desc = 'Files swirl into a quiet vortex. Shared note, per-item notes, live previews, spring animations. Polished Discord embeds. Soft size warnings only.';
   } else if (page === 'helix') {
     title = 'Helix — rankvault';
     desc = 'Files spiral into a living helix. Shared note, per-item notes, live previews, rotating spring animations. Polished Discord embeds. Soft size warnings only.';

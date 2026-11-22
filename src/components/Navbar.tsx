@@ -10,6 +10,7 @@ export default function Navbar() {
 
   const links = [
     { to: 'home', label: 'home' },
+    { to: 'stillharbor', label: 'stillharbor' },
     { to: 'vortex', label: 'vortex' },
     { to: 'aetherlane', label: 'lane' },
     { to: 'aetherwhisper', label: 'whisper' },

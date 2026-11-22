@@ -4,10 +4,10 @@ const FALLBACK = 'https://og2vsalt-svg.github.io/rank/og.png';
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"')
     .replace(/'/g, '&#39;');
 }
 
@@ -53,6 +53,9 @@ export default async function handler(req, res) {
         image = share.file_url;
       }
     }
+  } else if (page === 'lumencore') {
+    title = 'LumenCore — rankvault';
+    desc = 'Quiet light multi-file drop. Shared caption, per-item notes, live previews, soft size warnings only. Polished Discord embeds. Apple-style springs.';
   } else if (page === 'prism') {
     title = 'Prism — rankvault';
     desc = 'Light through every file. Multi-file grid with live previews, notes, soft size warnings only. Polished Discord embeds. Apple-style springs.';

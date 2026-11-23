@@ -14,7 +14,9 @@ Soft size warnings only — never hard limits. Apple-style spring animations on 
 
 **Voice Memo** at `/voicememo` — record an audio note and share it as a permanent link with polished Discord embeds. Soft size warnings only. Apple-style springs.
 
-**New: Sketch Desk** at `/sketch` — draw on a quiet canvas, publish the image as a permanent share with polished Discord embeds. Soft size warnings only. Apple-style springs.
+**Sketch Desk** at `/sketch` — draw on a quiet canvas, publish the image as a permanent share with polished Discord embeds. Soft size warnings only. Apple-style springs.
+
+**Polaroid Desk** at `/polaroiddesk` — drop a photo, add a short caption, and publish a classic polaroid frame as a permanent share with polished Discord embeds. Soft size warnings only. Apple-style springs.
 
 **Echo Desk** at `/echodesk` — leave a quiet text note, optionally attach a local file, and publish as a permanent share with polished Discord embeds. Soft size warnings only. Apple-style springs.
 

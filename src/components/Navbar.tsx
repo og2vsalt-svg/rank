@@ -18,6 +18,7 @@ export default function Navbar() {
     { to: 'echodesk', label: 'echo' },
     { to: 'moment', label: 'moment' },
     { to: 'collage', label: 'collage' },
+    { to: 'storydesk', label: 'story' },
     { to: 'snippet', label: 'snippet' },
     { to: 'notestudio', label: 'notes' },
     { to: 'qrdesk', label: 'qr' },

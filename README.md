@@ -8,6 +8,8 @@ Soft size warnings only — never hard limits. Apple-style spring animations on 
 
 **Central experience: Drop** — clean multi-file drop with shared note, per-item notes, live previews, soft size warnings only, Apple-style springs, polished Discord embeds. Accessible at `/drop`.
 
+**Mood Desk** at `/mooddesk` — pick a mood (sunny, rainy, night, calm, focused, inspired), write a quiet note, optionally attach a local file, and publish a permanent share with polished Discord embeds. Soft size warnings only. Apple-style springs.
+
 **Checklist Desk** at `/checklist` — build a simple interactive checklist with optional file attachment. Publishes as a permanent markdown share with polished Discord embeds. Soft size warnings only. Apple-style springs.
 
 **Twilight Desk** at `/twilight` — drop a local file or photo, choose a cool indigo accent color, add a quiet caption, and publish a permanent share with polished Discord embeds. Soft size warnings only. Apple-style springs.

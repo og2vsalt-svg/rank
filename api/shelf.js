@@ -4,10 +4,10 @@ const FALLBACK = 'https://og2vsalt-svg.github.io/rank/og.png';
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"')
     .replace(/'/g, '&#39;');
 }
 
@@ -59,6 +59,12 @@ export default async function handler(req, res) {
   } else if (page === 'drop') {
     title = 'Drop — rankvault';
     desc = 'The clean central place to share local files. Soft size warnings only. Polished Discord embeds on every link. Apple-style springs.';
+  } else if (page === 'journal') {
+    title = 'Journal — rankvault';
+    desc = 'Date a quiet entry, write freely, optionally attach a photo or file, and publish a permanent share. Soft size warnings only. Polished Discord embeds. Apple-style springs.';
+  } else if (page === 'gradient') {
+    title = 'Gradient — rankvault';
+    desc = 'Compose a linear gradient, preview it live, and publish the image as a permanent share. Soft size warnings only. Polished Discord embeds. Apple-style springs.';
   } else if (page === 'gallery') {
     title = 'Gallery — rankvault';
     desc = 'Recent public shares, presented quietly. Soft size warnings only. Polished Discord embeds.';

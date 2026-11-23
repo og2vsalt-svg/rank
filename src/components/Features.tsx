@@ -1,12 +1,12 @@
 import { motion } from 'framer-motion';
 
 const features = [
-  { title: 'Quiet desks', desc: 'Dozens of specialized surfaces for files, notes, sketches, collages, mosaics, annotations, timestamps, palettes, and handoffs. Each settles into the database with a polished Discord embed on every link. New Aurora and Zenith join Stillwater, Stillharbor, Vortex, AetherLane, Quiet Ember, and the existing ones.' },
+  { title: 'Quiet desks', desc: 'Dozens of specialized surfaces for files, notes, sketches, collages, mosaics, annotations, timestamps, palettes, and handoffs. Each settles into the database with a polished Discord embed on every link. New Capture, Markdown, and Voice Memo join the existing constellation.' },
   { title: 'Soft warnings only', desc: 'Large files are warned about possible slowness. Never refused. No hard limits.' },
   { title: 'Apple-style motion', desc: 'Spring animations, frosted glass, and careful pacing that feels hand-crafted and human.' },
   { title: 'Local + cloud', desc: 'Keep everything in the browser vault. Publish only what you choose. Shares live in Supabase with optional Blob.' },
   { title: 'Discord ready', desc: 'Every share link is prepared with professional Open Graph cards so Discord, Twitter, and others show a clean preview.' },
-  { title: 'Always expanding', desc: 'New desks appear while every prior surface remains fully intact. Aurora, Zenith, Stillwater, Stillharbor, Vortex, AetherLane, AetherWhisper, Quiet Ember, SoftMist, QuietThread, DriftLight, Stillpath, Quietstream, QuietSpark, Glimmer, Tide, Lumenpath, Whisper, Quiet Thoughts for soft words, Quiet Lumen Fold, Core, Annotate, Timestamp, Mosaic, Collage, Quill, Palette, Solace, Horizon, Pulse, Glow, Relay, Quiet Cartouche, and many more.' },
+  { title: 'Always expanding', desc: 'New desks appear while every prior surface remains fully intact. Capture (camera), Markdown Desk, Voice Memo, Aurora, Zenith, Stillwater, Stillharbor, Vortex, AetherLane, AetherWhisper, Quiet Ember, SoftMist, QuietThread, DriftLight, Stillpath, Quietstream, QuietSpark, Glimmer, Tide, Lumenpath, Whisper, Quiet Thoughts for soft words, Quiet Lumen Fold, Core, Annotate, Timestamp, Mosaic, Collage, Quill, Palette, Solace, Horizon, Pulse, Glow, Relay, Quiet Cartouche, and many more.' },
 ];
 
 export default function Features() {

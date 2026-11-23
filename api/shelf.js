@@ -74,6 +74,9 @@ export default async function handler(req, res) {
   } else if (page === 'chroma') {
     title = 'Chroma Desk — rankvault';
     desc = 'Compose color palettes and publish them as clean image shares. Soft size warnings only. Polished Discord embeds. Apple-style springs.';
+  } else if (page === 'collage') {
+    title = 'Collage Desk — rankvault';
+    desc = 'Arrange images into a quiet collage and publish it as a permanent share. Soft size warnings only. Polished Discord embeds.';
   }
 
   const url = `${proto}://${host}${path}`;

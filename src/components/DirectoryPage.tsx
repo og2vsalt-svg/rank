@@ -4,6 +4,7 @@ import Navbar from './Navbar';
 import { useRouter } from './Router';
 
 const DESKS = [
+  { route: 'storydesk', title: 'Story Desk', blurb: 'Write multi-section narratives that become a single markdown share. Permanent link with polished Discord embeds. Soft size warnings only. Apple-style springs.' },
   { route: 'sketch', title: 'Sketch Desk', blurb: 'Draw on a quiet canvas and publish the image as a permanent share with polished Discord embeds. Soft size warnings only. Apple-style springs.' },
   { route: 'notestudio', title: 'Note Studio', blurb: 'Write a quiet note. It becomes a shareable text file with a polished Discord embed. Soft size warnings only. Apple-style springs.' },
   { route: 'qrdesk', title: 'QR Desk', blurb: 'Turn any link into a scannable QR code and publish it as a permanent share. Real QR generation. Polished Discord embeds. Soft warnings only.' },

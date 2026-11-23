@@ -32,6 +32,10 @@ Soft size warnings only — never hard limits. Apple-style spring animations on 
 
 **QR Desk** at `/qrdesk` — generate real QR codes from any link and publish them as permanent shares.
 
+**Quote Desk** at `/quotedesk` — paste a quote with optional author and accent color. Publishes as a permanent text share with polished Discord embeds. Soft size warnings only. Apple-style springs.
+
+**Color Study** at `/colorstudy` — compose a four-color palette, name it, and publish as a permanent share with polished Discord embeds. Soft size warnings only. Apple-style springs.
+
 **Library** at `/library` — calm browser for all public shares with search and type filters. Same soft warnings, same embeds, same prior desks intact.
 
 **Gallery** and **Pulse** provide additional quiet views of recent activity.

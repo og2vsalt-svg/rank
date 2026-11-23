@@ -8,6 +8,8 @@ Soft size warnings only — never hard limits. Apple-style spring animations on 
 
 **Central experience: Drop** — clean multi-file drop with shared note, per-item notes, live previews, soft size warnings only, Apple-style springs, polished Discord embeds. Accessible at `/drop`.
 
+**Timeline Desk** at `/timelinedesk` — build a dated sequence of titles, notes, and optional local files. Publish the whole timeline as a permanent markdown share with polished Discord embeds. Soft size warnings only. Apple-style springs.
+
 **Binder Desk** at `/binder` — collect short notes and optional local files into one permanent markdown share. Soft size warnings only. Polished Discord embeds. Apple-style springs.
 
 **Lock Desk** at `/lockdesk` — drop a local file, optionally protect it with a password and set an expiry. Publishes a permanent share with polished Discord embeds. Soft size warnings only. Apple-style springs.

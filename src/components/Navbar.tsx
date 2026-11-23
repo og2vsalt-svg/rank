@@ -39,6 +39,7 @@ export default function Navbar() {
     { to: 'library', label: 'library' },
     { to: 'explore', label: 'explore' },
     { to: 'gallery', label: 'gallery' },
+    { to: 'insights', label: 'insights' },
     { to: 'directory', label: 'desks' },
     { to: 'home', label: 'home' },
   ];

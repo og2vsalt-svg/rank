@@ -8,9 +8,10 @@ Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted
 
 ## Features
 - Central Drop and Studio desks for uploading local files straight to Supabase (public_shares + storage)
+- New Board desk: freeform pinboard for notes and files that publishes as one share
 - Living library, gallery, explore, journal, sketch, gradient, QR, snippets, and dozens of specialized desks
 - Soft warnings for large files (browser may feel slow; nothing is blocked)
-- Discord / social embeds on every link via middleware + /api/shelf
+- Discord / social embeds on every link via middleware rewrites + /api/shelf (fixed HTML escaping)
 - Local vault with IndexedDB + cloud publish
 - No boosting, no artificial caps
 

@@ -95,6 +95,12 @@ export default async function handler(req, res) {
   } else if (page === 'pulse') {
     title = 'Pulse — rankvault';
     desc = 'Quiet activity of recent shares. Soft springs. Polished embeds. No hard limits.';
+  } else if (page === 'countdown') {
+    title = 'Countdown — rankvault';
+    desc = 'Set a quiet future moment and share a living countdown. Soft size warnings only. Polished Discord embeds. Apple-style springs.';
+  } else if (page === 'links') {
+    title = 'Links Desk — rankvault';
+    desc = 'Collect quiet links with notes and publish them as a permanent share. Soft warnings only. Polished Discord embeds.';
   }
 
   const url = `${proto}://${host}${path}`;

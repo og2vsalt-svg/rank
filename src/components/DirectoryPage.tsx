@@ -4,6 +4,7 @@ import Navbar from './Navbar';
 import { useRouter } from './Router';
 
 const DESKS = [
+  { route: 'checklist', title: 'Checklist', blurb: 'Build a simple checklist with optional attachment. Becomes a permanent markdown share with polished Discord embeds. Soft size warnings only. Apple-style springs.' },
   { route: 'countdown', title: 'Countdown', blurb: 'Set a quiet future moment, add a note or image, and share a living countdown. Soft size warnings only. Polished Discord embeds. Apple-style springs.' },
   { route: 'linkdesk', title: 'Link Desk', blurb: 'Collect quiet links with titles and notes. Publish them as a permanent markdown share with polished Discord embeds. Soft warnings only.' },
   { route: 'recipe', title: 'Recipe Desk', blurb: 'Title, ingredients, instructions, and optional photo. Publishes as a permanent share with polished Discord embeds. Soft size warnings only. Apple-style springs.' },

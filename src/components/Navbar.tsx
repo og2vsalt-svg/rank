@@ -10,6 +10,7 @@ export default function Navbar() {
 
   const links = [
     { to: 'drop', label: 'drop' },
+    { to: 'recipe', label: 'recipe' },
     { to: 'journal', label: 'journal' },
     { to: 'gradient', label: 'gradient' },
     { to: 'capture', label: 'capture' },

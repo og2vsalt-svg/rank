@@ -8,6 +8,8 @@ Soft size warnings only — never hard limits. Apple-style spring animations on 
 
 **Central experience: Drop** — clean multi-file drop with shared note, per-item notes, live previews, soft size warnings only, Apple-style springs, polished Discord embeds. Accessible at `/drop`.
 
+**Sunrise Desk** at `/sunrise` — drop a local file or photo, choose a warm accent color, add a quiet caption, and publish a permanent share with polished Discord embeds. Soft size warnings only. Apple-style springs.
+
 **Countdown** at `/countdown` — set a quiet future moment, add a note or image, and share a living countdown that ticks on the share page. Soft size warnings only. Polished Discord embeds. Apple-style springs.
 
 **Link Desk** at `/linkdesk` — collect quiet links with titles and notes. Publish them as a permanent markdown share with polished Discord embeds. Soft warnings only.

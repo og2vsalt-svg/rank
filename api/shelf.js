@@ -4,10 +4,10 @@ const FALLBACK = 'https://og2vsalt-svg.github.io/rank/og.png';
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 }
 
@@ -59,6 +59,9 @@ export default async function handler(req, res) {
   } else if (page === 'drop') {
     title = 'Drop — rankvault';
     desc = 'The clean central place to share local files. Soft size warnings only. Polished Discord embeds on every link. Apple-style springs.';
+  } else if (page === 'sunrise') {
+    title = 'Sunrise Desk — rankvault';
+    desc = 'Drop a local file, choose a warm accent, add a quiet caption, and publish a permanent share. Soft size warnings only. Polished Discord embeds. Apple-style springs.';
   } else if (page === 'journal') {
     title = 'Journal — rankvault';
     desc = 'Date a quiet entry, write freely, optionally attach a photo or file, and publish a permanent share. Soft size warnings only. Polished Discord embeds. Apple-style springs.';

@@ -25,6 +25,7 @@ export type CloudMeta = {
   color?: string | null;
   cardTitle?: string | null;
   unlockAt?: string | null;
+  meta?: Record<string, unknown> | null;
 };
 
 export type ShareOpts = {
@@ -64,6 +65,7 @@ function rowToMeta(row: any): CloudMeta {
     color: row.meta?.color || row.color || null,
     cardTitle: row.meta?.cardTitle || null,
     unlockAt: row.meta?.unlockAt || null,
+    meta: row.meta || null,
   };
 }
 
@@ -184,7 +186,7 @@ export async function publishLocalFile(
       return { ok: false, error: `shares table ${ins.status}: ${text.slice(0, 180)}` };
     }
     const done = packed(id, fileUrl, warn);
-    done.meta = { ...done.meta!, name: file.name || row.name, type: row.mime, size: file.size, caption: opts.caption || null, author: opts.author || null, color: opts.color || null, cardTitle: opts.cardTitle || null, unlockAt: (opts.meta as any)?.unlockAt || null };
+    done.meta = { ...done.meta!, name: file.name || row.name, type: row.mime, size: file.size, caption: opts.caption || null, author: opts.author || null, color: opts.color || null, cardTitle: opts.cardTitle || null, unlockAt: (opts.meta as any)?.unlockAt || null, meta: row.meta };
     return done;
   } catch (e: any) {
     try {

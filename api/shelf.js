@@ -4,10 +4,10 @@ const FALLBACK = 'https://og2vsalt-svg.github.io/rank/og.png';
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 }
 
@@ -65,9 +65,9 @@ export default async function handler(req, res) {
   } else if (page === 'explore') {
     title = 'Explore — rankvault';
     desc = 'Visual explorer of public shares with search, filters, and sorts. Apple-style springs. Soft warnings only. Polished Discord embeds.';
-  } else if (page === 'atlas') {
-    title = 'Atlas — rankvault';
-    desc = 'A visual explorer of public shares. Search, filter, and discover with Apple-style springs. Soft warnings only. Polished embeds.';
+  } else if (page === 'sketch') {
+    title = 'Sketch Desk — rankvault';
+    desc = 'Draw on a quiet canvas and publish the image as a permanent share with polished Discord embeds. Soft size warnings only. Apple-style springs.';
   } else if (page === 'notestudio') {
     title = 'Note Studio — rankvault';
     desc = 'Write quiet notes that become shareable files. Soft size warnings only. Polished Discord embeds. Apple-style springs.';

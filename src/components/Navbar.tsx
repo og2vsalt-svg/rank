@@ -10,6 +10,7 @@ export default function Navbar() {
 
   const links = [
     { to: 'drop', label: 'drop' },
+    { to: 'sketch', label: 'sketch' },
     { to: 'echodesk', label: 'echo' },
     { to: 'moment', label: 'moment' },
     { to: 'collage', label: 'collage' },

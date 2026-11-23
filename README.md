@@ -8,7 +8,9 @@ Soft size warnings only — never hard limits. Apple-style spring animations on 
 
 **Central experience: Drop** — clean multi-file drop with shared note, per-item notes, live previews, soft size warnings only, Apple-style springs, polished Discord embeds. Accessible at `/drop`.
 
-**New: Chroma Desk** at `/chroma` — compose color palettes, render a clean image, and publish it as a permanent share with polished Discord embeds. Soft size warnings only.
+**New: Collage Desk** at `/collage` — drop a few images, arrange them into a simple grid, and publish the composition as a permanent share with polished Discord embeds. Soft size warnings only.
+
+**Chroma Desk** at `/chroma` — compose color palettes, render a clean image, and publish it as a permanent share with polished Discord embeds. Soft size warnings only.
 
 **Snippet Desk** at `/snippet` — paste code or text with language selection. Becomes a shareable file with polished Discord embeds. Soft size warnings only.
 

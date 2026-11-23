@@ -62,6 +62,9 @@ export default async function handler(req, res) {
   } else if (page === 'gallery') {
     title = 'Gallery — rankvault';
     desc = 'Recent public shares, presented quietly. Soft size warnings only. Polished Discord embeds.';
+  } else if (page === 'atlas') {
+    title = 'Atlas — rankvault';
+    desc = 'A visual explorer of public shares. Search, filter, and discover with Apple-style springs. Soft warnings only. Polished embeds.';
   } else if (page === 'notestudio') {
     title = 'Note Studio — rankvault';
     desc = 'Write quiet notes that become shareable files. Soft size warnings only. Polished Discord embeds. Apple-style springs.';
@@ -80,6 +83,9 @@ export default async function handler(req, res) {
   } else if (page === 'moment') {
     title = 'Moment — rankvault';
     desc = 'Share a quiet moment — text, image, or both — as a permanent link with polished Discord embeds. Soft size warnings only. Apple-style springs.';
+  } else if (page === 'pulse') {
+    title = 'Pulse — rankvault';
+    desc = 'Quiet activity of recent shares. Soft springs. Polished embeds. No hard limits.';
   }
 
   const url = `${proto}://${host}${path}`;

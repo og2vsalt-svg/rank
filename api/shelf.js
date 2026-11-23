@@ -4,10 +4,10 @@ const FALLBACK = 'https://og2vsalt-svg.github.io/rank/og.png';
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"')
     .replace(/'/g, '&#39;');
 }
 
@@ -113,6 +113,9 @@ export default async function handler(req, res) {
   } else if (page === 'links') {
     title = 'Links Desk — rankvault';
     desc = 'Collect quiet links with notes and publish them as a permanent share. Soft warnings only. Polished Discord embeds.';
+  } else if (page === 'insights') {
+    title = 'Insights — rankvault';
+    desc = 'Quiet numbers on recent public shares: types, sizes, and arrivals. Soft size warnings only. Polished Discord embeds. Apple-style springs.';
   }
 
   const url = `${proto}://${host}${path}`;

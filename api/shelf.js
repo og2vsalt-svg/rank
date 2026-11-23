@@ -7,7 +7,7 @@ function esc(s) {
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
+    .replace(/\"/g, '&quot;')
     .replace(/'/g, '&#39;');
 }
 
@@ -34,7 +34,7 @@ async function fetchShare(id) {
 
 export default async function handler(req, res) {
   const proto = req.headers['x-forwarded-proto'] || 'https';
-  const host = req.headers['x-forwarded-host'] || req.headers.host || 'rank-six-iota.vercel.app';
+  const host = req.headers['x-forwarded-host'] || req.headers.host || 'rank-h2aozbq4b-rivall.vercel.app';
   const path = (req.url || '/').split('?')[0].replace(/\\+$/, '') || '/';
   const parts = path.split('/').filter(Boolean);
   const page = parts[0] || 'home';
@@ -59,6 +59,9 @@ export default async function handler(req, res) {
   } else if (page === 'drop') {
     title = 'Drop — rankvault';
     desc = 'The clean central place to share local files. Soft size warnings only. Polished Discord embeds on every link. Apple-style springs.';
+  } else if (page === 'twilight') {
+    title = 'Twilight Desk — rankvault';
+    desc = 'Drop a local file, choose a cool indigo accent, add a quiet caption, and publish a permanent share. Soft size warnings only. Polished Discord embeds. Apple-style springs.';
   } else if (page === 'sunrise') {
     title = 'Sunrise Desk — rankvault';
     desc = 'Drop a local file, choose a warm accent, add a quiet caption, and publish a permanent share. Soft size warnings only. Polished Discord embeds. Apple-style springs.';

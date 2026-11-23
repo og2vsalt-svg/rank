@@ -1,145 +1,137 @@
-import { useState, useRef } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './Navbar';
 import { publishLocalFile, shareUrls } from '../lib/cloudShare';
 import { useRouter } from './Router';
-
-const ACCENTS = ['#0A84FF', '#30D158', '#FF9F0A', '#BF5AF2', '#FF375F', '#64D2FF'];
 
 export default function TwilightPage() {
   const { navigate } = useRouter();
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [caption, setCaption] = useState('');
-  const [accent, setAccent] = useState(ACCENTS[0]);
+  const [color, setColor] = useState('#5E5CE6');
   const [busy, setBusy] = useState(false);
-  const [warn, setWarn] = useState('');
-  const [link, setLink] = useState('');
-  const [err, setErr] = useState('');
+  const [warn, setWarn] = useState<string | null>(null);
+  const [link, setLink] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const onPick = (list: FileList | null) => {
-    const f = list?.[0];
-    if (!f) return;
+  const onFile = useCallback((f: File) => {
     setFile(f);
-    setErr('');
-    setLink('');
-    setWarn(f.size > 40 * 1024 * 1024 ? 'large file — may feel slow while sending. No hard limit.' : '');
-    if (f.type.startsWith('image/')) {
-      setPreview(URL.createObjectURL(f));
-    } else {
-      setPreview(null);
-    }
-  };
+    setWarn(f.size > 60_000_000 ? 'Large files may feel slower. No hard limits.' : null);
+    setPreview(f.type.startsWith('image/') ? URL.createObjectURL(f) : null);
+    setLink(null);
+    setError(null);
+  }, []);
 
   const publish = async () => {
-    if (!file) return;
+    if (!file || busy) return;
     setBusy(true);
-    setErr('');
+    setError(null);
     try {
-      const result = await publishLocalFile(file, {
-        caption: caption || undefined,
-        color: accent,
-        cardTitle: (file.name || 'twilight').replace(/\.[^.]+$/, ''),
-        meta: { desk: 'twilight', accent },
+      const res = await publishLocalFile(file, {
+        caption: caption.trim() || file.name,
+        color,
+        cardTitle: file.name,
+        meta: { desk: 'twilight', accent: color },
       });
-      if (!result.ok || !result.id) {
-        setErr(result.error || 'failed to publish');
-        return;
+      if (res.ok && res.id) {
+        setLink(shareUrls(res.id).app);
+      } else {
+        setError(res.error || 'Could not share');
       }
-      if (result.warn) setWarn(result.warn);
-      const urls = shareUrls(result.id);
-      setLink(urls.app);
-      try { await navigator.clipboard.writeText(urls.app); } catch {}
     } catch (e: any) {
-      setErr(e?.message || 'error');
-    } finally {
-      setBusy(false);
+      setError(e.message || 'Upload failed');
     }
+    setBusy(false);
   };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
+      <div className="pt-28 pb-24 px-5 max-w-2xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 36 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 110, damping: 17 }}
-          className="glass rounded-[36px] p-8 sm:p-10 apple-card"
+          transition={{ type: 'spring', stiffness: 70, damping: 22 }}
+          className="glass rounded-[36px] p-8 md:p-12 border border-white/5"
         >
-          <p className="text-[#0A84FF] text-sm font-medium mb-2 tracking-wide">twilight</p>
-          <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight mb-3">a quiet drop at dusk.</h1>
-          <p className="text-neutral-400 text-sm sm:text-base mb-8 leading-relaxed">
-            Select a local file, add a caption if you like, choose an accent. The file is uploaded to storage and recorded in the database. Discord embeds are professional on all share links. Only warnings for large files that might be slow.
+          <p className="text-[13px] font-medium tracking-wide text-[#5E5CE6] mb-2">Twilight</p>
+          <h1 className="text-4xl font-semibold tracking-tight mb-3 text-white">Cool evening shares.</h1>
+          <p className="text-neutral-400 text-[15.5px] leading-relaxed mb-8">
+            Drop a local file or photo, choose a soft indigo accent, add a quiet caption. Publishes to the library with a polished Discord embed. Soft size warnings only.
           </p>
 
-          <label
-            className="block cursor-pointer rounded-[28px] border border-dashed border-white/12 hover:border-[#0A84FF]/40 bg-white/[0.02] p-10 text-center transition duration-500"
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => { e.preventDefault(); onPick(e.dataTransfer.files); }}
+          <div
+            onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('ring-2', 'ring-[#5E5CE6]/40'); }}
+            onDragLeave={(e) => e.currentTarget.classList.remove('ring-2', 'ring-[#5E5CE6]/40')}
+            onDrop={(e) => {
+              e.preventDefault();
+              e.currentTarget.classList.remove('ring-2', 'ring-[#5E5CE6]/40');
+              if (e.dataTransfer.files[0]) onFile(e.dataTransfer.files[0]);
+            }}
             onClick={() => inputRef.current?.click()}
+            className="border-2 border-dashed border-white/15 rounded-3xl p-12 text-center mb-7 cursor-pointer hover:border-white/30 transition bg-black/20"
           >
-            <input ref={inputRef} type="file" className="hidden" onChange={(e) => onPick(e.target.files)} />
-            <AnimatePresence mode="wait">
-              {preview ? (
-                <motion.img
-                  key="img"
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0 }}
-                  src={preview}
-                  alt=""
-                  className="mx-auto max-h-48 rounded-2xl object-cover shadow-2xl"
-                />
-              ) : (
-                <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                  <p className="text-white font-medium">{file ? file.name : 'click or drop a file'}</p>
-                  <p className="text-xs text-neutral-500 mt-2">no hard size limits</p>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </label>
+            {preview ? (
+              <img src={preview} alt="" className="max-h-48 mx-auto rounded-2xl object-cover" />
+            ) : (
+              <>
+                <p className="text-neutral-300 text-[15px]">Drop a file or photo</p>
+                <p className="text-neutral-500 text-sm mt-1">or click to browse</p>
+              </>
+            )}
+            <input
+              ref={inputRef}
+              type="file"
+              className="hidden"
+              onChange={(e) => e.target.files?.[0] && onFile(e.target.files[0])}
+            />
+          </div>
 
           {file && (
-            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-8 space-y-5">
-              <input
-                value={caption}
-                onChange={(e) => setCaption(e.target.value)}
-                placeholder="optional caption"
-                className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-sm outline-none focus:border-[#0A84FF]/40 transition"
-              />
-              <div className="flex gap-2.5 flex-wrap">
-                {ACCENTS.map((c) => (
-                  <button
-                    key={c}
-                    onClick={() => setAccent(c)}
-                    className={`w-9 h-9 rounded-full transition ${accent === c ? 'ring-2 ring-white ring-offset-2 ring-offset-[#050506] scale-110' : 'opacity-70 hover:opacity-100'}`}
-                    style={{ background: c }}
-                  />
-                ))}
-              </div>
-              <button
-                onClick={publish}
-                disabled={busy}
-                className="w-full py-3.5 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#409CFF] disabled:opacity-50 transition"
-              >
-                {busy ? 'publishing…' : 'publish twilight'}
-              </button>
-            </motion.div>
+            <p className="text-xs text-neutral-500 mb-5 text-center">{file.name} · {(file.size / 1024 / 1024).toFixed(1)} MB</p>
           )}
 
-          {warn && <p className="text-xs text-amber-300/80 mt-5">{warn}</p>}
-          {err && <p className="text-xs text-red-400 mt-5">{err}</p>}
+          <div className="flex items-center gap-3 mb-5">
+            <label className="text-sm text-neutral-400">Accent</label>
+            <input
+              type="color"
+              value={color}
+              onChange={(e) => setColor(e.target.value)}
+              className="w-10 h-10 rounded-full border border-white/10 cursor-pointer bg-transparent"
+            />
+            <span className="text-xs text-neutral-500">{color}</span>
+          </div>
+
+          <textarea
+            value={caption}
+            onChange={(e) => setCaption(e.target.value)}
+            placeholder="Optional quiet caption"
+            rows={3}
+            className="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-3.5 text-[15px] text-white placeholder:text-neutral-500 mb-5 focus:outline-none focus:border-white/30 transition resize-none"
+          />
+
+          {warn && <p className="text-[13px] text-amber-300/80 mb-5">{warn}</p>}
+          {error && <p className="text-[13px] text-red-400 mb-5">{error}</p>}
           {link && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-6 space-y-3">
-              <p className="text-xs text-neutral-400 break-all">copied: {link}</p>
-              <div className="flex gap-2">
-                <button onClick={() => navigate('share', link.split('/s/').pop() || '')} className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium">open share</button>
-                <button onClick={() => navigate('glimmer')} className="px-5 py-2.5 rounded-full bg-white/5 text-sm">recent shares</button>
-              </div>
-            </motion.div>
+            <button
+              onClick={() => navigate('share', link.split('/').pop() || '')}
+              className="block w-full text-center text-sm text-[#5E5CE6] mb-5 truncate"
+            >
+              {link}
+            </button>
           )}
+
+          <motion.button
+            whileTap={{ scale: 0.985 }}
+            whileHover={{ scale: 1.005 }}
+            onClick={publish}
+            disabled={busy || !file}
+            className="w-full rounded-2xl py-4 text-[15px] font-medium text-white disabled:opacity-40 transition shadow-xl bg-[#5E5CE6]"
+          >
+            {busy ? 'Sharing…' : 'Share with twilight'}
+          </motion.button>
         </motion.div>
       </div>
     </div>

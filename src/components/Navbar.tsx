@@ -11,6 +11,7 @@ export default function Navbar() {
   const links = [
     { to: 'drop', label: 'drop' },
     { to: 'sunrise', label: 'sunrise' },
+    { to: 'twilight', label: 'twilight' },
     { to: 'countdown', label: 'countdown' },
     { to: 'linkdesk', label: 'links' },
     { to: 'focus', label: 'focus' },

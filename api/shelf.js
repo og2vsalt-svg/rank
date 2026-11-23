@@ -62,6 +62,9 @@ export default async function handler(req, res) {
   } else if (page === 'gallery') {
     title = 'Gallery — rankvault';
     desc = 'Recent public shares, presented quietly. Soft size warnings only. Polished Discord embeds.';
+  } else if (page === 'explore') {
+    title = 'Explore — rankvault';
+    desc = 'Visual explorer of public shares with search, filters, and sorts. Apple-style springs. Soft warnings only. Polished Discord embeds.';
   } else if (page === 'atlas') {
     title = 'Atlas — rankvault';
     desc = 'A visual explorer of public shares. Search, filter, and discover with Apple-style springs. Soft warnings only. Polished embeds.';

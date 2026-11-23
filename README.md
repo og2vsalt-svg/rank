@@ -8,6 +8,12 @@ Soft size warnings only — never hard limits. Apple-style spring animations on 
 
 **Central experience: Drop** — clean multi-file drop with shared note, per-item notes, live previews, soft size warnings only, Apple-style springs, polished Discord embeds. Accessible at `/drop`.
 
+**Capture** at `/capture` — use your camera to take a photo and publish it as a permanent share with polished Discord embeds. Soft size warnings only. Apple-style springs.
+
+**Markdown Desk** at `/markdowndesk` — write markdown in a quiet editor and publish it as a shareable file with polished Discord embeds. Soft size warnings only.
+
+**Voice Memo** at `/voicememo` — record an audio note and share it as a permanent link with polished Discord embeds. Soft size warnings only. Apple-style springs.
+
 **New: Sketch Desk** at `/sketch` — draw on a quiet canvas, publish the image as a permanent share with polished Discord embeds. Soft size warnings only. Apple-style springs.
 
 **Echo Desk** at `/echodesk` — leave a quiet text note, optionally attach a local file, and publish as a permanent share with polished Discord embeds. Soft size warnings only. Apple-style springs.

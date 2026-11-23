@@ -8,6 +8,10 @@ Soft size warnings only — never hard limits. Apple-style spring animations on 
 
 **Central experience: Drop** — clean multi-file drop with shared note, per-item notes, live previews, soft size warnings only, Apple-style springs, polished Discord embeds. Accessible at `/drop`.
 
+**Journal** at `/journal` — date an entry, write freely, optionally attach a photo or file, and publish as a permanent share with polished Discord embeds. Soft size warnings only. Apple-style springs.
+
+**Gradient** at `/gradient` — compose a linear gradient with live preview and publish the image as a permanent share with polished Discord embeds. Soft size warnings only. Apple-style springs.
+
 **Capture** at `/capture` — use your camera to take a photo and publish it as a permanent share with polished Discord embeds. Soft size warnings only. Apple-style springs.
 
 **Markdown Desk** at `/markdowndesk` — write markdown in a quiet editor and publish it as a shareable file with polished Discord embeds. Soft size warnings only.

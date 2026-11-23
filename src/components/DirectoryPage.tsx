@@ -4,6 +4,7 @@ import Navbar from './Navbar';
 import { useRouter } from './Router';
 
 const DESKS = [
+  { route: 'timelinedesk', title: 'Timeline Desk', blurb: 'Build a dated sequence of titles, notes, and optional local files. Publish the whole timeline as a permanent markdown share with polished Discord embeds. Soft size warnings only. Apple-style springs.' },
   { route: 'binder', title: 'Binder', blurb: 'Collect short notes and optional local files into one permanent markdown share. Soft size warnings only. Polished Discord embeds. Apple-style springs.' },
   { route: 'checklist', title: 'Checklist', blurb: 'Build a simple checklist with optional attachment. Becomes a permanent markdown share with polished Discord embeds. Soft size warnings only. Apple-style springs.' },
   { route: 'countdown', title: 'Countdown', blurb: 'Set a quiet future moment, add a note or image, and share a living countdown. Soft size warnings only. Polished Discord embeds. Apple-style springs.' },

@@ -20,6 +20,8 @@ Soft size warnings only — never hard limits. Apple-style spring animations on 
 
 **Echo Desk** at `/echodesk` — leave a quiet text note, optionally attach a local file, and publish as a permanent share with polished Discord embeds. Soft size warnings only. Apple-style springs.
 
+**Story Desk** at `/storydesk` — write multi-section narratives that become a single markdown share with polished Discord embeds. Soft size warnings only. Apple-style springs.
+
 **Explore** at `/explore` — visual explorer of public shares with search, type filters, and sorts (recent/size/views). Apple-style springs, polished Discord embeds. Soft warnings only.
 
 **Moment Desk** at `/moment` — share a quiet thought, an image, or both as a single permanent link. Live preview, soft size warnings only, Apple-style springs, polished Discord embeds.

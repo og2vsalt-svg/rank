@@ -8,7 +8,9 @@ Soft size warnings only — never hard limits. Apple-style spring animations on 
 
 **Central experience: Drop** — clean multi-file drop with shared note, per-item notes, live previews, soft size warnings only, Apple-style springs, polished Discord embeds. Accessible at `/drop`.
 
-**New: Moment Desk** at `/moment` — share a quiet thought, an image, or both as a single permanent link. Live preview, soft size warnings only, Apple-style springs, polished Discord embeds.
+**New: Explore** at `/explore` — visual explorer of public shares with search, type filters, and sorts (recent/size/views). Apple-style springs, polished Discord embeds. Soft warnings only.
+
+**Moment Desk** at `/moment` — share a quiet thought, an image, or both as a single permanent link. Live preview, soft size warnings only, Apple-style springs, polished Discord embeds.
 
 **Collage Desk** at `/collage` — drop a few images, arrange them into a simple grid, and publish the composition as a permanent share with polished Discord embeds. Soft size warnings only.
 
@@ -21,6 +23,8 @@ Soft size warnings only — never hard limits. Apple-style spring animations on 
 **QR Desk** at `/qrdesk` — generate real QR codes from any link and publish them as permanent shares.
 
 **Library** at `/library` — calm browser for all public shares with search and type filters. Same soft warnings, same embeds, same prior desks intact.
+
+**Gallery** and **Pulse** provide additional quiet views of recent activity.
 
 All prior desks remain fully intact (QuietVault, AetherVault, Stillpoint, Weave, Horizon, Lumen Fold, and the full constellation).
 

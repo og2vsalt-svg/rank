@@ -11,6 +11,7 @@ export default function Navbar() {
   const links = [
     { to: 'drop', label: 'drop' },
     { to: 'binder', label: 'binder' },
+    { to: 'timelinedesk', label: 'timeline' },
     { to: 'lockdesk', label: 'lock' },
     { to: 'sunrise', label: 'sunrise' },
     { to: 'twilight', label: 'twilight' },

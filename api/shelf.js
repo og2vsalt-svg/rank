@@ -77,6 +77,9 @@ export default async function handler(req, res) {
   } else if (page === 'collage') {
     title = 'Collage Desk — rankvault';
     desc = 'Arrange images into a quiet collage and publish it as a permanent share. Soft size warnings only. Polished Discord embeds.';
+  } else if (page === 'moment') {
+    title = 'Moment — rankvault';
+    desc = 'Share a quiet moment — text, image, or both — as a permanent link with polished Discord embeds. Soft size warnings only. Apple-style springs.';
   }
 
   const url = `${proto}://${host}${path}`;

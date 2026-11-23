@@ -8,6 +8,10 @@ Soft size warnings only — never hard limits. Apple-style spring animations on 
 
 **Central experience: Drop** — clean multi-file drop with shared note, per-item notes, live previews, soft size warnings only, Apple-style springs, polished Discord embeds. Accessible at `/drop`.
 
+**Countdown** at `/countdown` — set a quiet future moment, add a note or image, and share a living countdown that ticks on the share page. Soft size warnings only. Polished Discord embeds. Apple-style springs.
+
+**Link Desk** at `/linkdesk` — collect quiet links with titles and notes. Publish them as a permanent markdown share with polished Discord embeds. Soft warnings only.
+
 **Focus Desk** at `/focus` — set a soft timer, write a quiet note while it runs, and publish the note as a permanent markdown share with polished Discord embeds. Soft size warnings only. Apple-style springs.
 
 **Recipe** at `/recipe` — title, ingredients, instructions, and optional photo. Publishes as a permanent share with polished Discord embeds. Soft size warnings only. Apple-style springs.

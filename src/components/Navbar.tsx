@@ -14,6 +14,7 @@ export default function Navbar() {
     { to: 'markdowndesk', label: 'markdown' },
     { to: 'voicememo', label: 'voice' },
     { to: 'sketch', label: 'sketch' },
+    { to: 'polaroiddesk', label: 'polaroid' },
     { to: 'echodesk', label: 'echo' },
     { to: 'moment', label: 'moment' },
     { to: 'collage', label: 'collage' },

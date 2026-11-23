@@ -1,231 +1,178 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishLocalFile, listPublicShares, type CloudMeta } from '../lib/cloudShare';
+import { publishLocalFile, shareUrls } from '../lib/cloudShare';
 import { useRouter } from './Router';
 
-type Layer = {
-  id: string;
-  note: string;
-  file?: File;
+type Item = {
+  file: File;
   preview?: string;
-  accent: string;
-  status: 'idle' | 'uploading' | 'done' | 'error';
+  id: string;
+  status: 'queued' | 'uploading' | 'done' | 'error';
   link?: string;
   error?: string;
+  note: string;
 };
 
 export default function StudioPage() {
   const { navigate } = useRouter();
-  const [layers, setLayers] = useState<Layer[]>([
-    { id: 'l1', note: '', accent: '#0A84FF', status: 'idle' },
-  ]);
-  const [title, setTitle] = useState('');
+  const [items, setItems] = useState<Item[]>([]);
+  const [globalNote, setGlobalNote] = useState('');
+  const [accent, setAccent] = useState('#0A84FF');
   const [busy, setBusy] = useState(false);
   const [warn, setWarn] = useState<string | null>(null);
-  const [recent, setRecent] = useState<CloudMeta[]>([]);
-  const [loadingRecent, setLoadingRecent] = useState(true);
-  const fileRefs = useRef<Record<string, HTMLInputElement | null>>({});
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const list = await listPublicShares(8);
-      if (!cancelled) {
-        setRecent(list);
-        setLoadingRecent(false);
-      }
-    })();
-    return () => { cancelled = true; };
+  const addFiles = useCallback((list: FileList | File[]) => {
+    const arr = Array.from(list);
+    const total = arr.reduce((s, f) => s + f.size, 0);
+    setWarn(total > 60_000_000 ? 'Large files may take a moment while the browser encodes. No hard limits.' : null);
+    const next: Item[] = arr.map((file) => ({
+      file,
+      id: Math.random().toString(36).slice(2, 10),
+      status: 'queued',
+      note: '',
+      preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : undefined,
+    }));
+    setItems((p) => [...p, ...next]);
   }, []);
 
-  const addLayer = () => {
-    setLayers((p) => [
-      ...p,
-      { id: Math.random().toString(36).slice(2, 9), note: '', accent: '#0A84FF', status: 'idle' },
-    ]);
-  };
-
-  const updateLayer = (id: string, patch: Partial<Layer>) => {
-    setLayers((p) => p.map((l) => (l.id === id ? { ...l, ...patch } : l)));
-  };
-
-  const onFile = (id: string, file: File) => {
-    const total = layers.reduce((s, l) => s + (l.file?.size || 0), 0) + file.size;
-    setWarn(total > 45_000_000 ? 'Large studio drop — may feel slower. No hard limits.' : null);
-    updateLayer(id, {
-      file,
-      preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : undefined,
-      status: 'idle',
-    });
-  };
-
   const publish = async () => {
-    if (busy) return;
-    const toPublish = layers.filter((l) => l.file || l.note.trim());
-    if (!toPublish.length) return;
+    if (!items.length || busy) return;
     setBusy(true);
-    for (const layer of toPublish) {
-      if (layer.status === 'done') continue;
-      updateLayer(layer.id, { status: 'uploading' });
+    for (const item of items) {
+      if (item.status === 'done') continue;
+      setItems((p) => p.map((i) => i.id === item.id ? { ...i, status: 'uploading' } : i));
       try {
-        if (layer.file) {
-          const res = await publishLocalFile(layer.file, {
-            caption: layer.note.trim() || title.trim() || layer.file.name,
-            color: layer.accent,
-            cardTitle: title.trim() || layer.file.name,
-            meta: { desk: 'studio', layerNote: layer.note },
-          });
-          updateLayer(layer.id, {
-            status: res.ok ? 'done' : 'error',
-            link: res.embed,
-            error: res.error,
-          });
-        } else if (layer.note.trim()) {
-          // pure note as text file
-          const blob = new Blob([layer.note], { type: 'text/plain' });
-          const file = new File([blob], `${title || 'note'}.txt`, { type: 'text/plain' });
-          const res = await publishLocalFile(file, {
-            caption: layer.note.slice(0, 180),
-            color: layer.accent,
-            cardTitle: title || 'studio note',
-            meta: { desk: 'studio' },
-          });
-          updateLayer(layer.id, {
-            status: res.ok ? 'done' : 'error',
-            link: res.embed,
-            error: res.error,
-          });
-        }
+        const caption = [globalNote.trim(), item.note.trim()].filter(Boolean).join(' · ') || item.file.name;
+        const res = await publishLocalFile(item.file, {
+          caption,
+          color: accent,
+          cardTitle: item.file.name,
+          meta: { desk: 'studio', accent },
+        });
+        const link = res.ok && res.id ? shareUrls(res.id).app : undefined;
+        setItems((p) => p.map((i) =>
+          i.id === item.id
+            ? { ...i, status: res.ok ? 'done' : 'error', link, error: res.error }
+            : i
+        ));
       } catch (e: any) {
-        updateLayer(layer.id, { status: 'error', error: e.message });
+        setItems((p) => p.map((i) => i.id === item.id ? { ...i, status: 'error', error: e.message } : i));
       }
     }
     setBusy(false);
-    const list = await listPublicShares(8);
-    setRecent(list);
   };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-24 px-5 max-w-4xl mx-auto">
+      <div className="pt-28 pb-24 px-5 max-w-2xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 18 }}
+          initial={{ opacity: 0, y: 28 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 100, damping: 20 }}
-          className="glass rounded-[36px] p-8 md:p-12 mb-10"
+          transition={{ type: 'spring', stiffness: 90, damping: 22 }}
+          className="glass rounded-[36px] p-8 md:p-12 border border-white/5"
         >
-          <p className="text-[13px] font-medium tracking-wide mb-2 text-[#0A84FF]">Studio</p>
-          <h1 className="text-4xl font-semibold tracking-tight mb-3">Layer the work.</h1>
+          <p className="text-[13px] font-medium tracking-wide text-[#0A84FF] mb-2">Studio</p>
+          <h1 className="text-4xl font-semibold tracking-tight mb-3 text-white">Compose a share.</h1>
           <p className="text-neutral-400 text-[15.5px] leading-relaxed mb-8">
-            A quiet multi-layer desk. Primary title, per-layer notes, optional files. Everything lands in the database with polished Discord embeds. Soft size warnings only. Spring animations on frosted glass.
+            Drop local files, add quiet notes, choose an accent, and publish permanent links. Soft size warnings only. Every link ships with a polished Discord embed.
           </p>
 
-          <input
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Optional studio title"
-            className="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-3.5 text-[15px] text-white placeholder:text-neutral-500 mb-6 focus:outline-none focus:border-white/30 transition"
-          />
+          <div
+            onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('ring-2', 'ring-[#0A84FF]/40'); }}
+            onDragLeave={(e) => e.currentTarget.classList.remove('ring-2', 'ring-[#0A84FF]/40')}
+            onDrop={(e) => {
+              e.preventDefault();
+              e.currentTarget.classList.remove('ring-2', 'ring-[#0A84FF]/40');
+              if (e.dataTransfer.files.length) addFiles(e.dataTransfer.files);
+            }}
+            onClick={() => inputRef.current?.click()}
+            className="border-2 border-dashed border-white/15 rounded-3xl p-14 text-center mb-7 cursor-pointer hover:border-white/30 transition bg-black/20"
+          >
+            <p className="text-neutral-300 text-[15px]">Drop files here</p>
+            <p className="text-neutral-500 text-sm mt-1">or click to browse · images preview automatically</p>
+            <input
+              ref={inputRef}
+              type="file"
+              multiple
+              className="hidden"
+              onChange={(e) => e.target.files && addFiles(e.target.files)}
+            />
+          </div>
+
+          <div className="flex gap-3 mb-5">
+            <textarea
+              value={globalNote}
+              onChange={(e) => setGlobalNote(e.target.value)}
+              placeholder="Optional note for all files"
+              rows={2}
+              className="flex-1 bg-black/30 border border-white/10 rounded-2xl px-4 py-3.5 text-[15px] text-white placeholder:text-neutral-500 focus:outline-none focus:border-white/30 transition resize-none"
+            />
+            <input
+              type="color"
+              value={accent}
+              onChange={(e) => setAccent(e.target.value)}
+              className="w-12 h-12 rounded-2xl bg-black/30 border border-white/10 cursor-pointer"
+              title="Accent color"
+            />
+          </div>
+
+          {warn && <p className="text-[13px] text-amber-300/80 mb-5">{warn}</p>}
 
           <AnimatePresence>
-            {layers.map((layer, idx) => (
+            {items.map((item) => (
               <motion.div
-                key={layer.id}
+                key={item.id}
                 layout
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.98 }}
-                className="glass rounded-2xl p-5 mb-4"
+                initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.96 }}
+                transition={{ type: 'spring', stiffness: 260, damping: 28 }}
+                className="glass rounded-2xl p-4 flex flex-col gap-3 mb-3 border border-white/5"
               >
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-[12px] text-neutral-500">layer {idx + 1}</span>
-                  <input
-                    type="color"
-                    value={layer.accent}
-                    onChange={(e) => updateLayer(layer.id, { accent: e.target.value })}
-                    className="w-7 h-7 rounded-full cursor-pointer border-0"
-                  />
-                </div>
-                <textarea
-                  value={layer.note}
-                  onChange={(e) => updateLayer(layer.id, { note: e.target.value })}
-                  placeholder="Note for this layer…"
-                  rows={2}
-                  className="w-full bg-black/20 border border-white/8 rounded-xl px-3 py-2.5 text-sm text-white placeholder:text-neutral-500 mb-3 focus:outline-none focus:border-white/20 resize-none"
-                />
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-4">
+                  {item.preview ? (
+                    <img src={item.preview} alt="" className="w-14 h-14 rounded-xl object-cover" />
+                  ) : (
+                    <div className="w-14 h-14 rounded-xl bg-white/5 grid place-items-center text-[11px] text-neutral-500">file</div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate text-white">{item.file.name}</p>
+                    <p className="text-xs text-neutral-500">{(item.file.size / 1024 / 1024).toFixed(1)} MB · {item.status}</p>
+                    {item.link && (
+                      <button onClick={() => navigate('share', item.link!.split('/').pop() || '')} className="text-xs text-[#0A84FF] truncate block mt-0.5 text-left">{item.link}</button>
+                    )}
+                    {item.error && <p className="text-xs text-red-400 mt-0.5">{item.error}</p>}
+                  </div>
                   <button
-                    onClick={() => fileRefs.current[layer.id]?.click()}
-                    className="text-xs px-3 py-1.5 rounded-full bg-white/8 text-neutral-300 hover:bg-white/12"
+                    onClick={() => setItems((p) => p.filter((i) => i.id !== item.id))}
+                    className="text-xs text-neutral-500 hover:text-white px-2"
                   >
-                    {layer.file ? layer.file.name : 'add file'}
+                    remove
                   </button>
-                  <input
-                    ref={(el) => { fileRefs.current[layer.id] = el; }}
-                    type="file"
-                    className="hidden"
-                    onChange={(e) => e.target.files?.[0] && onFile(layer.id, e.target.files[0])}
-                  />
-                  {layer.preview && (
-                    <img src={layer.preview} alt="" className="w-10 h-10 rounded-lg object-cover" />
-                  )}
-                  {layer.link && (
-                    <a href={layer.link} target="_blank" rel="noreferrer" className="text-xs text-blue-400 truncate">
-                      {layer.link}
-                    </a>
-                  )}
-                  {layer.status === 'uploading' && <span className="text-xs text-neutral-500">sending…</span>}
-                  {layer.error && <span className="text-xs text-red-400">{layer.error}</span>}
                 </div>
+                <input
+                  value={item.note}
+                  onChange={(e) => setItems((p) => p.map((i) => i.id === item.id ? { ...i, note: e.target.value } : i))}
+                  placeholder="Optional note for this file"
+                  className="w-full bg-black/20 border border-white/5 rounded-xl px-3 py-2 text-xs text-white placeholder:text-neutral-600 focus:outline-none focus:border-white/20"
+                />
               </motion.div>
             ))}
           </AnimatePresence>
 
-          {warn && <p className="text-[13px] text-amber-300/80 mb-4">{warn}</p>}
-
-          <div className="flex gap-3">
-            <button
-              onClick={addLayer}
-              className="text-sm px-4 py-2.5 rounded-2xl bg-white/6 text-neutral-300 hover:bg-white/10"
-            >
-              + layer
-            </button>
-            <motion.button
-              whileTap={{ scale: 0.98 }}
-              onClick={publish}
-              disabled={busy}
-              className="flex-1 rounded-2xl py-3.5 text-[15px] font-medium text-white disabled:opacity-40 transition shadow-xl"
-              style={{ background: '#0A84FF' }}
-            >
-              {busy ? 'Publishing…' : 'Publish studio'}
-            </motion.button>
-          </div>
-        </motion.div>
-
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }}>
-          <h2 className="text-2xl font-semibold tracking-tight mb-5">Recent</h2>
-          {loadingRecent ? (
-            <p className="text-neutral-500 text-sm">loading…</p>
-          ) : (
-            <div className="grid sm:grid-cols-2 gap-4">
-              {recent.map((share, i) => (
-                <motion.button
-                  key={share.id}
-                  onClick={() => navigate('share', share.id)}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.03 }}
-                  whileHover={{ y: -3 }}
-                  className="glass rounded-2xl p-4 text-left"
-                >
-                  <p className="text-sm font-medium truncate">{share.name}</p>
-                  <p className="text-xs text-neutral-500 truncate mt-0.5">{share.caption || 'shared'}</p>
-                </motion.button>
-              ))}
-            </div>
-          )}
+          <motion.button
+            whileTap={{ scale: 0.985 }}
+            whileHover={{ scale: 1.005 }}
+            onClick={publish}
+            disabled={busy || !items.length}
+            className="w-full rounded-2xl py-4 text-[15px] font-medium text-white disabled:opacity-40 transition shadow-xl mt-2"
+            style={{ background: accent }}
+          >
+            {busy ? 'Sharing…' : items.length ? `Share ${items.length} file${items.length === 1 ? '' : 's'}` : 'Drop a file first'}
+          </motion.button>
         </motion.div>
       </div>
     </div>

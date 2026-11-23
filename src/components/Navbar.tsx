@@ -10,6 +10,7 @@ export default function Navbar() {
 
   const links = [
     { to: 'drop', label: 'drop' },
+    { to: 'studio', label: 'studio' },
     { to: 'binder', label: 'binder' },
     { to: 'timelinedesk', label: 'timeline' },
     { to: 'lockdesk', label: 'lock' },

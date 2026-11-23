@@ -67,6 +67,7 @@ export default function SharePage() {
         downloads: cloud.downloads || 0,
         unlockAt: cloud.unlockAt || null,
         isLocal: false as const,
+        meta: cloud.meta || null,
       }
     : local
       ? {
@@ -80,11 +81,14 @@ export default function SharePage() {
           downloads: local.downloads,
           unlockAt: null,
           isLocal: true as const,
+          meta: null,
         }
       : null;
 
   const locked = !!(file && file.lockPass && !ok);
   const sealed = !!(file && file.unlockAt && new Date(file.unlockAt).getTime() > now);
+  const countdownTarget = file?.meta && typeof file.meta.countdown === 'string' ? new Date(file.meta.countdown as string) : null;
+  const isCountdown = !!countdownTarget && !isNaN(countdownTarget.getTime());
 
   const copyEmbed = async () => {
     if (!file) return;
@@ -97,6 +101,12 @@ export default function SharePage() {
   const hours = Math.floor(remaining / 3600000);
   const mins = Math.floor((remaining % 3600000) / 60000);
   const secs = Math.floor((remaining % 60000) / 1000);
+
+  const cdRemaining = isCountdown && countdownTarget ? Math.max(0, countdownTarget.getTime() - now) : 0;
+  const cdDays = Math.floor(cdRemaining / 86400000);
+  const cdHours = Math.floor((cdRemaining % 86400000) / 3600000);
+  const cdMins = Math.floor((cdRemaining % 3600000) / 60000);
+  const cdSecs = Math.floor((cdRemaining % 60000) / 1000);
 
   return (
     <div className="mesh min-h-screen">
@@ -135,6 +145,20 @@ export default function SharePage() {
                 <input value={pass} onChange={(e) => setPass(e.target.value)} type="password" placeholder="passcode" className="flex-1 px-4 py-2.5 rounded-full bg-white/5 border border-white/10 text-sm outline-none" />
                 <button type="submit" className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium">unlock</button>
               </form>
+            </>
+          ) : isCountdown ? (
+            <>
+              <p className="text-[#AF52DE] text-sm mb-2">countdown</p>
+              <h1 className="text-3xl font-semibold tracking-tight mb-3">{file.meta?.message || file.name || 'a quiet moment'}</h1>
+              <p className="text-sm text-neutral-500 mb-5">until {countdownTarget!.toLocaleString()}</p>
+              <p className="text-3xl font-mono text-neutral-200 mb-6 tracking-tight">
+                {cdDays > 0 ? `${cdDays}d ` : ''}{cdHours}h {cdMins}m {cdSecs}s
+              </p>
+              {file.type.startsWith('image/') && <img src={file.url} alt="" className="w-full rounded-2xl mb-6" />}
+              <div className="flex flex-wrap gap-2">
+                <button onClick={copyEmbed} className="inline-flex px-5 py-2.5 rounded-full bg-white/5 text-sm">copy discord link</button>
+              </div>
+              {copied && <p className="text-xs text-neutral-500 mt-4">embed url: {copied}</p>}
             </>
           ) : (
             <>

@@ -17,6 +17,7 @@ export default function Navbar() {
     { to: 'qrdesk', label: 'qr' },
     { to: 'chroma', label: 'chroma' },
     { to: 'library', label: 'library' },
+    { to: 'explore', label: 'explore' },
     { to: 'gallery', label: 'gallery' },
     { to: 'directory', label: 'desks' },
     { to: 'home', label: 'home' },

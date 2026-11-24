@@ -12,6 +12,7 @@ Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted
 - Pixel Desk: paint a 16×16 grid, choose colors, and publish the pixel art as a permanent share
 - Quote Card: type a quote and attribution, preview a typographic card, and publish it as a permanent share
 - Harmony Desk: generate analogous, complementary, or triadic palettes from a seed color and publish the set as a permanent share
+- Lumen Note: type a quiet note, choose a glow color, and publish a luminous card as a permanent share
 - Living library, gallery, explore, journal, sketch, gradient, QR, snippets, and more
 - Soft warnings for large files (browser may feel slow; nothing is blocked)
 - Discord / social embeds on every link via API routes and middleware-style handling (proper HTML escaping)

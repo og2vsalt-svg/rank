@@ -7,20 +7,12 @@ Drop local files. Soft size warnings only — no hard limits. Every share link s
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
 ## Features
-- Central Drop, Harbor, Studio, Prism, Quill, Glimmer, Ember, Pulse and dozens of specialized desks for uploading local files straight to Supabase (public_shares + storage)
-- New: Pulse Desk — live echoes and pulsing activity for shared files and notes
-- Signature Desk: draw a signature or mark and publish as a permanent share
-- Mood Board: pick a feeling, add a note, publish a luminous card
-- Whisper Note: leave a short note that can fade after a chosen time
-- Annotate Desk: drop an image, draw marks over it, add a caption, and publish the annotated result as a permanent share
-- Pixel Desk: paint a 16×16 grid, choose colors, and publish the pixel art as a permanent share
-- Quote Card: type a quote and attribution, preview a typographic card, and publish it as a permanent share
-- Harmony Desk: generate analogous, complementary, or triadic palettes from a seed color and publish the set as a permanent share
-- Lumen Note: type a quiet note, choose a glow color, and publish a luminous card as a permanent share
-- Particle Desk: shape a living particle field, seed it with a local image, capture the glow, and publish a permanent share
-- Living library, gallery, explore, journal, sketch, gradient, QR, snippets, and more
+- Central Drop and new Forge desk for crafting polished shares (title, caption, accent) from local files uploaded to Supabase (public_shares + storage)
+- Harbor, Studio, Prism, Quill, Glimmer, Ember, Pulse and dozens of specialized desks
+- Signature Desk, Mood Board, Whisper Note, Annotate Desk, Pixel Desk, Quote Card, Harmony Desk, Lumen Note, Particle Desk, and more
+- Living library, gallery, explore, journal, sketch, gradient, QR, snippets
 - Soft warnings for large files (browser may feel slow; nothing is blocked)
-- Discord / social embeds on every link via API routes and middleware-style handling (proper HTML escaping)
+- Discord / social embeds on every link via API routes (proper HTML escaping)
 - Local vault with IndexedDB + cloud publish
 - No boosting, no artificial caps, no file size limits beyond practical browser performance notes
 

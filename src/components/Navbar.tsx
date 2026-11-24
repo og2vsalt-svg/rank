@@ -10,6 +10,7 @@ export default function Navbar() {
 
   const links = [
     { to: 'drop', label: 'drop' },
+    { to: 'forge', label: 'forge' },
     { to: 'rippledesk', label: 'ripple' },
     { to: 'pulsedesk', label: 'pulse' },
     { to: 'signaturedesk', label: 'sign' },

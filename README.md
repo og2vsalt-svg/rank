@@ -7,7 +7,8 @@ Drop local files. Soft size warnings only — no hard limits. Every share link s
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
 ## Features
-- Central Drop and new Forge desk for crafting polished shares (title, caption, accent) from local files uploaded to Supabase (public_shares + storage)
+- Central Drop and Forge desks for crafting polished shares (title, caption, accent) from local files uploaded to Supabase (public_shares + storage)
+- New Aureate Forge for warm, gilded single-file shares
 - Harbor, Studio, Prism, Quill, Glimmer, Ember, Pulse and dozens of specialized desks
 - Signature Desk, Mood Board, Whisper Note, Annotate Desk, Pixel Desk, Quote Card, Harmony Desk, Lumen Note, Particle Desk, and more
 - Living library, gallery, explore, journal, sketch, gradient, QR, snippets

@@ -4,12 +4,17 @@ import Navbar from './Navbar';
 import { useRouter } from './Router';
 
 const DESKS = [
+  { route: 'nameplatedesk', title: 'Nameplate Desk', blurb: 'Type a name or title, choose an accent and style, and publish a sleek nameplate as a permanent share. Soft size warnings only. Polished Discord embeds. Apple-style springs.' },
   { route: 'capsuledesk', title: 'Capsule Desk', blurb: 'Seal a note or file until a future date. Soft warnings only. Polished Discord embeds on every link. Apple-style springs.' },
   { route: 'timelinedesk', title: 'Timeline Desk', blurb: 'Build a dated sequence of titles, notes, and optional local files. Publish the whole timeline as a permanent markdown share with polished Discord embeds. Soft size warnings only. Apple-style springs.' },
-  // ... other desks remain as before
+  { route: 'lumennote', title: 'Lumen Note', blurb: 'Type a quiet note, choose a glow color, and publish a luminous card as a permanent share. Soft size warnings only. Polished Discord embeds.' },
+  { route: 'harmonydesk', title: 'Harmony Desk', blurb: 'Generate analogous, complementary, or triadic palettes from a seed color and publish the set as a permanent share.' },
+  { route: 'pixeldesk', title: 'Pixel Desk', blurb: 'Paint a 16×16 grid, choose colors, and publish the pixel art as a permanent share. Soft size warnings only.' },
+  { route: 'quotecard', title: 'Quote Card', blurb: 'Type a quote and attribution, preview a typographic card, and publish it as a permanent share. Soft size warnings only.' },
+  { route: 'annotatedesk', title: 'Annotate Desk', blurb: 'Drop an image, draw marks over it, add a caption, and publish the annotated result as a permanent share.' },
+  // more desks remain available as pages; this list surfaces popular ones
 ];
 
-// Note: full list restored from previous version with addition
 export default function DirectoryPage() {
   const { navigate } = useRouter();
   const [q, setQ] = useState('');

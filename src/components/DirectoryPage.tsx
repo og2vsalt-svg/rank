@@ -4,6 +4,7 @@ import Navbar from './Navbar';
 import { useRouter } from './Router';
 
 const DESKS = [
+  { route: 'aurorapath', title: 'Aurora Path', blurb: 'Build a short sequence of titles and notes. Publish the whole path as a clean markdown share. Soft warnings only. Polished Discord embeds. Apple-style springs.' },
   { route: 'centraldrop', title: 'Central Drop', blurb: 'Everything in one place. Multi-file drops cascade into permanent shares with polished Discord embeds. Soft size warnings only. Apple-style springs.' },
   { route: 'orbitdesk', title: 'Orbit Desk', blurb: 'Map a central idea and orbiting thoughts. Publish the map as a clean markdown share. Soft size warnings only. Polished Discord embeds. Apple-style springs.' },
   { route: 'signaturedesk', title: 'Signature Desk', blurb: 'Draw a signature or quiet mark and publish it as a permanent share. Soft size warnings only. Polished Discord embeds. Apple-style springs.' },

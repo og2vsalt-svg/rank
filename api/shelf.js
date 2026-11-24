@@ -4,10 +4,10 @@ const FALLBACK = 'https://og2vsalt-svg.github.io/rank/og.png';
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"')
     .replace(/'/g, '&#39;');
 }
 
@@ -68,6 +68,9 @@ export default async function handler(req, res) {
   } else if (page === 'annotate') {
     title = 'Annotate Desk — rankvault';
     desc = 'Drop a local image, draw annotations over it, add a quiet caption, and publish a permanent share. Soft size warnings only. Polished Discord embeds. Apple-style springs.';
+  } else if (page === 'prism') {
+    title = 'Prism Desk — rankvault';
+    desc = 'Drop one or many local files with a shared note and accent. They enter storage and public_shares. Recent public drops settle into a living prism of glass tiles. Soft size warnings only. Polished Discord embeds. Apple-style springs.';
   } else if (page === 'twilight') {
     title = 'Twilight Desk — rankvault';
     desc = 'Drop a local file, choose a cool indigo accent, add a quiet caption, and publish a permanent share. Soft size warnings only. Polished Discord embeds. Apple-style springs.';

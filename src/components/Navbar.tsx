@@ -9,6 +9,7 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   const links = [
+    { to: 'centraldrop', label: 'central' },
     { to: 'drop', label: 'drop' },
     { to: 'forge', label: 'forge' },
     { to: 'aureateforge', label: 'aureate' },

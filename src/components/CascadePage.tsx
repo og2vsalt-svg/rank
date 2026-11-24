@@ -1,86 +1,182 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import Navbar from './Navbar';
+import { useState, useCallback, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useRouter } from './Router';
 import { publishLocalFile, shareUrls } from '../lib/cloudShare';
 
-export default function CascadePage() {
-  const [files, setFiles] = useState<File[]>([]);
-  const [note, setNote] = useState('');
-  const [accent, setAccent] = useState('#30D158');
-  const [busy, setBusy] = useState(false);
-  const [warn, setWarn] = useState('');
-  const [links, setLinks] = useState<string[]>([]);
-  const [err, setErr] = useState('');
+const ACCENTS = ['#0A84FF', '#30D158', '#FFD60A', '#FF3B30', '#AF52DE', '#64D2FF', '#FF9F0A'];
 
-  const handleFiles = (list: FileList | null) => {
-    const arr = Array.from(list || []);
-    setFiles(arr);
-    setWarn(arr.some(f => f.size > 42 * 1024 * 1024) ? 'large cascade. upload may take a moment. never refused.' : '');
-  };
+function prettySize(n: number) {
+  if (n < 1024) return `${n} B`;
+  if (n < 1024 * 1024) return `${Math.round(n / 1024)} KB`;
+  if (n < 1024 * 1024 * 1024) return `${(n / (1024 * 1024)).toFixed(1)} MB`;
+  return `${(n / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+}
+
+export default function CascadePage() {
+  const { navigate } = useRouter();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [dragging, setDragging] = useState(false);
+  const [files, setFiles] = useState<File[]>([]);
+  const [title, setTitle] = useState('');
+  const [caption, setCaption] = useState('');
+  const [accent, setAccent] = useState(ACCENTS[0]);
+  const [busy, setBusy] = useState(false);
+  const [results, setResults] = useState<{ id: string; name: string; embed: string; warn?: string | null }[]>([]);
+  const [error, setError] = useState('');
+
+  const onFiles = useCallback((list: FileList | File[]) => {
+    const next = Array.from(list);
+    if (!next.length) return;
+    setFiles((prev) => [...prev, ...next]);
+    if (!title) setTitle(next[0].name.replace(/\.[^.]+$/, ''));
+    setResults([]);
+    setError('');
+  }, [title]);
 
   const publish = async () => {
-    if (!files.length) return setErr('select files');
+    if (!files.length || busy) return;
     setBusy(true);
-    setErr('');
-    const created: string[] = [];
+    setError('');
+    const out: typeof results = [];
     for (const file of files) {
       const res = await publishLocalFile(file, {
-        caption: note || 'cascade share',
-        cardTitle: file.name,
+        cardTitle: title.trim() || file.name,
+        caption: caption.trim() || undefined,
         color: accent,
-        meta: { desk: 'cascade' },
       });
-      if (res.ok && res.id) created.push(shareUrls(res.id).app);
-      else setErr(res.error || 'paused on one file');
+      if (!res.ok || !res.id) {
+        setError(res.error || `failed on ${file.name}`);
+        setBusy(false);
+        return;
+      }
+      out.push({ id: res.id, name: file.name, embed: res.embed || shareUrls(res.id).embed, warn: res.warn });
     }
-    setLinks(created);
-    if (created[0]) try { await navigator.clipboard.writeText(created[0]); } catch {}
+    setResults(out);
     setBusy(false);
   };
 
+  const copy = async (text: string) => {
+    try { await navigator.clipboard.writeText(text); } catch { /* ignore */ }
+  };
+
+  const totalSize = files.reduce((a, f) => a + f.size, 0);
+
   return (
-    <div className="mesh min-h-screen overflow-hidden">
-      <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto relative">
-        {[0,1,2].map(i => (
-          <motion.div
-            key={i}
-            className="absolute left-0 right-0 h-px pointer-events-none"
-            style={{ background: `linear-gradient(90deg, transparent, ${accent}66, transparent)`, top: `${25 + i*18}%` }}
-            animate={{ x: ['-100%', '100%'] }}
-            transition={{ duration: 6 + i*2, repeat: Infinity, ease: 'linear' }}
-          />
-        ))}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 90, damping: 16 }}
-          className="glass rounded-[32px] p-8 relative z-10"
+    <div className="min-h-screen bg-[#050506] text-white pt-24 pb-20 px-5">
+      <div className="max-w-xl mx-auto">
+        <motion.button
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          onClick={() => navigate('home')}
+          className="text-xs text-neutral-500 hover:text-white mb-8"
         >
-          <p className="text-sm mb-2 tracking-wide" style={{ color: accent }}>cascade</p>
-          <h1 className="text-3xl font-semibold mb-3 tracking-tight">soft falling light for your files.</h1>
-          <p className="text-neutral-400 text-sm mb-6 leading-relaxed">
-            Multi-file drop with a shared note. Horizontal lines that drift with your accent. Spring motion, glass surfaces, polished Discord embeds. Each file lands in storage and the public_shares table. Large files warned, never refused. Prior desks remain.
+          ← home
+        </motion.button>
+
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: 'spring', stiffness: 120, damping: 20 }}
+        >
+          <p className="text-[#0A84FF] text-sm font-medium tracking-wide mb-2">cascade</p>
+          <h1 className="text-4xl font-semibold tracking-tight mb-3">many files. one voice.</h1>
+          <p className="text-neutral-400 text-base leading-relaxed mb-10">
+            Drop several local files. They cascade into permanent shares under a shared title, caption, and accent. Soft size notes only — nothing blocked. Discord embeds on every link.
           </p>
-          <div className="flex gap-3 mb-4">
-            <input type="color" value={accent} onChange={e => setAccent(e.target.value)} className="w-12 h-10 rounded-xl border border-white/10 bg-transparent cursor-pointer" />
-            <input value={note} onChange={e => setNote(e.target.value)} placeholder="a line that falls with the light" className="flex-1 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm placeholder:text-neutral-500 focus:outline-none focus:border-white/30" />
-          </div>
-          <label className="block cursor-pointer rounded-2xl border border-dashed border-white/15 hover:border-white/40 p-10 text-center transition-all duration-300" onDragOver={e => e.preventDefault()} onDrop={e => { e.preventDefault(); handleFiles(e.dataTransfer.files); }}>
-            <input type="file" multiple className="hidden" onChange={e => handleFiles(e.target.files)} />
-            <p className="text-sm text-neutral-300">{files.length ? `${files.length} file${files.length>1?'s':''} falling` : 'drop files into the cascade'}</p>
-          </label>
-          {warn && <p className="text-xs text-amber-300/80 mt-3">{warn}</p>}
-          {err && <p className="text-xs text-red-400 mt-3">{err}</p>}
-          <motion.button whileTap={{ scale: 0.975 }} whileHover={{ scale: 1.015 }} onClick={publish} disabled={busy || !files.length} style={{ backgroundColor: accent }} className="w-full mt-4 py-3 rounded-full text-black text-sm font-medium disabled:opacity-50">
-            {busy ? 'sharing…' : 'share into the cascade'}
-          </motion.button>
-          {links.length > 0 && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-5 text-xs text-neutral-400 break-all space-y-1">
-              {links.map((l, i) => <div key={i}>shared: {l}</div>)}
+        </motion.div>
+
+        <motion.div
+          onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+          onDragLeave={() => setDragging(false)}
+          onDrop={(e) => { e.preventDefault(); setDragging(false); onFiles(e.dataTransfer.files); }}
+          onClick={() => inputRef.current?.click()}
+          animate={{ borderColor: dragging ? accent : 'rgba(255,255,255,0.08)', scale: dragging ? 1.01 : 1 }}
+          className="relative rounded-3xl border-2 border-dashed bg-white/[0.03] p-10 text-center cursor-pointer transition-colors"
+        >
+          <input ref={inputRef} type="file" multiple className="hidden" onChange={(e) => e.target.files && onFiles(e.target.files)} />
+          <AnimatePresence mode="wait">
+            {files.length ? (
+              <motion.div key="files" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                <p className="text-lg font-medium">{files.length} file{files.length > 1 ? 's' : ''}</p>
+                <p className="text-sm text-neutral-500 mt-1">{prettySize(totalSize)}</p>
+                {totalSize > 40 * 1024 * 1024 && (
+                  <p className="text-xs text-amber-400/90 mt-3">large cascade — the browser may feel slow while it uploads. no hard limit.</p>
+                )}
+              </motion.div>
+            ) : (
+              <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                <p className="text-neutral-300">drop files here</p>
+                <p className="text-xs text-neutral-500 mt-1">or click to browse · multiple ok</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+
+        {files.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-8 space-y-4"
+          >
+            <input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="shared title for the cards"
+              className="w-full bg-white/[0.04] border border-white/10 rounded-2xl px-4 py-3 text-sm outline-none focus:border-white/20"
+            />
+            <textarea
+              value={caption}
+              onChange={(e) => setCaption(e.target.value)}
+              placeholder="optional shared caption"
+              rows={2}
+              className="w-full bg-white/[0.04] border border-white/10 rounded-2xl px-4 py-3 text-sm outline-none focus:border-white/20 resize-none"
+            />
+            <div className="flex gap-2">
+              {ACCENTS.map((c) => (
+                <button
+                  key={c}
+                  onClick={() => setAccent(c)}
+                  className="w-7 h-7 rounded-full transition"
+                  style={{ background: c, boxShadow: accent === c ? `0 0 0 2px #050506, 0 0 0 4px ${c}` : undefined }}
+                />
+              ))}
+            </div>
+            <motion.button
+              whileTap={{ scale: 0.98 }}
+              disabled={busy}
+              onClick={publish}
+              className="w-full py-3.5 rounded-full text-sm font-medium text-white disabled:opacity-50"
+              style={{ background: accent }}
+            >
+              {busy ? 'cascading…' : 'publish cascade'}
+            </motion.button>
+          </motion.div>
+        )}
+
+        {error && <p className="text-red-400 text-sm mt-4">{error}</p>}
+
+        <AnimatePresence>
+          {results.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-8 space-y-3"
+            >
+              <p className="text-sm font-medium">shares ready</p>
+              {results.map((r) => (
+                <div key={r.id} className="glass rounded-2xl p-4">
+                  <p className="text-xs text-neutral-400 truncate">{r.name}</p>
+                  {r.warn && <p className="text-xs text-amber-400/80 mt-1">{r.warn}</p>}
+                  <p className="text-xs text-neutral-500 break-all mt-2">{r.embed}</p>
+                  <div className="flex gap-2 mt-3">
+                    <button onClick={() => copy(r.embed)} className="px-3 py-1.5 rounded-full bg-white/10 text-xs hover:bg-white/15">copy</button>
+                    <button onClick={() => navigate('share', r.id)} className="px-3 py-1.5 rounded-full bg-white/10 text-xs hover:bg-white/15">open</button>
+                  </div>
+                </div>
+              ))}
             </motion.div>
           )}
-        </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   );

@@ -8,6 +8,8 @@ Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted
 
 ## Features
 - **Central Drop**: multi-file hosting desk that cascades permanent shares with shared caption and accent. Recent shares grid included.
+- **Cascade Desk**: multi-file cascade under one shared title, caption, and accent color. Instant Discord-ready links.
+- **Ribbon Desk**: focused single-file share with a quiet note and soft accent.
 - Central Drop and Forge desks for crafting polished shares (title, caption, accent) from local files uploaded to Supabase (public_shares + storage)
 - New Aurora Path: build a short sequence of titles and notes, publish the whole path as a clean markdown share
 - New Studio desk: focused one-file drop with title, caption, accent color, and instant Discord-ready share link

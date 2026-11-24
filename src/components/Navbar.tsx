@@ -47,6 +47,7 @@ export default function Navbar() {
     { to: 'lumennote', label: 'lumen' },
     { to: 'qrdesk', label: 'qr' },
     { to: 'chroma', label: 'chroma' },
+    { to: 'particledesk', label: 'particles' },
     { to: 'library', label: 'library' },
     { to: 'explore', label: 'explore' },
     { to: 'gallery', label: 'gallery' },

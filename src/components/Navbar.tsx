@@ -15,6 +15,8 @@ export default function Navbar() {
     { to: 'studio', label: 'studio' },
     { to: 'wave', label: 'wave' },
     { to: 'prism', label: 'prism' },
+    { to: 'pixeldesk', label: 'pixel' },
+    { to: 'quotecard', label: 'quote' },
     { to: 'binder', label: 'binder' },
     { to: 'timelinedesk', label: 'timeline' },
     { to: 'lock', label: 'lock' },

@@ -1,178 +1,149 @@
-import { useState, useEffect } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishLocalFile, listPublicShares, type CloudMeta } from '../lib/cloudShare';
+import { publishLocalFile, shareUrls } from '../lib/cloudShare';
+import { useRouter } from './Router';
 
 export default function RippleDeskPage() {
-  const [shares, setShares] = useState<CloudMeta[]>([]);
-  const [files, setFiles] = useState<File[]>([]);
+  const { navigate } = useRouter();
+  const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
   const [caption, setCaption] = useState('');
-  const [accent, setAccent] = useState('#5AC8FA');
   const [busy, setBusy] = useState(false);
-  const [warn, setWarn] = useState<string | null>(null);
-  const [err, setErr] = useState('');
-  const [links, setLinks] = useState<string[]>([]);
+  const [result, setResult] = useState<{ link?: string; error?: string; warn?: string | null } | null>(null);
+  const [ripples, setRipples] = useState<{ id: string; x: number; y: number }[]>([]);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const zoneRef = useRef<HTMLDivElement>(null);
 
-  const refresh = async () => {
-    const list = await listPublicShares(16);
-    setShares(list);
-  };
-
-  useEffect(() => {
-    refresh();
+  const addRipple = useCallback((clientX: number, clientY: number) => {
+    if (!zoneRef.current) return;
+    const rect = zoneRef.current.getBoundingClientRect();
+    const id = Math.random().toString(36).slice(2);
+    setRipples((r) => [...r, { id, x: clientX - rect.left, y: clientY - rect.top }]);
+    setTimeout(() => setRipples((r) => r.filter((x) => x.id !== id)), 900);
   }, []);
 
-  const onFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const arr = Array.from(e.target.files || []);
-    setFiles(arr);
-    const big = arr.some(f => f.size > 40 * 1024 * 1024);
-    setWarn(big ? 'Large file(s). The ripple may take a moment to expand. No hard limit.' : null);
-  };
+  const onDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    addRipple(e.clientX, e.clientY);
+    const f = e.dataTransfer.files[0];
+    if (f) {
+      setFile(f);
+      setPreview(f.type.startsWith('image/') ? URL.createObjectURL(f) : null);
+      setResult(null);
+    }
+  }, [addRipple]);
 
-  const share = async () => {
-    if (!files.length) return setErr('let one or more files start a ripple');
+  const publish = async () => {
+    if (!file || busy) return;
     setBusy(true);
-    setErr('');
-    setLinks([]);
-    const created: string[] = [];
-    try {
-      for (const file of files) {
-        const res = await publishLocalFile(file, {
-          caption: caption.trim() || 'ripple drop',
-          color: accent,
-          cardTitle: file.name,
-          meta: { desk: 'rippledesk' },
-        });
-        if (res.ok && res.embed) {
-          created.push(res.embed);
-        } else {
-          setErr(res.error || `paused on ${file.name}`);
-        }
-      }
-      setLinks(created);
-      setFiles([]);
-      setCaption('');
-      await refresh();
-    } catch (e: any) {
-      setErr(e.message || 'something slowed');
+    setResult(null);
+    const res = await publishLocalFile(file, {
+      caption: caption.trim() || file.name,
+      color: '#30D158',
+      cardTitle: file.name,
+      meta: { desk: 'ripple' },
+    });
+    if (res.ok && res.id) {
+      setResult({ link: shareUrls(res.id).app, warn: res.warn || null });
+    } else {
+      setResult({ error: res.error || 'could not share' });
     }
     setBusy(false);
   };
 
   return (
-    <div className="mesh min-h-screen bg-[#050507]">
+    <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-32 px-5 max-w-5xl mx-auto">
+      <div className="pt-28 pb-24 px-5 max-w-2xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 22 }}
+          initial={{ opacity: 0, y: 28 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 90, damping: 20 }}
-          className="text-center mb-12"
+          transition={{ type: 'spring', stiffness: 70, damping: 18 }}
+          className="glass rounded-[36px] p-8 md:p-12 border border-white/5 relative overflow-hidden"
         >
-          <p className="text-[13px] font-medium tracking-[0.2em] uppercase mb-2" style={{ color: accent }}>Ripple Desk</p>
-          <h1 className="text-[40px] font-semibold tracking-tight text-white mb-3">Let it expand.</h1>
-          <p className="text-neutral-400 text-[16px] leading-relaxed max-w-xl mx-auto">
-            Drop one or many local files with a shared note and accent. They enter storage and public_shares. Recent public drops settle into expanding ripples of glass that pulse and lift with spring motion. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.
+          <p className="text-[13px] font-medium tracking-wide text-[#30D158] mb-2">Ripple Desk</p>
+          <h1 className="text-4xl font-semibold tracking-tight mb-3 text-white">Let it settle.</h1>
+          <p className="text-neutral-400 text-[15.5px] leading-relaxed mb-8">
+            Drop a local file. A quiet ripple expands around the point of contact. Add a caption and publish a permanent share with polished Discord embeds. Soft size warnings only — nothing is blocked.
           </p>
-        </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, scale: 0.97 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.08, type: 'spring', stiffness: 110, damping: 22 }}
-          className="glass rounded-[32px] p-8 mb-16 shadow-2xl max-w-xl mx-auto"
-        >
-          <label className="block cursor-pointer rounded-[24px] border-2 border-dashed border-white/10 p-10 text-center mb-6 hover:border-white/20 transition-colors">
-            <p className="text-[15px] text-neutral-300">{files.length ? `${files.length} file${files.length > 1 ? 's' : ''} ready to ripple` : 'Drop or choose local files'}</p>
-            <p className="text-[12px] text-neutral-500 mt-1">No size limits. Soft warning only if it may feel slow.</p>
-            <input type="file" multiple className="hidden" onChange={onFiles} />
-          </label>
+          <div
+            ref={zoneRef}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={onDrop}
+            onClick={(e) => {
+              addRipple(e.clientX, e.clientY);
+              inputRef.current?.click();
+            }}
+            className="relative border-2 border-dashed border-white/15 rounded-3xl p-20 text-center mb-7 cursor-pointer hover:border-white/30 transition bg-black/20 overflow-hidden"
+          >
+            <AnimatePresence>
+              {ripples.map((r) => (
+                <motion.div
+                  key={r.id}
+                  initial={{ scale: 0, opacity: 0.6 }}
+                  animate={{ scale: 6, opacity: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+                  className="absolute rounded-full border border-[#30D158]/40 pointer-events-none"
+                  style={{ left: r.x - 40, top: r.y - 40, width: 80, height: 80 }}
+                />
+              ))}
+            </AnimatePresence>
+            {preview ? (
+              <img src={preview} alt="" className="mx-auto max-h-48 rounded-2xl object-cover" />
+            ) : (
+              <>
+                <p className="text-neutral-300 text-[15px]">Drop a file or click</p>
+                <p className="text-neutral-500 text-sm mt-1">ripple follows your touch</p>
+              </>
+            )}
+            {file && <p className="mt-4 text-sm text-white">{file.name} · {(file.size / 1024 / 1024).toFixed(1)} MB</p>}
+            <input
+              ref={inputRef}
+              type="file"
+              className="hidden"
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) {
+                  setFile(f);
+                  setPreview(f.type.startsWith('image/') ? URL.createObjectURL(f) : null);
+                  setResult(null);
+                }
+              }}
+            />
+          </div>
 
           <textarea
             value={caption}
             onChange={(e) => setCaption(e.target.value)}
-            placeholder="Optional note that expands with every file…"
+            placeholder="Quiet caption (optional)"
             rows={2}
-            className="w-full bg-black/20 border border-white/10 rounded-[20px] px-4 py-3 text-[15px] text-white placeholder:text-neutral-500 mb-5 resize-none focus:outline-none focus:border-white/25"
+            className="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-3.5 text-[15px] text-white placeholder:text-neutral-500 mb-5 focus:outline-none focus:border-white/30 transition resize-none"
           />
 
-          <div className="flex items-center gap-4 mb-6">
-            <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="w-10 h-10 rounded-full cursor-pointer border-0" />
-            <span className="text-[13px] text-neutral-400">Ripple accent</span>
-          </div>
-
-          {warn && <p className="text-[13px] text-amber-300/90 mb-4">{warn}</p>}
+          {result?.warn && <p className="text-[13px] text-amber-300/80 mb-4">{result.warn}</p>}
+          {result?.error && <p className="text-[13px] text-red-400 mb-4">{result.error}</p>}
+          {result?.link && (
+            <button
+              onClick={() => navigate('share', result.link!.split('/').pop() || '')}
+              className="block w-full text-left text-[#30D158] text-sm mb-4 truncate"
+            >
+              {result.link}
+            </button>
+          )}
 
           <motion.button
-            whileTap={{ scale: 0.97 }}
-            whileHover={{ scale: 1.02 }}
-            onClick={share}
-            disabled={busy || !files.length}
-            className="w-full rounded-[22px] py-4 text-[16px] font-medium text-white disabled:opacity-40 transition shadow-xl"
-            style={{ background: accent }}
+            whileTap={{ scale: 0.985 }}
+            whileHover={{ scale: 1.005 }}
+            onClick={publish}
+            disabled={busy || !file}
+            className="w-full rounded-2xl py-4 text-[15px] font-medium text-white disabled:opacity-40 transition shadow-xl bg-[#30D158]"
           >
-            {busy ? 'Expanding the ripple…' : 'Share into the ripple'}
+            {busy ? 'Settling…' : file ? 'Publish the ripple' : 'Drop a file first'}
           </motion.button>
-
-          <AnimatePresence>
-            {links.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mt-6 space-y-1 text-center"
-              >
-                {links.map((l, i) => (
-                  <a key={i} href={l} target="_blank" rel="noreferrer" className="block text-[14px] break-all" style={{ color: accent }}>{l}</a>
-                ))}
-              </motion.div>
-            )}
-            {err && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 text-[13px] text-red-400 text-center">{err}</motion.p>}
-          </AnimatePresence>
         </motion.div>
-
-        <div className="relative grid gap-8 sm:grid-cols-2 lg:grid-cols-3 place-items-center">
-          {shares.map((s, i) => (
-            <motion.a
-              key={s.id}
-              href={`/s/${s.id}`}
-              target="_blank"
-              rel="noreferrer"
-              initial={{ opacity: 0, scale: 0.4, y: 40 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{
-                delay: i * 0.07,
-                type: 'spring',
-                stiffness: 80,
-                damping: 14,
-              }}
-              whileHover={{
-                scale: 1.06,
-                y: -8,
-                transition: { type: 'spring', stiffness: 300, damping: 20 },
-              }}
-              className="glass rounded-[24px] p-4 apple-card shadow-lg w-full max-w-[280px] relative overflow-hidden"
-            >
-              <motion.div
-                className="absolute inset-0 rounded-[24px] pointer-events-none"
-                style={{ border: `1px solid ${accent}40` }}
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1.4, opacity: 0 }}
-                transition={{ delay: i * 0.07 + 0.3, duration: 1.2, ease: 'easeOut' }}
-              />
-              <div className="aspect-square rounded-[16px] mb-3 overflow-hidden" style={{ backgroundColor: (s.color || accent) + '18' }}>
-                {s.type?.startsWith('image/') && s.url ? (
-                  <img src={s.url} alt={s.name} className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full grid place-items-center text-[13px] text-neutral-400">{s.type?.split('/')[1] || 'file'}</div>
-                )}
-              </div>
-              <p className="text-[15px] font-medium text-white truncate px-1">{s.name || 'untitled'}</p>
-              {s.caption && <p className="text-[13px] text-neutral-400 mt-1 line-clamp-2 px-1">{s.caption}</p>}
-              <p className="text-[11px] text-neutral-500 mt-2 px-1">{new Date(s.createdAt || '').toLocaleDateString()}</p>
-            </motion.a>
-          ))}
-        </div>
-        {shares.length === 0 && <p className="text-neutral-500 text-center py-12 text-[15px]">The surface is still. Share the first ripple.</p>}
       </div>
     </div>
   );

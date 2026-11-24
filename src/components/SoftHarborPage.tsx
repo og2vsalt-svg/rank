@@ -1,179 +1,164 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishLocalFile, shareUrls, listPublicShares, type CloudMeta } from '../lib/cloudShare';
+import { publishLocalFile, shareUrls } from '../lib/cloudShare';
 import { useRouter } from './Router';
+
+type Item = {
+  file: File;
+  preview?: string;
+  id: string;
+  status: 'queued' | 'uploading' | 'done' | 'error';
+  progress: number;
+  link?: string;
+  error?: string;
+  note: string;
+};
 
 export default function SoftHarborPage() {
   const { navigate } = useRouter();
-  const [files, setFiles] = useState<File[]>([]);
-  const [note, setNote] = useState('');
-  const [accent, setAccent] = useState('#5AC8FA');
+  const [items, setItems] = useState<Item[]>([]);
+  const [sharedNote, setSharedNote] = useState('');
+  const [accent, setAccent] = useState('#0A84FF');
   const [busy, setBusy] = useState(false);
-  const [warn, setWarn] = useState('');
-  const [shares, setShares] = useState<{ id: string; url: string; name: string }[]>([]);
-  const [recent, setRecent] = useState<CloudMeta[]>([]);
+  const [warn, setWarn] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const heavy = useMemo(() => files.some(f => f.size > 40 * 1024 * 1024), [files]);
-
-  useEffect(() => {
-    listPublicShares(6).then(setRecent).catch(() => {});
+  const addFiles = useCallback((list: FileList | File[]) => {
+    const arr = Array.from(list);
+    const total = arr.reduce((s, f) => s + f.size, 0);
+    setWarn(total > 60_000_000 ? 'Large files may feel slow in the browser. Nothing is blocked.' : null);
+    const next: Item[] = arr.map((file) => ({
+      file,
+      id: Math.random().toString(36).slice(2, 10),
+      status: 'queued',
+      progress: 0,
+      note: '',
+      preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : undefined,
+    }));
+    setItems((p) => [...p, ...next]);
   }, []);
 
-  const onSelect = (list: FileList | null) => {
-    if (!list) return;
-    const arr = Array.from(list);
-    setFiles(arr);
-    setWarn(heavy ? 'large files present. harbor may feel slow while the tide settles. no hard limits.' : '');
-    setShares([]);
-  };
-
-  const drop = async () => {
-    if (!files.length) return;
+  const publish = async () => {
+    if (!items.length || busy) return;
     setBusy(true);
-    setWarn('');
-    try {
-      const results = [];
-      for (const f of files) {
-        const res = await publishLocalFile(f, {
-          caption: note || 'harbor drop',
+    for (const item of items) {
+      if (item.status === 'done') continue;
+      setItems((p) => p.map((i) => i.id === item.id ? { ...i, status: 'uploading', progress: 12 } : i));
+      try {
+        const progressTimer = setInterval(() => {
+          setItems((p) => p.map((i) => i.id === item.id && i.status === 'uploading' ? { ...i, progress: Math.min(92, i.progress + 8) } : i));
+        }, 180);
+        const caption = [sharedNote.trim(), item.note.trim()].filter(Boolean).join(' · ') || item.file.name;
+        const res = await publishLocalFile(item.file, {
+          caption,
           color: accent,
-          cardTitle: note ? note.slice(0, 80) : f.name,
-          meta: { source: 'softharbor', accent },
+          cardTitle: item.file.name,
+          meta: { desk: 'harbor' },
         });
-        if (res.ok && res.id) {
-          const urls = shareUrls(res.id);
-          results.push({ id: res.id, url: urls.app, name: f.name });
-        }
+        clearInterval(progressTimer);
+        const link = res.ok && res.id ? shareUrls(res.id).app : undefined;
+        setItems((p) => p.map((i) =>
+          i.id === item.id
+            ? { ...i, status: res.ok ? 'done' : 'error', progress: res.ok ? 100 : 0, link, error: res.error }
+            : i
+        ));
+      } catch (e: any) {
+        setItems((p) => p.map((i) => i.id === item.id ? { ...i, status: 'error', error: e.message } : i));
       }
-      setShares(results);
-      if (results[0]) {
-        try { await navigator.clipboard.writeText(results[0].url); } catch {}
-      }
-      listPublicShares(6).then(setRecent).catch(() => {});
-    } catch (e: any) {
-      setWarn(e?.message || 'harbor drop failed');
-    } finally {
-      setBusy(false);
     }
+    setBusy(false);
   };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-24 px-5 max-w-2xl mx-auto relative">
-        {/* gentle harbor waves */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          {[0, 1, 2, 3].map(i => (
-            <motion.div
-              key={i}
-              className="absolute left-0 right-0 h-24 rounded-full blur-2xl"
-              style={{
-                background: `linear-gradient(90deg, transparent, ${accent}33, transparent)`,
-                top: `${30 + i * 12}%`,
-                opacity: 0.18,
-              }}
-              animate={{
-                x: ['-10%', '10%', '-10%'],
-                scaleY: [1, 1.08, 1],
-              }}
-              transition={{
-                duration: 8 + i * 2,
-                repeat: Infinity,
-                ease: 'easeInOut',
-                delay: i * 0.4,
-              }}
-            />
-          ))}
-        </div>
-
+      <div className="pt-28 pb-24 px-5 max-w-2xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 28 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 100, damping: 16 }}
-          className="glass rounded-[40px] p-8 sm:p-12 relative"
+          transition={{ type: 'spring', stiffness: 90, damping: 22 }}
+          className="glass rounded-[36px] p-8 md:p-12 border border-white/5"
         >
-          <p className="text-[#5AC8FA] text-sm font-medium mb-2 tracking-wide">soft harbor</p>
-          <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight mb-3">a quiet harbor for what you carry.</h1>
-          <p className="text-neutral-400 text-sm mb-8 leading-relaxed">
-            Drop one or many local files with a shared note and accent. Soft waves of light lap and settle with spring motion on deep navy glass. Recent public drops surface as quiet cards along the quay. Lands in storage and public_shares. Discord unfurls a polished card on every link. Large drops warned, never refused. All prior desks remain fully intact. No traces of boosting.
+          <p className="text-[13px] font-medium tracking-wide mb-2" style={{ color: accent }}>Harbor</p>
+          <h1 className="text-4xl font-semibold tracking-tight mb-3 text-white">A quieter drop.</h1>
+          <p className="text-neutral-400 text-[15.5px] leading-relaxed mb-8">
+            Multi-file local drops with a shared note and accent. Soft progress, spring motion, frosted glass. Files land in storage and public_shares. Every link carries a polished Discord embed. Large files are only warned. All prior desks remain intact. No traces of boosting.
           </p>
 
-          <label
-            className="block cursor-pointer rounded-[32px] border border-dashed border-white/12 hover:border-white/25 p-12 text-center transition mb-6"
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => { e.preventDefault(); onSelect(e.dataTransfer.files); }}
+          <div
+            onDragOver={(e) => { e.preventDefault(); }}
+            onDrop={(e) => { e.preventDefault(); addFiles(e.dataTransfer.files); }}
+            onClick={() => inputRef.current?.click()}
+            className="relative rounded-3xl border-2 border-dashed border-white/10 hover:border-white/20 bg-black/20 p-10 text-center cursor-pointer transition-colors mb-6"
           >
-            <input type="file" multiple className="hidden" onChange={(e) => onSelect(e.target.files)} />
-            <p className="text-white font-medium">{files.length ? `${files.length} file${files.length > 1 ? 's' : ''}` : 'click or drop files'}</p>
-            <p className="text-xs text-neutral-500 mt-2">{files.length ? files.map(f => f.name).join(', ').slice(0, 60) + (files.length > 1 ? '…' : '') : 'no size limits · only slowness warnings'}</p>
-          </label>
-
-          <input
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            placeholder="shared note (embed title)"
-            className="w-full rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-white placeholder:text-neutral-500 outline-none focus:border-white/25 mb-4"
-          />
-
-          <div className="flex items-center gap-3 mb-6">
-            <span className="text-xs text-neutral-500">accent</span>
-            <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="w-10 h-10 rounded-full border-0 cursor-pointer" />
+            <input ref={inputRef} type="file" multiple hidden onChange={(e) => e.target.files && addFiles(e.target.files)} />
+            <p className="text-neutral-300 text-sm">Drop files here or click to choose</p>
+            <p className="text-neutral-500 text-xs mt-1">No hard limits — only a soft warning if large</p>
           </div>
 
-          <motion.button
-            whileTap={{ scale: 0.96 }}
-            disabled={!files.length || busy}
-            onClick={drop}
-            className="w-full py-3.5 rounded-full bg-white text-black text-sm font-medium disabled:opacity-40 transition"
-          >
-            {busy ? 'settling into harbor…' : 'drop into soft harbor'}
-          </motion.button>
+          {warn && (
+            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-amber-300/80 text-sm mb-4">{warn}</motion.p>
+          )}
 
-          {warn && <p className="text-xs text-amber-300/80 mt-4">{warn}</p>}
-
-          <AnimatePresence>
-            {shares.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mt-8 space-y-3"
-              >
-                {shares.map(s => (
-                  <div key={s.id} className="rounded-2xl bg-white/5 border border-white/10 p-4 flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-neutral-200">{s.name}</p>
-                      <p className="text-xs text-neutral-500 break-all">{s.url}</p>
-                    </div>
-                    <button onClick={() => navigate('share', s.id)} className="px-3 py-1.5 rounded-full bg-white/10 text-xs">open</button>
-                  </div>
-                ))}
-                <p className="text-[11px] text-neutral-500">Discord will show a pro card on these links.</p>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </motion.div>
-
-        {recent.length > 0 && (
-          <div className="mt-12">
-            <p className="text-xs text-neutral-500 mb-4 tracking-wide">recent harbor lights</p>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {recent.map((r, i) => (
-                <motion.div
-                  key={r.id}
-                  initial={{ opacity: 0, scale: 0.92 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ type: 'spring', stiffness: 120, damping: 14, delay: i * 0.06 }}
-                  onClick={() => navigate('share', r.id)}
-                  className="glass rounded-2xl p-4 cursor-pointer hover:bg-white/5 transition"
-                >
-                  <div className="w-6 h-6 rounded-full mb-2" style={{ background: r.color || accent }} />
-                  <p className="text-xs text-neutral-300 truncate">{r.caption || r.name}</p>
-                </motion.div>
-              ))}
+          <div className="space-y-3 mb-6">
+            <input
+              value={sharedNote}
+              onChange={(e) => setSharedNote(e.target.value)}
+              placeholder="Shared note (optional)"
+              className="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-3 text-white placeholder:text-neutral-500 focus:outline-none focus:border-white/25"
+            />
+            <div className="flex items-center gap-3">
+              <label className="text-xs text-neutral-500">Accent</label>
+              <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="w-10 h-8 rounded-lg bg-transparent border-0 cursor-pointer" />
+              <span className="text-xs text-neutral-400">{accent}</span>
             </div>
           </div>
-        )}
+
+          <AnimatePresence>
+            {items.map((item) => (
+              <motion.div
+                key={item.id}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="flex items-center gap-3 bg-black/30 rounded-2xl p-3 mb-2 border border-white/5"
+              >
+                {item.preview ? (
+                  <img src={item.preview} alt="" className="w-12 h-12 object-cover rounded-xl" />
+                ) : (
+                  <div className="w-12 h-12 rounded-xl bg-white/5 grid place-items-center text-xs text-neutral-500">file</div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm text-white truncate">{item.file.name}</p>
+                  <p className="text-xs text-neutral-500">{(item.file.size / 1024 / 1024).toFixed(1)} MB</p>
+                  {item.status === 'uploading' && (
+                    <div className="mt-1 h-1 bg-white/10 rounded-full overflow-hidden">
+                      <motion.div className="h-full rounded-full" style={{ background: accent, width: `${item.progress}%` }} />
+                    </div>
+                  )}
+                  {item.status === 'done' && item.link && (
+                    <a href={item.link} target="_blank" rel="noreferrer" className="text-xs text-[#0A84FF] hover:underline">open share</a>
+                  )}
+                  {item.error && <p className="text-xs text-red-400">{item.error}</p>}
+                </div>
+                <span className="text-xs text-neutral-400 capitalize">{item.status}</span>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+
+          {items.length > 0 && (
+            <motion.button
+              whileTap={{ scale: 0.98 }}
+              disabled={busy}
+              onClick={publish}
+              className="mt-6 w-full py-3.5 rounded-full text-white text-sm font-medium transition disabled:opacity-50"
+              style={{ background: accent }}
+            >
+              {busy ? 'sending…' : `share ${items.length} file${items.length > 1 ? 's' : ''}`}
+            </motion.button>
+          )}
+        </motion.div>
       </div>
     </div>
   );

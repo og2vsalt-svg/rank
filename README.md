@@ -7,7 +7,7 @@ Drop local files. Soft size warnings only — no hard limits. Every share link s
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
 ## Features
-- Central Drop and Studio desks for uploading local files straight to Supabase (public_shares + storage)
+- Central Drop, Harbor, and Studio desks for uploading local files straight to Supabase (public_shares + storage)
 - Board desk: freeform pinboard for notes and files that publishes as one share
 - Insights desk: quiet numbers on recent public shares (types, sizes, arrivals)
 - Living library, gallery, explore, journal, sketch, gradient, QR, snippets, and dozens of specialized desks

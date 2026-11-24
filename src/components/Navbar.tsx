@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useRouter } from './Router';
 import { useAuth } from './AuthContext';
 
@@ -10,11 +10,12 @@ export default function Navbar() {
 
   const links = [
     { to: 'drop', label: 'drop' },
+    { to: 'softharbor', label: 'harbor' },
     { to: 'board', label: 'board' },
     { to: 'studio', label: 'studio' },
     { to: 'binder', label: 'binder' },
     { to: 'timelinedesk', label: 'timeline' },
-    { to: 'lockdesk', label: 'lock' },
+    { to: 'lock', label: 'lock' },
     { to: 'sunrise', label: 'sunrise' },
     { to: 'twilight', label: 'twilight' },
     { to: 'countdown', label: 'countdown' },
@@ -78,58 +79,23 @@ export default function Navbar() {
             {isLoggedIn ? (
               <>
                 <span className="hidden sm:inline text-xs text-neutral-500">{user?.username}</span>
-                <button
-                  onClick={logout}
-                  className="text-xs px-3 py-1.5 rounded-full bg-white/5 text-neutral-300 hover:bg-white/10"
-                >
-                  out
-                </button>
+                <button onClick={logout} className="text-xs text-neutral-400 hover:text-white">out</button>
               </>
             ) : (
-              <button
-                onClick={() => navigate('auth')}
-                className="text-xs px-3.5 py-1.5 rounded-full bg-white text-black font-medium"
-              >
-                sign in
-              </button>
+              <button onClick={() => navigate('login')} className="text-xs text-neutral-400 hover:text-white">in</button>
             )}
-            <button
-              className="md:hidden p-1.5"
-              onClick={() => setOpen((o) => !o)}
-              aria-label="menu"
-            >
-              <div className="w-4 space-y-1">
-                <span className="block h-px bg-white/70" />
-                <span className="block h-px bg-white/70" />
-                <span className="block h-px bg-white/70" />
-              </div>
+            <button onClick={() => setOpen(!open)} className="md:hidden text-neutral-400">
+              {open ? 'close' : 'menu'}
             </button>
           </div>
         </motion.nav>
-
-        <AnimatePresence>
-          {open && (
-            <motion.div
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              className="md:hidden mt-2 glass rounded-3xl p-3 space-y-1"
-            >
-              {links.map((l) => (
-                <button
-                  key={l.to}
-                  onClick={() => {
-                    navigate(l.to);
-                    setOpen(false);
-                  }}
-                  className="block w-full text-left px-3 py-2 rounded-xl text-sm text-neutral-300 hover:bg-white/5"
-                >
-                  {l.label}
-                </button>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {open && (
+          <div className="md:hidden mt-2 glass rounded-3xl p-4 space-y-1">
+            {links.map((l) => (
+              <button key={l.to} onClick={() => { navigate(l.to); setOpen(false); }} className="block w-full text-left px-3 py-2 text-sm text-neutral-300 hover:text-white rounded-xl">{l.label}</button>
+            ))}
+          </div>
+        )}
       </div>
     </header>
   );

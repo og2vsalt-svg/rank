@@ -34,6 +34,7 @@ export default function Hero() {
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center">
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('drop')} className="px-7 py-3 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#3A9DFF] transition shadow-lg">drop files</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('softharbor')} className="px-7 py-3 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition">harbor</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('library')} className="px-7 py-3 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition">library</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('gallery')} className="px-7 py-3 rounded-full bg-white/5 text-white text-sm font-medium hover:bg-white/10 transition">gallery</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('directory')} className="px-6 py-2.5 rounded-full bg-white/5 text-neutral-300 text-sm font-medium hover:bg-white/10 transition">all desks</motion.button>

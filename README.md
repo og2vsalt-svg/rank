@@ -16,6 +16,8 @@ Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted
 - New Aurora Path: build a short sequence of titles and notes, publish the whole path as a clean markdown share
 - New Studio desk: focused one-file drop with title, caption, accent color, and instant Discord-ready share link
 - New Aureate Forge for warm, gilded single-file shares
+- **Batch Cascade**: drop multiple local files, share one title/caption/accent across them, each gets a permanent Discord-ready link. Soft warnings only.
+- **Whisper Notes**: write a quiet note, shape title and accent, share as a clean text file with embeds.
 - Harbor, Studio, Prism, Quill, Glimmer, Ember, Pulse and dozens of specialized desks
 - Signature Desk, Mood Board, Whisper Note, Annotate Desk, Pixel Desk, Quote Card, Harmony Desk, Lumen Note, Particle Desk, and more
 - Living library, gallery, explore, journal, sketch, gradient, QR, snippets

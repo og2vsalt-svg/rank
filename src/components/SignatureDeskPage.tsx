@@ -1,0 +1,1 @@
+$(cat /tmp/SignatureDeskPage.tsx)

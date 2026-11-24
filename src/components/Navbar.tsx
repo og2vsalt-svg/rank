@@ -10,6 +10,7 @@ export default function Navbar() {
 
   const links = [
     { to: 'drop', label: 'drop' },
+    { to: 'harmonydesk', label: 'harmony' },
     { to: 'softharbor', label: 'harbor' },
     { to: 'board', label: 'board' },
     { to: 'studio', label: 'studio' },

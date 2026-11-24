@@ -8,6 +8,7 @@ Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted
 
 ## Features
 - Central Drop and Forge desks for crafting polished shares (title, caption, accent) from local files uploaded to Supabase (public_shares + storage)
+- New Studio desk: focused one-file drop with title, caption, accent color, and instant Discord-ready share link
 - New Orbit Desk for mapping central ideas with orbiting thoughts, published as clean markdown shares
 - New Aureate Forge for warm, gilded single-file shares
 - Harbor, Studio, Prism, Quill, Glimmer, Ember, Pulse and dozens of specialized desks

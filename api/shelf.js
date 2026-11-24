@@ -7,7 +7,7 @@ function esc(s) {
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
+    .replace(/\"/g, '&quot;')
     .replace(/'/g, '&#39;');
 }
 
@@ -68,6 +68,9 @@ export default async function handler(req, res) {
   } else if (page === 'drop') {
     title = 'Drop — rankvault';
     desc = 'The clean central place to share local files. Soft size warnings only. Polished Discord embeds on every link. Apple-style springs.';
+  } else if (page === 'orbitdesk') {
+    title = 'Orbit Desk — rankvault';
+    desc = 'Ideas in orbit. Map a center and surrounding thoughts, then publish as a clean markdown share. Soft warnings only. Polished Discord embeds. Apple-style springs.';
   }
   // other pages remain as before
 

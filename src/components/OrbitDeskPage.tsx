@@ -1,168 +1,97 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useMemo } from 'react';
+import { motion } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishLocalFile, listPublicShares, type CloudMeta } from '../lib/cloudShare';
+import { useRouter } from './Router';
+import { publishLocalFile } from '../lib/cloudShare';
 
 export default function OrbitDeskPage() {
-  const [shares, setShares] = useState<CloudMeta[]>([]);
-  const [files, setFiles] = useState<File[]>([]);
-  const [caption, setCaption] = useState('');
-  const [accent, setAccent] = useState('#5AC8FA');
+  const { navigate } = useRouter();
+  const [center, setCenter] = useState('central idea');
+  const [nodes, setNodes] = useState<string[]>(['first orbit', 'second orbit', 'third orbit']);
+  const [accent, setAccent] = useState('#0A84FF');
   const [busy, setBusy] = useState(false);
-  const [warn, setWarn] = useState<string | null>(null);
-  const [err, setErr] = useState('');
-  const [links, setLinks] = useState<string[]>([]);
+  const [result, setResult] = useState<{url?: string; embed?: string; warn?: string} | null>(null);
 
-  const refresh = async () => {
-    const list = await listPublicShares(16);
-    setShares(list);
-  };
+  const addNode = () => setNodes((n) => [...n, `orbit ${n.length + 1}`]);
+  const updateNode = (i: number, v: string) => setNodes((n) => n.map((x, idx) => idx === i ? v : x));
 
-  useEffect(() => {
-    refresh();
-  }, []);
-
-  const onFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const arr = Array.from(e.target.files || []);
-    setFiles(arr);
-    const big = arr.some(f => f.size > 40 * 1024 * 1024);
-    setWarn(big ? 'Large file(s). Orbit may take a moment to settle. No hard limit.' : null);
-  };
+  const md = useMemo(() => {
+    return `# ${center}\n\n${nodes.map((n, i) => `- **${i + 1}.** ${n}`).join('\n')}\n\n_shared from orbit desk · rankvault_`;
+  }, [center, nodes]);
 
   const share = async () => {
-    if (!files.length) return setErr('let one or more files enter orbit');
     setBusy(true);
-    setErr('');
-    setLinks([]);
-    const created: string[] = [];
     try {
-      for (const file of files) {
-        const res = await publishLocalFile(file, {
-          caption: caption.trim() || 'orbit drop',
-          color: accent,
-          cardTitle: file.name,
-          meta: { desk: 'orbitdesk' },
-        });
-        if (res.ok && res.embed) {
-          created.push(res.embed);
-        } else {
-          setErr(res.error || `paused on ${file.name}`);
-        }
+      const file = new File([md], `${center.slice(0, 20).replace(/[^a-z0-9]/gi, '_') || 'orbit'}.md`, { type: 'text/markdown' });
+      const res = await publishLocalFile(file, {
+        caption: `Orbit: ${center}`,
+        color: accent,
+        cardTitle: center,
+      });
+      if (res.ok) {
+        setResult({ url: res.url, embed: res.embed, warn: res.warn || undefined });
+      } else {
+        alert(res.error || 'share failed');
       }
-      setLinks(created);
-      setFiles([]);
-      setCaption('');
-      await refresh();
-    } catch (e: any) {
-      setErr(e.message || 'something slowed');
+    } finally {
+      setBusy(false);
     }
-    setBusy(false);
   };
 
   return (
-    <div className="mesh min-h-screen bg-[#050507]">
+    <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-32 px-5 max-w-5xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 22 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 90, damping: 20 }}
-          className="text-center mb-12"
-        >
-          <p className="text-[13px] font-medium tracking-[0.2em] uppercase mb-2" style={{ color: accent }}>Orbit Desk</p>
-          <h1 className="text-[40px] font-semibold tracking-tight text-white mb-3">Place what you carry in orbit.</h1>
-          <p className="text-neutral-400 text-[16px] leading-relaxed max-w-xl mx-auto">
-            Drop one or many local files with a shared note and accent. They enter storage and public_shares. Recent public drops settle into a living orbital arrangement of glass tiles that drift and lift with spring motion. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.
+      <div className="pt-28 pb-24 px-5 max-w-2xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 100, damping: 20 }}>
+          <p className="text-[#0A84FF] text-sm font-medium mb-2 tracking-wide">orbit desk</p>
+          <h1 className="text-4xl font-semibold tracking-tight mb-2">ideas in orbit.</h1>
+          <p className="text-neutral-400 text-sm mb-8 leading-relaxed">
+            Place a center and let thoughts orbit it. Publish the map as a clean markdown share. Soft size warnings only. Polished Discord embeds on every link. Apple-style springs throughout.
           </p>
-        </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, scale: 0.97 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.08, type: 'spring', stiffness: 110, damping: 22 }}
-          className="glass rounded-[32px] p-8 mb-16 shadow-2xl max-w-xl mx-auto"
-        >
-          <label className="block cursor-pointer rounded-[24px] border-2 border-dashed border-white/10 p-10 text-center mb-6 hover:border-white/20 transition-colors">
-            <p className="text-[15px] text-neutral-300">{files.length ? `${files.length} file${files.length > 1 ? 's' : ''} ready for orbit` : 'Drop or choose local files'}</p>
-            <p className="text-[12px] text-neutral-500 mt-1">No size limits. Soft warning only if it may feel slow.</p>
-            <input type="file" multiple className="hidden" onChange={onFiles} />
-          </label>
-
-          <textarea
-            value={caption}
-            onChange={(e) => setCaption(e.target.value)}
-            placeholder="Optional note that orbits with every file…"
-            rows={2}
-            className="w-full bg-black/20 border border-white/10 rounded-[20px] px-4 py-3 text-[15px] text-white placeholder:text-neutral-500 mb-5 resize-none focus:outline-none focus:border-white/25"
-          />
-
-          <div className="flex items-center gap-4 mb-6">
-            <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="w-10 h-10 rounded-full cursor-pointer border-0" />
-            <span className="text-[13px] text-neutral-400">Orbit accent</span>
+          <div className="glass rounded-3xl p-6 mb-6">
+            <label className="block text-xs text-neutral-500 mb-1">center</label>
+            <input
+              value={center}
+              onChange={(e) => setCenter(e.target.value)}
+              className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white text-lg font-medium mb-6 focus:outline-none focus:border-white/30"
+            />
+            <div className="space-y-3 mb-6">
+              {nodes.map((n, i) => (
+                <motion.div key={i} layout className="flex gap-2">
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium" style={{ background: accent + '22', color: accent }}>{i + 1}</div>
+                  <input
+                    value={n}
+                    onChange={(e) => updateNode(i, e.target.value)}
+                    className="flex-1 bg-black/20 border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-white/25"
+                  />
+                </motion.div>
+              ))}
+            </div>
+            <div className="flex gap-3">
+              <button onClick={addNode} className="px-4 py-2 rounded-full bg-white/10 text-sm hover:bg-white/15 transition">add orbit</button>
+              <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="w-10 h-10 rounded-full border border-white/20 bg-transparent cursor-pointer" />
+            </div>
           </div>
 
-          {warn && <p className="text-[13px] text-amber-300/90 mb-4">{warn}</p>}
-
           <motion.button
-            whileTap={{ scale: 0.97 }}
-            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={share}
-            disabled={busy || !files.length}
-            className="w-full rounded-[22px] py-4 text-[16px] font-medium text-white disabled:opacity-40 transition shadow-xl"
-            style={{ background: accent }}
+            disabled={busy}
+            className="w-full py-3.5 rounded-full bg-[#0A84FF] text-white font-medium hover:bg-[#3A9DFF] transition disabled:opacity-50"
           >
-            {busy ? 'Entering orbit…' : 'Share into orbit'}
+            {busy ? 'publishing…' : 'publish orbit'}
           </motion.button>
 
-          <AnimatePresence>
-            {links.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mt-6 space-y-1 text-center"
-              >
-                {links.map((l, i) => (
-                  <a key={i} href={l} target="_blank" rel="noreferrer" className="block text-[14px] break-all" style={{ color: accent }}>{l}</a>
-                ))}
-              </motion.div>
-            )}
-            {err && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 text-[13px] text-red-400 text-center">{err}</motion.p>}
-          </AnimatePresence>
+          {result && (
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-6 glass rounded-2xl p-5 text-sm">
+              <p className="text-neutral-400 mb-2">shared</p>
+              {result.warn && <p className="text-amber-400 text-xs mb-2">{result.warn}</p>}
+              <a href={result.embed} className="text-[#0A84FF] break-all hover:underline">{result.embed}</a>
+              <button onClick={() => navigator.clipboard.writeText(result.embed || '')} className="mt-3 text-xs text-neutral-500 hover:text-white">copy link</button>
+            </motion.div>
+          )}
         </motion.div>
-
-        <div className="relative mx-auto max-w-3xl min-h-[480px]">
-          {shares.map((s, i) => {
-            const angle = (i / Math.max(shares.length, 1)) * Math.PI * 2;
-            const radius = 160 + (i % 3) * 30;
-            const x = Math.cos(angle) * radius;
-            const y = Math.sin(angle) * radius;
-            return (
-              <motion.a
-                key={s.id}
-                href={`/s/${s.id}`}
-                target="_blank"
-                rel="noreferrer"
-                initial={{ opacity: 0, scale: 0.6, x: 0, y: 0 }}
-                animate={{ opacity: 1, scale: 1, x, y }}
-                transition={{ delay: i * 0.04, type: 'spring', stiffness: 60, damping: 14 }}
-                whileHover={{ scale: 1.08, zIndex: 10 }}
-                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 glass rounded-[18px] p-3 apple-card shadow-lg w-36 origin-center"
-                style={{ transform: `translate(-50%, -50%) translate(${x}px, ${y}px)` }}
-              >
-                <div className="aspect-square rounded-[10px] mb-2 overflow-hidden" style={{ backgroundColor: (s.color || accent) + '18' }}>
-                  {s.type?.startsWith('image/') && s.url ? (
-                    <img src={s.url} alt={s.name} className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full grid place-items-center text-[11px] text-neutral-400">{s.type?.split('/')[1] || 'file'}</div>
-                  )}
-                </div>
-                <p className="text-[13px] font-medium text-white truncate">{s.name || 'untitled'}</p>
-                {s.caption && <p className="text-[11px] text-neutral-400 mt-0.5 line-clamp-2">{s.caption}</p>}
-              </motion.a>
-            );
-          })}
-        </div>
-        {shares.length === 0 && <p className="text-neutral-500 text-center py-12 text-[15px]">The orbit is clear. Share the first body.</p>}
       </div>
     </div>
   );

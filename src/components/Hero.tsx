@@ -35,6 +35,8 @@ export default function Hero() {
         <div className="flex flex-wrap gap-3 justify-center">
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('studio')} className="px-7 py-3 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#3A9DFF] transition shadow-lg">studio</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('drop')} className="px-7 py-3 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition">drop files</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('cascadedesk')} className="px-7 py-3 rounded-full bg-[#64D2FF]/90 text-white text-sm font-medium hover:bg-[#64D2FF] transition">cascade</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('orbitmap')} className="px-7 py-3 rounded-full bg-[#AF52DE]/90 text-white text-sm font-medium hover:bg-[#AF52DE] transition">orbit</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('forge')} className="px-7 py-3 rounded-full bg-[#30D158]/90 text-white text-sm font-medium hover:bg-[#30D158] transition">forge</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('aureateforge')} className="px-7 py-3 rounded-full bg-[#FFD60A] text-black text-sm font-medium hover:bg-[#FFE033] transition">aureate</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('pulsedesk')} className="px-7 py-3 rounded-full bg-[#30D158]/90 text-white text-sm font-medium hover:bg-[#30D158] transition">pulse</motion.button>

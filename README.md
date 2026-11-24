@@ -9,11 +9,11 @@ Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted
 ## Features
 - **Central Drop**: multi-file hosting desk that cascades permanent shares with shared caption and accent. Recent shares grid included.
 - **Cascade Desk**: multi-file cascade under one shared title, caption, and accent color. Instant Discord-ready links.
+- **Orbit Map**: place a central idea, let thoughts orbit, publish the whole map as clean markdown with embeds.
 - **Ribbon Desk**: focused single-file share with a quiet note and soft accent.
 - Central Drop and Forge desks for crafting polished shares (title, caption, accent) from local files uploaded to Supabase (public_shares + storage)
 - New Aurora Path: build a short sequence of titles and notes, publish the whole path as a clean markdown share
 - New Studio desk: focused one-file drop with title, caption, accent color, and instant Discord-ready share link
-- New Orbit Desk for mapping central ideas with orbiting thoughts, published as clean markdown shares
 - New Aureate Forge for warm, gilded single-file shares
 - Harbor, Studio, Prism, Quill, Glimmer, Ember, Pulse and dozens of specialized desks
 - Signature Desk, Mood Board, Whisper Note, Annotate Desk, Pixel Desk, Quote Card, Harmony Desk, Lumen Note, Particle Desk, and more

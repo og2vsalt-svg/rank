@@ -9,6 +9,7 @@ Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted
 ## Features
 - Central Drop, Harbor, and Studio desks for uploading local files straight to Supabase (public_shares + storage)
 - Annotate Desk: drop an image, draw marks over it, add a caption, and publish the annotated result as a permanent share
+- Prism Desk: drop one or many local files with a shared note and accent. Recent public drops settle into a living prism of glass tiles with spring motion
 - Board desk: freeform pinboard for notes and files that publishes as one share
 - Wave desk: drop an audio file, watch a living spectrum visualization, and publish with a quiet caption
 - Insights desk: quiet numbers on recent public shares (types, sizes, arrivals)

@@ -10,6 +10,7 @@ export default function Navbar() {
 
   const links = [
     { to: 'centraldrop', label: 'central' },
+    { to: 'aurorapath', label: 'path' },
     { to: 'drop', label: 'drop' },
     { to: 'forge', label: 'forge' },
     { to: 'aureateforge', label: 'aureate' },

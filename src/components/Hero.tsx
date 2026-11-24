@@ -34,6 +34,7 @@ export default function Hero() {
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center">
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('drop')} className="px-7 py-3 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#3A9DFF] transition shadow-lg">drop files</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('pulsedesk')} className="px-7 py-3 rounded-full bg-[#30D158]/90 text-white text-sm font-medium hover:bg-[#30D158] transition">pulse</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('signaturedesk')} className="px-7 py-3 rounded-full bg-[#0A84FF]/80 text-white text-sm font-medium hover:bg-[#0A84FF] transition">sign</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('moodboard')} className="px-7 py-3 rounded-full bg-[#AF52DE]/90 text-white text-sm font-medium hover:bg-[#AF52DE] transition">mood</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('whispernote')} className="px-7 py-3 rounded-full bg-[#30D158]/90 text-white text-sm font-medium hover:bg-[#30D158] transition">whisper</motion.button>

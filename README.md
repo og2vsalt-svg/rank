@@ -8,6 +8,7 @@ Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted
 
 ## Features
 - Central Drop, Harbor, Studio, Prism, Quill, Glimmer, Ember, Pulse and dozens of specialized desks for uploading local files straight to Supabase (public_shares + storage)
+- New: Pulse Desk — live echoes and pulsing activity for shared files and notes
 - Signature Desk: draw a signature or mark and publish as a permanent share
 - Mood Board: pick a feeling, add a note, publish a luminous card
 - Whisper Note: leave a short note that can fade after a chosen time

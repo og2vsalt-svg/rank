@@ -1,189 +1,171 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishLocalFile } from '../lib/cloudShare';
-
-type Dropped = { id: string; file: File; preview?: string; warn?: string; dock: number; sway: number };
+import { publishLocalFile, shareUrls } from '../lib/cloudShare';
+import { useRouter } from './Router';
 
 export default function QuietHarborPage() {
-  const [files, setFiles] = useState<Dropped[]>([]);
-  const [caption, setCaption] = useState('');
+  const { navigate } = useRouter();
+  const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [title, setTitle] = useState('');
+  const [note, setNote] = useState('');
   const [accent, setAccent] = useState('#5AC8FA');
   const [busy, setBusy] = useState(false);
-  const [links, setLinks] = useState<string[]>([]);
-  const [err, setErr] = useState('');
+  const [result, setResult] = useState<{ link?: string; error?: string } | null>(null);
+  const [sizeNote, setSizeNote] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const docks = useMemo(() => files.map((f, i) => ({
-    ...f,
-    delay: i * 0.05,
-    bob: 4 + (i % 3) * 2,
-  })), [files]);
-
-  const onDrop = useCallback((list: FileList | null) => {
-    if (!list) return;
-    const next: Dropped[] = Array.from(list).map((file, i) => {
-      const warn = file.size > 40 * 1024 * 1024 ? 'Large file. Upload may feel slow. No hard limit.' : undefined;
-      const preview = file.type.startsWith('image/') ? URL.createObjectURL(file) : undefined;
-      return {
-        id: Math.random().toString(36).slice(2),
-        file,
-        preview,
-        warn,
-        dock: i % 5,
-        sway: Math.random() * 0.4 + 0.3,
-      };
-    });
-    setFiles((f) => [...f, ...next]);
+  const onFile = useCallback((f: File) => {
+    setFile(f);
+    setTitle(f.name.replace(/\.[^.]+$/, ''));
+    setSizeNote(f.size > 80_000_000 ? 'Quite large — the browser might pause while sending. Nothing is blocked.' : null);
+    if (f.type.startsWith('image/')) {
+      setPreview(URL.createObjectURL(f));
+    } else {
+      setPreview(null);
+    }
+    setResult(null);
   }, []);
 
-  const remove = (id: string) => setFiles((f) => f.filter((x) => x.id !== id));
-
-  const publish = async () => {
-    if (!files.length) return setErr('drop at least one local file');
+  const share = async () => {
+    if (!file || busy) return;
     setBusy(true);
-    setErr('');
-    setLinks([]);
-    const made: string[] = [];
-    for (const d of files) {
-      const res = await publishLocalFile(d.file, {
-        caption: caption.trim() || 'from the quiet harbor',
+    setResult(null);
+    try {
+      const res = await publishLocalFile(file, {
+        caption: note.trim() || undefined,
         color: accent,
-        cardTitle: d.file.name,
+        cardTitle: title.trim() || file.name,
         meta: { desk: 'quietharbor' },
       });
-      if (res.ok && res.embed) made.push(res.embed);
-      else if (!res.ok) setErr(res.error || 'one file slowed');
+      if (res.ok && res.id) {
+        setResult({ link: shareUrls(res.id).app });
+      } else {
+        setResult({ error: res.error || 'Could not place the share.' });
+      }
+    } catch (e: any) {
+      setResult({ error: e.message });
     }
-    setLinks(made);
-    setFiles([]);
     setBusy(false);
   };
 
   return (
-    <div className="mesh min-h-screen bg-[#05070a]">
+    <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-6 max-w-4xl mx-auto">
+      <div className="pt-32 pb-28 px-5 max-w-xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 100, damping: 22 }}
-          className="text-center mb-10"
+          transition={{ type: 'spring', stiffness: 100, damping: 24 }}
+          className="glass rounded-[40px] p-8 md:p-11 border border-white/[0.06]"
         >
-          <p className="text-[13px] font-medium tracking-wide mb-2" style={{ color: accent }}>Quiet Harbor</p>
-          <h1 className="text-[34px] font-semibold tracking-tight text-white mb-3">Files rest at soft docks.</h1>
-          <p className="text-neutral-400 text-[15px] max-w-lg mx-auto leading-relaxed">
-            Drop local files. They moor at quiet docks of frosted glass, gently bobbing on soft waves with spring motion. Shared caption, accent color. Batch-publish to the database. Every share link carries a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style spring pacing. All prior desks remain fully intact.
+          <p className="text-[12.5px] font-medium tracking-[0.08em] uppercase text-[#5AC8FA]/80 mb-3">Quiet Harbor</p>
+          <h1 className="text-[2.35rem] font-semibold tracking-tight leading-tight mb-3 text-white">A calm place to leave files.</h1>
+          <p className="text-neutral-400 text-[15.5px] leading-relaxed mb-9">
+            Drop something local. Add a short note if you like. Soft warning on very large files — the rest is up to the browser. Every link carries a clean Discord embed.
           </p>
-        </motion.div>
 
-        <div
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={(e) => { e.preventDefault(); onDrop(e.dataTransfer.files); }}
-          className="glass rounded-[32px] p-10 text-center border-dashed border-2 border-white/10 hover:border-white/20 transition-all mb-8 relative overflow-hidden min-h-[320px]"
-        >
-          <div className="absolute inset-0 pointer-events-none opacity-40">
-            {/* soft wave lines */}
-            <svg className="absolute bottom-0 w-full h-24" viewBox="0 0 100 20" preserveAspectRatio="none">
-              <motion.path
-                d="M0 10 Q 25 5 50 10 T 100 10 V20 H0 Z"
-                fill="none"
-                stroke={accent}
-                strokeWidth="0.3"
-                animate={{ d: ["M0 10 Q 25 5 50 10 T 100 10 V20 H0 Z", "M0 10 Q 25 15 50 10 T 100 10 V20 H0 Z", "M0 10 Q 25 5 50 10 T 100 10 V20 H0 Z"] }}
-                transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-              />
-            </svg>
-            {docks.map((s) => (
-              <motion.div
-                key={s.id}
-                className="absolute w-16 h-10 rounded-lg glass border border-white/10"
-                style={{
-                  left: `${8 + s.dock * 18}%`,
-                  bottom: `${12 + (s.dock % 2) * 8}%`,
-                }}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{
-                  opacity: 1,
-                  y: [0, -s.bob, 0],
-                }}
-                transition={{
-                  type: 'spring',
-                  stiffness: 70,
-                  damping: 12,
-                  delay: s.delay,
-                  y: { duration: 3 + s.sway * 2, repeat: Infinity, ease: 'easeInOut' },
-                }}
-              />
-            ))}
+          <div
+            onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('ring-2', 'ring-[#5AC8FA]/30'); }}
+            onDragLeave={(e) => e.currentTarget.classList.remove('ring-2', 'ring-[#5AC8FA]/30')}
+            onDrop={(e) => {
+              e.preventDefault();
+              e.currentTarget.classList.remove('ring-2', 'ring-[#5AC8FA]/30');
+              if (e.dataTransfer.files[0]) onFile(e.dataTransfer.files[0]);
+            }}
+            onClick={() => inputRef.current?.click()}
+            className="border-2 border-dashed border-white/12 rounded-[28px] p-14 text-center mb-8 cursor-pointer hover:border-white/25 transition-colors bg-black/15"
+          >
+            {preview ? (
+              <img src={preview} alt="" className="max-h-36 mx-auto rounded-2xl object-contain" />
+            ) : file ? (
+              <p className="text-neutral-300 text-[15px]">{file.name}</p>
+            ) : (
+              <>
+                <p className="text-neutral-300 text-[15px]">Drop a file</p>
+                <p className="text-neutral-500 text-sm mt-1.5">or click to choose</p>
+              </>
+            )}
+            <input
+              ref={inputRef}
+              type="file"
+              className="hidden"
+              onChange={(e) => e.target.files?.[0] && onFile(e.target.files[0])}
+            />
           </div>
-          <p className="text-neutral-300 mb-4 relative z-10">Drag files here or click to choose</p>
-          <label className="inline-block px-6 py-3 rounded-full text-sm font-medium text-white cursor-pointer relative z-10" style={{ background: accent }}>
-            Choose local files
-            <input type="file" multiple className="hidden" onChange={(e) => onDrop(e.target.files)} />
-          </label>
-        </div>
 
-        <div className="flex flex-col sm:flex-row gap-4 mb-8">
-          <input
-            value={caption}
-            onChange={(e) => setCaption(e.target.value)}
-            placeholder="Shared caption (optional)"
-            className="flex-1 bg-black/20 border border-white/10 rounded-2xl px-4 py-3 text-white placeholder:text-neutral-500 focus:outline-none focus:border-white/20"
-          />
-          <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="w-12 h-12 rounded-full cursor-pointer border-0 self-center" />
-        </div>
+          <AnimatePresence>
+            {file && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="space-y-4 mb-7 overflow-hidden"
+              >
+                <input
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Title"
+                  className="w-full bg-black/25 border border-white/10 rounded-2xl px-4 py-3.5 text-[15px] text-white placeholder:text-neutral-500 focus:outline-none focus:border-white/25 transition"
+                />
+                <textarea
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  placeholder="Optional note"
+                  rows={3}
+                  className="w-full bg-black/25 border border-white/10 rounded-2xl px-4 py-3.5 text-[15px] text-white placeholder:text-neutral-500 focus:outline-none focus:border-white/25 transition resize-none"
+                />
+                <div className="flex items-center gap-3 pt-1">
+                  <label className="text-sm text-neutral-400">Accent</label>
+                  <input
+                    type="color"
+                    value={accent}
+                    onChange={(e) => setAccent(e.target.value)}
+                    className="w-9 h-9 rounded-full border border-white/10 bg-transparent cursor-pointer"
+                  />
+                  <span className="text-xs text-neutral-500 font-mono">{accent}</span>
+                </div>
+                {sizeNote && <p className="text-[13px] text-amber-300/70">{sizeNote}</p>}
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-        <AnimatePresence>
-          {files.length > 0 && (
-            <motion.div layout className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-              {files.map((d, i) => (
-                <motion.div
-                  key={d.id}
-                  layout
-                  initial={{ opacity: 0, scale: 0.92, y: 20 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ type: 'spring', stiffness: 140, damping: 18, delay: i * 0.04 }}
-                  className="glass rounded-[24px] p-4 relative overflow-hidden group"
+          <motion.button
+            whileTap={{ scale: 0.98 }}
+            whileHover={{ scale: 1.01 }}
+            onClick={share}
+            disabled={busy || !file}
+            className="w-full rounded-2xl py-4 text-[15px] font-medium text-black disabled:opacity-40 transition shadow-lg"
+            style={{ background: accent }}
+          >
+            {busy ? 'Placing…' : file ? 'Leave in harbor' : 'Choose a file first'}
+          </motion.button>
+
+          <AnimatePresence>
+            {result?.link && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-6 glass rounded-2xl p-4"
+              >
+                <p className="text-sm text-neutral-400 mb-1">Ready</p>
+                <button
+                  onClick={() => navigate('share', result.link!.split('/').pop() || '')}
+                  className="text-sm break-all text-left"
+                  style={{ color: accent }}
                 >
-                  {d.preview ? (
-                    <img src={d.preview} alt="" className="w-full h-32 object-cover rounded-2xl mb-3" />
-                  ) : (
-                    <div className="h-32 rounded-2xl mb-3 grid place-items-center text-neutral-500 text-xs" style={{ background: `linear-gradient(135deg, ${accent}22, transparent)` }}>
-                      {d.file.name.split('.').pop()?.toUpperCase()}
-                    </div>
-                  )}
-                  <p className="text-sm text-white truncate">{d.file.name}</p>
-                  <p className="text-[11px] text-neutral-500">{(d.file.size / 1024 / 1024).toFixed(1)} MB</p>
-                  {d.warn && <p className="text-[10px] text-amber-300/80 mt-1">{d.warn}</p>}
-                  <button onClick={() => remove(d.id)} className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-neutral-400 hover:text-white text-xs">×</button>
-                </motion.div>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.97 }}
-          onClick={publish}
-          disabled={busy || !files.length}
-          className="w-full max-w-md mx-auto block rounded-[20px] py-4 text-[15px] font-medium text-white disabled:opacity-40 shadow-xl"
-          style={{ background: accent }}
-        >
-          {busy ? 'Mooring at the docks…' : `Publish ${files.length || ''} to the vault`}
-        </motion.button>
-
-        <AnimatePresence>
-          {links.length > 0 && (
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-8 space-y-2 max-w-md mx-auto">
-              {links.map((l) => (
-                <a key={l} href={l} className="block text-sm break-all" style={{ color: accent }}>{l}</a>
-              ))}
-            </motion.div>
-          )}
-          {err && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center mt-4 text-sm text-red-400">{err}</motion.p>}
-        </AnimatePresence>
+                  {result.link}
+                </button>
+              </motion.div>
+            )}
+            {result?.error && (
+              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-sm text-red-400/90 mt-4">
+                {result.error}
+              </motion.p>
+            )}
+          </AnimatePresence>
+        </motion.div>
       </div>
     </div>
   );

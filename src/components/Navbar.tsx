@@ -12,6 +12,7 @@ export default function Navbar() {
     { to: 'drop', label: 'drop' },
     { to: 'forge', label: 'forge' },
     { to: 'aureateforge', label: 'aureate' },
+    { to: 'quietharbor', label: 'quiet' },
     { to: 'rippledesk', label: 'ripple' },
     { to: 'pulsedesk', label: 'pulse' },
     { to: 'signaturedesk', label: 'sign' },

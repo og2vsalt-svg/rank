@@ -13,6 +13,7 @@ export default function Navbar() {
     { to: 'softharbor', label: 'harbor' },
     { to: 'board', label: 'board' },
     { to: 'studio', label: 'studio' },
+    { to: 'wave', label: 'wave' },
     { to: 'binder', label: 'binder' },
     { to: 'timelinedesk', label: 'timeline' },
     { to: 'lock', label: 'lock' },

@@ -4,6 +4,7 @@ import Navbar from './Navbar';
 import { useRouter } from './Router';
 
 const DESKS = [
+  { route: 'centraldrop', title: 'Central Drop', blurb: 'Everything in one place. Multi-file drops cascade into permanent shares with polished Discord embeds. Soft size warnings only. Apple-style springs.' },
   { route: 'orbitdesk', title: 'Orbit Desk', blurb: 'Map a central idea and orbiting thoughts. Publish the map as a clean markdown share. Soft size warnings only. Polished Discord embeds. Apple-style springs.' },
   { route: 'signaturedesk', title: 'Signature Desk', blurb: 'Draw a signature or quiet mark and publish it as a permanent share. Soft size warnings only. Polished Discord embeds. Apple-style springs.' },
   { route: 'moodboard', title: 'Mood Board', blurb: 'Pick a mood, add a note, and publish a luminous feeling card as a permanent share. Soft warnings only. Discord embeds included.' },

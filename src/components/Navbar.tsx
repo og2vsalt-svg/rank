@@ -40,6 +40,7 @@ export default function Navbar() {
     { to: 'storydesk', label: 'story' },
     { to: 'snippet', label: 'snippet' },
     { to: 'notestudio', label: 'notes' },
+    { to: 'lumennote', label: 'lumen' },
     { to: 'qrdesk', label: 'qr' },
     { to: 'chroma', label: 'chroma' },
     { to: 'library', label: 'library' },

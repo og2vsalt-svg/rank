@@ -10,6 +10,9 @@ export default function Navbar() {
 
   const links = [
     { to: 'drop', label: 'drop' },
+    { to: 'signaturedesk', label: 'sign' },
+    { to: 'moodboard', label: 'mood' },
+    { to: 'whispernote', label: 'whisper' },
     { to: 'nameplatedesk', label: 'nameplate' },
     { to: 'harmonydesk', label: 'harmony' },
     { to: 'softharbor', label: 'harbor' },

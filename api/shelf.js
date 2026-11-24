@@ -59,6 +59,9 @@ export default async function handler(req, res) {
   } else if (page === 'aureateforge') {
     title = 'Aureate Forge — rankvault';
     desc = 'Gilded shares in warm light. Shape title, caption, and golden accent. Soft size warnings only. Polished Discord embeds. Apple-style springs.';
+  } else if (page === 'velvetdesk') {
+    title = 'Velvet Desk — rankvault';
+    desc = 'Soft, lasting shares in deep velvet. Shape title, caption, and rich accent. Soft size warnings only. Polished Discord embeds. Apple-style springs.';
   } else if (page === 'quietharbor') {
     title = 'Quiet Harbor — rankvault';
     desc = 'A calm place to leave files. Soft size warnings only. Polished Discord embeds on every link. Apple-style springs.';

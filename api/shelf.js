@@ -116,6 +116,9 @@ export default async function handler(req, res) {
   } else if (page === 'insights') {
     title = 'Insights — rankvault';
     desc = 'Quiet numbers on recent public shares: types, sizes, and arrivals. Soft size warnings only. Polished Discord embeds. Apple-style springs.';
+  } else if (page === 'wave') {
+    title = 'Wave — rankvault';
+    desc = 'Drop an audio file, watch the living spectrum, add a quiet caption, and share a permanent link. Soft size warnings only. Polished Discord embeds. Apple-style springs.';
   }
 
   const url = `${proto}://${host}${path}`;

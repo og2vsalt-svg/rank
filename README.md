@@ -9,6 +9,8 @@ Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted
 ## Features
 - Central Drop, Harbor, Studio, Prism, Quill, Glimmer, Ember, Pulse and dozens of specialized desks for uploading local files straight to Supabase (public_shares + storage)
 - Annotate Desk: drop an image, draw marks over it, add a caption, and publish the annotated result as a permanent share
+- Pixel Desk: paint a 16×16 grid, choose colors, and publish the pixel art as a permanent share
+- Quote Card: type a quote and attribution, preview a typographic card, and publish it as a permanent share
 - Living library, gallery, explore, journal, sketch, gradient, QR, snippets, and more
 - Soft warnings for large files (browser may feel slow; nothing is blocked)
 - Discord / social embeds on every link via API routes and middleware-style handling (proper HTML escaping)

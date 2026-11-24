@@ -125,6 +125,12 @@ export default async function handler(req, res) {
   } else if (page === 'wave') {
     title = 'Wave — rankvault';
     desc = 'Drop an audio file, watch the living spectrum, add a quiet caption, and share a permanent link. Soft size warnings only. Polished Discord embeds. Apple-style springs.';
+  } else if (page === 'pixeldesk' || page === 'pixel') {
+    title = 'Pixel Desk — rankvault';
+    desc = 'Paint a small grid of pixels, choose colors, and publish the result as a permanent share. Soft size warnings only. Polished Discord embeds. Apple-style springs.';
+  } else if (page === 'quotecard' || page === 'quote') {
+    title = 'Quote Card — rankvault';
+    desc = 'Type a quote and attribution. Preview the typographic card, then publish it as a permanent share with polished Discord embeds. Soft warnings only. Apple-style springs.';
   }
 
   const url = `${proto}://${host}${path}`;

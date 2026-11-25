@@ -9,6 +9,7 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   const links = [
+    { to: 'eclipsedesk', label: 'eclipse' },
     { to: 'prismcascade', label: 'prism' },
     { to: 'canvasdesk', label: 'canvas' },
     { to: 'quietweave', label: 'weave' },

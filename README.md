@@ -7,6 +7,7 @@ Drop local files. Soft size warnings only — no hard limits. Every share link s
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
 ## Features
+- **Silk Desk**: soft multi-file shares. Drop one or many local files, shape a shared title and quiet caption, choose a muted accent. Each becomes a permanent Discord-ready link. Soft warnings only. Silk-smooth springs.
 - **Frost Desk**: ultra-clean single-file shares with soft frost glass, cool accent, and permanent Discord-ready link. Soft warnings only.
 - **Lumen Gallery**: public gallery of recent shares with spring-lift hover. Click any card for the full embed-ready share.
 - **Orbit Path**: multi-file orbital preview. Drop several local files, shape a shared title and accent, each rises as its own Discord-ready link.

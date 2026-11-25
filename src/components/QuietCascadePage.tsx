@@ -1,129 +1,140 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishLocalFile, shareUrls } from '../lib/cloudShare';
+import { publishLocalFile } from '../lib/cloudShare';
 
 export default function QuietCascadePage() {
   const [files, setFiles] = useState<File[]>([]);
-  const [captions, setCaptions] = useState<string[]>([]);
-  const [publishing, setPublishing] = useState(false);
+  const [title, setTitle] = useState('');
+  const [caption, setCaption] = useState('');
+  const [accent, setAccent] = useState('#5AC8FA');
+  const [busy, setBusy] = useState(false);
   const [links, setLinks] = useState<string[]>([]);
-  const [warn, setWarn] = useState('');
+  const [warns, setWarns] = useState<string[]>([]);
+  const [err, setErr] = useState('');
 
-  const onDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    const list = Array.from(e.dataTransfer.files);
-    setFiles((prev) => [...prev, ...list]);
-    setCaptions((prev) => [...prev, ...list.map(() => '')]);
-  }, []);
+  const onFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const list = Array.from(e.target.files || []);
+    setFiles(list);
+    setWarns(list.map(f => f.size > 40 * 1024 * 1024 ? 'Large file. May feel slow. No hard limit.' : ''));
+  };
 
-  const publishAll = async () => {
-    if (!files.length) return;
-    setPublishing(true);
-    setWarn('');
-    const newLinks: string[] = [];
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      const caption = captions[i] || '';
-      const res = await publishLocalFile(file, { caption });
-      if (res.ok && res.id) {
-        if (res.warn) setWarn(res.warn);
-        const urls = shareUrls(res.id);
-        newLinks.push(urls.embed);
-      }
+  const shareAll = async () => {
+    if (files.length === 0) return setErr('choose at least one local file');
+    setBusy(true);
+    setErr('');
+    setLinks([]);
+    const results: string[] = [];
+    for (const file of files) {
+      try {
+        const res = await publishLocalFile(file, {
+          caption: caption.trim() || 'from the quiet cascade',
+          color: accent,
+          cardTitle: title.trim() || file.name,
+          meta: { desk: 'quietcascade' },
+        });
+        if (res.ok && res.embed) results.push(res.embed);
+      } catch {}
     }
-    setLinks(newLinks);
-    setFiles([]);
-    setCaptions([]);
-    setPublishing(false);
+    setLinks(results);
+    setBusy(false);
   };
 
   return (
     <div className="mesh min-h-screen">
       <Navbar />
-      <main className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
+      <div className="pt-32 pb-24 px-6 max-w-2xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="glass rounded-[36px] p-10 text-center"
+          transition={{ type: 'spring', stiffness: 100, damping: 22 }}
+          className="glass rounded-[32px] p-8 shadow-2xl"
         >
-          <p className="text-[#0a84ff] text-xs tracking-widest uppercase mb-3">quiet cascade</p>
-          <h1 className="text-4xl font-semibold tracking-tight text-white mb-4">let them fall.</h1>
-          <p className="text-neutral-400 text-sm mb-8 max-w-md mx-auto">
-            Drop local files. They cascade into the database with individual quiet captions. Every link carries a polished Discord embed. Soft size warnings only — no hard limits.
+          <p className="text-[13px] font-medium tracking-wide mb-1" style={{ color: accent }}>Quiet Cascade</p>
+          <h1 className="text-[28px] font-semibold tracking-tight mb-3">Files that settle in sequence.</h1>
+          <p className="text-neutral-400 text-[14px] leading-relaxed mb-6">
+            Drop several local files. Shape one shared title, caption, and cool accent. They cascade with staggered Apple-style springs. Each becomes its own permanent Discord-ready link. Soft size warnings only. No hard limits.
           </p>
 
-          <div
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={onDrop}
-            className="border-2 border-dashed border-white/10 rounded-3xl p-12 mb-6 hover:border-white/20 transition-all"
-          >
-            <p className="text-neutral-500">drop files here</p>
-            <input
-              type="file"
-              multiple
-              className="hidden"
-              id="cascade-input"
-              onChange={(e) => {
-                const list = Array.from(e.target.files || []);
-                setFiles((prev) => [...prev, ...list]);
-                setCaptions((prev) => [...prev, ...list.map(() => '')]);
-              }}
-            />
-            <label htmlFor="cascade-input" className="mt-4 inline-block text-[#0a84ff] text-sm cursor-pointer">
-              or choose
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Shared title"
+            className="w-full bg-black/20 border border-white/10 rounded-[16px] px-4 py-3 text-[15px] text-white placeholder:text-neutral-500 mb-3 focus:outline-none focus:border-white/20"
+          />
+          <textarea
+            value={caption}
+            onChange={(e) => setCaption(e.target.value)}
+            placeholder="Shared caption…"
+            rows={2}
+            className="w-full bg-black/20 border border-white/10 rounded-[16px] px-4 py-3 text-[15px] text-white placeholder:text-neutral-500 mb-4 resize-none focus:outline-none focus:border-white/20"
+          />
+
+          <div className="flex items-center gap-4 mb-5">
+            <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="w-9 h-9 rounded-full cursor-pointer border-0" />
+            <label className="text-[13px] text-neutral-300 cursor-pointer hover:text-white transition">
+              {files.length ? `${files.length} file${files.length > 1 ? 's' : ''}` : 'Choose local files'}
+              <input type="file" multiple className="hidden" onChange={onFiles} />
             </label>
           </div>
 
-          <AnimatePresence>
-            {files.map((f, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                className="flex items-center gap-3 mb-3 text-left"
-              >
-                <span className="text-sm text-white truncate flex-1">{f.name}</span>
-                <input
-                  type="text"
-                  placeholder="quiet caption"
-                  value={captions[i] || ''}
-                  onChange={(e) => {
-                    const next = [...captions];
-                    next[i] = e.target.value;
-                    setCaptions(next);
-                  }}
-                  className="bg-white/5 border border-white/10 rounded-xl px-3 py-1 text-sm text-white flex-1"
-                />
-              </motion.div>
-            ))}
-          </AnimatePresence>
-
-          {warn && <p className="text-xs text-amber-300/80 mb-4">{warn}</p>}
-
-          {files.length > 0 && (
-            <motion.button
-              whileTap={{ scale: 0.97 }}
-              onClick={publishAll}
-              disabled={publishing}
-              className="mt-6 px-8 py-3 bg-white text-black rounded-full font-medium disabled:opacity-50"
-            >
-              {publishing ? 'cascading…' : 'publish cascade'}
-            </motion.button>
-          )}
-
-          {links.length > 0 && (
-            <div className="mt-8 text-left">
-              <p className="text-sm text-neutral-400 mb-2">share links (Discord-ready):</p>
-              {links.map((l, i) => (
-                <p key={i} className="text-xs text-[#0a84ff] break-all mb-1">{l}</p>
-              ))}
+          {warns.some(Boolean) && (
+            <div className="mb-3 space-y-1">
+              {warns.filter(Boolean).map((w, i) => <p key={i} className="text-[12px] text-amber-300/90">{w}</p>)}
             </div>
           )}
+
+          <AnimatePresence>
+            {files.length > 0 && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-5 space-y-2">
+                {files.map((f, i) => (
+                  <motion.div
+                    key={f.name + i}
+                    initial={{ opacity: 0, x: -12 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.05, type: 'spring', stiffness: 140, damping: 18 }}
+                    className="text-[13px] text-neutral-300 truncate"
+                  >
+                    {f.name}
+                  </motion.div>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <motion.button
+            whileTap={{ scale: 0.96 }}
+            whileHover={{ scale: 1.02 }}
+            onClick={shareAll}
+            disabled={busy || files.length === 0}
+            className="w-full rounded-[18px] py-3.5 text-[15px] font-medium text-white disabled:opacity-40 transition shadow-lg"
+            style={{ background: accent }}
+          >
+            {busy ? 'Cascading…' : 'Share cascade'}
+          </motion.button>
+
+          <AnimatePresence>
+            {links.length > 0 && (
+              <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mt-5 space-y-2">
+                {links.map((l, i) => (
+                  <motion.a
+                    key={l}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: i * 0.04 }}
+                    href={l}
+                    className="block text-[13px] break-all"
+                    style={{ color: accent }}
+                  >
+                    {l}
+                  </motion.a>
+                ))}
+              </motion.div>
+            )}
+            {err && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 text-[12px] text-red-400">{err}</motion.p>}
+          </AnimatePresence>
         </motion.div>
-      </main>
+      </div>
     </div>
   );
 }

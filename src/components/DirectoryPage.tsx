@@ -4,6 +4,7 @@ import Navbar from './Navbar';
 import { useRouter } from './Router';
 
 const DESKS = [
+  { route: 'quietdrift', title: 'Quiet Drift', blurb: 'Multi-file shares that settle in sequence with staggered Apple-style springs. Shared title, caption, and cool accent. Each becomes its own permanent Discord-ready link. Soft size warnings only. No hard limits.' },
   { route: 'aethercascade', title: 'Aether Cascade', blurb: 'Multi-file shares that cascade with staggered Apple-style springs. Shared title, caption, and violet accent. Each becomes its own permanent Discord-ready link. Soft size warnings only.' },
   { route: 'quietpath', title: 'Quiet Path', blurb: 'Shape a short sequence of titles and notes. Publish the whole path as one clean markdown share. Permanent Discord-ready link. Soft warnings only. No file limits.' },
   { route: 'prismlumen', title: 'Prism Lumen', blurb: 'Sequential multi-file shares. Each local file settles under a shared title and caption with its own prism accent. Permanent Discord-ready links. Soft size warnings only. Apple-style springs on frosted glass.' },

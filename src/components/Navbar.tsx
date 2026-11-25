@@ -9,6 +9,7 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   const links = [
+    { to: 'silkdesk', label: 'silk' },
     { to: 'frostd', label: 'frost' },
     { to: 'lumengallery', label: 'gallery' },
     { to: 'orbitpath', label: 'orbit path' },

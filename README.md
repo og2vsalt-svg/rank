@@ -7,6 +7,7 @@ Drop local files. Soft size warnings only — no hard limits. Every share link s
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
 ## Features
+- **Lumen Mosaic**: multi-image mosaic. Drop several local images, shape one shared title, caption, and accent. They arrange with staggered Apple-style springs. Each becomes its own permanent Discord-ready link. Soft size warnings only.
 - **Solstice Desk**: files that turn with the light. Sequential multi-file shares under one shared title and caption. Soft size warnings only. Permanent Discord-ready links. Apple-style springs.
 - **Echo Loom**: weave audio and quiet notes into permanent shares. Living waveform for audio. Soft warnings only. Discord embeds.
 - **Zenith Desk**: the high point of a single share. Live preview for images, title, caption, and accent. Permanent Discord-ready link. Soft size warnings only.

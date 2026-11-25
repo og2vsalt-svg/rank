@@ -7,6 +7,8 @@ Drop local files. Soft size warnings only — no hard limits. Every share link s
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
 ## Features
+- **Glass Cascade**: multi-file shares that cascade with sequential Apple-style springs. Shared note and accent. Soft size warnings only. Permanent Discord-ready links.
+- **Velvet Harbor**: soft multi-file arrivals under one quiet note and muted accent. Live previews, sequential springs, soft warnings only. Discord embeds on every link.
 - **Nimbus Desk**: soft multi-file clouds. Drop several local files, shape a shared title and accent, each rises as its own permanent Discord-ready link. Soft warnings only.
 - **Lattice Desk**: quiet grid of local files. Arrange them, publish each as a permanent Discord-ready share. Soft size notes only.
 - **Horizon Desk**: cinematic horizontal multi-file shares. Drop locals along a quiet light line, shape a shared title and cool accent. Each becomes its own permanent Discord-ready link. Soft size warnings only. Apple-style springs on frosted glass.

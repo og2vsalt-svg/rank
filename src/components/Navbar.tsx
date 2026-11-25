@@ -9,6 +9,7 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   const links = [
+    { to: 'lumenmosaic', label: 'mosaic' },
     { to: 'solsticedesk', label: 'solstice' },
     { to: 'echoloom', label: 'echo loom' },
     { to: 'zenithdesk', label: 'zenith' },

@@ -4,6 +4,8 @@ import Navbar from './Navbar';
 import { useRouter } from './Router';
 
 const DESKS = [
+  { route: 'aethercascade', title: 'Aether Cascade', blurb: 'Multi-file shares that cascade with staggered Apple-style springs. Shared title, caption, and violet accent. Each becomes its own permanent Discord-ready link. Soft size warnings only.' },
+  { route: 'quietpath', title: 'Quiet Path', blurb: 'Shape a short sequence of titles and notes. Publish the whole path as one clean markdown share. Permanent Discord-ready link. Soft warnings only. No file limits.' },
   { route: 'prismlumen', title: 'Prism Lumen', blurb: 'Sequential multi-file shares. Each local file settles under a shared title and caption with its own prism accent. Permanent Discord-ready links. Soft size warnings only. Apple-style springs on frosted glass.' },
   { route: 'horizondesk', title: 'Horizon Desk', blurb: 'Cinematic horizontal multi-file shares. Drop locals along a quiet light line, shape a shared title and cool accent. Each becomes its own permanent Discord-ready link. Soft size warnings only. Apple-style springs on frosted glass.' },
   { route: 'gossamerdesk', title: 'Gossamer Desk', blurb: 'Delicate multi-file shares with soft notes and muted accents. Each local file becomes its own permanent Discord-ready link. Soft size warnings only. Apple-style springs on frosted glass.' },

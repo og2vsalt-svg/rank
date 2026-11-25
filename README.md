@@ -7,6 +7,8 @@ Drop local files. Soft size warnings only — no hard limits. Every share link s
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
 ## Features
+- **Aether Cascade**: multi-file shares that cascade with staggered Apple-style springs. Shared title, caption, and violet accent. Each becomes its own permanent Discord-ready link. Soft size warnings only. No hard limits.
+- **Quiet Path**: shape a short sequence of titles and notes. Publish the whole path as one clean markdown share. Permanent Discord-ready link. Soft warnings only. Different from pure file vaults.
 - **Aether Halo**: multi-file orbital shares. Drop several local files, shape a shared title, caption, and violet accent. They rise with staggered Apple-style springs into a quiet orbit. Each becomes its own permanent Discord-ready link. Soft size warnings only.
 - **Dawn Lumen**: soft multi-file dawn shares. Drop several local files, shape a shared title, caption, and warm accent. They rise with staggered Apple-style springs. Recent shares form a living gallery. Each becomes its own permanent Discord-ready link. Soft size warnings only.
 - **Lumen Mosaic**: multi-image mosaic. Drop several local images, shape one shared title, caption, and accent. They arrange with staggered Apple-style springs. Each becomes its own permanent Discord-ready link. Soft size warnings only.

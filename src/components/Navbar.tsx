@@ -9,6 +9,8 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   const links = [
+    { to: 'aethercascade', label: 'aether cascade' },
+    { to: 'quietpath', label: 'quiet path' },
     { to: 'dawnlumen', label: 'dawn lumen' },
     { to: 'lumenmosaic', label: 'mosaic' },
     { to: 'solsticedesk', label: 'solstice' },

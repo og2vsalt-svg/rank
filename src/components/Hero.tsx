@@ -33,6 +33,8 @@ export default function Hero() {
           Clean multi-file drops, a living library of shares, quiet notes, signatures, and moods. Soft size warnings only — no hard limits. Apple-style spring animations on frosted glass.
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center">
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('grovedesk')} className="px-7 py-3 rounded-full bg-[#34C759] text-white text-sm font-medium hover:bg-[#3CD765] transition shadow-lg">grove</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietjournal')} className="px-7 py-3 rounded-full bg-[#FF9500] text-white text-sm font-medium hover:bg-[#FFA733] transition shadow-lg">quiet journal</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('aethercascade')} className="px-7 py-3 rounded-full bg-[#5E5CE6] text-white text-sm font-medium hover:bg-[#6E6CF0] transition shadow-lg">aether cascade</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietpath')} className="px-7 py-3 rounded-full bg-[#64D2FF] text-white text-sm font-medium hover:bg-[#7AD8FF] transition shadow-lg">quiet path</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('nimbusdesk')} className="px-7 py-3 rounded-full bg-[#64D2FF]/80 text-white text-sm font-medium hover:bg-[#7AD8FF] transition shadow-lg">nimbus</motion.button>

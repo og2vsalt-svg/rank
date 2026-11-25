@@ -80,6 +80,12 @@ export default async function handler(req, res) {
   } else if (page === 'horizondesk') {
     title = 'Horizon Desk — rankvault';
     desc = 'Where shares meet the light. Multi-file drops settle along a quiet horizon. Soft warnings only. Polished Discord embeds.';
+  } else if (page === 'constellation') {
+    title = 'Constellation — rankvault';
+    desc = 'Place a central idea and orbiting notes or files. Publish the whole constellation as a clean markdown share. Soft size warnings only. Polished Discord embeds.';
+  } else if (page === 'lattice') {
+    title = 'Lattice — rankvault';
+    desc = 'Arrange notes and files in a quiet grid. Publish the lattice as structured markdown with embeds. Soft warnings only. Apple-style springs.';
   }
 
   const url = `${proto}://${host}${path}`;

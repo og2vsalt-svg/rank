@@ -9,6 +9,7 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   const links = [
+    { to: 'dailylumen', label: 'daily lumen' },
     { to: 'grovedesk', label: 'grove' },
     { to: 'quietjournal', label: 'journal' },
     { to: 'aetherloom', label: 'aether loom' },

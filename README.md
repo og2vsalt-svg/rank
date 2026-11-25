@@ -7,6 +7,7 @@ Drop local files. Soft size warnings only — no hard limits. Every share link s
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
 ## Features
+- **Daily Lumen**: quiet daily reflection. Write a short note or drop an optional local file. Shape title and warm accent. Permanent Discord-ready link. Soft size warnings only. No hard limits. Different from pure file vaults — the note can stand alone.
 - **Grove Desk**: multi-file shares that settle like leaves with staggered organic Apple-style springs. Shared title, caption, and accent. Each becomes its own permanent Discord-ready link. Soft size warnings only. No hard limits.
 - **Quiet Journal**: dated quiet entries. Write a note or drop an optional local file. Live preview, recent shares, permanent Discord-ready links. Soft warnings only.
 - **Aether Loom**: multi-file shares that weave with staggered Apple-style springs. Shared title, caption, and violet accent. Each becomes its own permanent Discord-ready link. Soft size warnings only. No hard limits.

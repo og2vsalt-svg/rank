@@ -9,6 +9,7 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   const links = [
+    { to: 'gossamerdesk', label: 'gossamer' },
     { to: 'lumenvault', label: 'lumen' },
     { to: 'centraldrop', label: 'central' },
     { to: 'cascade', label: 'cascade' },

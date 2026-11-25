@@ -4,10 +4,10 @@ const FALLBACK = 'https://og2vsalt-svg.github.io/rank/og.png';
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/\"/g, '"')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 }
 
@@ -86,6 +86,9 @@ export default async function handler(req, res) {
   } else if (page === 'lattice') {
     title = 'Lattice — rankvault';
     desc = 'Arrange notes and files in a quiet grid. Publish the lattice as structured markdown with embeds. Soft warnings only. Apple-style springs.';
+  } else if (page === 'gossamerdesk') {
+    title = 'Gossamer Desk — rankvault';
+    desc = 'Delicate multi-file shares with soft notes and muted accents. Each local file settles as its own permanent Discord-ready link. Soft size warnings only. Apple-style springs on frosted glass.';
   }
 
   const url = `${proto}://${host}${path}`;

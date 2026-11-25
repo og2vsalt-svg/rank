@@ -56,6 +56,7 @@ export default function Navbar() {
     { to: 'harmonydesk', label: 'harmony' },
     { to: 'softharbor', label: 'harbor' },
     { to: 'board', label: 'board' },
+    { to: 'softnexus', label: 'soft nexus' },
     { to: 'studio', label: 'studio' },
     { to: 'wave', label: 'wave' },
     { to: 'prism', label: 'prism old' },

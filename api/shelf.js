@@ -4,10 +4,10 @@ const FALLBACK = 'https://og2vsalt-svg.github.io/rank/og.png';
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/\"/g, '&quot;')
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/\"/g, '"')
     .replace(/'/g, '&#39;');
 }
 
@@ -53,6 +53,9 @@ export default async function handler(req, res) {
         image = share.file_url;
       }
     }
+  } else if (page === 'eclipsedesk') {
+    title = 'Eclipse Desk — rankvault';
+    desc = 'Files rise like stars. Sequential multi-file shares under one quiet title and caption with staggered springs. Soft size warnings only. Permanent Discord-ready links. Apple-style frosted glass.';
   } else if (page === 'prismcascade') {
     title = 'Prism Cascade — rankvault';
     desc = 'Files rise in sequential prism colors. Multi-file drops cascade into permanent Discord-ready shares. Soft size warnings only. Apple-style springs on frosted glass.';

@@ -7,6 +7,7 @@ Drop local files. Soft size warnings only — no hard limits. Every share link s
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
 ## Features
+- **Prism Lumen**: sequential multi-file shares. Each local file settles under a shared title and caption with its own prism accent. Permanent Discord-ready links. Soft size warnings only.
 - **Prism Cascade**: multi-file shares that cascade with sequential prism accents and Apple-style springs. Shared title and caption. Soft size warnings only. Permanent Discord-ready links.
 - **Canvas Desk**: focused image shares with live preview, title, caption, and accent. Uploads to the share database. Professional Discord embeds. Soft warnings only.
 - **Quiet Weave**: weave short notes and an optional local file into one clean share. Discord-ready links. Soft warnings only.

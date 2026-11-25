@@ -9,6 +9,9 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   const links = [
+    { to: 'frostd', label: 'frost' },
+    { to: 'lumengallery', label: 'gallery' },
+    { to: 'orbitpath', label: 'orbit path' },
     { to: 'gossamerdesk', label: 'gossamer' },
     { to: 'lumenvault', label: 'lumen' },
     { to: 'centraldrop', label: 'central' },
@@ -62,7 +65,6 @@ export default function Navbar() {
     { to: 'particledesk', label: 'particles' },
     { to: 'library', label: 'library' },
     { to: 'explore', label: 'explore' },
-    { to: 'gallery', label: 'gallery' },
     { to: 'insights', label: 'insights' },
     { to: 'directory', label: 'desks' },
     { to: 'home', label: 'home' },

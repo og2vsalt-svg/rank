@@ -4,10 +4,10 @@ const FALLBACK = 'https://og2vsalt-svg.github.io/rank/og.png';
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/\"/g, '"')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 }
 
@@ -53,6 +53,15 @@ export default async function handler(req, res) {
         image = share.file_url;
       }
     }
+  } else if (page === 'solsticedesk') {
+    title = 'Solstice Desk — rankvault';
+    desc = 'Files that turn with the light. Sequential multi-file shares under one quiet title and caption. Soft size warnings only. Permanent Discord-ready links. Apple-style springs.';
+  } else if (page === 'echoloom') {
+    title = 'Echo Loom — rankvault';
+    desc = 'Weave audio and quiet notes into permanent Discord-ready shares. Soft size warnings only. Living waveform. Apple-style springs on frosted glass.';
+  } else if (page === 'zenithdesk') {
+    title = 'Zenith Desk — rankvault';
+    desc = 'The high point of a single share. Live preview, title, caption, and accent. Permanent Discord-ready link. Soft size warnings only. Apple-style springs.';
   } else if (page === 'eclipsedesk') {
     title = 'Eclipse Desk — rankvault';
     desc = 'Files rise like stars. Sequential multi-file shares under one quiet title and caption with staggered springs. Soft size warnings only. Permanent Discord-ready links. Apple-style frosted glass.';

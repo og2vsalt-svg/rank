@@ -1,179 +1,127 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './Navbar';
-import { publishLocalFile, listPublicShares, type CloudMeta } from '../lib/cloudShare';
+import { publishLocalFile } from '../lib/cloudShare';
 
 export default function SolsticeDeskPage() {
-  const [shares, setShares] = useState<CloudMeta[]>([]);
   const [files, setFiles] = useState<File[]>([]);
+  const [title, setTitle] = useState('');
   const [caption, setCaption] = useState('');
-  const [accent, setAccent] = useState('#FFD60A');
+  const [accent, setAccent] = useState('#FF9500');
   const [busy, setBusy] = useState(false);
-  const [warn, setWarn] = useState<string | null>(null);
-  const [err, setErr] = useState('');
   const [links, setLinks] = useState<string[]>([]);
+  const [warns, setWarns] = useState<string[]>([]);
+  const [err, setErr] = useState('');
 
-  const refresh = async () => {
-    const list = await listPublicShares(16);
-    setShares(list);
+  const onDrop = (list: FileList | null) => {
+    if (!list) return;
+    const arr = Array.from(list);
+    setFiles((f) => [...f, ...arr]);
+    const big = arr.filter((f) => f.size > 40 * 1024 * 1024);
+    if (big.length) setWarns((w) => [...w, ...big.map((f) => `${f.name} is large — upload may feel slow. No hard limit.`)]);
   };
 
-  useEffect(() => {
-    refresh();
-  }, []);
-
-  const onFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const arr = Array.from(e.target.files || []);
-    setFiles(arr);
-    const big = arr.some(f => f.size > 40 * 1024 * 1024);
-    setWarn(big ? 'Large file(s). The solstice may take a moment to rise. No hard limit.' : null);
-  };
-
-  const share = async () => {
-    if (!files.length) return setErr('let one or more files catch the light');
+  const publish = async () => {
+    if (!files.length) return setErr('drop at least one local file');
     setBusy(true);
     setErr('');
     setLinks([]);
-    const created: string[] = [];
     try {
+      const results: string[] = [];
       for (const file of files) {
         const res = await publishLocalFile(file, {
-          caption: caption.trim() || 'solstice drop',
+          caption: caption.trim() || title.trim() || 'from the solstice desk',
           color: accent,
-          cardTitle: file.name,
-          meta: { desk: 'solsticedesk' },
+          cardTitle: title.trim() || file.name,
+          meta: { desk: 'solstice', season: 'quiet light' },
         });
-        if (res.ok && res.embed) {
-          created.push(res.embed);
-        } else {
-          setErr(res.error || `paused on ${file.name}`);
-        }
+        if (res.ok && res.embed) results.push(res.embed);
+        else if (!res.ok) setErr(res.error || 'one file slowed');
       }
-      setLinks(created);
+      setLinks(results);
       setFiles([]);
-      setCaption('');
-      await refresh();
     } catch (e: any) {
       setErr(e.message || 'something slowed');
     }
     setBusy(false);
   };
 
-  const radius = 220;
-  const angleStep = shares.length ? (2 * Math.PI) / shares.length : 0;
-
   return (
-    <div className="mesh min-h-screen bg-[#050507]">
+    <div className="mesh min-h-screen bg-[#0b0b0d]">
       <Navbar />
-      <div className="pt-28 pb-32 px-5 max-w-5xl mx-auto">
+      <div className="pt-32 pb-24 px-6 max-w-2xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 22 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 90, damping: 20 }}
-          className="text-center mb-12"
-        >
-          <p className="text-[13px] font-medium tracking-[0.2em] uppercase mb-2" style={{ color: accent }}>Solstice Desk</p>
-          <h1 className="text-[40px] font-semibold tracking-tight text-white mb-3">Catch the longest light.</h1>
-          <p className="text-neutral-400 text-[16px] leading-relaxed max-w-xl mx-auto">
-            Drop one or many local files with a shared note and accent. They enter storage and public_shares. Recent public drops settle into a living radial arrangement that slowly turns and lifts with spring motion. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.
-          </p>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, scale: 0.97 }}
+          initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.08, type: 'spring', stiffness: 110, damping: 22 }}
-          className="glass rounded-[32px] p-8 mb-16 shadow-2xl max-w-xl mx-auto"
+          transition={{ type: 'spring', stiffness: 110, damping: 22 }}
+          className="glass rounded-[32px] p-8 shadow-2xl relative overflow-hidden"
         >
-          <label className="block cursor-pointer rounded-[24px] border-2 border-dashed border-white/10 p-10 text-center mb-6 hover:border-white/20 transition-colors">
-            <p className="text-[15px] text-neutral-300">{files.length ? `${files.length} file${files.length > 1 ? 's' : ''} ready for the light` : 'Drop or choose local files'}</p>
-            <p className="text-[12px] text-neutral-500 mt-1">No size limits. Soft warning only if it may feel slow.</p>
-            <input type="file" multiple className="hidden" onChange={onFiles} />
-          </label>
+          <motion.div
+            className="absolute -top-20 -right-20 w-48 h-48 rounded-full opacity-30 blur-3xl"
+            style={{ background: accent }}
+            animate={{ scale: [1, 1.08, 1], opacity: [0.2, 0.35, 0.2] }}
+            transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+          />
+          <p className="text-[13px] font-medium tracking-wide mb-1" style={{ color: accent }}>Solstice Desk</p>
+          <h1 className="text-[30px] font-semibold tracking-tight mb-3">Files that turn with the light.</h1>
+          <p className="text-neutral-400 text-[14px] leading-relaxed mb-6">
+            Drop several local files. They settle under one shared title and caption with sequential springs. Each becomes its own permanent Discord-ready link. Soft size warnings only. Apple-style frosted glass. Prior desks remain untouched.
+          </p>
 
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Shared title"
+            className="w-full bg-black/20 border border-white/10 rounded-[16px] px-4 py-3 text-[15px] text-white placeholder:text-neutral-500 mb-3 focus:outline-none focus:border-white/20"
+          />
           <textarea
             value={caption}
             onChange={(e) => setCaption(e.target.value)}
-            placeholder="Optional note that turns with every file…"
-            rows={2}
-            className="w-full bg-black/20 border border-white/10 rounded-[20px] px-4 py-3 text-[15px] text-white placeholder:text-neutral-500 mb-5 resize-none focus:outline-none focus:border-white/25"
+            placeholder="Quiet caption for every share…"
+            rows={3}
+            className="w-full bg-black/20 border border-white/10 rounded-[16px] px-4 py-3 text-[15px] text-white placeholder:text-neutral-500 mb-4 resize-none focus:outline-none focus:border-white/20"
           />
 
-          <div className="flex items-center gap-4 mb-6">
+          <div className="flex items-center gap-4 mb-5">
             <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="w-10 h-10 rounded-full cursor-pointer border-0" />
-            <span className="text-[13px] text-neutral-400">Solstice accent</span>
+            <label className="flex-1 text-[13px] text-neutral-300 cursor-pointer border border-dashed border-white/15 rounded-[16px] py-4 text-center hover:border-white/30 transition">
+              {files.length ? `${files.length} file${files.length > 1 ? 's' : ''} ready` : 'Drop or choose local files'}
+              <input type="file" multiple className="hidden" onChange={(e) => onDrop(e.target.files)} />
+            </label>
           </div>
 
-          {warn && <p className="text-[13px] text-amber-300/90 mb-4">{warn}</p>}
+          {warns.map((w, i) => (
+            <p key={i} className="text-[12px] text-amber-300/90 mb-1">{w}</p>
+          ))}
 
           <motion.button
             whileTap={{ scale: 0.97 }}
             whileHover={{ scale: 1.02 }}
-            onClick={share}
+            onClick={publish}
             disabled={busy || !files.length}
-            className="w-full rounded-[22px] py-4 text-[16px] font-medium text-white disabled:opacity-40 transition shadow-xl"
+            className="w-full rounded-[18px] py-3.5 text-[15px] font-medium text-white disabled:opacity-40 transition shadow-lg"
             style={{ background: accent }}
           >
-            {busy ? 'Catching the light…' : 'Share to the solstice'}
+            {busy ? 'Turning…' : 'Publish solstice shares'}
           </motion.button>
 
           <AnimatePresence>
-            {links.length > 0 && (
-              <motion.div
+            {links.map((l, i) => (
+              <motion.a
+                key={l}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mt-6 space-y-1 text-center"
+                transition={{ delay: i * 0.05, type: 'spring', stiffness: 120, damping: 18 }}
+                href={l}
+                className="block mt-4 text-[13px] break-all"
+                style={{ color: accent }}
               >
-                {links.map((l, i) => (
-                  <a key={i} href={l} target="_blank" rel="noreferrer" className="block text-[14px] break-all" style={{ color: accent }}>{l}</a>
-                ))}
-              </motion.div>
-            )}
-            {err && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 text-[13px] text-red-400 text-center">{err}</motion.p>}
+                {l}
+              </motion.a>
+            ))}
+            {err && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 text-[12px] text-red-400">{err}</motion.p>}
           </AnimatePresence>
         </motion.div>
-
-        <div className="relative mx-auto" style={{ height: radius * 2 + 160, width: radius * 2 + 160 }}>
-          <motion.div
-            className="absolute inset-0 flex items-center justify-center"
-            animate={{ rotate: 360 }}
-            transition={{ duration: 120, repeat: Infinity, ease: 'linear' }}
-          >
-            {shares.map((s, i) => {
-              const angle = i * angleStep - Math.PI / 2;
-              const x = Math.cos(angle) * radius;
-              const y = Math.sin(angle) * radius;
-              return (
-                <motion.a
-                  key={s.id}
-                  href={`/s/${s.id}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  initial={{ opacity: 0, scale: 0.6 }}
-                  animate={{ opacity: 1, scale: 1, x, y }}
-                  transition={{ delay: i * 0.04, type: 'spring', stiffness: 80, damping: 18 }}
-                  whileHover={{ scale: 1.12, zIndex: 10 }}
-                  className="absolute glass rounded-[18px] p-3 apple-card shadow-lg w-36 origin-center"
-                  style={{ left: '50%', top: '50%', marginLeft: -72, marginTop: -48 }}
-                >
-                  <div className="aspect-square rounded-[10px] mb-2 overflow-hidden" style={{ backgroundColor: (s.color || accent) + '22' }}>
-                    {s.type?.startsWith('image/') && s.url ? (
-                      <img src={s.url} alt={s.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full grid place-items-center text-[11px] text-neutral-400">{s.type?.split('/')[1] || 'file'}</div>
-                    )}
-                  </div>
-                  <p className="text-[12px] font-medium text-white truncate">{s.name || 'untitled'}</p>
-                  {s.caption && <p className="text-[10px] text-neutral-400 mt-0.5 line-clamp-1">{s.caption}</p>}
-                </motion.a>
-              );
-            })}
-          </motion.div>
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="w-24 h-24 rounded-full glass flex items-center justify-center text-[11px] text-neutral-400">solstice</div>
-          </div>
-        </div>
-        {shares.length === 0 && <p className="text-neutral-500 text-center py-12 text-[15px]">The circle is clear. Share the first light.</p>}
       </div>
     </div>
   );

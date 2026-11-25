@@ -7,6 +7,9 @@ Drop local files. Soft size warnings only — no hard limits. Every share link s
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
 ## Features
+- **Solstice Desk**: files that turn with the light. Sequential multi-file shares under one shared title and caption. Soft size warnings only. Permanent Discord-ready links. Apple-style springs.
+- **Echo Loom**: weave audio and quiet notes into permanent shares. Living waveform for audio. Soft warnings only. Discord embeds.
+- **Zenith Desk**: the high point of a single share. Live preview for images, title, caption, and accent. Permanent Discord-ready link. Soft size warnings only.
 - **Eclipse Desk**: sequential multi-file shares. Files rise with staggered star-like springs under one shared title and caption. Live previews, recent shares grid, permanent Discord-ready links. Soft size warnings only.
 - **Prism Lumen**: sequential multi-file shares. Each local file settles under a shared title and caption with its own prism accent. Permanent Discord-ready links. Soft size warnings only.
 - **Prism Cascade**: multi-file shares that cascade with sequential prism accents and Apple-style springs. Shared title and caption. Soft size warnings only. Permanent Discord-ready links.

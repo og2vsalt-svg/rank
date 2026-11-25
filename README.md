@@ -7,6 +7,7 @@ Drop local files. Soft size warnings only — no hard limits. Every share link s
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
 ## Features
+- **Path Weaver**: weave a short sequence of titled notes and optional local files into one clean markdown share.
 - **Lumen Vault**: multi-file hosting desk. Drop several local files, share one title/caption/accent across them, each gets a permanent Discord-ready link. Recent shares grid included. Soft warnings only.
 - **Central Drop**: multi-file hosting desk that cascades permanent shares with shared caption and accent. Recent shares grid included.
 - **Cascade Desk**: multi-file cascade under one shared title, caption, and accent color. Instant Discord-ready links.

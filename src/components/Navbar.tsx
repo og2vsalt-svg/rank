@@ -9,6 +9,7 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   const links = [
+    { to: 'lumenvault', label: 'lumen' },
     { to: 'centraldrop', label: 'central' },
     { to: 'cascade', label: 'cascade' },
     { to: 'ribbon', label: 'ribbon' },
@@ -54,7 +55,7 @@ export default function Navbar() {
     { to: 'storydesk', label: 'story' },
     { to: 'snippet', label: 'snippet' },
     { to: 'notestudio', label: 'notes' },
-    { to: 'lumennote', label: 'lumen' },
+    { to: 'lumennote', label: 'lumen note' },
     { to: 'qrdesk', label: 'qr' },
     { to: 'chroma', label: 'chroma' },
     { to: 'particledesk', label: 'particles' },

@@ -9,6 +9,8 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   const links = [
+    { to: 'glasscascade', label: 'glass cascade' },
+    { to: 'velvetharbor', label: 'velvet harbor' },
     { to: 'nimbusdesk', label: 'nimbus' },
     { to: 'latticedesk', label: 'lattice' },
     { to: 'horizondesk', label: 'horizon' },

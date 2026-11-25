@@ -7,6 +7,7 @@ Drop local files. Soft size warnings only — no hard limits. Every share link s
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
 ## Features
+- **Lumen Vault**: multi-file hosting desk. Drop several local files, share one title/caption/accent across them, each gets a permanent Discord-ready link. Recent shares grid included. Soft warnings only.
 - **Central Drop**: multi-file hosting desk that cascades permanent shares with shared caption and accent. Recent shares grid included.
 - **Cascade Desk**: multi-file cascade under one shared title, caption, and accent color. Instant Discord-ready links.
 - **Orbit Map**: place a central idea, let thoughts orbit, publish the whole map as clean markdown with embeds.
@@ -22,7 +23,7 @@ Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted
 - Signature Desk, Mood Board, Whisper Note, Annotate Desk, Pixel Desk, Quote Card, Harmony Desk, Lumen Note, Particle Desk, and more
 - Living library, gallery, explore, journal, sketch, gradient, QR, snippets
 - Soft warnings for large files (browser may feel slow; nothing is blocked)
-- Discord / social embeds on every link via API routes (proper HTML escaping fixed)
+- Discord / social embeds on every link via API routes (proper HTML escaping)
 - Local vault with IndexedDB + cloud publish
 - No boosting, no artificial caps, no file size limits beyond practical browser performance notes
 

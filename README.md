@@ -7,6 +7,9 @@ Drop local files. Soft size warnings only — no hard limits. Every share link s
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
 ## Features
+- **Frost Desk**: ultra-clean single-file shares with soft frost glass, cool accent, and permanent Discord-ready link. Soft warnings only.
+- **Lumen Gallery**: public gallery of recent shares with spring-lift hover. Click any card for the full embed-ready share.
+- **Orbit Path**: multi-file orbital preview. Drop several local files, shape a shared title and accent, each rises as its own Discord-ready link.
 - **Gossamer Desk**: delicate multi-file shares. Drop a few local files, shape a shared title and quiet note, choose a muted accent. Each becomes a permanent Discord-ready link. Soft warnings only.
 - **Nova Desk**: radiant multi-file shares. Drop one or many local files, shape a shared title, caption, and accent. Each rises as a permanent Discord-ready link. Soft warnings only.
 - **Path Weaver**: weave a short sequence of titled notes and optional local files into one clean markdown share.

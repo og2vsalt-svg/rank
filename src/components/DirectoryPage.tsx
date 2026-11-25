@@ -4,9 +4,12 @@ import Navbar from './Navbar';
 import { useRouter } from './Router';
 
 const DESKS = [
+  { route: 'pathweaver', title: 'Path Weaver', blurb: 'Weave a short sequence of titled notes and optional local files. Publish the whole path as one clean markdown share. Soft warnings only. Polished Discord embeds. Apple-style springs.' },
   { route: 'aurorapath', title: 'Aurora Path', blurb: 'Build a short sequence of titles and notes. Publish the whole path as a clean markdown share. Soft warnings only. Polished Discord embeds. Apple-style springs.' },
   { route: 'centraldrop', title: 'Central Drop', blurb: 'Everything in one place. Multi-file drops cascade into permanent shares with polished Discord embeds. Soft size warnings only. Apple-style springs.' },
   { route: 'orbitdesk', title: 'Orbit Desk', blurb: 'Map a central idea and orbiting thoughts. Publish the map as a clean markdown share. Soft size warnings only. Polished Discord embeds. Apple-style springs.' },
+  { route: 'constellation', title: 'Constellation', blurb: 'Drop several files into a soft orbit around a shared note. Each receives its own polished Discord embed. Soft size warnings only.' },
+  { route: 'lattice', title: 'Lattice', blurb: 'Pick several locals. Each lands as its own share card. Soft warnings for heavy batches. Nothing is refused.' },
   { route: 'signaturedesk', title: 'Signature Desk', blurb: 'Draw a signature or quiet mark and publish it as a permanent share. Soft size warnings only. Polished Discord embeds. Apple-style springs.' },
   { route: 'moodboard', title: 'Mood Board', blurb: 'Pick a mood, add a note, and publish a luminous feeling card as a permanent share. Soft warnings only. Discord embeds included.' },
   { route: 'whispernote', title: 'Whisper Note', blurb: 'Leave a short note that can fade after a chosen time. Uploads as a local file to the share database. Soft warnings only. Polished embeds.' },
@@ -18,7 +21,6 @@ const DESKS = [
   { route: 'pixeldesk', title: 'Pixel Desk', blurb: 'Paint a 16×16 grid, choose colors, and publish the pixel art as a permanent share. Soft size warnings only.' },
   { route: 'quotecard', title: 'Quote Card', blurb: 'Type a quote and attribution, preview a typographic card, and publish it as a permanent share. Soft size warnings only.' },
   { route: 'annotatedesk', title: 'Annotate Desk', blurb: 'Drop an image, draw marks over it, add a caption, and publish the annotated result as a permanent share.' },
-  // more desks remain available as pages; this list surfaces popular ones
 ];
 
 export default function DirectoryPage() {

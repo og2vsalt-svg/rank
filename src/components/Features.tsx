@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 
 const features = [
-  { title: 'Quiet desks', desc: 'Dozens of specialized surfaces for files, notes, sketches, signatures, moods, whispers, collages, mosaics, annotations, timestamps, palettes, and handoffs. Quiet Cascade, Aether Loom, Soft Nexus, Silk Harbor, Horizon Weave, Dawn Lumen, Prism Cascade, Canvas Desk, and Quiet Weave join the collection. Each settles into the database with a polished Discord embed on every link.' },
+  { title: 'Quiet desks', desc: 'Dozens of specialized surfaces for files, notes, sketches, signatures, moods, whispers, collages, mosaics, annotations, timestamps, palettes, and handoffs. Quiet Cascade, Aether Loom, Soft Nexus, Silk Harbor, Horizon Weave, Dawn Lumen, Prism Cascade, Canvas Desk, Quiet Weave, Soft Tide, Aether Ledger, and Lumen Quay join the collection. Each settles into the database with a polished Discord embed on every link.' },
   { title: 'Soft warnings only', desc: 'Large files are warned about possible slowness. Never refused. No hard limits.' },
   { title: 'Apple-style motion', desc: 'Spring animations, frosted glass, and careful pacing that feels hand-crafted and human.' },
   { title: 'Local + cloud', desc: 'Keep everything in the browser vault. Publish only what you choose. Shares live in Supabase with optional Blob. File sharing uploads local files straight to the database.' },

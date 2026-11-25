@@ -4,6 +4,7 @@ import Navbar from './Navbar';
 import { useRouter } from './Router';
 
 const DESKS = [
+  { route: 'horizondesk', title: 'Horizon Desk', blurb: 'Cinematic horizontal multi-file shares. Drop locals along a quiet light line, shape a shared title and cool accent. Each becomes its own permanent Discord-ready link. Soft size warnings only. Apple-style springs on frosted glass.' },
   { route: 'gossamerdesk', title: 'Gossamer Desk', blurb: 'Delicate multi-file shares with soft notes and muted accents. Each local file becomes its own permanent Discord-ready link. Soft size warnings only. Apple-style springs on frosted glass.' },
   { route: 'pathweaver', title: 'Path Weaver', blurb: 'Weave a short sequence of titled notes and optional local files. Publish the whole path as one clean markdown share. Soft warnings only. Polished Discord embeds. Apple-style springs.' },
   { route: 'aurorapath', title: 'Aurora Path', blurb: 'Build a short sequence of titles and notes. Publish the whole path as a clean markdown share. Soft warnings only. Polished Discord embeds. Apple-style springs.' },

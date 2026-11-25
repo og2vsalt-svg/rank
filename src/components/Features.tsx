@@ -1,12 +1,12 @@
 import { motion } from 'framer-motion';
 
 const features = [
-  { title: 'Quiet desks', desc: 'Dozens of specialized surfaces for files, notes, sketches, signatures, moods, whispers, collages, mosaics, annotations, timestamps, palettes, and handoffs. Aether Loom, Silk Harbor, Horizon Weave, Dawn Lumen, Prism Cascade, Canvas Desk, and Quiet Weave join the collection. Each settles into the database with a polished Discord embed on every link.' },
+  { title: 'Quiet desks', desc: 'Dozens of specialized surfaces for files, notes, sketches, signatures, moods, whispers, collages, mosaics, annotations, timestamps, palettes, and handoffs. Quiet Cascade, Aether Loom, Silk Harbor, Horizon Weave, Dawn Lumen, Prism Cascade, Canvas Desk, and Quiet Weave join the collection. Each settles into the database with a polished Discord embed on every link.' },
   { title: 'Soft warnings only', desc: 'Large files are warned about possible slowness. Never refused. No hard limits.' },
   { title: 'Apple-style motion', desc: 'Spring animations, frosted glass, and careful pacing that feels hand-crafted and human.' },
   { title: 'Local + cloud', desc: 'Keep everything in the browser vault. Publish only what you choose. Shares live in Supabase with optional Blob. File sharing uploads local files straight to the database.' },
   { title: 'Discord ready', desc: 'Every share link is prepared with professional Open Graph cards so Discord, Twitter, and others show a clean preview.' },
-  { title: 'Always expanding', desc: 'New desks appear while every prior surface remains fully intact. Centralized around private file hosting. No boosting. Aether Loom, Silk Harbor, Horizon Weave, Dawn Lumen, Prism Cascade, Canvas Desk, Quiet Weave, Nimbus Desk, Lattice Desk, Silk Desk, Frost Desk, Lumen Gallery, Orbit Path, Signature Desk, Mood Board, Whisper Note, and many more.' },
+  { title: 'Always expanding', desc: 'New desks appear while every prior surface remains fully intact. Centralized around private file hosting. No boosting. Quiet Cascade, Aether Loom, Silk Harbor, Horizon Weave, Dawn Lumen, Prism Cascade, Canvas Desk, Quiet Weave, Nimbus Desk, Lattice Desk, Silk Desk, Frost Desk, Lumen Gallery, Orbit Path, Signature Desk, Mood Board, Whisper Note, and many more.' },
 ];
 
 export default function Features() {

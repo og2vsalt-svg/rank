@@ -7,6 +7,9 @@ Drop local files. Soft size warnings only — no hard limits. Every share link s
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
 ## Features
+- **Soft Tide**: multi-file shares that settle with staggered tidal springs. Shared title, caption, and cool accent. Each becomes its own permanent Discord-ready link. Soft size warnings only. No hard limits.
+- **Aether Ledger**: quiet sequence of titled entries. Publish the whole ledger as one clean markdown share. Permanent Discord-ready link. Soft warnings only. Different from pure file vaults.
+- **Lumen Quay**: quiet arrivals of multi-file shares under one warm title and caption. Staggered Apple-style springs. Each becomes its own permanent Discord-ready link. Soft size warnings only. No hard limits.
 - **Soft Nexus**: multi-file shares under one quiet title and caption with shared accent. Apple-style springs, frosted glass, permanent Discord-ready links. Soft size warnings only. No hard limits. Prior desks intact.
 - **Quiet Cascade**: multi-file shares that settle in sequence with staggered Apple-style springs. Shared title, caption, and cool accent. Each becomes its own permanent Discord-ready link. Soft size warnings only. No hard limits.
 - **Daily Lumen**: quiet daily reflection. Write a short note or drop an optional local file. Shape title and warm accent. Permanent Discord-ready link. Soft size warnings only. No hard limits. Different from pure file vaults — the note can stand alone.

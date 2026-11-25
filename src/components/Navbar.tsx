@@ -9,6 +9,8 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   const links = [
+    { to: 'grovedesk', label: 'grove' },
+    { to: 'quietjournal', label: 'journal' },
     { to: 'aetherloom', label: 'aether loom' },
     { to: 'silkharbor', label: 'silk harbor' },
     { to: 'horizonweave', label: 'horizon weave' },
@@ -66,7 +68,7 @@ export default function Navbar() {
     { to: 'linkdesk', label: 'links' },
     { to: 'focus', label: 'focus' },
     { to: 'recipe', label: 'recipe' },
-    { to: 'journal', label: 'journal' },
+    { to: 'journal', label: 'journal old' },
     { to: 'gradient', label: 'gradient' },
     { to: 'capture', label: 'capture' },
     { to: 'markdowndesk', label: 'markdown' },

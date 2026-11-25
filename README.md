@@ -7,6 +7,9 @@ Drop local files. Soft size warnings only — no hard limits. Every share link s
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
 ## Features
+- **Prism Cascade**: multi-file shares that cascade with sequential prism accents and Apple-style springs. Shared title and caption. Soft size warnings only. Permanent Discord-ready links.
+- **Canvas Desk**: focused image shares with live preview, title, caption, and accent. Uploads to the share database. Professional Discord embeds. Soft warnings only.
+- **Quiet Weave**: weave short notes and an optional local file into one clean share. Discord-ready links. Soft warnings only.
 - **Glass Cascade**: multi-file shares that cascade with sequential Apple-style springs. Shared note and accent. Soft size warnings only. Permanent Discord-ready links.
 - **Velvet Harbor**: soft multi-file arrivals under one quiet note and muted accent. Live previews, sequential springs, soft warnings only. Discord embeds on every link.
 - **Nimbus Desk**: soft multi-file clouds. Drop several local files, shape a shared title and accent, each rises as its own permanent Discord-ready link. Soft warnings only.

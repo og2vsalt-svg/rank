@@ -9,6 +9,9 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   const links = [
+    { to: 'prismcascade', label: 'prism' },
+    { to: 'canvasdesk', label: 'canvas' },
+    { to: 'quietweave', label: 'weave' },
     { to: 'glasscascade', label: 'glass cascade' },
     { to: 'velvetharbor', label: 'velvet harbor' },
     { to: 'nimbusdesk', label: 'nimbus' },
@@ -40,7 +43,7 @@ export default function Navbar() {
     { to: 'board', label: 'board' },
     { to: 'studio', label: 'studio' },
     { to: 'wave', label: 'wave' },
-    { to: 'prism', label: 'prism' },
+    { to: 'prism', label: 'prism old' },
     { to: 'pixeldesk', label: 'pixel' },
     { to: 'quotecard', label: 'quote' },
     { to: 'binder', label: 'binder' },

@@ -7,7 +7,7 @@ function esc(s) {
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
+    .replace(/\"/g, '&quot;')
     .replace(/'/g, '&#39;');
 }
 
@@ -53,6 +53,15 @@ export default async function handler(req, res) {
         image = share.file_url;
       }
     }
+  } else if (page === 'prismcascade') {
+    title = 'Prism Cascade — rankvault';
+    desc = 'Files rise in sequential prism colors. Multi-file drops cascade into permanent Discord-ready shares. Soft size warnings only. Apple-style springs on frosted glass.';
+  } else if (page === 'canvasdesk') {
+    title = 'Canvas Desk — rankvault';
+    desc = 'A quiet place for images. Live preview, title, caption, and accent. Permanent Discord-ready link. Soft size warnings only. Apple-style springs.';
+  } else if (page === 'quietweave') {
+    title = 'Quiet Weave — rankvault';
+    desc = 'Weave short notes and an optional local file into one clean share. Polished Discord embeds. Soft warnings only. Apple-style springs on frosted glass.';
   } else if (page === 'forge') {
     title = 'Forge — rankvault';
     desc = 'Craft a polished share from a local file. Shape title, caption, and accent. Soft size warnings only. Polished Discord embeds. Apple-style springs.';

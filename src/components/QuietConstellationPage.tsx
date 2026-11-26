@@ -1,181 +1,109 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './Navbar';
 import { publishLocalFile } from '../lib/cloudShare';
 
-type Dropped = { id: string; file: File; preview?: string; warn?: string; x: number; y: number };
-
 export default function QuietConstellationPage() {
-  const [files, setFiles] = useState<Dropped[]>([]);
-  const [caption, setCaption] = useState('');
-  const [accent, setAccent] = useState('#AF52DE');
+  const [stars, setStars] = useState([{ title: '', note: '', file: null as File | null }]);
+  const [accent, setAccent] = useState('#0A84FF');
   const [busy, setBusy] = useState(false);
-  const [links, setLinks] = useState<string[]>([]);
+  const [link, setLink] = useState<string | null>(null);
   const [err, setErr] = useState('');
+  const [warn, setWarn] = useState<string | null>(null);
 
-  const stars = useMemo(() => files.map((f, i) => ({
-    ...f,
-    delay: i * 0.07,
-  })), [files]);
+  const update = (i: number, field: 'title' | 'note', val: string) => {
+    setStars(prev => prev.map((s, idx) => idx === i ? { ...s, [field]: val } : s));
+  };
 
-  const onDrop = useCallback((list: FileList | null) => {
-    if (!list) return;
-    const next: Dropped[] = Array.from(list).map((file, i) => {
-      const warn = file.size > 40 * 1024 * 1024 ? 'Large file. Upload may feel slow. No hard limit.' : undefined;
-      const preview = file.type.startsWith('image/') ? URL.createObjectURL(file) : undefined;
-      return {
-        id: Math.random().toString(36).slice(2),
-        file,
-        preview,
-        warn,
-        x: 18 + (i % 5) * 16 + Math.random() * 6,
-        y: 22 + Math.floor(i / 5) * 18 + Math.random() * 4,
-      };
-    });
-    setFiles((f) => [...f, ...next]);
-  }, []);
+  const setFile = (i: number, f: File | null) => {
+    setStars(prev => prev.map((s, idx) => idx === i ? { ...s, file: f } : s));
+    if (f && f.size > 40 * 1024 * 1024) setWarn('Large file. May feel slow. No hard limit.');
+  };
 
-  const remove = (id: string) => setFiles((f) => f.filter((x) => x.id !== id));
+  const addStar = () => setStars(prev => [...prev, { title: '', note: '', file: null }]);
 
-  const publish = async () => {
-    if (!files.length) return setErr('drop at least one local file');
+  const share = async () => {
+    const valid = stars.filter(s => s.title.trim() || s.note.trim() || s.file);
+    if (!valid.length) return setErr('add at least one star');
     setBusy(true);
     setErr('');
-    setLinks([]);
-    const made: string[] = [];
-    for (const d of files) {
-      const res = await publishLocalFile(d.file, {
-        caption: caption.trim() || 'from the quiet constellation',
-        color: accent,
-        cardTitle: d.file.name,
-        meta: { desk: 'quietconstellation' },
+    setLink(null);
+    try {
+      let md = `# Quiet Constellation\n\nA quiet map of ideas.\n\n`;
+      const filesToUpload: File[] = [];
+      valid.forEach((s, i) => {
+        md += `## ${i + 1}. ${s.title || 'untitled star'}\n\n${s.note || ''}\n\n`;
+        if (s.file) {
+          md += `*Attached: ${s.file.name}*\n\n`;
+          filesToUpload.push(s.file);
+        }
+        md += '---\n\n';
       });
-      if (res.ok && res.embed) made.push(res.embed);
-      else if (!res.ok) setErr(res.error || 'one file slowed');
+      const file = new File([md], 'quiet-constellation.md', { type: 'text/markdown' });
+      if (file.size > 40 * 1024 * 1024) setWarn('Large constellation. May feel slow. No hard limit.');
+      const res = await publishLocalFile(file, {
+        caption: 'a quiet constellation of ideas',
+        color: accent,
+        cardTitle: valid[0].title || 'Quiet Constellation',
+        meta: { desk: 'quietconstellation', stars: valid.length },
+      });
+      if (res.ok && res.embed) {
+        setLink(res.embed);
+        // Optionally upload attached files separately if desired, but main share is the map
+      } else setErr(res.error || 'constellation slowed');
+    } catch (e: any) {
+      setErr(e.message || 'something slowed');
     }
-    setLinks(made);
-    setFiles([]);
     setBusy(false);
   };
 
   return (
-    <div className="mesh min-h-screen bg-[#050506]">
+    <div className="mesh min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-6 max-w-4xl mx-auto">
+      <div className="pt-32 pb-24 px-6 max-w-2xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 100, damping: 22 }}
-          className="text-center mb-10"
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ type: 'spring', stiffness: 110, damping: 20 }}
+          className="glass rounded-[32px] p-8 shadow-2xl"
         >
-          <p className="text-[13px] font-medium tracking-wide mb-2" style={{ color: accent }}>Quiet Constellation</p>
-          <h1 className="text-[34px] font-semibold tracking-tight text-white mb-3">Files settle as stars.</h1>
-          <p className="text-neutral-400 text-[15px] max-w-lg mx-auto leading-relaxed">
-            Drop local files. They drift into a quiet constellation of frosted glass stars with gentle connecting lines and spring motion. Shared caption, accent color. Batch-publish to the database. Every share link carries a polished Discord embed. Soft size warnings only. No hard limits. Human-crafted Apple-style pacing. All prior desks remain fully intact.
+          <p className="text-[13px] font-medium tracking-wide mb-1" style={{ color: accent }}>Quiet Constellation</p>
+          <h1 className="text-[28px] font-semibold tracking-tight mb-3">Map quiet stars of ideas.</h1>
+          <p className="text-neutral-400 text-[14px] leading-relaxed mb-6">
+            Place titles, notes, and optional local files as stars. Publish the whole constellation as one clean markdown share. Permanent Discord-ready link. Soft size warnings only. No hard limits. Different from pure file vaults. Prior features intact. No traces of boosting.
           </p>
-        </motion.div>
 
-        <div
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={(e) => { e.preventDefault(); onDrop(e.dataTransfer.files); }}
-          className="glass rounded-[32px] p-10 text-center border-dashed border-2 border-white/10 hover:border-white/20 transition-all mb-8 relative overflow-hidden min-h-[280px]"
-        >
-          <div className="absolute inset-0 pointer-events-none opacity-40">
+          <div className="space-y-4 mb-5">
             {stars.map((s, i) => (
-              <motion.div
-                key={s.id}
-                className="absolute w-2 h-2 rounded-full"
-                style={{ left: `${s.x}%`, top: `${s.y}%`, background: accent }}
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ type: 'spring', stiffness: 120, damping: 16, delay: s.delay }}
-              />
+              <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="bg-black/10 rounded-[16px] p-4">
+                <input value={s.title} onChange={(ev) => update(i, 'title', ev.target.value)} placeholder={`Star ${i + 1} title`} className="w-full bg-transparent border-b border-white/10 pb-2 mb-2 text-[15px] text-white placeholder:text-neutral-500 focus:outline-none" />
+                <textarea value={s.note} onChange={(ev) => update(i, 'note', ev.target.value)} placeholder="Note…" rows={2} className="w-full bg-transparent text-[14px] text-white placeholder:text-neutral-500 resize-none focus:outline-none" />
+                <input type="file" onChange={(ev) => setFile(i, ev.target.files?.[0] || null)} className="mt-2 text-[12px] text-neutral-400" />
+              </motion.div>
             ))}
-            {stars.length > 1 && stars.slice(1).map((s, i) => {
-              const prev = stars[i];
-              return (
-                <svg key={`line-${s.id}`} className="absolute inset-0 w-full h-full pointer-events-none" style={{ opacity: 0.25 }}>
-                  <motion.line
-                    x1={`${prev.x}%`} y1={`${prev.y}%`}
-                    x2={`${s.x}%`} y2={`${s.y}%`}
-                    stroke={accent}
-                    strokeWidth="1"
-                    initial={{ pathLength: 0, opacity: 0 }}
-                    animate={{ pathLength: 1, opacity: 1 }}
-                    transition={{ delay: s.delay + 0.1, duration: 0.8 }}
-                  />
-                </svg>
-              );
-            })}
           </div>
-          <p className="text-neutral-300 mb-4 relative z-10">Drag files here or click to choose</p>
-          <label className="inline-block px-6 py-3 rounded-full text-sm font-medium text-white cursor-pointer relative z-10" style={{ background: accent }}>
-            Choose local files
-            <input type="file" multiple className="hidden" onChange={(e) => onDrop(e.target.files)} />
-          </label>
-        </div>
 
-        <div className="flex flex-col sm:flex-row gap-4 mb-8">
-          <input
-            value={caption}
-            onChange={(e) => setCaption(e.target.value)}
-            placeholder="Shared caption (optional)"
-            className="flex-1 bg-black/20 border border-white/10 rounded-2xl px-4 py-3 text-white placeholder:text-neutral-500 focus:outline-none focus:border-white/20"
-          />
-          <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="w-12 h-12 rounded-full cursor-pointer border-0 self-center" />
-        </div>
+          <div className="flex items-center gap-4 mb-5">
+            <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="w-9 h-9 rounded-full cursor-pointer border-0" />
+            <button type="button" onClick={addStar} className="text-[13px] text-neutral-300 hover:text-white">Add star</button>
+          </div>
 
-        <AnimatePresence>
-          {files.length > 0 && (
-            <motion.div layout className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-              {files.map((d, i) => (
-                <motion.div
-                  key={d.id}
-                  layout
-                  initial={{ opacity: 0, scale: 0.92, y: 20 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ type: 'spring', stiffness: 140, damping: 18, delay: i * 0.04 }}
-                  className="glass rounded-[24px] p-4 relative overflow-hidden group"
-                >
-                  {d.preview ? (
-                    <img src={d.preview} alt="" className="w-full h-32 object-cover rounded-2xl mb-3" />
-                  ) : (
-                    <div className="h-32 rounded-2xl mb-3 grid place-items-center text-neutral-500 text-xs" style={{ background: `linear-gradient(135deg, ${accent}22, transparent)` }}>
-                      {d.file.name.split('.').pop()?.toUpperCase()}
-                    </div>
-                  )}
-                  <p className="text-sm text-white truncate">{d.file.name}</p>
-                  <p className="text-[11px] text-neutral-500">{(d.file.size / 1024 / 1024).toFixed(1)} MB</p>
-                  {d.warn && <p className="text-[10px] text-amber-300/80 mt-1">{d.warn}</p>}
-                  <button onClick={() => remove(d.id)} className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-neutral-400 hover:text-white text-xs">×</button>
-                </motion.div>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
+          {warn && <p className="text-[12px] text-amber-300/90 mb-3">{warn}</p>}
 
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.97 }}
-          onClick={publish}
-          disabled={busy || !files.length}
-          className="w-full max-w-md mx-auto block rounded-[20px] py-4 text-[15px] font-medium text-white disabled:opacity-40 shadow-xl"
-          style={{ background: accent }}
-        >
-          {busy ? 'Settling into the constellation…' : `Publish ${files.length || ''} to the vault`}
-        </motion.button>
+          <motion.button whileTap={{ scale: 0.96 }} whileHover={{ scale: 1.02 }} onClick={share} disabled={busy} className="w-full rounded-[18px] py-3.5 text-[15px] font-medium text-white disabled:opacity-40 transition shadow-lg" style={{ background: accent }}>
+            {busy ? 'Mapping…' : 'Share the constellation'}
+          </motion.button>
 
-        <AnimatePresence>
-          {links.length > 0 && (
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-8 space-y-2 max-w-md mx-auto">
-              {links.map((l) => (
-                <a key={l} href={l} className="block text-sm break-all" style={{ color: accent }}>{l}</a>
-              ))}
-            </motion.div>
-          )}
-          {err && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center mt-4 text-sm text-red-400">{err}</motion.p>}
-        </AnimatePresence>
+          {err && <p className="text-[13px] text-red-400 mt-3">{err}</p>}
+
+          <AnimatePresence>
+            {link && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-6">
+                <a href={link} target="_blank" rel="noreferrer" className="text-[13px] text-blue-300 hover:underline break-all">{link}</a>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
       </div>
     </div>
   );

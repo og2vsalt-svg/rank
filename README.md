@@ -7,6 +7,7 @@ Drop local files. Soft size warnings only — no hard limits. Every share link s
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
 ## Features
+- **Quiet Constellation**: map ideas as stars with titles, notes, and optional local files. Publish the whole as one clean markdown share. Permanent Discord-ready link. Soft size warnings only. No hard limits. Different from pure file vaults.
 - **Quiet Drift**: multi-file shares that settle in sequence with staggered Apple-style springs. Shared title, caption, and cool accent. Each becomes its own permanent Discord-ready link. Soft size warnings only. No hard limits.
 - **Soft Tide**: multi-file shares that settle with staggered tidal springs. Shared title, caption, and cool accent. Each becomes its own permanent Discord-ready link. Soft size warnings only. No hard limits.
 - **Aether Ledger**: quiet sequence of titled entries. Publish the whole ledger as one clean markdown share. Permanent Discord-ready link. Soft warnings only. Different from pure file vaults.

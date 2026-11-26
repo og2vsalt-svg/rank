@@ -1,12 +1,13 @@
 # rankvault
 
-Private file hosting and quiet creative desks.
+Private file hosting and quiet creative desks. Centralized around effortless file sharing.
 
 Drop local files. Soft size warnings only — no hard limits. Every share link ships with polished Discord embeds.
 
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
 ## Core
+- **Central Vault**: the quiet center. Drop local files; each uploads to the share database and becomes a permanent Discord-ready link with polished embeds. Soft size warnings only. Apple-style springs on frosted glass.
 - **Mood Atlas**: map a mood with notes, colors, and local files. Each piece publishes as a polished Discord-ready share under one quiet title and caption. Soft size warnings only. Apple-style springs on frosted glass.
 - **Echo Note**: write a quiet note, optionally attach a local file, shape title/caption/accent, and publish a permanent Discord-ready share. Soft size warnings only. Apple-style springs on frosted glass.
 - **Horizon Forge**: shape title, caption, accent, and optional expiry, then drop multiple local files. Each uploads to the share database and becomes a permanent Discord-ready link. Soft size warnings only. Apple-style springs on frosted glass.

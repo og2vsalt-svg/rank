@@ -4,10 +4,10 @@ const FALLBACK = 'https://og2vsalt-svg.github.io/rank/og.png';
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"')
     .replace(/'/g, '&#39;');
 }
 
@@ -62,6 +62,9 @@ export default async function handler(req, res) {
   } else if (page === 'moodatlas') {
     title = 'Mood Atlas — rankvault';
     desc = 'Map a mood with notes, colors, and local files. Publish the whole atlas as a quiet share with polished Discord embeds. Soft size warnings only. Apple-style springs.';
+  } else if (page === 'centralprism') {
+    title = 'Central Prism — rankvault';
+    desc = 'The quiet center. Multi-file hosting with live gallery of recent shares. Soft size warnings only. Polished Discord embeds on every link. Apple-style springs on frosted glass.';
   }
 
   const url = `${proto}://${host}${path}`;

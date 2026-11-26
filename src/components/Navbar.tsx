@@ -9,6 +9,7 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   const links = [
+    { to: 'echoprism', label: 'echo prism' },
     { to: 'silkboard', label: 'silk board' },
     { to: 'velvetledger', label: 'velvet ledger' },
     { to: 'orbitbundle', label: 'orbit bundle' },

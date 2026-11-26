@@ -7,6 +7,7 @@ Drop local files. Soft size warnings only — no hard limits. Every share link s
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
 ## Core
+- **Lumen Vault**: quiet multi-file hosting with living gallery previews, soft size warnings, and instant Discord-ready share links. Uploads local files straight to the share database.
 - **Lumen Drop**: refined multi-file hosting with live previews, soft size warnings, and instant Discord-ready share links. Uploads local files straight to the share database.
 - **Prism Vault**: multi-file hosting with live previews, accent colors, soft size warnings, and instant Discord-ready share links. Uploads local files straight to the share database.
 - **Silk Weave**: weave files into polished embeds with a shared caption. Soft warnings only.

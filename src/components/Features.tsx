@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 
 const features = [
+  { title: 'Lumen Vault', desc: 'Quiet multi-file hosting with living gallery previews. Each local file uploads to the share database and becomes its own permanent Discord-ready link. Soft size warnings only.' },
   { title: 'Vault Pulse', desc: 'Multi-file hosting with live progress. Each local file uploads to the share database and becomes its own permanent Discord-ready link. Soft size warnings only.' },
   { title: 'Discord Studio', desc: 'Shape title and caption for the embed, preview it, then publish a professional share link. Every share is Discord-ready.' },
   { title: 'Quiet desks', desc: 'Dozens of specialized surfaces for files, notes, sketches, signatures, moods, and more. Prior desks remain fully intact.' },

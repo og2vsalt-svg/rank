@@ -33,9 +33,9 @@ export default function Hero() {
           Clean multi-file drops, living galleries, quiet notes, and polished Discord embeds on every link. Soft size warnings only — no hard limits. Apple-style springs on frosted glass.
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center">
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('vaultpulse')} className="px-7 py-3 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#3A9DFF] transition shadow-lg">vault pulse</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('discordstudio')} className="px-7 py-3 rounded-full bg-[#AF52DE] text-white text-sm font-medium hover:bg-[#C07AE8] transition shadow-lg">discord studio</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('studio')} className="px-7 py-3 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition">studio</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('lumencollection')} className="px-7 py-3 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#3A9DFF] transition shadow-lg">lumen collection</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('vaultpulse')} className="px-7 py-3 rounded-full bg-[#AF52DE] text-white text-sm font-medium hover:bg-[#C07AE8] transition shadow-lg">vault pulse</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('discordstudio')} className="px-7 py-3 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition">discord studio</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('drop')} className="px-7 py-3 rounded-full bg-white/5 text-neutral-300 text-sm font-medium hover:bg-white/10 transition">drop</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('directory')} className="px-6 py-2.5 rounded-full bg-white/5 text-neutral-300 text-sm font-medium hover:bg-white/10 transition">all desks</motion.button>
         </div>

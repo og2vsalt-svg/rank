@@ -9,6 +9,8 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   const links = [
+    { to: 'prismvault', label: 'prism vault' },
+    { to: 'silkweave', label: 'silk weave' },
     { to: 'quietdrift', label: 'quiet drift' },
     { to: 'quietcascade', label: 'quiet cascade' },
     { to: 'dailylumen', label: 'daily lumen' },

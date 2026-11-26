@@ -7,6 +7,8 @@ Drop local files. Soft size warnings only — no hard limits. Every share link s
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
 ## Core
+- **Prism Vault**: multi-file hosting with live previews, accent colors, soft size warnings, and instant Discord-ready share links. Uploads local files straight to the share database.
+- **Silk Weave**: weave files into polished embeds with a shared caption. Soft warnings only.
 - **Aether Forge**: shape title, caption, and accent color, then drop multiple local files. Each becomes a permanent Discord-ready share with your custom embed styling. Soft size warnings only. Apple-style springs on frosted glass.
 - **Nexus Drop**: central multi-file hosting with live previews, soft size warnings, and instant Discord-ready share links. Uploads local files straight to the share database.
 - **Harbor Drop**: sleek multi-file drop zone with live progress, soft size warnings, and instant Discord-ready share links. Uploads local files straight to the share database.

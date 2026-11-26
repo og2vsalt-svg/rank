@@ -37,6 +37,7 @@ const DESK_TITLES = {
   quietlens: 'Quiet Lens',
   quietdiary: 'Quiet Diary',
   core: 'Core',
+  centralprism: 'Central Prism',
 };
 
 export default async function handler(req, res) {
@@ -54,7 +55,9 @@ export default async function handler(req, res) {
         ? 'Calm docks for local files. Soft warnings only. Discord embeds on every link.'
         : page === 'quietsignal'
           ? 'Soft pulsing signals. Files and notes with Apple springs. No hard limits.'
-          : 'Private file hosting. Discord cards on every link. Soft size warnings only.';
+          : page === 'centralprism'
+            ? 'The quiet center. Multi-file hosting with live gallery. Soft warnings only. Discord embeds on every link.'
+            : 'Private file hosting. Discord cards on every link. Soft size warnings only.';
   let image = FALLBACK;
 
   if (page === 'impost' && id) {
@@ -72,7 +75,7 @@ export default async function handler(req, res) {
       desc = String(slip.body || '').slice(0, 180);
     }
   }
-  if ((page === 's' || page === 'share' || page === 'quietharbor' || page === 'quietsignal') && id) {
+  if ((page === 's' || page === 'share' || page === 'quietharbor' || page === 'quietsignal' || page === 'centralprism') && id) {
     const share = await row('public_shares', id);
     if (share) {
       title = (share.name || 'shared file') + (DESK_TITLES[page] ? ' — ' + DESK_TITLES[page] : '');

@@ -30,22 +30,13 @@ export default function Hero() {
           transition={{ type: 'spring', stiffness: 80, damping: 20, delay: 0.1 }}
           className="text-neutral-400 text-lg leading-relaxed max-w-lg mb-10 mx-auto"
         >
-          Clean multi-file drops, a living library of shares, quiet notes, signatures, and moods. Soft size warnings only — no hard limits. Apple-style spring animations on frosted glass.
+          Clean multi-file drops, living galleries, quiet notes, and polished Discord embeds on every link. Soft size warnings only — no hard limits. Apple-style springs on frosted glass.
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center">
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietdrift')} className="px-7 py-3 rounded-full bg-[#64D2FF] text-white text-sm font-medium hover:bg-[#7AD8FF] transition shadow-lg">quiet drift</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('dailylumen')} className="px-7 py-3 rounded-full bg-[#FF9F0A] text-white text-sm font-medium hover:bg-[#FFB340] transition shadow-lg">daily lumen</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('grovedesk')} className="px-7 py-3 rounded-full bg-[#34C759] text-white text-sm font-medium hover:bg-[#3CD765] transition shadow-lg">grove</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietjournal')} className="px-7 py-3 rounded-full bg-[#FF9500] text-white text-sm font-medium hover:bg-[#FFA733] transition shadow-lg">quiet journal</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('aethercascade')} className="px-7 py-3 rounded-full bg-[#5E5CE6] text-white text-sm font-medium hover:bg-[#6E6CF0] transition shadow-lg">aether cascade</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietpath')} className="px-7 py-3 rounded-full bg-[#64D2FF] text-white text-sm font-medium hover:bg-[#7AD8FF] transition shadow-lg">quiet path</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('nimbusdesk')} className="px-7 py-3 rounded-full bg-[#64D2FF]/80 text-white text-sm font-medium hover:bg-[#7AD8FF] transition shadow-lg">nimbus</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('latticedesk')} className="px-7 py-3 rounded-full bg-[#AF52DE] text-white text-sm font-medium hover:bg-[#C07AE8] transition shadow-lg">lattice</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('horizondesk')} className="px-7 py-3 rounded-full bg-[#64D2FF]/80 text-white text-sm font-medium hover:bg-[#7AD8FF] transition shadow-lg">horizon</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('silkdesk')} className="px-7 py-3 rounded-full bg-[#AF52DE]/90 text-white text-sm font-medium hover:bg-[#C07AE8] transition shadow-lg">silk</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('lumenvault')} className="px-7 py-3 rounded-full bg-[#64D2FF]/80 text-white text-sm font-medium hover:bg-[#7AD8FF] transition shadow-lg">lumen vault</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('studio')} className="px-7 py-3 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#3A9DFF] transition shadow-lg">studio</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('drop')} className="px-7 py-3 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition">drop files</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('vaultpulse')} className="px-7 py-3 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#3A9DFF] transition shadow-lg">vault pulse</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('discordstudio')} className="px-7 py-3 rounded-full bg-[#AF52DE] text-white text-sm font-medium hover:bg-[#C07AE8] transition shadow-lg">discord studio</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('studio')} className="px-7 py-3 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition">studio</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('drop')} className="px-7 py-3 rounded-full bg-white/5 text-neutral-300 text-sm font-medium hover:bg-white/10 transition">drop</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('directory')} className="px-6 py-2.5 rounded-full bg-white/5 text-neutral-300 text-sm font-medium hover:bg-white/10 transition">all desks</motion.button>
         </div>
       </div>

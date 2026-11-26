@@ -4,6 +4,7 @@ import Navbar from './Navbar';
 import { useRouter } from './Router';
 
 const DESKS = [
+  { route: 'snippetforge', title: 'Snippet Forge', blurb: 'Type or paste code. Shape the title and caption Discord will show, then publish the snippet as a permanent file share. Live preview, soft size warnings only, Apple-style springs. No hard limits.' },
   { route: 'nexusdrop', title: 'Nexus Drop', blurb: 'Central multi-file hosting with live previews, soft size warnings only, and instant Discord-ready share links. Uploads local files straight to the share database. Apple-style springs on frosted glass. No hard limits.' },
   { route: 'lumencollection', title: 'Lumen Collection', blurb: 'Gather notes and local files into one quiet board. Publish the whole collection as a clean markdown share with permanent Discord-ready links. Soft size warnings only. No hard limits. Apple-style springs on frosted glass.' },
   { route: 'vaultpulse', title: 'Vault Pulse', blurb: 'Multi-file hosting with live progress. Each local file uploads to the share database and becomes its own permanent Discord-ready link. Soft size warnings only. No hard limits.' },

@@ -12,6 +12,7 @@ Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted
 - **Vault Pulse**: multi-file hosting with live progress. Each local file uploads to the share database and becomes its own permanent Discord-ready link. Soft size warnings only.
 - **Lumen Collection**: gather notes and local files into one board, then publish the whole collection as a clean markdown share.
 - **Discord Studio**: shape title and caption for the embed, preview it, then publish a professional share link.
+- **Snippet Forge**: type or paste code, shape the Discord title and caption, publish as a permanent file share with live preview. Soft warnings only.
 - Studio, Drop, Gallery, Library, and dozens of specialized desks remain fully intact.
 
 ## Features

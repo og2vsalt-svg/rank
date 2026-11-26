@@ -7,6 +7,7 @@ Drop local files. Soft size warnings only — no hard limits. Every share link s
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
 ## Core
+- **Aether Echo**: leave a quiet mark. Write a note, optionally attach a local file, choose an accent, and publish a permanent Discord-ready share. Soft size warnings only. Apple-style springs on frosted glass.
 - **Central Prism**: the quiet center. Multi-file drops with custom title, caption, and accent, live gallery of recent shares, soft size warnings only, and instant Discord-ready links. Apple-style springs on frosted glass.
 - **Prism Journal**: write a quiet note (title + body), optionally attach files, shape caption and accent, then publish permanent Discord-ready shares. Soft size warnings only. Apple-style springs on frosted glass.
 - **Central Vault**: the quiet center. Drop local files; each uploads to the share database and becomes a permanent Discord-ready link with polished embeds. Soft size warnings only. Apple-style springs on frosted glass.

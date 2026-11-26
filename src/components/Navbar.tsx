@@ -9,6 +9,7 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   const links = [
+    { to: 'echonote', label: 'echo note' },
     { to: 'horizonforge', label: 'horizon forge' },
     { to: 'prismvault', label: 'prism vault' },
     { to: 'silkweave', label: 'silk weave' },

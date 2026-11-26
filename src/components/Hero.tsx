@@ -33,6 +33,7 @@ export default function Hero() {
           Locked ledgers, multi-file catalogs, time capsules, receipts, mosaics, and quiet notes. Polished Discord embeds on every link. Soft size warnings only — no hard limits. Apple-style springs on frosted glass.
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center">
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('lumenboard')} className="px-7 py-3 rounded-full bg-[#FF9F0A] text-black text-sm font-medium hover:opacity-90 transition shadow-lg">lumen board</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('silkboard')} className="px-7 py-3 rounded-full bg-[#FF375F] text-white text-sm font-medium hover:opacity-90 transition shadow-lg">silk board</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('velvetledger')} className="px-7 py-3 rounded-full bg-[#BF5AF2] text-white text-sm font-medium hover:opacity-90 transition shadow-lg">velvet ledger</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('orbitbundle')} className="px-7 py-3 rounded-full bg-[#64D2FF] text-black text-sm font-medium hover:opacity-90 transition shadow-lg">orbit bundle</motion.button>

@@ -7,6 +7,7 @@ Drop local files. Soft size warnings only — no hard limits. Every share link s
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
 ## New desks
+- **Lumen Board**: drop local files onto a living board. Each settles with staggered Apple-style springs and becomes its own permanent Discord-ready link under a shared title, caption, and accent. Soft size warnings only. Prior desks remain untouched.
 - **Silk Board**: drop local files onto a living board. Each settles with staggered Apple-style springs and becomes its own permanent Discord-ready link under a shared title, caption, and accent. Soft size warnings only. Prior desks remain untouched.
 - **Aether Stream**: build a living sequence step by step. Drop files (with optional per-step notes), choose accent, and each becomes its own permanent Discord-ready link. Soft size warnings only. Apple-style springs on frosted glass. Prior desks remain untouched.
 - **Prism Sketch**: a living canvas. Draw freely with spring-smooth tools, then publish the sketch as a permanent Discord-ready PNG share. Soft warnings only. All prior features remain.

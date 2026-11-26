@@ -53,6 +53,9 @@ export default async function handler(req, res) {
         image = share.file_url;
       }
     }
+  } else if (page === 'aetherecho') {
+    title = 'Aether Echo — rankvault';
+    desc = 'Leave a quiet mark. Write a note, optionally attach a local file, choose an accent, and publish a permanent Discord-ready share. Soft size warnings only. Apple-style springs on frosted glass.';
   } else if (page === 'cascadedesk') {
     title = 'Cascade Desk — rankvault';
     desc = 'Files that fall in quiet sequence. Multi-file drops cascade into permanent Discord-ready shares with staggered Apple-style springs. Soft size warnings only. Frosted glass throughout.';

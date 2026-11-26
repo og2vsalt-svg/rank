@@ -33,7 +33,8 @@ export default function Hero() {
           Clean multi-file drops, living galleries, quiet notes, code snippets, and polished Discord embeds on every link. Soft size warnings only — no hard limits. Apple-style springs on frosted glass.
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center">
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('centralvault')} className="px-7 py-3 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#3A9DFF] transition shadow-lg">central vault</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('aetherecho')} className="px-7 py-3 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#3A9DFF] transition shadow-lg">aether echo</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('centralvault')} className="px-7 py-3 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition">central vault</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('cascadedesk')} className="px-7 py-3 rounded-full bg-[#AF52DE] text-white text-sm font-medium hover:bg-[#C07AE8] transition shadow-lg">cascade desk</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('moodatlas')} className="px-7 py-3 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition">mood atlas</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('echonote')} className="px-7 py-3 rounded-full bg-white/5 text-neutral-300 text-sm font-medium hover:bg-white/10 transition">echo note</motion.button>

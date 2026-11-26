@@ -7,6 +7,8 @@ Drop local files. Soft size warnings only — no hard limits. Every share link s
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
 ## New desks
+- **Prism Sketch**: a living canvas. Draw freely with spring-smooth tools, then publish the sketch as a permanent Discord-ready PNG share. Soft warnings only. All prior features remain.
+
 - **Quiet Harbor**: shape embed title, caption, and accent with live preview, then drop multiple local files. Each becomes a permanent Discord-ready link. Soft size warnings only.
 - **Silk Mosaic**: weave local images into a living board. Publish each under a shared title and caption as Discord-ready shares.
 - **Aether Timeline**: sequence moments with notes and optional file attachments. Publish the whole timeline as one polished markdown share.

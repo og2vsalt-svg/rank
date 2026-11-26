@@ -7,6 +7,7 @@ Drop local files. Soft size warnings only — no hard limits. Every share link s
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
 ## Core
+- **Prism Journal**: write a quiet note (title + body), optionally attach files, shape caption and accent, then publish permanent Discord-ready shares. Soft size warnings only. Apple-style springs on frosted glass.
 - **Central Vault**: the quiet center. Drop local files; each uploads to the share database and becomes a permanent Discord-ready link with polished embeds. Soft size warnings only. Apple-style springs on frosted glass.
 - **Cascade Desk**: files that fall in quiet sequence. Multi-file drops cascade into permanent Discord-ready shares with staggered springs. Soft size warnings only.
 - **Mood Atlas**: map a mood with notes, colors, and local files. Each piece publishes as a polished Discord-ready share under one quiet title and caption. Soft size warnings only. Apple-style springs on frosted glass.

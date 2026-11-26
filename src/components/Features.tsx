@@ -1,12 +1,12 @@
 import { motion } from 'framer-motion';
 
 const features = [
-  { title: 'Quiet Harbor', desc: 'Shape title, caption, and accent, then drop multiple local files. Each uploads to the share database and becomes a permanent Discord-ready link with a live embed preview. Soft size warnings only.' },
+  { title: 'Velvet Ledger', desc: 'Optional password lock and expiry on every share. Local files upload to the share database with polished Discord embeds. Soft size warnings only.' },
+  { title: 'Orbit Bundle', desc: 'Drop several local files. Each becomes its own Discord-ready share, plus a single markdown catalog that links them all under one title.' },
+  { title: 'Whisper Capsule', desc: 'Write a quiet note, optionally attach a file, and set an unlock time. Publishes as a permanent Discord-ready share with soft size warnings only.' },
+  { title: 'Glass Receipt', desc: 'Structured line items, currency, totals, and optional attachment. Publish the whole receipt as a clean Discord-ready markdown share.' },
+  { title: 'Quiet Harbor', desc: 'Shape title, caption, and accent, then drop multiple local files. Each uploads to the share database and becomes a permanent Discord-ready link with a live embed preview.' },
   { title: 'Silk Mosaic', desc: 'Weave local images into a living board. Publish each as its own Discord-ready share under one quiet title and caption.' },
-  { title: 'Aether Timeline', desc: 'Sequence moments with notes and optional file attachments. Publish the whole timeline as one polished markdown share.' },
-  { title: 'Prism Code', desc: 'Shape a code snippet, set the embed styling, and publish it as a permanent Discord-ready file. Soft warnings only.' },
-  { title: 'Horizon Forge', desc: 'Shape title, caption, accent, and optional expiry, then drop multiple local files. Each becomes a permanent Discord-ready link.' },
-  { title: 'Lumen Vault', desc: 'Quiet multi-file hosting with living gallery previews. Each local file uploads to the share database.' },
   { title: 'Soft warnings only', desc: 'Large files are warned about possible slowness. Never refused. No hard limits.' },
   { title: 'Apple-style motion', desc: 'Spring animations, frosted glass, and careful pacing that feels hand-crafted and human.' },
 ];

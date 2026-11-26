@@ -7,6 +7,7 @@ Drop local files. Soft size warnings only — no hard limits. Every share link s
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
 ## Core
+- **Nexus Drop**: central multi-file hosting with live previews, soft size warnings, and instant Discord-ready share links. Uploads local files straight to the share database.
 - **Harbor Drop**: sleek multi-file drop zone with live progress, soft size warnings, and instant Discord-ready share links. Uploads local files straight to the share database.
 - **Vault Pulse**: multi-file hosting with live progress. Each local file uploads to the share database and becomes its own permanent Discord-ready link. Soft size warnings only.
 - **Lumen Collection**: gather notes and local files into one board, then publish the whole collection as a clean markdown share.

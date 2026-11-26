@@ -53,6 +53,9 @@ export default async function handler(req, res) {
         image = share.file_url;
       }
     }
+  } else if (page === 'echonote') {
+    title = 'Echo Note — rankvault';
+    desc = 'Leave a quiet mark. Write a note, optionally attach a file, and publish a polished Discord-ready share. Soft size warnings only. Apple-style springs on frosted glass.';
   } else if (page === 'aetherloom') {
     title = 'Aether Loom — rankvault';
     desc = 'Weave local files into quiet threads. Multi-file drops with staggered Apple-style springs. Soft size warnings only. Permanent Discord-ready links on frosted glass.';

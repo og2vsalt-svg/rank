@@ -4,6 +4,7 @@ import Navbar from './Navbar';
 import { useRouter } from './Router';
 
 const DESKS = [
+  { route: 'lumencollection', title: 'Lumen Collection', blurb: 'Gather notes and local files into one quiet board. Publish the whole collection as a clean markdown share with permanent Discord-ready links. Soft size warnings only. No hard limits. Apple-style springs on frosted glass.' },
   { route: 'vaultpulse', title: 'Vault Pulse', blurb: 'Multi-file hosting with live progress. Each local file uploads to the share database and becomes its own permanent Discord-ready link. Soft size warnings only. No hard limits.' },
   { route: 'discordstudio', title: 'Discord Studio', blurb: 'Shape title and caption for the embed, preview it, then publish a professional share link. Soft warnings only. Polished Discord embeds.' },
   { route: 'quietdrift', title: 'Quiet Drift', blurb: 'Multi-file shares that settle in sequence with staggered Apple-style springs. Shared title, caption, and cool accent. Each becomes its own permanent Discord-ready link. Soft size warnings only. No hard limits.' },

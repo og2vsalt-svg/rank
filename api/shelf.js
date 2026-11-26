@@ -122,6 +122,9 @@ export default async function handler(req, res) {
   } else if (page === 'gossamerdesk') {
     title = 'Gossamer Desk — rankvault';
     desc = 'Delicate multi-file shares with soft notes and muted accents. Each local file settles as its own permanent Discord-ready link. Soft size warnings only. Apple-style springs on frosted glass.';
+  } else if (page === 'moodatlas') {
+    title = 'Mood Atlas — rankvault';
+    desc = 'Map a mood with notes, colors, and local files. Publish the whole atlas as a quiet share with polished Discord embeds. Soft size warnings only. Apple-style springs.';
   }
 
   const url = `${proto}://${host}${path}`;

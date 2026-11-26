@@ -106,7 +106,7 @@ export default function QuietHarborPage() {
           <input ref={inputRef} type="file" multiple className="hidden" onChange={e => e.target.files && handleFiles(e.target.files)} />
           {uploading ? (
             <div className="space-y-5">
-              <div className="w-16 h-16 mx-auto rounded-full border-2 border-white/20" style={{ borderTopColor: color }} className="animate-spin" />
+              <div className="w-16 h-16 mx-auto rounded-full border-2 border-white/20 animate-spin" style={{ borderTopColor: color }} />
               <p className="text-sm text-neutral-300">harboring… {progress}%</p>
             </div>
           ) : (

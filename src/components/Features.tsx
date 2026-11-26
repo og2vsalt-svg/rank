@@ -1,14 +1,14 @@
 import { motion } from 'framer-motion';
 
 const features = [
-  { title: 'Horizon Forge', desc: 'Shape title, caption, accent, and optional expiry, then drop multiple local files. Each uploads to the share database and becomes a permanent Discord-ready link. Soft size warnings only.' },
-  { title: 'Lumen Vault', desc: 'Quiet multi-file hosting with living gallery previews. Each local file uploads to the share database and becomes its own permanent Discord-ready link. Soft size warnings only.' },
-  { title: 'Vault Pulse', desc: 'Multi-file hosting with live progress. Each local file uploads to the share database and becomes its own permanent Discord-ready link. Soft size warnings only.' },
-  { title: 'Discord Studio', desc: 'Shape title and caption for the embed, preview it, then publish a professional share link. Every share is Discord-ready.' },
-  { title: 'Quiet desks', desc: 'Dozens of specialized surfaces for files, notes, sketches, signatures, moods, and more. Prior desks remain fully intact.' },
+  { title: 'Quiet Harbor', desc: 'Shape title, caption, and accent, then drop multiple local files. Each uploads to the share database and becomes a permanent Discord-ready link with a live embed preview. Soft size warnings only.' },
+  { title: 'Silk Mosaic', desc: 'Weave local images into a living board. Publish each as its own Discord-ready share under one quiet title and caption.' },
+  { title: 'Aether Timeline', desc: 'Sequence moments with notes and optional file attachments. Publish the whole timeline as one polished markdown share.' },
+  { title: 'Prism Code', desc: 'Shape a code snippet, set the embed styling, and publish it as a permanent Discord-ready file. Soft warnings only.' },
+  { title: 'Horizon Forge', desc: 'Shape title, caption, accent, and optional expiry, then drop multiple local files. Each becomes a permanent Discord-ready link.' },
+  { title: 'Lumen Vault', desc: 'Quiet multi-file hosting with living gallery previews. Each local file uploads to the share database.' },
   { title: 'Soft warnings only', desc: 'Large files are warned about possible slowness. Never refused. No hard limits.' },
   { title: 'Apple-style motion', desc: 'Spring animations, frosted glass, and careful pacing that feels hand-crafted and human.' },
-  { title: 'Local + cloud', desc: 'Keep everything in the browser vault. Publish only what you choose. Shares live in Supabase. File sharing uploads local files straight to the database.' },
 ];
 
 export default function Features() {

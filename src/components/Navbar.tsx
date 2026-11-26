@@ -9,6 +9,10 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   const links = [
+    { to: 'quietharbor', label: 'quiet harbor' },
+    { to: 'silkmosaic', label: 'silk mosaic' },
+    { to: 'aethertimeline', label: 'aether timeline' },
+    { to: 'prismcode', label: 'prism code' },
     { to: 'aetherecho', label: 'aether echo' },
     { to: 'prismjournal', label: 'prism journal' },
     { to: 'moodatlas', label: 'mood atlas' },
@@ -54,7 +58,6 @@ export default function Navbar() {
     { to: 'forge', label: 'forge' },
     { to: 'aureateforge', label: 'aureate' },
     { to: 'orbitdesk', label: 'orbit' },
-    { to: 'quietharbor', label: 'quiet' },
     { to: 'rippledesk', label: 'ripple' },
     { to: 'pulsedesk', label: 'pulse' },
     { to: 'signaturedesk', label: 'sign' },

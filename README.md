@@ -6,6 +6,12 @@ Drop local files. Soft size warnings only — no hard limits. Every share link s
 
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
+## New desks
+- **Quiet Harbor**: shape embed title, caption, and accent with live preview, then drop multiple local files. Each becomes a permanent Discord-ready link. Soft size warnings only.
+- **Silk Mosaic**: weave local images into a living board. Publish each under a shared title and caption as Discord-ready shares.
+- **Aether Timeline**: sequence moments with notes and optional file attachments. Publish the whole timeline as one polished markdown share.
+- **Prism Code**: shape a code snippet, set Discord embed styling, and publish it as a permanent file share.
+
 ## Core
 - **Aether Echo**: leave a quiet mark. Write a note, optionally attach a local file, choose an accent, and publish a permanent Discord-ready share. Soft size warnings only. Apple-style springs on frosted glass.
 - **Central Prism**: the quiet center. Multi-file drops with custom title, caption, and accent, live gallery of recent shares, soft size warnings only, and instant Discord-ready links. Apple-style springs on frosted glass.

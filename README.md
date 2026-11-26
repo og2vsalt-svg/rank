@@ -7,6 +7,7 @@ Drop local files. Soft size warnings only — no hard limits. Every share link s
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
 ## New desks
+- **Aether Stream**: build a living sequence step by step. Drop files (with optional per-step notes), choose accent, and each becomes its own permanent Discord-ready link. Soft size warnings only. Apple-style springs on frosted glass. Prior desks remain untouched.
 - **Prism Sketch**: a living canvas. Draw freely with spring-smooth tools, then publish the sketch as a permanent Discord-ready PNG share. Soft warnings only. All prior features remain.
 
 - **Quiet Harbor**: shape embed title, caption, and accent with live preview, then drop multiple local files. Each becomes a permanent Discord-ready link. Soft size warnings only.

@@ -1,171 +1,142 @@
 import { useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Navbar from './Navbar';
 import { publishLocalFile, shareUrls } from '../lib/cloudShare';
 import { useRouter } from './Router';
 
 export default function QuietHarborPage() {
   const { navigate } = useRouter();
-  const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
-  const [title, setTitle] = useState('');
-  const [note, setNote] = useState('');
-  const [accent, setAccent] = useState('#5AC8FA');
-  const [busy, setBusy] = useState(false);
-  const [result, setResult] = useState<{ link?: string; error?: string } | null>(null);
-  const [sizeNote, setSizeNote] = useState<string | null>(null);
+  const [dragging, setDragging] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [title, setTitle] = useState('Quiet Harbor');
+  const [caption, setCaption] = useState('shared from the quiet harbor');
+  const [color, setColor] = useState('#0A84FF');
+  const [results, setResults] = useState<any[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const onFile = useCallback((f: File) => {
-    setFile(f);
-    setTitle(f.name.replace(/\.[^.]+$/, ''));
-    setSizeNote(f.size > 80_000_000 ? 'Quite large — the browser might pause while sending. Nothing is blocked.' : null);
-    if (f.type.startsWith('image/')) {
-      setPreview(URL.createObjectURL(f));
-    } else {
-      setPreview(null);
-    }
-    setResult(null);
-  }, []);
+  const handleFiles = useCallback(async (files: FileList | File[]) => {
+    const list = Array.from(files);
+    if (!list.length) return;
+    setUploading(true);
+    setError(null);
+    setResults([]);
+    setProgress(0);
 
-  const share = async () => {
-    if (!file || busy) return;
-    setBusy(true);
-    setResult(null);
-    try {
-      const res = await publishLocalFile(file, {
-        caption: note.trim() || undefined,
-        color: accent,
-        cardTitle: title.trim() || file.name,
-        meta: { desk: 'quietharbor' },
-      });
-      if (res.ok && res.id) {
-        setResult({ link: shareUrls(res.id).app });
-      } else {
-        setResult({ error: res.error || 'Could not place the share.' });
+    const newResults: any[] = [];
+    for (let i = 0; i < list.length; i++) {
+      const file = list[i];
+      setProgress(Math.round(((i + 0.3) / list.length) * 100));
+      try {
+        const pub = await publishLocalFile(file, {
+          caption,
+          cardTitle: title || file.name,
+          color,
+        });
+        if (pub.ok && pub.id) {
+          const urls = shareUrls(pub.id);
+          newResults.push({
+            name: file.name,
+            id: pub.id,
+            url: urls.embed,
+            size: file.size,
+            warn: pub.warn,
+          });
+        } else {
+          setError(pub.error || 'one file could not be harbored');
+        }
+      } catch (e: any) {
+        setError(e?.message || 'upload interrupted');
       }
-    } catch (e: any) {
-      setResult({ error: e.message });
+      setProgress(Math.round(((i + 1) / list.length) * 100));
     }
-    setBusy(false);
+    setResults(newResults);
+    setUploading(false);
+  }, [title, caption, color]);
+
+  const onDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragging(false);
+    if (e.dataTransfer.files) handleFiles(e.dataTransfer.files);
+  }, [handleFiles]);
+
+  const prettySize = (n: number) => {
+    if (n < 1024) return n + ' B';
+    if (n < 1048576) return Math.round(n / 1024) + ' KB';
+    return (n / 1048576).toFixed(1) + ' MB';
   };
 
   return (
-    <div className="mesh min-h-screen">
-      <Navbar />
-      <div className="pt-32 pb-28 px-5 max-w-xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 100, damping: 24 }}
-          className="glass rounded-[40px] p-8 md:p-11 border border-white/[0.06]"
-        >
-          <p className="text-[12.5px] font-medium tracking-[0.08em] uppercase text-[#5AC8FA]/80 mb-3">Quiet Harbor</p>
-          <h1 className="text-[2.35rem] font-semibold tracking-tight leading-tight mb-3 text-white">A calm place to leave files.</h1>
-          <p className="text-neutral-400 text-[15.5px] leading-relaxed mb-9">
-            Drop something local. Add a short note if you like. Soft warning on very large files — the rest is up to the browser. Every link carries a clean Discord embed.
-          </p>
-
-          <div
-            onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('ring-2', 'ring-[#5AC8FA]/30'); }}
-            onDragLeave={(e) => e.currentTarget.classList.remove('ring-2', 'ring-[#5AC8FA]/30')}
-            onDrop={(e) => {
-              e.preventDefault();
-              e.currentTarget.classList.remove('ring-2', 'ring-[#5AC8FA]/30');
-              if (e.dataTransfer.files[0]) onFile(e.dataTransfer.files[0]);
-            }}
-            onClick={() => inputRef.current?.click()}
-            className="border-2 border-dashed border-white/12 rounded-[28px] p-14 text-center mb-8 cursor-pointer hover:border-white/25 transition-colors bg-black/15"
-          >
-            {preview ? (
-              <img src={preview} alt="" className="max-h-36 mx-auto rounded-2xl object-contain" />
-            ) : file ? (
-              <p className="text-neutral-300 text-[15px]">{file.name}</p>
-            ) : (
-              <>
-                <p className="text-neutral-300 text-[15px]">Drop a file</p>
-                <p className="text-neutral-500 text-sm mt-1.5">or click to choose</p>
-              </>
-            )}
-            <input
-              ref={inputRef}
-              type="file"
-              className="hidden"
-              onChange={(e) => e.target.files?.[0] && onFile(e.target.files[0])}
-            />
-          </div>
-
-          <AnimatePresence>
-            {file && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="space-y-4 mb-7 overflow-hidden"
-              >
-                <input
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Title"
-                  className="w-full bg-black/25 border border-white/10 rounded-2xl px-4 py-3.5 text-[15px] text-white placeholder:text-neutral-500 focus:outline-none focus:border-white/25 transition"
-                />
-                <textarea
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                  placeholder="Optional note"
-                  rows={3}
-                  className="w-full bg-black/25 border border-white/10 rounded-2xl px-4 py-3.5 text-[15px] text-white placeholder:text-neutral-500 focus:outline-none focus:border-white/25 transition resize-none"
-                />
-                <div className="flex items-center gap-3 pt-1">
-                  <label className="text-sm text-neutral-400">Accent</label>
-                  <input
-                    type="color"
-                    value={accent}
-                    onChange={(e) => setAccent(e.target.value)}
-                    className="w-9 h-9 rounded-full border border-white/10 bg-transparent cursor-pointer"
-                  />
-                  <span className="text-xs text-neutral-500 font-mono">{accent}</span>
-                </div>
-                {sizeNote && <p className="text-[13px] text-amber-300/70">{sizeNote}</p>}
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          <motion.button
-            whileTap={{ scale: 0.98 }}
-            whileHover={{ scale: 1.01 }}
-            onClick={share}
-            disabled={busy || !file}
-            className="w-full rounded-2xl py-4 text-[15px] font-medium text-black disabled:opacity-40 transition shadow-lg"
-            style={{ background: accent }}
-          >
-            {busy ? 'Placing…' : file ? 'Leave in harbor' : 'Choose a file first'}
-          </motion.button>
-
-          <AnimatePresence>
-            {result?.link && (
-              <motion.div
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mt-6 glass rounded-2xl p-4"
-              >
-                <p className="text-sm text-neutral-400 mb-1">Ready</p>
-                <button
-                  onClick={() => navigate('share', result.link!.split('/').pop() || '')}
-                  className="text-sm break-all text-left"
-                  style={{ color: accent }}
-                >
-                  {result.link}
-                </button>
-              </motion.div>
-            )}
-            {result?.error && (
-              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-sm text-red-400/90 mt-4">
-                {result.error}
-              </motion.p>
-            )}
-          </AnimatePresence>
+    <div className="min-h-screen bg-[#050506] text-[#f5f5f7]">
+      <div className="max-w-5xl mx-auto px-6 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 90, damping: 18 }} className="text-center mb-12">
+          <p className="text-[#0A84FF] text-sm tracking-wide mb-3">quiet harbor</p>
+          <h1 className="text-5xl sm:text-6xl font-semibold tracking-tight mb-4 leading-[1.02]">a calm place<br />for every file.</h1>
+          <p className="text-neutral-400 text-lg max-w-2xl mx-auto">Shape the embed title, caption, and accent, then drop local files. Each becomes a permanent Discord-ready link. Soft size warnings only — nothing is refused.</p>
         </motion.div>
+
+        <div className="grid md:grid-cols-2 gap-6 mb-10">
+          <div className="glass rounded-3xl p-6 space-y-4">
+            <label className="block text-xs text-neutral-500">embed title</label>
+            <input value={title} onChange={e => setTitle(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm outline-none focus:border-[#0A84FF]/50" />
+            <label className="block text-xs text-neutral-500">caption</label>
+            <textarea value={caption} onChange={e => setCaption(e.target.value)} rows={3} className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm outline-none focus:border-[#0A84FF]/50 resize-none" />
+            <label className="block text-xs text-neutral-500">accent</label>
+            <input type="color" value={color} onChange={e => setColor(e.target.value)} className="w-full h-12 rounded-2xl cursor-pointer bg-transparent border border-white/10" />
+          </div>
+          <div className="glass rounded-3xl p-6">
+            <p className="text-xs text-neutral-500 mb-3">live embed preview</p>
+            <div className="border-l-4 rounded-2xl p-4 bg-black/40" style={{ borderColor: color }}>
+              <p className="font-medium text-sm" style={{ color }}>{title || 'Quiet Harbor'}</p>
+              <p className="text-neutral-400 text-xs mt-1 leading-relaxed">{caption || 'shared from the quiet harbor'}</p>
+              <p className="text-[10px] text-neutral-600 mt-3">rankvault · Discord-ready</p>
+            </div>
+          </div>
+        </div>
+
+        <motion.div
+          onDrop={onDrop}
+          onDragOver={e => { e.preventDefault(); setDragging(true); }}
+          onDragLeave={() => setDragging(false)}
+          animate={{ scale: dragging ? 1.012 : 1, borderColor: dragging ? color : 'rgba(255,255,255,0.08)' }}
+          transition={{ type: 'spring', stiffness: 240, damping: 26 }}
+          className="relative border-2 border-dashed rounded-3xl p-16 text-center bg-white/[0.025] backdrop-blur-2xl cursor-pointer mb-10"
+          onClick={() => inputRef.current?.click()}
+        >
+          <input ref={inputRef} type="file" multiple className="hidden" onChange={e => e.target.files && handleFiles(e.target.files)} />
+          {uploading ? (
+            <div className="space-y-5">
+              <div className="w-16 h-16 mx-auto rounded-full border-2 border-white/20" style={{ borderTopColor: color }} className="animate-spin" />
+              <p className="text-sm text-neutral-300">harboring… {progress}%</p>
+            </div>
+          ) : (
+            <>
+              <p className="text-2xl font-medium mb-2">Drop files into the harbor</p>
+              <p className="text-sm text-neutral-500">or click to browse. Large files may feel slow in the browser — nothing is blocked.</p>
+            </>
+          )}
+        </motion.div>
+
+        {error && <p className="text-center text-sm text-red-400 mb-6">{error}</p>}
+
+        <AnimatePresence>
+          {results.length > 0 && (
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="grid sm:grid-cols-2 gap-4">
+              {results.map((r, i) => (
+                <motion.div key={r.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }} className="glass rounded-2xl p-5 flex flex-col gap-3">
+                  <div>
+                    <p className="text-sm font-medium truncate">{r.name}</p>
+                    <p className="text-xs text-neutral-500">{prettySize(r.size)}</p>
+                    {r.warn && <p className="text-xs text-amber-400 mt-1">{r.warn}</p>}
+                  </div>
+                  <button onClick={() => navigator.clipboard.writeText(r.url)} className="self-start px-4 py-2 rounded-full text-xs font-medium text-white" style={{ background: color }}>copy share link</button>
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <button onClick={() => navigate('home')} className="mt-12 text-sm text-neutral-500 hover:text-white transition">← back home</button>
       </div>
     </div>
   );

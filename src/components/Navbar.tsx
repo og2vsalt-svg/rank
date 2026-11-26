@@ -9,6 +9,7 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   const links = [
+    { to: 'aetherecho', label: 'aether echo' },
     { to: 'prismjournal', label: 'prism journal' },
     { to: 'moodatlas', label: 'mood atlas' },
     { to: 'echonote', label: 'echo note' },

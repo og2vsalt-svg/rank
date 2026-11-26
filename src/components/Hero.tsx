@@ -34,6 +34,7 @@ export default function Hero() {
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center">
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('centralvault')} className="px-7 py-3 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#3A9DFF] transition shadow-lg">central vault</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('cascadedesk')} className="px-7 py-3 rounded-full bg-[#AF52DE] text-white text-sm font-medium hover:bg-[#C07AE8] transition shadow-lg">cascade desk</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('moodatlas')} className="px-7 py-3 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition">mood atlas</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('echonote')} className="px-7 py-3 rounded-full bg-white/5 text-neutral-300 text-sm font-medium hover:bg-white/10 transition">echo note</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('horizonforge')} className="px-7 py-3 rounded-full bg-white/5 text-neutral-300 text-sm font-medium hover:bg-white/10 transition">horizon forge</motion.button>
@@ -42,7 +43,7 @@ export default function Hero() {
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('nexusdrop')} className="px-7 py-3 rounded-full bg-white/5 text-neutral-300 text-sm font-medium hover:bg-white/10 transition">nexus drop</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('snippetforge')} className="px-7 py-3 rounded-full bg-white/5 text-neutral-300 text-sm font-medium hover:bg-white/10 transition">snippet forge</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('harbordrop')} className="px-7 py-3 rounded-full bg-white/5 text-neutral-300 text-sm font-medium hover:bg-white/10 transition">harbor drop</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('lumencollection')} className="px-7 py-3 rounded-full bg-[#AF52DE] text-white text-sm font-medium hover:bg-[#C07AE8] transition shadow-lg">lumen collection</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('lumencollection')} className="px-7 py-3 rounded-full bg-white/5 text-neutral-300 text-sm font-medium hover:bg-white/10 transition">lumen collection</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('discordstudio')} className="px-7 py-3 rounded-full bg-white/5 text-neutral-300 text-sm font-medium hover:bg-white/10 transition">discord studio</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('directory')} className="px-6 py-2.5 rounded-full bg-white/5 text-neutral-300 text-sm font-medium hover:bg-white/10 transition">all desks</motion.button>
         </div>

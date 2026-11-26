@@ -1,163 +1,177 @@
-import { useState, useEffect } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Navbar from './Navbar';
-import { publishLocalFile, listPublicShares, type CloudMeta } from '../lib/cloudShare';
+import { useVault } from './VaultContext';
+import { publishLocalFile, shareUrls } from '../lib/cloudShare';
+import { useRouter } from './Router';
 
 export default function CascadeDeskPage() {
-  const [shares, setShares] = useState<CloudMeta[]>([]);
-  const [files, setFiles] = useState<File[]>([]);
-  const [caption, setCaption] = useState('');
-  const [accent, setAccent] = useState('#64D2FF');
-  const [busy, setBusy] = useState(false);
-  const [warn, setWarn] = useState<string | null>(null);
-  const [err, setErr] = useState('');
-  const [links, setLinks] = useState<string[]>([]);
+  const { addFiles } = useVault();
+  const { navigate } = useRouter();
+  const [dragging, setDragging] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [results, setResults] = useState<{ name: string; id: string; warn?: string; url: string; thumb?: string; size: number }[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const refresh = async () => {
-    const list = await listPublicShares(20);
-    setShares(list);
-  };
+  const handleFiles = useCallback(async (files: FileList | File[]) => {
+    const list = Array.from(files);
+    if (!list.length) return;
+    setUploading(true);
+    setError(null);
+    setResults([]);
+    setProgress(0);
 
-  useEffect(() => {
-    refresh();
+    await addFiles(list, 'cascadedesk');
+
+    const newResults: typeof results = [];
+    for (let i = 0; i < list.length; i++) {
+      const file = list[i];
+      setProgress(Math.round(((i + 0.4) / list.length) * 100));
+      let thumb: string | undefined;
+      if (file.type.startsWith('image/')) {
+        try { thumb = URL.createObjectURL(file); } catch {}
+      }
+      try {
+        const pub = await publishLocalFile(file, {
+          caption: 'Cascaded from Cascade Desk',
+          cardTitle: file.name,
+          color: '#AF52DE',
+        });
+        if (pub.ok && pub.id) {
+          const urls = shareUrls(pub.id);
+          newResults.push({
+            name: file.name,
+            id: pub.id,
+            warn: pub.warn || undefined,
+            url: urls.embed,
+            thumb,
+            size: file.size,
+          });
+        } else {
+          setError(pub.error || 'upload failed for one file');
+        }
+      } catch (e: any) {
+        setError(e?.message || 'upload error');
+      }
+      setProgress(Math.round(((i + 1) / list.length) * 100));
+    }
+    setResults(newResults);
+    setUploading(false);
+    setProgress(100);
+  }, [addFiles]);
+
+  const onDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragging(false);
+    if (e.dataTransfer.files) handleFiles(e.dataTransfer.files);
+  }, [handleFiles]);
+
+  const onDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragging(true);
   }, []);
 
-  const onFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const arr = Array.from(e.target.files || []);
-    setFiles(arr);
-    const big = arr.some(f => f.size > 40 * 1024 * 1024);
-    setWarn(big ? 'Large file(s). The cascade may take a moment to settle. No hard limit.' : null);
-  };
+  const onDragLeave = useCallback(() => setDragging(false), []);
 
-  const share = async () => {
-    if (!files.length) return setErr('let one or more files enter the cascade');
-    setBusy(true);
-    setErr('');
-    setLinks([]);
-    const created: string[] = [];
-    try {
-      for (const file of files) {
-        const res = await publishLocalFile(file, {
-          caption: caption.trim() || 'cascade drop',
-          color: accent,
-          cardTitle: file.name,
-          meta: { desk: 'cascadedesk' },
-        });
-        if (res.ok && res.embed) {
-          created.push(res.embed);
-        } else {
-          setErr(res.error || `paused on ${file.name}`);
-        }
-      }
-      setLinks(created);
-      setFiles([]);
-      setCaption('');
-      await refresh();
-    } catch (e: any) {
-      setErr(e.message || 'something slowed');
-    }
-    setBusy(false);
+  const prettySize = (n: number) => {
+    if (n < 1024) return n + ' B';
+    if (n < 1048576) return Math.round(n / 1024) + ' KB';
+    return (n / 1048576).toFixed(1) + ' MB';
   };
 
   return (
-    <div className="mesh min-h-screen bg-[#050507]">
-      <Navbar />
-      <div className="pt-28 pb-32 px-5 max-w-4xl mx-auto">
+    <div className="min-h-screen bg-[#050506] text-[#f5f5f7] font-sans antialiased">
+      <div className="max-w-5xl mx-auto px-6 py-16">
         <motion.div
-          initial={{ opacity: 0, y: 22 }}
+          initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 90, damping: 20 }}
-          className="text-center mb-12"
+          transition={{ type: 'spring', stiffness: 90, damping: 18 }}
+          className="text-center mb-14"
         >
-          <p className="text-[13px] font-medium tracking-[0.2em] uppercase mb-2" style={{ color: accent }}>Cascade Desk</p>
-          <h1 className="text-[40px] font-semibold tracking-tight text-white mb-3">Let it cascade.</h1>
-          <p className="text-neutral-400 text-[16px] leading-relaxed max-w-xl mx-auto">
-            Drop one or many local files with a shared note and accent. They enter storage and public_shares. Recent public drops settle into a living cascade of glass that flows and lifts with spring motion. Every share link unfurls a polished Discord card. Large batches warned only for possible slowness. No hard limits. All prior desks remain fully intact. No traces of boosting.
-          </p>
+          <p className="text-[#AF52DE] text-sm tracking-wide mb-3">cascade desk</p>
+          <h1 className="text-5xl sm:text-6xl font-semibold tracking-tight mb-5 leading-[1.02]">files that fall<br />in quiet sequence.</h1>
+          <p className="text-neutral-400 text-lg max-w-2xl mx-auto leading-relaxed">Drop multiple local files. They cascade into permanent Discord-ready shares, each with polished embeds and staggered Apple-style springs. Soft size warnings only — no hard limits, no boosting. Frosted glass throughout.</p>
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, scale: 0.97 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.08, type: 'spring', stiffness: 110, damping: 22 }}
-          className="glass rounded-[32px] p-8 mb-16 shadow-2xl max-w-xl mx-auto"
+          onDrop={onDrop}
+          onDragOver={onDragOver}
+          onDragLeave={onDragLeave}
+          animate={{
+            scale: dragging ? 1.015 : 1,
+            borderColor: dragging ? '#AF52DE' : 'rgba(255,255,255,0.08)',
+          }}
+          transition={{ type: 'spring', stiffness: 260, damping: 26 }}
+          className="relative border-2 border-dashed rounded-3xl p-20 text-center bg-white/[0.025] backdrop-blur-2xl cursor-pointer mb-12"
+          onClick={() => inputRef.current?.click()}
         >
-          <label className="block cursor-pointer rounded-[24px] border-2 border-dashed border-white/10 p-10 text-center mb-6 hover:border-white/20 transition-colors">
-            <p className="text-[15px] text-neutral-300">{files.length ? `${files.length} file${files.length > 1 ? 's' : ''} ready to cascade` : 'Drop or choose local files'}</p>
-            <p className="text-[12px] text-neutral-500 mt-1">No size limits. Soft warning only if it may feel slow.</p>
-            <input type="file" multiple className="hidden" onChange={onFiles} />
-          </label>
-
-          <textarea
-            value={caption}
-            onChange={(e) => setCaption(e.target.value)}
-            placeholder="Optional note that cascades with every file…"
-            rows={2}
-            className="w-full bg-black/20 border border-white/10 rounded-[20px] px-4 py-3 text-[15px] text-white placeholder:text-neutral-500 mb-5 resize-none focus:outline-none focus:border-white/25"
+          <input
+            ref={inputRef}
+            type="file"
+            multiple
+            className="hidden"
+            onChange={(e) => e.target.files && handleFiles(e.target.files)}
           />
-
-          <div className="flex items-center gap-4 mb-6">
-            <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="w-10 h-10 rounded-full cursor-pointer border-0" />
-            <span className="text-[13px] text-neutral-400">Cascade accent</span>
-          </div>
-
-          {warn && <p className="text-[13px] text-amber-300/90 mb-4">{warn}</p>}
-
-          <motion.button
-            whileTap={{ scale: 0.97 }}
-            whileHover={{ scale: 1.02 }}
-            onClick={share}
-            disabled={busy || !files.length}
-            className="w-full rounded-[22px] py-4 text-[16px] font-medium text-white disabled:opacity-40 transition shadow-xl"
-            style={{ background: accent }}
-          >
-            {busy ? 'Cascading into the flow…' : 'Share into the cascade'}
-          </motion.button>
-
-          <AnimatePresence>
-            {links.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mt-6 space-y-1 text-center"
-              >
-                {links.map((l, i) => (
-                  <a key={i} href={l} target="_blank" rel="noreferrer" className="block text-[14px] break-all" style={{ color: accent }}>{l}</a>
-                ))}
+          <AnimatePresence mode="wait">
+            {uploading ? (
+              <motion.div key="uploading" initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className="space-y-6">
+                <div className="w-20 h-20 mx-auto rounded-full border-2 border-[#AF52DE]/30 border-t-[#AF52DE] animate-spin" />
+                <p className="text-base text-neutral-300">cascading files… {progress}%</p>
+                <div className="h-1.5 bg-white/10 rounded-full overflow-hidden max-w-sm mx-auto">
+                  <motion.div className="h-full bg-[#AF52DE]" initial={{ width: 0 }} animate={{ width: `${progress}%` }} transition={{ type: 'spring', stiffness: 80, damping: 20 }} />
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                <div className="w-20 h-20 mx-auto mb-6 rounded-3xl bg-[#AF52DE]/15 flex items-center justify-center text-[#AF52DE]">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 16V4m0 0L8 8m4-4l4 4M4 20h16"/></svg>
+                </div>
+                <p className="text-2xl font-medium mb-2">Drop files here</p>
+                <p className="text-sm text-neutral-500">or click to browse. Large files may feel slow in the browser — nothing is blocked.</p>
               </motion.div>
             )}
-            {err && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 text-[13px] text-red-400 text-center">{err}</motion.p>}
           </AnimatePresence>
         </motion.div>
 
-        <div className="flex flex-col items-center gap-6">
-          {shares.map((s, i) => (
-            <motion.a
-              key={s.id}
-              href={`/s/${s.id}`}
-              target="_blank"
-              rel="noreferrer"
-              initial={{ opacity: 0, y: 40, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ delay: i * 0.06, type: 'spring', stiffness: 70, damping: 16 }}
-              whileHover={{ y: -8, scale: 1.03 }}
-              className="glass rounded-[28px] p-4 apple-card shadow-xl w-full max-w-md origin-center relative overflow-hidden"
-            >
-              <div className="absolute inset-0 opacity-15 pointer-events-none" style={{ background: `linear-gradient(180deg, ${s.color || accent}30, transparent 70%)` }} />
-              <div className="aspect-video rounded-[18px] mb-3 overflow-hidden relative" style={{ backgroundColor: (s.color || accent) + '10' }}>
-                {s.type?.startsWith('image/') && s.url ? (
-                  <img src={s.url} alt={s.name} className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full grid place-items-center text-[14px] text-neutral-400">{s.type?.split('/')[1] || 'file'}</div>
-                )}
+        {error && (
+          <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-center text-sm text-red-400 mb-8">{error}</motion.p>
+        )}
+
+        <AnimatePresence>
+          {results.length > 0 && (
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 100, damping: 20 }} className="space-y-6">
+              <p className="text-sm text-neutral-400">each link ships with a polished Discord embed</p>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                {results.map((r, i) => (
+                  <motion.div
+                    key={r.id}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.06, type: 'spring', stiffness: 140, damping: 18 }}
+                    className="glass rounded-2xl p-5 flex flex-col gap-4"
+                  >
+                    {r.thumb && (
+                      <img src={r.thumb} alt="" className="w-full h-36 object-cover rounded-xl" />
+                    )}
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium truncate">{r.name}</p>
+                      <p className="text-xs text-neutral-500 mt-0.5">{prettySize(r.size)}</p>
+                      {r.warn && <p className="text-xs text-amber-400 mt-1">{r.warn}</p>}
+                    </div>
+                    <button
+                      onClick={() => navigator.clipboard.writeText(r.url)}
+                      className="mt-auto px-4 py-2.5 rounded-full bg-[#AF52DE] text-white text-xs font-medium hover:bg-[#C07AE8] transition self-start"
+                    >
+                      copy share link
+                    </button>
+                  </motion.div>
+                ))}
               </div>
-              <p className="text-[16px] font-medium text-white truncate px-1 relative">{s.name || 'untitled'}</p>
-              {s.caption && <p className="text-[14px] text-neutral-400 mt-1 line-clamp-2 px-1 relative">{s.caption}</p>}
-              <p className="text-[12px] text-neutral-500 mt-2 px-1 relative">{new Date(s.createdAt || '').toLocaleDateString()}</p>
-            </motion.a>
-          ))}
-        </div>
-        {shares.length === 0 && <p className="text-neutral-500 text-center py-12 text-[15px]">The cascade is still. Share the first flow.</p>}
+              <button onClick={() => navigate('home')} className="mt-8 text-sm text-neutral-500 hover:text-white transition">← back home</button>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

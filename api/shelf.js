@@ -4,10 +4,10 @@ const FALLBACK = 'https://og2vsalt-svg.github.io/rank/og.png';
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 }
 
@@ -53,75 +53,12 @@ export default async function handler(req, res) {
         image = share.file_url;
       }
     }
+  } else if (page === 'cascadedesk') {
+    title = 'Cascade Desk — rankvault';
+    desc = 'Files that fall in quiet sequence. Multi-file drops cascade into permanent Discord-ready shares with staggered Apple-style springs. Soft size warnings only. Frosted glass throughout.';
   } else if (page === 'echonote') {
     title = 'Echo Note — rankvault';
     desc = 'Leave a quiet mark. Write a note, optionally attach a file, and publish a polished Discord-ready share. Soft size warnings only. Apple-style springs on frosted glass.';
-  } else if (page === 'aetherloom') {
-    title = 'Aether Loom — rankvault';
-    desc = 'Weave local files into quiet threads. Multi-file drops with staggered Apple-style springs. Soft size warnings only. Permanent Discord-ready links on frosted glass.';
-  } else if (page === 'silkharbor') {
-    title = 'Silk Harbor — rankvault';
-    desc = 'Soft arrivals under one quiet note and muted silk accent. Multi-file shares with staggered springs. Soft size warnings only. Permanent Discord-ready links.';
-  } else if (page === 'horizonweave') {
-    title = 'Horizon Weave — rankvault';
-    desc = 'Files settle along a quiet light line. Multi-file horizon shares with cool accent and Apple-style springs. Soft size warnings only. Permanent Discord-ready links.';
-  } else if (page === 'solsticedesk') {
-    title = 'Solstice Desk — rankvault';
-    desc = 'Files that turn with the light. Sequential multi-file shares under one quiet title and caption. Soft size warnings only. Permanent Discord-ready links. Apple-style springs.';
-  } else if (page === 'echoloom') {
-    title = 'Echo Loom — rankvault';
-    desc = 'Weave audio and quiet notes into permanent Discord-ready shares. Soft size warnings only. Living waveform. Apple-style springs on frosted glass.';
-  } else if (page === 'zenithdesk') {
-    title = 'Zenith Desk — rankvault';
-    desc = 'The high point of a single share. Live preview, title, caption, and accent. Permanent Discord-ready link. Soft size warnings only. Apple-style springs.';
-  } else if (page === 'eclipsedesk') {
-    title = 'Eclipse Desk — rankvault';
-    desc = 'Files rise like stars. Sequential multi-file shares under one quiet title and caption with staggered springs. Soft size warnings only. Permanent Discord-ready links. Apple-style frosted glass.';
-  } else if (page === 'prismcascade') {
-    title = 'Prism Cascade — rankvault';
-    desc = 'Files rise in sequential prism colors. Multi-file drops cascade into permanent Discord-ready shares. Soft size warnings only. Apple-style springs on frosted glass.';
-  } else if (page === 'canvasdesk') {
-    title = 'Canvas Desk — rankvault';
-    desc = 'A quiet place for images. Live preview, title, caption, and accent. Permanent Discord-ready link. Soft size warnings only. Apple-style springs.';
-  } else if (page === 'quietweave') {
-    title = 'Quiet Weave — rankvault';
-    desc = 'Weave short notes and an optional local file into one clean share. Polished Discord embeds. Soft warnings only. Apple-style springs on frosted glass.';
-  } else if (page === 'forge') {
-    title = 'Forge — rankvault';
-    desc = 'Craft a polished share from a local file. Shape title, caption, and accent. Soft size warnings only. Polished Discord embeds. Apple-style springs.';
-  } else if (page === 'aureateforge') {
-    title = 'Aureate Forge — rankvault';
-    desc = 'Gilded shares in warm light. Shape title, caption, and golden accent. Soft size warnings only. Polished Discord embeds. Apple-style springs.';
-  } else if (page === 'velvetdesk') {
-    title = 'Velvet Desk — rankvault';
-    desc = 'Soft, lasting shares in deep velvet. Shape title, caption, and rich accent. Soft size warnings only. Polished Discord embeds. Apple-style springs.';
-  } else if (page === 'quietharbor') {
-    title = 'Quiet Harbor — rankvault';
-    desc = 'A calm place to leave files. Soft size warnings only. Polished Discord embeds on every link. Apple-style springs.';
-  } else if (page === 'library') {
-    title = 'Library — rankvault';
-    desc = 'Browse recent public shares with search and filters. Soft size warnings only. Polished Discord embeds. Apple-style springs.';
-  } else if (page === 'drop') {
-    title = 'Drop — rankvault';
-    desc = 'The clean central place to share local files. Soft size warnings only. Polished Discord embeds on every link. Apple-style springs.';
-  } else if (page === 'orbitdesk') {
-    title = 'Orbit Desk — rankvault';
-    desc = 'Ideas in orbit. Map a center and surrounding thoughts, then publish as a clean markdown share. Soft warnings only. Polished Discord embeds. Apple-style springs.';
-  } else if (page === 'centraldrop') {
-    title = 'Central Drop — rankvault';
-    desc = 'Everything in one place. Multi-file drops cascade into permanent shares with polished Discord embeds. Soft size warnings only. Apple-style springs.';
-  } else if (page === 'horizondesk') {
-    title = 'Horizon Desk — rankvault';
-    desc = 'Where shares meet the light. Multi-file drops settle along a quiet horizon. Soft warnings only. Polished Discord embeds.';
-  } else if (page === 'constellation') {
-    title = 'Constellation — rankvault';
-    desc = 'Place a central idea and orbiting notes or files. Publish the whole constellation as a clean markdown share. Soft size warnings only. Polished Discord embeds.';
-  } else if (page === 'lattice') {
-    title = 'Lattice — rankvault';
-    desc = 'Arrange notes and files in a quiet grid. Publish the lattice as structured markdown with embeds. Soft warnings only. Apple-style springs.';
-  } else if (page === 'gossamerdesk') {
-    title = 'Gossamer Desk — rankvault';
-    desc = 'Delicate multi-file shares with soft notes and muted accents. Each local file settles as its own permanent Discord-ready link. Soft size warnings only. Apple-style springs on frosted glass.';
   } else if (page === 'moodatlas') {
     title = 'Mood Atlas — rankvault';
     desc = 'Map a mood with notes, colors, and local files. Publish the whole atlas as a quiet share with polished Discord embeds. Soft size warnings only. Apple-style springs.';

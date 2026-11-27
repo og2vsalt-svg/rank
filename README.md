@@ -7,6 +7,7 @@ Drop local files. Soft size warnings only — no hard limits. Every share link s
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
 ## New desks
+- **Aether Archive**: living multi-file drop with shared title, caption, and accent. Files settle into a gallery of recent shares with staggered Apple-style springs. Each becomes its own permanent Discord-ready link. Soft size warnings only — no hard limits. Prior desks remain untouched.
 - **Quiet Prism**: shape a shared title, caption, and accent, then drop multiple local files. They settle with staggered Apple-style springs and each becomes its own permanent Discord-ready link. Soft size warnings only — no hard limits. Prior desks remain untouched.
 - **Velvet Cascade**: shape a shared title, caption, and accent, then drop multiple local files. They settle with staggered Apple-style springs and each becomes its own permanent Discord-ready link. Soft size warnings only — no hard limits, no boosting. Prior desks remain untouched.
 - **Lumen Whisper**: leave a quiet mark. Write a note, optionally attach a local file, choose an accent, and publish a permanent Discord-ready share. Soft size warnings only. Apple-style springs on frosted glass.

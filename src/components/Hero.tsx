@@ -33,6 +33,9 @@ export default function Hero() {
           Quiet desks for multi-file drops, sequenced notes, living galleries, and polished embeds. Soft size warnings only — no hard limits. Apple-style springs on frosted glass.
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center">
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('velvetcascade')} className="px-7 py-3 rounded-full bg-[#BF5AF2] text-white text-sm font-medium hover:opacity-90 transition shadow-lg">velvet cascade</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('lumenwhisper')} className="px-7 py-3 rounded-full bg-[#64D2FF] text-black text-sm font-medium hover:opacity-90 transition shadow-lg">lumen whisper</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('horizonstream')} className="px-7 py-3 rounded-full bg-[#30D158] text-black text-sm font-medium hover:opacity-90 transition shadow-lg">horizon stream</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('velvetdrift')} className="px-7 py-3 rounded-full bg-[#BF5AF2] text-white text-sm font-medium hover:opacity-90 transition shadow-lg">velvet drift</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('horizondesk')} className="px-7 py-3 rounded-full bg-[#64D2FF] text-black text-sm font-medium hover:opacity-90 transition shadow-lg">horizon desk</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietcascade')} className="px-7 py-3 rounded-full bg-[#BF5AF2] text-white text-sm font-medium hover:opacity-90 transition shadow-lg">quiet cascade</motion.button>

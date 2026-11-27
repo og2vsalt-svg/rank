@@ -4,10 +4,10 @@ const FALLBACK = 'https://og2vsalt-svg.github.io/rank/og.png';
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"')
     .replace(/'/g, '&#39;');
 }
 
@@ -83,6 +83,9 @@ export default async function handler(req, res) {
   } else if (page === 'quietmosaic') {
     title = 'Quiet Mosaic — rankvault';
     desc = 'Weave local images into a living board. Each becomes a permanent Discord-ready share under a shared title and caption. Soft size warnings only. Apple-style springs on frosted glass.';
+  } else if (page === 'cascadejournal') {
+    title = 'Cascade Journal — rankvault';
+    desc = 'Sequence quiet moments. Build a cascade of notes and optional local files. Each step publishes as a permanent Discord-ready link under a shared title and accent. Soft size warnings only. Apple-style springs on frosted glass.';
   }
 
   const url = `${proto}://${host}${path}`;

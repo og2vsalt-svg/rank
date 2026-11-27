@@ -7,6 +7,7 @@ Drop local files. Soft size warnings only — no hard limits. Every share link s
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
 ## New desks
+- **Lumen Quill**: compose a quiet note, optionally attach a local file, shape title, caption, and accent, then publish a permanent Discord-ready link. Soft size warnings only — no hard limits, no boosting. Apple-style springs on frosted glass. Prior desks remain untouched.
 - **Lumen Atelier**: shape a quiet title, caption, and accent, then drop multiple local files. They settle with staggered Apple-style springs and each becomes its own permanent Discord-ready link. Soft size warnings only — no hard limits, no boosting. Prior desks remain untouched.
 - **Lumen Palette**: drop local images. A living palette settles with Apple-style springs from the light inside. Publish each as its own permanent Discord-ready link, with the colors carried in the caption. Soft size warnings only — no hard limits. Prior desks remain untouched.
 - **Aether Archive**: living multi-file drop with shared title, caption, and accent. Files settle into a gallery of recent shares with staggered Apple-style springs. Each becomes its own permanent Discord-ready link. Soft size warnings only — no hard limits. Prior desks remain untouched.

@@ -53,6 +53,9 @@ export default async function handler(req, res) {
         image = share.file_url;
       }
     }
+  } else if (page === 'prismgallery') {
+    title = 'Prism Gallery — rankvault';
+    desc = 'Living gallery of recent public shares. Soft size warnings only. Every link ships with polished Discord embeds. Apple-style springs on frosted glass.';
   } else if (page === 'echoprism') {
     title = 'Echo Prism — rankvault';
     desc = 'Quiet multi-file hosting with living previews. Soft size warnings only — no hard limits. Every share link ships with polished Discord embeds. Apple-style springs on frosted glass.';

@@ -33,6 +33,7 @@ export default function Hero() {
           Quiet desks for multi-file drops, sequenced notes, living galleries, and polished embeds. Soft size warnings only — no hard limits. Apple-style springs on frosted glass.
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center">
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('lumenpalette')} className="px-7 py-3 rounded-full bg-[#FF9F0A] text-black text-sm font-medium hover:opacity-90 transition shadow-lg">lumen palette</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('aetherarchive')} className="px-7 py-3 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:opacity-90 transition shadow-lg">aether archive</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietprism')} className="px-7 py-3 rounded-full bg-[#BF5AF2] text-white text-sm font-medium hover:opacity-90 transition shadow-lg">quiet prism</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('velvetcascade')} className="px-7 py-3 rounded-full bg-[#64D2FF] text-black text-sm font-medium hover:opacity-90 transition shadow-lg">velvet cascade</motion.button>

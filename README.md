@@ -7,6 +7,8 @@ Drop local files. Soft size warnings only — no hard limits. Every share link s
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
 ## New desks
+- **Silk Capsule**: a softer seal. Drop a local file, write a quiet note, set an optional unlock hour and passcode, then publish a permanent Discord-ready link. Soft size warnings only — no hard limits, no boosting. Apple-style springs on frosted glass. Prior desks remain untouched.
+- **Aether Playlist**: a living sequence. Drop audio, video, or images. They settle into a quiet playlist under a shared title and accent. Each becomes its own permanent Discord-ready link. Soft size warnings only — no hard limits, no boosting. Apple-style springs on frosted glass. Prior desks remain untouched.
 - **Lumen Orbit**: drop local files. They settle into a living orbit with Apple-style springs. Each becomes its own permanent Discord-ready link under a shared title and accent. Soft size warnings only — no hard limits. Prior desks remain untouched.
 - **Quiet Spectrum**: drop a local image. A living palette settles with Apple-style springs from the light inside. Publish with the colors carried in the caption as a permanent Discord-ready link. Soft size warnings only.
 - **Lumen Quill**: compose a quiet note, optionally attach a local file, shape title, caption, and accent, then publish a permanent Discord-ready link. Soft size warnings only — no hard limits, no boosting. Apple-style springs on frosted glass. Prior desks remain untouched.

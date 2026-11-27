@@ -1,120 +1,205 @@
-import { useState } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Navbar from './Navbar';
-import { publishLocalFile } from '../lib/cloudShare';
-
-const PRISM = ['#0A84FF', '#64D2FF', '#AF52DE', '#FF9F0A', '#30D158', '#FF375F'];
+import { useVault } from './VaultContext';
+import { publishLocalFile, shareUrls } from '../lib/cloudShare';
+import { useRouter } from './Router';
 
 export default function PrismCascadePage() {
-  const [files, setFiles] = useState<File[]>([]);
-  const [title, setTitle] = useState('');
-  const [caption, setCaption] = useState('');
-  const [busy, setBusy] = useState(false);
-  const [links, setLinks] = useState<{ name: string; embed: string; color: string }[]>([]);
-  const [warns, setWarns] = useState<string[]>([]);
-  const [err, setErr] = useState('');
+  const { addFiles } = useVault();
+  const { navigate } = useRouter();
+  const [dragging, setDragging] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [results, setResults] = useState<{ name: string; id: string; warn?: string; url: string; thumb?: string; size: number }[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [title, setTitle] = useState('Prism Cascade');
+  const [caption, setCaption] = useState('Shared from the cascade');
+  const [accent, setAccent] = useState('#0A84FF');
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const onFiles = (list: FileList | null) => {
-    if (!list) return;
-    const arr = Array.from(list);
-    setFiles(arr);
-    const big = arr.filter((f) => f.size > 40 * 1024 * 1024).map((f) => `${f.name} is large — upload may feel slow. No hard limit.`);
-    setWarns(big);
-  };
+  const handleFiles = useCallback(async (files: FileList | File[]) => {
+    const list = Array.from(files);
+    if (!list.length) return;
+    setUploading(true);
+    setError(null);
+    setResults([]);
+    setProgress(0);
 
-  const cascade = async () => {
-    if (!files.length) return setErr('drop at least one local file');
-    setBusy(true);
-    setErr('');
-    setLinks([]);
-    const next: { name: string; embed: string; color: string }[] = [];
-    for (let i = 0; i < files.length; i++) {
-      const f = files[i];
-      const color = PRISM[i % PRISM.length];
-      try {
-        const res = await publishLocalFile(f, {
-          caption: caption.trim() || title.trim() || 'from the prism cascade',
-          color,
-          cardTitle: title.trim() || f.name,
-          meta: { desk: 'prismcascade', index: i },
-        });
-        if (res.ok && res.embed) next.push({ name: f.name, embed: res.embed, color });
-        else setErr(res.error || 'one file slowed');
-      } catch (e: any) {
-        setErr(e.message || 'something slowed');
+    await addFiles(list, 'prismcascade');
+
+    const newResults: typeof results = [];
+    for (let i = 0; i < list.length; i++) {
+      const file = list[i];
+      setProgress(Math.round(((i + 0.4) / list.length) * 100));
+      let thumb: string | undefined;
+      if (file.type.startsWith('image/')) {
+        try { thumb = URL.createObjectURL(file); } catch {}
       }
+      try {
+        const pub = await publishLocalFile(file, {
+          caption,
+          cardTitle: title || file.name,
+          color: accent,
+        });
+        if (pub.ok && pub.id) {
+          const urls = shareUrls(pub.id);
+          newResults.push({
+            name: file.name,
+            id: pub.id,
+            warn: pub.warn || undefined,
+            url: urls.embed,
+            thumb,
+            size: file.size,
+          });
+        } else {
+          setError(pub.error || 'upload failed for one file');
+        }
+      } catch (e: any) {
+        setError(e?.message || 'upload error');
+      }
+      setProgress(Math.round(((i + 1) / list.length) * 100));
     }
-    setLinks(next);
-    setBusy(false);
+    setResults(newResults);
+    setUploading(false);
+    setProgress(100);
+  }, [addFiles, title, caption, accent]);
+
+  const onDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragging(false);
+    if (e.dataTransfer.files) handleFiles(e.dataTransfer.files);
+  }, [handleFiles]);
+
+  const onDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragging(true);
+  }, []);
+
+  const onDragLeave = useCallback(() => setDragging(false), []);
+
+  const prettySize = (n: number) => {
+    if (n < 1024) return n + ' B';
+    if (n < 1048576) return Math.round(n / 1024) + ' KB';
+    return (n / 1048576).toFixed(1) + ' MB';
   };
 
   return (
-    <div className="mesh min-h-screen">
-      <Navbar />
-      <div className="pt-32 pb-24 px-6 max-w-2xl mx-auto">
+    <div className="min-h-screen bg-[#050506] text-[#f5f5f7] font-sans antialiased">
+      <div className="max-w-5xl mx-auto px-6 py-16">
         <motion.div
-          initial={{ opacity: 0, scale: 0.98 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ type: 'spring', stiffness: 110, damping: 20 }}
-          className="glass rounded-[32px] p-8 shadow-2xl"
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: 'spring', stiffness: 90, damping: 18 }}
+          className="text-center mb-14"
         >
-          <p className="text-[13px] font-medium tracking-wide mb-1 text-[#64D2FF]">Prism Cascade</p>
-          <h1 className="text-[28px] font-semibold tracking-tight mb-3">Files rise in color.</h1>
-          <p className="text-neutral-400 text-[14px] leading-relaxed mb-6">
-            Drop several local files. They cascade with sequential prism accents and Apple-style springs. Shared title and caption. Each becomes its own permanent Discord-ready link. Soft size warnings only. No hard limits. Prior desks stay untouched.
-          </p>
+          <p className="text-[#0A84FF] text-sm tracking-wide mb-3">prism cascade</p>
+          <h1 className="text-5xl sm:text-6xl font-semibold tracking-tight mb-5 leading-[1.02]">files that fall<br />in quiet sequence.</h1>
+          <p className="text-neutral-400 text-lg max-w-2xl mx-auto leading-relaxed">Shape a shared title, caption, and accent, then drop local files. Each settles with staggered Apple-style springs and becomes its own permanent Discord-ready link. Soft size warnings only — no hard limits, no boosting. Prior desks remain untouched.</p>
+        </motion.div>
 
+        <div className="grid sm:grid-cols-3 gap-4 mb-10 max-w-3xl mx-auto">
           <input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="Shared title (optional)"
-            className="w-full bg-black/20 border border-white/10 rounded-[16px] px-4 py-3 text-[15px] text-white placeholder:text-neutral-500 mb-3 focus:outline-none focus:border-white/20"
+            placeholder="shared title"
+            className="glass rounded-2xl px-4 py-3 text-sm bg-white/[0.03] border border-white/10 focus:border-[#0A84FF]/50 outline-none"
           />
-          <textarea
+          <input
             value={caption}
             onChange={(e) => setCaption(e.target.value)}
-            placeholder="Quiet caption for every link…"
-            rows={2}
-            className="w-full bg-black/20 border border-white/10 rounded-[16px] px-4 py-3 text-[15px] text-white placeholder:text-neutral-500 mb-4 resize-none focus:outline-none focus:border-white/20"
+            placeholder="shared caption"
+            className="glass rounded-2xl px-4 py-3 text-sm bg-white/[0.03] border border-white/10 focus:border-[#0A84FF]/50 outline-none"
           />
+          <div className="flex items-center gap-3 glass rounded-2xl px-4 py-3 bg-white/[0.03] border border-white/10">
+            <input
+              type="color"
+              value={accent}
+              onChange={(e) => setAccent(e.target.value)}
+              className="w-8 h-8 rounded-lg cursor-pointer border-0 bg-transparent"
+            />
+            <span className="text-sm text-neutral-400">accent</span>
+          </div>
+        </div>
 
-          <label className="block mb-4 text-[13px] text-neutral-300 cursor-pointer hover:text-white transition">
-            {files.length ? `${files.length} file${files.length > 1 ? 's' : ''} ready` : 'Drop local files'}
-            <input type="file" multiple className="hidden" onChange={(e) => onFiles(e.target.files)} />
-          </label>
-
-          {warns.map((w, i) => (
-            <p key={i} className="text-[12px] text-amber-300/90 mb-1">{w}</p>
-          ))}
-
-          <motion.button
-            whileTap={{ scale: 0.96 }}
-            whileHover={{ scale: 1.02 }}
-            onClick={cascade}
-            disabled={busy || !files.length}
-            className="w-full rounded-[18px] py-3.5 text-[15px] font-medium text-white disabled:opacity-40 transition shadow-lg bg-[#0A84FF]"
-          >
-            {busy ? 'Cascading…' : 'Cascade shares'}
-          </motion.button>
-
-          {err && <p className="mt-4 text-[12px] text-red-400">{err}</p>}
-
-          <AnimatePresence>
-            {links.map((l, i) => (
-              <motion.a
-                key={l.embed}
-                initial={{ opacity: 0, y: 8, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ delay: i * 0.06, type: 'spring', stiffness: 120, damping: 18 }}
-                href={l.embed}
-                className="block mt-4 text-[13px] break-all"
-                style={{ color: l.color }}
-              >
-                {l.name} — {l.embed}
-              </motion.a>
-            ))}
+        <motion.div
+          onDrop={onDrop}
+          onDragOver={onDragOver}
+          onDragLeave={onDragLeave}
+          animate={{
+            scale: dragging ? 1.015 : 1,
+            borderColor: dragging ? accent : 'rgba(255,255,255,0.08)',
+          }}
+          transition={{ type: 'spring', stiffness: 260, damping: 26 }}
+          className="relative border-2 border-dashed rounded-3xl p-20 text-center bg-white/[0.025] backdrop-blur-2xl cursor-pointer mb-12"
+          onClick={() => inputRef.current?.click()}
+        >
+          <input
+            ref={inputRef}
+            type="file"
+            multiple
+            className="hidden"
+            onChange={(e) => e.target.files && handleFiles(e.target.files)}
+          />
+          <AnimatePresence mode="wait">
+            {uploading ? (
+              <motion.div key="uploading" initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className="space-y-6">
+                <div className="w-20 h-20 mx-auto rounded-full border-2 border-white/20" style={{ borderTopColor: accent }} className="animate-spin" />
+                <p className="text-base text-neutral-300">cascading files… {progress}%</p>
+                <div className="h-1.5 bg-white/10 rounded-full overflow-hidden max-w-sm mx-auto">
+                  <motion.div className="h-full" style={{ backgroundColor: accent }} initial={{ width: 0 }} animate={{ width: `${progress}%` }} transition={{ type: 'spring', stiffness: 80, damping: 20 }} />
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                <div className="w-20 h-20 mx-auto mb-6 rounded-3xl flex items-center justify-center" style={{ backgroundColor: `${accent}22`, color: accent }}>
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 16V4m0 0L8 8m4-4l4 4M4 20h16"/></svg>
+                </div>
+                <p className="text-2xl font-medium mb-2">Drop files here</p>
+                <p className="text-sm text-neutral-500">or click to browse. Large files may feel slow in the browser — nothing is blocked.</p>
+              </motion.div>
+            )}
           </AnimatePresence>
         </motion.div>
+
+        {error && (
+          <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-center text-sm text-red-400 mb-8">{error}</motion.p>
+        )}
+
+        <AnimatePresence>
+          {results.length > 0 && (
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 100, damping: 20 }} className="space-y-6">
+              <p className="text-sm text-neutral-400">each link ships with a polished Discord embed</p>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                {results.map((r, i) => (
+                  <motion.div
+                    key={r.id}
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.06, type: 'spring', stiffness: 140, damping: 18 }}
+                    className="glass rounded-2xl p-5 flex flex-col gap-4"
+                  >
+                    {r.thumb && (
+                      <img src={r.thumb} alt="" className="w-full h-36 object-cover rounded-xl" />
+                    )}
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium truncate">{r.name}</p>
+                      <p className="text-xs text-neutral-500 mt-0.5">{prettySize(r.size)}</p>
+                      {r.warn && <p className="text-xs text-amber-400 mt-1">{r.warn}</p>}
+                    </div>
+                    <button
+                      onClick={() => navigator.clipboard.writeText(r.url)}
+                      className="mt-auto px-4 py-2.5 rounded-full text-white text-xs font-medium transition self-start"
+                      style={{ backgroundColor: accent }}
+                    >
+                      copy share link
+                    </button>
+                  </motion.div>
+                ))}
+              </div>
+              <button onClick={() => navigate('home')} className="mt-8 text-sm text-neutral-500 hover:text-white transition">← back home</button>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

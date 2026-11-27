@@ -7,6 +7,7 @@ Drop local files. Soft size warnings only — no hard limits. Every share link s
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
 ## New desks
+- **Lumen Constellation**: drop local files. They settle into a living constellation with Apple-style springs and connecting light. Each becomes its own permanent Discord-ready link under a shared title and accent. Soft size warnings only — no hard limits, no boosting. Prior desks remain untouched.
 - **Lumen Horizon**: shape a shared title, caption, and accent, then drop multiple local files. They settle into a living horizontal field with Apple-style springs. Publish each as its own permanent Discord-ready link. Soft size warnings only — no hard limits, no boosting. Prior desks remain untouched.
 - **Lumen Forge**: shape a quiet forge. Gather notes and local files under one title, caption, and accent. Each settles with Apple-style springs and becomes its own permanent Discord-ready link. Soft size warnings only — no hard limits, no boosting. Prior desks remain untouched.
 - **Prism Notebook**: a quiet sequence of thoughts. Add entries, optionally attach local files that upload to the share database, then publish the whole notebook as one permanent Discord-ready markdown link. Soft size warnings only — no hard limits, no boosting. Apple-style springs on frosted glass. Prior desks remain untouched.

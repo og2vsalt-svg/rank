@@ -7,6 +7,9 @@ Drop local files. Soft size warnings only — no hard limits. Every share link s
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
 ## New desks
+- **Prism Pulse**: living gallery of recent public shares. Soft size notes only. Every link ships with a polished Discord embed. Apple-style springs on frosted glass. Prior desks remain untouched.
+- **Aether Capsule**: seal a quiet capsule. Drop a local file, write a note, set an optional unlock moment, and publish a permanent Discord-ready link. Soft size warnings only. Apple-style springs on frosted glass. Prior desks remain untouched.
+- **Quiet Mosaic**: weave local images into a living board. Each becomes its own permanent Discord-ready share under a shared title and caption. Soft size warnings only. Apple-style springs on frosted glass. Prior desks remain untouched.
 - **Prism Gallery**: living gallery of recent public shares from the database. Soft size notes only. Every link ships with a polished Discord embed. Apple-style springs on frosted glass. Prior desks remain untouched.
 - **Prism Cascade**: shape a shared title, caption, and accent, then drop multiple local files. Each settles with staggered Apple-style springs and becomes its own permanent Discord-ready link. Soft size warnings only — no hard limits, no boosting. Prior desks remain untouched.
 - **Echo Prism**: quiet multi-file hosting with living previews. Soft size warnings only — no hard limits. Every share link ships with polished Discord embeds. Apple-style springs on frosted glass. Prior desks remain untouched.

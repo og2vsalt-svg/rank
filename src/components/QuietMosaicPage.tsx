@@ -1,164 +1,98 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Navbar from './Navbar';
-import { publishLocalFile } from '../lib/cloudShare';
+import { publishLocalFile, shareUrls } from '../lib/cloudShare';
+import { useRouter } from './Router';
 
 export default function QuietMosaicPage() {
-  const [files, setFiles] = useState<File[]>([]);
-  const [previews, setPreviews] = useState<string[]>([]);
+  const { navigate } = useRouter();
+  const [title, setTitle] = useState('');
   const [caption, setCaption] = useState('');
-  const [accent, setAccent] = useState('#0A84FF');
-  const [busy, setBusy] = useState(false);
-  const [results, setResults] = useState<{ link?: string; error?: string; name: string }[]>([]);
-  const [warn, setWarn] = useState<string | null>(null);
+  const [accent, setAccent] = useState('#30D158');
+  const [files, setFiles] = useState<File[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [results, setResults] = useState<{ url: string; name: string; warn?: string }[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const onDrop = useCallback((e: React.DragEvent | React.ChangeEvent<HTMLInputElement>) => {
-    const list = 'dataTransfer' in e ? Array.from(e.dataTransfer.files) : Array.from((e.target as HTMLInputElement).files || []);
-    const images = list.filter(f => f.type.startsWith('image/'));
-    if (!images.length) return;
-    const totalSize = images.reduce((s, f) => s + f.size, 0);
-    setWarn(totalSize > 40 * 1024 * 1024 ? 'Large mosaic — may feel slow to send. No hard limits.' : null);
-    setFiles(prev => [...prev, ...images]);
-    images.forEach(f => {
-      const url = URL.createObjectURL(f);
-      setPreviews(prev => [...prev, url]);
-    });
-  }, []);
-
-  const remove = (i: number) => {
-    URL.revokeObjectURL(previews[i]);
-    setFiles(f => f.filter((_, idx) => idx !== i));
-    setPreviews(p => p.filter((_, idx) => idx !== i));
+  const onFiles = (list: FileList | null) => {
+    if (!list) return;
+    setFiles(Array.from(list));
   };
 
-  const publish = async () => {
-    if (!files.length || busy) return;
-    setBusy(true);
-    setResults([]);
-    const outs: typeof results = [];
-    for (const file of files) {
-      const res = await publishLocalFile(file, {
-        caption: caption.trim() || 'Quiet Mosaic',
-        color: accent,
-        cardTitle: caption.trim() || file.name,
-        meta: { desk: 'quietmosaic' },
-      });
-      outs.push({
-        name: file.name,
-        link: res.embed,
-        error: res.error,
-      });
+  const publish = useCallback(async () => {
+    if (!files.length) {
+      setError('drop a few images first');
+      return;
     }
-    setResults(outs);
-    setBusy(false);
-  };
-
-  const clear = () => {
-    previews.forEach(URL.revokeObjectURL);
-    setFiles([]);
-    setPreviews([]);
+    setUploading(true);
+    setError(null);
     setResults([]);
-    setWarn(null);
-  };
+    const out: { url: string; name: string; warn?: string }[] = [];
+
+    for (const file of files) {
+      const pub = await publishLocalFile(file, {
+        caption: caption || title || 'from a quiet mosaic',
+        cardTitle: title || file.name,
+        color: accent,
+      });
+      if (pub.ok && pub.id) {
+        out.push({ url: shareUrls(pub.id).embed, name: file.name, warn: pub.warn || undefined });
+      }
+    }
+    setResults(out);
+    setUploading(false);
+  }, [files, title, caption, accent]);
 
   return (
-    <div className="mesh min-h-screen">
-      <Navbar />
-      <div className="pt-28 pb-24 px-5 max-w-4xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 110, damping: 22 }}
-          className="glass rounded-[36px] p-8 md:p-12"
-        >
-          <p className="text-[13px] font-medium tracking-wide mb-2" style={{ color: accent }}>Quiet Mosaic</p>
-          <h1 className="text-4xl font-semibold tracking-tight mb-3">Compose a quiet mosaic.</h1>
-          <p className="text-neutral-400 text-[15.5px] leading-relaxed mb-8">
-            Drop several images. They settle into the database as individual shares with polished Discord embeds on every link. Soft size warnings only — never hard limits. Apple-style springs on frosted glass.
-          </p>
+    <div className="min-h-screen bg-[#050506] text-[#f5f5f7] font-sans antialiased">
+      <div className="max-w-3xl mx-auto px-6 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 90, damping: 18 }} className="text-center mb-12">
+          <p className="text-[#30D158] text-sm tracking-wide mb-3">quiet mosaic</p>
+          <h1 className="text-5xl sm:text-6xl font-semibold tracking-tight mb-4 leading-[1.02]">weave a quiet mosaic.</h1>
+          <p className="text-neutral-400 text-lg leading-relaxed">Drop local images. Each settles into its own permanent Discord-ready share under a shared title and caption. Soft size warnings only. Apple-style springs on frosted glass.</p>
+        </motion.div>
 
-          <div
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => { e.preventDefault(); onDrop(e); }}
-            className="border-2 border-dashed border-white/20 rounded-3xl p-12 text-center mb-8 hover:border-white/40 transition cursor-pointer"
-            onClick={() => document.getElementById('mosaic-input')?.click()}
-          >
-            <p className="text-neutral-400">Drop images or click to choose</p>
-            <input id="mosaic-input" type="file" multiple accept="image/*" className="hidden" onChange={onDrop} />
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06, type: 'spring', stiffness: 100, damping: 20 }} className="glass rounded-3xl p-8 space-y-6">
+          <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="mosaic title" className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-3.5 text-lg focus:outline-none focus:border-[#30D158]/50 transition" />
+          <textarea value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="shared caption" rows={3} className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-4 text-base leading-relaxed focus:outline-none focus:border-[#30D158]/50 transition resize-none" />
+
+          <div className="flex items-center gap-4">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <span className="text-sm text-neutral-400">accent</span>
+              <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="w-10 h-10 rounded-full border border-white/10 cursor-pointer bg-transparent" />
+            </label>
+            <button onClick={() => inputRef.current?.click()} className="text-sm text-neutral-400 hover:text-white transition">{files.length ? `${files.length} files` : 'drop images'}</button>
+            <input ref={inputRef} type="file" multiple accept="image/*" className="hidden" onChange={(e) => onFiles(e.target.files)} />
+            {files.length > 0 && <button onClick={() => setFiles([])} className="text-xs text-neutral-500 hover:text-white">clear</button>}
           </div>
 
-          {previews.length > 0 && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
-              <AnimatePresence>
-                {previews.map((src, i) => (
-                  <motion.div
-                    key={src}
-                    layout
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ type: 'spring', stiffness: 200, damping: 20 }}
-                    className="relative aspect-square rounded-2xl overflow-hidden group"
-                  >
-                    <img src={src} alt="" className="w-full h-full object-cover" />
-                    <button
-                      onClick={() => remove(i)}
-                      className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 text-white text-xs opacity-0 group-hover:opacity-100 transition"
-                    >
-                      ×
-                    </button>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </div>
+          {files.some(f => f.size > 40 * 1024 * 1024) && (
+            <p className="text-xs text-amber-400">one or more large drops. the browser may feel slow. nothing is blocked.</p>
           )}
 
-          <input
-            value={caption}
-            onChange={(e) => setCaption(e.target.value)}
-            placeholder="Shared caption for the mosaic"
-            className="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-3.5 text-[15px] text-white placeholder:text-neutral-500 mb-5 focus:outline-none focus:border-white/30 transition"
-          />
-
-          <div className="flex items-center gap-3 mb-6">
-            <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="w-9 h-9 rounded-full cursor-pointer border-0" />
-            <span className="text-[13px] text-neutral-500">Accent for the embeds</span>
-          </div>
-
-          {warn && <p className="text-[13px] text-amber-300/80 mb-5">{warn}</p>}
-
-          <AnimatePresence>
-            {results.length > 0 && (
-              <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="mb-5 space-y-2">
-                {results.map((r, i) => (
-                  <div key={i} className="text-sm">
-                    <span className="text-neutral-400">{r.name}: </span>
-                    {r.link ? (
-                      <a href={r.link} target="_blank" rel="noreferrer" className="text-blue-400 break-all">{r.link}</a>
-                    ) : (
-                      <span className="text-red-400">{r.error}</span>
-                    )}
-                  </div>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          <div className="flex gap-3">
-            <motion.button
-              whileTap={{ scale: 0.98 }}
-              onClick={publish}
-              disabled={!files.length || busy}
-              className="flex-1 rounded-2xl py-4 text-[15px] font-medium text-white disabled:opacity-40 transition shadow-xl"
-              style={{ background: accent }}
-            >
-              {busy ? 'Publishing…' : `Publish ${files.length} image${files.length === 1 ? '' : 's'}`}
-            </motion.button>
-            {files.length > 0 && (
-              <button onClick={clear} className="px-5 rounded-2xl text-sm text-neutral-400 hover:text-white">clear</button>
-            )}
-          </div>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={publish} disabled={uploading || !files.length} className="w-full py-3.5 rounded-full bg-[#30D158] text-black text-sm font-medium hover:bg-[#40E168] transition disabled:opacity-50">
+            {uploading ? 'weaving…' : 'publish mosaic'}
+          </motion.button>
         </motion.div>
+
+        <AnimatePresence>
+          {error && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center text-sm text-red-400 mt-6">{error}</motion.p>}
+          {results.length > 0 && (
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="mt-8 space-y-4">
+              {results.map((r, i) => (
+                <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="glass rounded-2xl p-5 flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium">{r.name}</p>
+                    {r.warn && <p className="text-xs text-amber-400">{r.warn}</p>}
+                  </div>
+                  <button onClick={() => navigator.clipboard.writeText(r.url)} className="px-4 py-2 rounded-full bg-white/10 text-xs hover:bg-white/15 transition">copy</button>
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <button onClick={() => navigate('home')} className="mt-12 text-sm text-neutral-500 hover:text-white transition block mx-auto">← back home</button>
       </div>
     </div>
   );

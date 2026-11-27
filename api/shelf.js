@@ -4,10 +4,10 @@ const FALLBACK = 'https://og2vsalt-svg.github.io/rank/og.png';
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 }
 
@@ -74,6 +74,15 @@ export default async function handler(req, res) {
   } else if (page === 'centralprism') {
     title = 'Central Prism — rankvault';
     desc = 'The quiet center. Multi-file hosting with live gallery of recent shares. Soft size warnings only. Polished Discord embeds on every link. Apple-style springs on frosted glass.';
+  } else if (page === 'prismpulse') {
+    title = 'Prism Pulse — rankvault';
+    desc = 'Living pulse of recent public shares. Soft size notes only. Every link ships with a polished Discord embed. Apple-style springs on frosted glass.';
+  } else if (page === 'aethercapsule') {
+    title = 'Aether Capsule — rankvault';
+    desc = 'Seal a quiet capsule. Drop a file, write a note, set an optional unlock moment, and publish a permanent Discord-ready link. Soft size warnings only. Apple-style springs on frosted glass.';
+  } else if (page === 'quietmosaic') {
+    title = 'Quiet Mosaic — rankvault';
+    desc = 'Weave local images into a living board. Each becomes a permanent Discord-ready share under a shared title and caption. Soft size warnings only. Apple-style springs on frosted glass.';
   }
 
   const url = `${proto}://${host}${path}`;

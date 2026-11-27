@@ -7,6 +7,8 @@ Drop local files. Soft size warnings only — no hard limits. Every share link s
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
 ## New desks
+- **Prism Notebook**: a quiet sequence of thoughts. Add entries, optionally attach local files that upload to the share database, then publish the whole notebook as one permanent Discord-ready markdown link. Soft size warnings only — no hard limits, no boosting. Apple-style springs on frosted glass. Prior desks remain untouched.
+- **Lumen Echo**: leave a quiet mark. Drop a local file or write a note. It settles into a living echo with Apple-style springs and becomes a permanent Discord-ready link. Soft size warnings only — no hard limits, no boosting. Prior desks remain untouched.
 - **Aether Canvas**: draw freely on a living canvas. Export as PNG and publish a permanent Discord-ready link with title, caption, and accent. Soft size warnings only — no hard limits, no boosting. Apple-style springs on frosted glass. Prior desks remain untouched.
 - **Voice Capsule**: record a quiet voice note. Add a title and caption. Publish a permanent Discord-ready link. Soft size warnings only — no hard limits, no boosting. Apple-style springs on frosted glass. Prior desks remain untouched.
 - **Invite Forge**: shape an event invite with date, place, note, and optional local file. Publish a permanent Discord-ready link. Soft size warnings only — no hard limits. Apple-style springs on frosted glass.

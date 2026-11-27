@@ -1,146 +1,107 @@
-import { useState, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import Navbar from './Navbar';
-import { publishLocalFile } from '../lib/cloudShare';
+import { useState, useCallback, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { publishLocalFile, shareUrls } from '../lib/cloudShare';
+import { useRouter } from './Router';
 
-function generatePalette(base: string, count = 5): string[] {
-  const hex = base.replace('#', '');
-  const r = parseInt(hex.slice(0, 2), 16);
-  const g = parseInt(hex.slice(2, 4), 16);
-  const b = parseInt(hex.slice(4, 6), 16);
-  const colors = [base];
-  for (let i = 1; i < count; i++) {
-    const factor = 0.6 + (i * 0.15);
-    const nr = Math.min(255, Math.floor(r * factor));
-    const ng = Math.min(255, Math.floor(g * factor));
-    const nb = Math.min(255, Math.floor(b * factor));
-    colors.push(`#${nr.toString(16).padStart(2, '0')}${ng.toString(16).padStart(2, '0')}${nb.toString(16).padStart(2, '0')}`);
-  }
-  return colors;
+function extractColors(file: File): Promise<string[]> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) { resolve([]); return; }
+      canvas.width = 32; canvas.height = 32;
+      ctx.drawImage(img, 0, 0, 32, 32);
+      const data = ctx.getImageData(0, 0, 32, 32).data;
+      const colors = new Set<string>();
+      for (let i = 0; i < data.length; i += 16) {
+        const r = data[i], g = data[i+1], b = data[i+2];
+        const hex = '#' + [r,g,b].map(x => x.toString(16).padStart(2,'0')).join('');
+        colors.add(hex);
+      }
+      URL.revokeObjectURL(url);
+      resolve(Array.from(colors).slice(0, 6));
+    };
+    img.src = url;
+  });
 }
 
 export default function QuietSpectrumPage() {
-  const [base, setBase] = useState('#0A84FF');
-  const [caption, setCaption] = useState('');
-  const [palette, setPalette] = useState<string[]>([]);
-  const [busy, setBusy] = useState(false);
-  const [link, setLink] = useState<string | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { navigate } = useRouter();
+  const [title, setTitle] = useState('');
+  const [file, setFile] = useState<File | null>(null);
+  const [colors, setColors] = useState<string[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [result, setResult] = useState<{ url: string; warn?: string } | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    setPalette(generatePalette(base));
-  }, [base]);
+  const onFile = useCallback(async (f: File | null) => {
+    setFile(f);
+    setColors([]);
+    if (f && f.type.startsWith('image/')) {
+      const cols = await extractColors(f);
+      setColors(cols);
+    }
+  }, []);
 
-  const draw = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    const w = 800, h = 400;
-    canvas.width = w;
-    canvas.height = h;
-    ctx.fillStyle = '#0b0b0d';
-    ctx.fillRect(0, 0, w, h);
-    const barW = w / palette.length;
-    palette.forEach((c, i) => {
-      ctx.fillStyle = c;
-      ctx.fillRect(i * barW, 0, barW, h);
+  const publish = useCallback(async () => {
+    if (!file) return;
+    setUploading(true);
+    const palette = colors.length ? `palette: ${colors.join(' ')}` : '';
+    const pub = await publishLocalFile(file, {
+      caption: palette || title || 'spectrum share',
+      cardTitle: title || file.name,
+      color: colors[0] || '#0A84FF',
     });
-    ctx.fillStyle = 'rgba(255,255,255,0.9)';
-    ctx.font = '24px Inter, system-ui, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(caption || 'Quiet Spectrum', w / 2, h - 40);
-  };
-
-  useEffect(() => { draw(); }, [palette, caption]);
-
-  const publish = async () => {
-    const canvas = canvasRef.current;
-    if (!canvas || busy) return;
-    setBusy(true);
-    canvas.toBlob(async (blob) => {
-      if (!blob) { setBusy(false); return; }
-      const file = new File([blob], 'quiet-spectrum.png', { type: 'image/png' });
-      try {
-        const res = await publishLocalFile(file, {
-          caption: caption || 'A quiet spectrum',
-          color: base,
-          cardTitle: 'Quiet Spectrum',
-          meta: { desk: 'quietspectrum', colors: palette },
-        });
-        if (res.ok && res.embed) setLink(res.embed);
-      } catch (e) {
-        console.error(e);
-      }
-      setBusy(false);
-    }, 'image/png');
-  };
+    if (pub.ok && pub.id) {
+      const urls = shareUrls(pub.id);
+      setResult({ url: urls.embed, warn: pub.warn || undefined });
+    }
+    setUploading(false);
+  }, [file, title, colors]);
 
   return (
-    <div className="mesh min-h-screen">
-      <Navbar />
-      <div className="pt-28 pb-24 px-5 max-w-2xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 110, damping: 22 }}
-          className="glass rounded-[36px] p-8 md:p-12"
-        >
-          <p className="text-[13px] font-medium tracking-wide mb-2" style={{ color: base }}>Quiet Spectrum</p>
-          <h1 className="text-4xl font-semibold tracking-tight mb-3">Shape a palette.</h1>
-          <p className="text-neutral-400 text-[15.5px] leading-relaxed mb-8">
-            Choose a base color. A quiet spectrum unfolds. Caption it. The visual settles into the database as an image with a polished Discord embed. Soft warnings only. No hard limits. Apple-style springs on frosted glass.
-          </p>
-
-          <div className="flex items-center gap-4 mb-6">
-            <input type="color" value={base} onChange={(e) => setBase(e.target.value)} className="w-12 h-12 rounded-full cursor-pointer border-0" />
-            <span className="text-sm text-neutral-400">Base color</span>
-          </div>
-
-          <div className="flex gap-2 mb-6 justify-center">
-            {palette.map((c, i) => (
-              <motion.div
-                key={i}
-                layout
-                className="w-14 h-14 rounded-2xl shadow-lg"
-                style={{ background: c }}
-                whileHover={{ scale: 1.05 }}
-              />
-            ))}
-          </div>
-
-          <canvas ref={canvasRef} className="w-full rounded-2xl mb-6 hidden" />
-
-          <input
-            value={caption}
-            onChange={(e) => setCaption(e.target.value)}
-            placeholder="Optional caption for the spectrum"
-            className="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-3.5 text-[15px] text-white placeholder:text-neutral-500 mb-6 focus:outline-none focus:border-white/30 transition"
-          />
-
-          <motion.button
-            whileTap={{ scale: 0.98 }}
-            onClick={publish}
-            disabled={busy}
-            className="w-full rounded-2xl py-4 text-[15px] font-medium text-white disabled:opacity-40 transition shadow-xl"
-            style={{ background: base }}
-          >
-            {busy ? 'Shaping…' : 'Publish spectrum'}
-          </motion.button>
-
-          {link && (
-            <motion.a
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              href={link}
-              target="_blank"
-              rel="noreferrer"
-              className="block mt-4 text-center text-sm text-blue-400 truncate"
-            >
-              {link}
-            </motion.a>
-          )}
+    <div className="min-h-screen bg-[#050506] text-[#f5f5f7] font-sans antialiased">
+      <div className="max-w-2xl mx-auto px-6 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 90, damping: 18 }} className="text-center mb-12">
+          <p className="text-[#0A84FF] text-sm tracking-wide mb-3">quiet spectrum</p>
+          <h1 className="text-5xl sm:text-6xl font-semibold tracking-tight mb-4 leading-[1.02]">colors from the light inside.</h1>
+          <p className="text-neutral-400 text-lg leading-relaxed">Drop a local image. A living palette settles with Apple-style springs. Publish with the colors carried in the caption as a permanent Discord-ready link. Soft size warnings only.</p>
         </motion.div>
+
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-3xl p-8 space-y-6">
+          <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="quiet title" className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-3.5 text-lg focus:outline-none focus:border-[#0A84FF]/50 transition" />
+          <button onClick={() => inputRef.current?.click()} className="w-full py-10 border border-dashed border-white/10 rounded-2xl text-neutral-400 hover:text-white hover:border-white/20 transition">
+            {file ? file.name : 'drop or choose an image'}
+          </button>
+          <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={(e) => onFile(e.target.files?.[0] || null)} />
+
+          {file && file.size > 40 * 1024 * 1024 && <p className="text-xs text-amber-400">large drop. the browser may feel slow while it sends. nothing is blocked.</p>}
+
+          <div className="flex flex-wrap gap-3 justify-center">
+            <AnimatePresence>
+              {colors.map((c, i) => (
+                <motion.div key={c} initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} transition={{ type: 'spring', stiffness: 140, damping: 16, delay: i * 0.05 }} className="w-12 h-12 rounded-full border border-white/10" style={{ background: c }} />
+              ))}
+            </AnimatePresence>
+          </div>
+
+          <motion.button whileTap={{ scale: 0.97 }} onClick={publish} disabled={uploading || !file} className="w-full py-3.5 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#3A9DFF] transition disabled:opacity-50">
+            {uploading ? 'publishing…' : 'publish spectrum'}
+          </motion.button>
+        </motion.div>
+
+        <AnimatePresence>
+          {result && (
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-3xl p-8 mt-8 text-center space-y-4">
+              {result.warn && <p className="text-xs text-amber-400">{result.warn}</p>}
+              <button onClick={() => navigator.clipboard.writeText(result.url)} className="px-6 py-2.5 rounded-full bg-white/10 text-sm hover:bg-white/15 transition">copy share link</button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <button onClick={() => navigate('home')} className="mt-12 text-sm text-neutral-500 hover:text-white transition block mx-auto">← back home</button>
       </div>
     </div>
   );

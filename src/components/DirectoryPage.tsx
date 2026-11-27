@@ -4,6 +4,7 @@ import Navbar from './Navbar';
 import { useRouter } from './Router';
 
 const DESKS = [
+  { route: 'aethercanvas', title: 'Aether Canvas', blurb: 'Draw freely on a living canvas. Export as PNG and publish a permanent Discord-ready link with title, caption, and accent. Soft size warnings only. No hard limits, no boosting. Apple-style springs on frosted glass. Prior desks remain untouched.' },
   { route: 'voicecapsule', title: 'Voice Capsule', blurb: 'Record a quiet voice note. Add title and caption. Publish a permanent Discord-ready link. Soft size warnings only. No hard limits, no boosting. Apple-style springs on frosted glass. Prior desks remain untouched.' },
   { route: 'inviteforge', title: 'Invite Forge', blurb: 'Shape an event invite with date, place, note, and optional local file. Publish a permanent Discord-ready link. Soft size warnings only. No hard limits. Apple-style springs on frosted glass.' },
   { route: 'quietchecklist', title: 'Quiet Checklist', blurb: 'Build a living checklist of items. Mark done, add a note, publish the whole list as a clean markdown share. Soft warnings only. No hard limits, no boosting. Prior desks remain untouched.' },

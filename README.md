@@ -7,6 +7,9 @@ Drop local files. Soft size warnings only — no hard limits. Every share link s
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
 ## New desks
+- **Voice Capsule**: record a quiet voice note. Add a title and caption. Publish a permanent Discord-ready link. Soft size warnings only — no hard limits, no boosting. Apple-style springs on frosted glass. Prior desks remain untouched.
+- **Invite Forge**: shape an event invite with date, place, note, and optional local file. Publish a permanent Discord-ready link. Soft size warnings only — no hard limits. Apple-style springs on frosted glass.
+- **Quiet Checklist**: build a living checklist of items. Mark them done, add a note, publish the whole list as a clean markdown share. Soft warnings only — no hard limits, no boosting. Prior desks remain untouched.
 - **Aether Memo**: write a quiet note, optionally attach a local file, shape title, body, and accent with live preview, then publish a permanent Discord-ready link. Soft size warnings only — no hard limits, no boosting. Apple-style springs on frosted glass. Prior desks remain untouched.
 - **Silk Capsule**: a softer seal. Drop a local file, write a quiet note, set an optional unlock hour and passcode, then publish a permanent Discord-ready link. Soft size warnings only — no hard limits, no boosting. Apple-style springs on frosted glass. Prior desks remain untouched.
 - **Aether Playlist**: a living sequence. Drop audio, video, or images. They settle into a quiet playlist under a shared title and accent. Each becomes its own permanent Discord-ready link. Soft size warnings only — no hard limits, no boosting. Apple-style springs on frosted glass. Prior desks remain untouched.

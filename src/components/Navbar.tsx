@@ -9,6 +9,7 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   const links = [
+    { to: 'aethermemo', label: 'aether memo' },
     { to: 'lumenorbit', label: 'lumen orbit' },
     { to: 'quietspectrum', label: 'quiet spectrum' },
     { to: 'lumenquill', label: 'lumen quill' },

@@ -4,10 +4,10 @@ const FALLBACK = 'https://og2vsalt-svg.github.io/rank/og.png';
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/\"/g, '&quot;')
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/\"/g, '"')
     .replace(/'/g, '&#39;');
 }
 
@@ -53,6 +53,9 @@ export default async function handler(req, res) {
         image = share.file_url;
       }
     }
+  } else if (page === 'lumenquill') {
+    title = 'Lumen Quill — rankvault';
+    desc = 'Compose a quiet note, optionally attach a local file, shape title, caption, and accent. Publish a permanent Discord-ready link. Soft size warnings only. No hard limits. Apple-style springs on frosted glass.';
   } else if (page === 'aetherarchive') {
     title = 'Aether Archive — rankvault';
     desc = 'Living multi-file archive. Shape a shared title, caption, and accent, then drop local files. They settle with staggered Apple-style springs and each becomes its own permanent Discord-ready link. Soft size warnings only. No hard limits.';

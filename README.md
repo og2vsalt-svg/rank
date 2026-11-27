@@ -7,6 +7,7 @@ Drop local files. Soft size warnings only — no hard limits. Every share link s
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
 ## New desks
+- **Prism Gallery**: living gallery of recent public shares from the database. Soft size notes only. Every link ships with a polished Discord embed. Apple-style springs on frosted glass. Prior desks remain untouched.
 - **Prism Cascade**: shape a shared title, caption, and accent, then drop multiple local files. Each settles with staggered Apple-style springs and becomes its own permanent Discord-ready link. Soft size warnings only — no hard limits, no boosting. Prior desks remain untouched.
 - **Echo Prism**: quiet multi-file hosting with living previews. Soft size warnings only — no hard limits. Every share link ships with polished Discord embeds. Apple-style springs on frosted glass. Prior desks remain untouched.
 - **Lumen Board**: drop local files onto a living board. Each settles with staggered Apple-style springs and becomes its own permanent Discord-ready link under a shared title, caption, and accent. Soft size warnings only. Prior desks remain untouched.

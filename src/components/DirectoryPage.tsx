@@ -4,6 +4,7 @@ import Navbar from './Navbar';
 import { useRouter } from './Router';
 
 const DESKS = [
+  { route: 'prismgallery', title: 'Prism Gallery', blurb: 'Living gallery of recent public shares from the database. Soft size notes only. Every link ships with a polished Discord embed. Apple-style springs on frosted glass. Prior desks remain untouched.' },
   { route: 'lumenboard', title: 'Lumen Board', blurb: 'Drop local files onto a living board. Each settles with staggered Apple-style springs and becomes its own permanent Discord-ready link under a shared title, caption, and accent. Soft size warnings only. No hard limits.' },
   { route: 'silkboard', title: 'Silk Board', blurb: 'Drop local files onto a living board. Each settles with staggered Apple-style springs and becomes its own permanent Discord-ready link under a shared title, caption, and accent. Soft size warnings only. No hard limits.' },
   { route: 'aetherforge', title: 'Aether Forge', blurb: 'Shape title, caption, and accent color, then drop multiple local files. Each becomes a permanent Discord-ready share with your custom embed styling. Soft size warnings only. Apple-style springs on frosted glass. No hard limits.' },

@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 
 const features = [
+  { title: 'Aether Archive', desc: 'Living multi-file drop with shared title, caption, and accent. Files settle into a gallery of recent shares. Soft size warnings only. Every link ships with a polished Discord embed.' },
   { title: 'Quiet Prism', desc: 'Shape a shared title, caption, and accent, then drop multiple local files. They settle with staggered Apple-style springs and each becomes its own permanent Discord-ready link. Soft size warnings only.' },
   { title: 'Silk Board', desc: 'Drop local files onto a living board. Each settles with staggered Apple-style springs and becomes its own permanent Discord-ready link under a shared title, caption, and accent. Soft size warnings only.' },
   { title: 'Velvet Ledger', desc: 'Optional password lock and expiry on every share. Local files upload to the share database with polished Discord embeds. Soft size warnings only.' },

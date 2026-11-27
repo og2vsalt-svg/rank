@@ -4,6 +4,7 @@ import Navbar from './Navbar';
 import { useRouter } from './Router';
 
 const DESKS = [
+  { route: 'aetherarchive', title: 'Aether Archive', blurb: 'Living multi-file archive. Shape a shared title, caption, and accent, then drop local files. They settle with staggered Apple-style springs and each becomes its own permanent Discord-ready link. Soft size warnings only. No hard limits. Prior desks remain untouched.' },
   { route: 'velvetdrift', title: 'Velvet Drift', blurb: 'Soft files in gentle drift. Shape a shared title, caption, and accent, then drop multiple local files. They settle with staggered Apple-style springs and each becomes its own permanent Discord-ready link. Soft size warnings only. No hard limits, no boosting. Prior desks remain untouched.' },
   { route: 'prismgallery', title: 'Prism Gallery', blurb: 'Living gallery of recent public shares from the database. Soft size notes only. Every link ships with a polished Discord embed. Apple-style springs on frosted glass. Prior desks remain untouched.' },
   { route: 'lumenboard', title: 'Lumen Board', blurb: 'Drop local files onto a living board. Each settles with staggered Apple-style springs and becomes its own permanent Discord-ready link under a shared title, caption, and accent. Soft size warnings only. No hard limits.' },

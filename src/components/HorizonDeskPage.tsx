@@ -1,174 +1,173 @@
 import { useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Navbar from './Navbar';
 import { publishLocalFile, shareUrls } from '../lib/cloudShare';
 import { useRouter } from './Router';
 
 export default function HorizonDeskPage() {
   const { navigate } = useRouter();
-  const [files, setFiles] = useState<File[]>([]);
-  const [previews, setPreviews] = useState<Record<string, string>>({});
   const [title, setTitle] = useState('');
   const [caption, setCaption] = useState('');
-  const [color, setColor] = useState('#64D2FF');
-  const [busy, setBusy] = useState(false);
-  const [results, setResults] = useState<{ link: string; name: string }[]>([]);
-  const [warn, setWarn] = useState<string | null>(null);
+  const [color, setColor] = useState('#0A84FF');
+  const [dragging, setDragging] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [results, setResults] = useState<{ name: string; id: string; warn?: string; url: string; thumb?: string; size: number }[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const scrollRef = useRef<HTMLDivElement>(null);
 
-  const handleFiles = useCallback((list: FileList | File[]) => {
-    const arr = Array.from(list);
-    setFiles(prev => [...prev, ...arr]);
-    const big = arr.some(f => f.size > 40_000_000);
-    setWarn(big ? 'Large file(s) — may take a quiet moment on the horizon. Soft warning only. Nothing is refused.' : null);
-    arr.forEach(f => {
-      if (f.type.startsWith('image/')) {
-        setPreviews(p => ({ ...p, [f.name + f.size]: URL.createObjectURL(f) }));
+  const handleFiles = useCallback(async (files: FileList | File[]) => {
+    const list = Array.from(files);
+    if (!list.length) return;
+    setUploading(true);
+    setError(null);
+    setResults([]);
+    setProgress(0);
+
+    const newResults: typeof results = [];
+    for (let i = 0; i < list.length; i++) {
+      const file = list[i];
+      setProgress(Math.round(((i + 0.3) / list.length) * 100));
+      let thumb: string | undefined;
+      if (file.type.startsWith('image/')) {
+        try { thumb = URL.createObjectURL(file); } catch {}
       }
-    });
-    setResults([]);
-    setTimeout(() => scrollRef.current?.scrollTo({ left: scrollRef.current.scrollWidth, behavior: 'smooth' }), 50);
-  }, []);
-
-  const publish = async () => {
-    if (!files.length || busy) return;
-    setBusy(true);
-    setResults([]);
-    const created: { link: string; name: string }[] = [];
-    try {
-      for (const file of files) {
-        const res = await publishLocalFile(file, {
-          caption: caption.trim() || undefined,
+      try {
+        const pub = await publishLocalFile(file, {
+          caption: caption || 'Shared from Horizon Desk',
+          cardTitle: title || file.name,
           color,
-          cardTitle: title.trim() || file.name,
-          meta: { desk: 'horizon' },
         });
-        if (res.ok && res.id) {
-          created.push({ link: shareUrls(res.id).app, name: file.name });
+        if (pub.ok && pub.id) {
+          const urls = shareUrls(pub.id);
+          newResults.push({
+            name: file.name,
+            id: pub.id,
+            warn: pub.warn || undefined,
+            url: urls.embed,
+            thumb,
+            size: file.size,
+          });
+        } else {
+          setError(pub.error || 'upload failed for one file');
         }
+      } catch (e: any) {
+        setError(e?.message || 'upload error');
       }
-      setResults(created);
-      setFiles([]);
-      setPreviews({});
-    } catch {
-      // quiet
+      setProgress(Math.round(((i + 1) / list.length) * 100));
     }
-    setBusy(false);
+    setResults(newResults);
+    setUploading(false);
+    setProgress(100);
+  }, [title, caption, color]);
+
+  const onDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragging(false);
+    if (e.dataTransfer.files) handleFiles(e.dataTransfer.files);
+  }, [handleFiles]);
+
+  const prettySize = (n: number) => {
+    if (n < 1024) return n + ' B';
+    if (n < 1048576) return Math.round(n / 1024) + ' KB';
+    return (n / 1048576).toFixed(1) + ' MB';
   };
 
   return (
-    <div className="mesh min-h-screen">
-      <Navbar />
-      <div className="pt-28 pb-24 px-5 max-w-4xl mx-auto">
+    <div className="min-h-screen bg-[#050506] text-[#f5f5f7] font-sans antialiased">
+      <div className="max-w-5xl mx-auto px-6 py-16">
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 80, damping: 22 }}
-          className="glass rounded-[40px] p-8 md:p-12 border border-white/10 backdrop-blur-2xl bg-white/5"
+          transition={{ type: 'spring', stiffness: 100, damping: 20 }}
+          className="text-center mb-12"
         >
-          <p className="text-[13px] font-medium tracking-wide text-[#64D2FF] mb-2">Horizon Desk</p>
-          <h1 className="text-4xl font-semibold tracking-tight mb-3 text-white">Along the light.</h1>
-          <p className="text-neutral-400 text-[15.5px] leading-relaxed mb-8">
-            Drop local files into a quiet horizontal horizon. Shape a shared title, caption, and cool accent. Each settles as its own permanent Discord-ready link. Soft size warnings only — nothing is blocked.
-          </p>
+          <p className="text-[#64D2FF] text-sm tracking-wide mb-3">horizon desk</p>
+          <h1 className="text-5xl sm:text-6xl font-semibold tracking-tight mb-5 leading-[1.02]">shape the horizon.<br />drop what belongs there.</h1>
+          <p className="text-neutral-400 text-lg max-w-2xl mx-auto leading-relaxed">Set a quiet title, caption, and accent. Then drop local files. Each becomes its own permanent Discord-ready link with a polished embed. Soft size warnings only — no hard limits.</p>
+        </motion.div>
 
-          <motion.div
-            onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('ring-2', 'ring-[#64D2FF]/40'); }}
-            onDragLeave={(e) => e.currentTarget.classList.remove('ring-2', 'ring-[#64D2FF]/40')}
-            onDrop={(e) => {
-              e.preventDefault();
-              e.currentTarget.classList.remove('ring-2', 'ring-[#64D2FF]/40');
-              if (e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
-            }}
-            onClick={() => inputRef.current?.click()}
-            whileHover={{ scale: 1.002 }}
-            className="border-2 border-dashed border-white/15 rounded-3xl p-8 text-center mb-7 cursor-pointer hover:border-white/30 transition bg-black/20"
-          >
-            {files.length === 0 ? (
-              <>
-                <p className="text-neutral-300 text-[15px]">Drop files along the horizon</p>
-                <p className="text-neutral-500 text-sm mt-1">or click to browse · multiple welcome</p>
-              </>
+        <div className="grid md:grid-cols-3 gap-4 mb-10 max-w-3xl mx-auto">
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="shared title"
+            className="px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm focus:outline-none focus:border-[#64D2FF]/40"
+          />
+          <input
+            value={caption}
+            onChange={(e) => setCaption(e.target.value)}
+            placeholder="quiet caption"
+            className="px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm focus:outline-none focus:border-[#64D2FF]/40"
+          />
+          <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-white/5 border border-white/10">
+            <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="w-8 h-8 rounded-lg cursor-pointer" />
+            <span className="text-xs text-neutral-400">accent</span>
+          </div>
+        </div>
+
+        <motion.div
+          onDrop={onDrop}
+          onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+          onDragLeave={() => setDragging(false)}
+          animate={{
+            scale: dragging ? 1.012 : 1,
+            borderColor: dragging ? color : 'rgba(255,255,255,0.08)',
+          }}
+          transition={{ type: 'spring', stiffness: 280, damping: 26 }}
+          className="relative border-2 border-dashed rounded-3xl p-16 text-center bg-white/[0.025] backdrop-blur-2xl cursor-pointer mb-12"
+          onClick={() => inputRef.current?.click()}
+        >
+          <input ref={inputRef} type="file" multiple className="hidden" onChange={(e) => e.target.files && handleFiles(e.target.files)} />
+          <AnimatePresence mode="wait">
+            {uploading ? (
+              <motion.div key="uploading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-5">
+                <div className="w-16 h-16 mx-auto rounded-full border-2 border-white/20" style={{ borderTopColor: color }} />
+                <p className="text-sm text-neutral-300">settling on the horizon… {progress}%</p>
+              </motion.div>
             ) : (
-              <div ref={scrollRef} className="flex gap-3 overflow-x-auto pb-2 snap-x">
-                {files.map((f, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="flex-shrink-0 w-28 h-28 rounded-2xl overflow-hidden bg-white/5 grid place-items-center text-[10px] text-neutral-400 snap-start"
-                  >
-                    {previews[f.name + f.size] ? (
-                      <img src={previews[f.name + f.size]} alt="" className="w-full h-full object-cover" />
-                    ) : (
-                      f.name.slice(0, 10)
-                    )}
-                  </motion.div>
-                ))}
-              </div>
-            )}
-            <input
-              ref={inputRef}
-              type="file"
-              multiple
-              className="hidden"
-              onChange={(e) => e.target.files && handleFiles(e.target.files)}
-            />
-          </motion.div>
-
-          {files.length > 0 && (
-            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="space-y-4 mb-6">
-              <input
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Horizon title"
-                className="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-3.5 text-[15px] text-white placeholder:text-neutral-500 focus:outline-none focus:border-white/30 transition"
-              />
-              <textarea
-                value={caption}
-                onChange={(e) => setCaption(e.target.value)}
-                placeholder="Quiet caption for the light"
-                rows={2}
-                className="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-3.5 text-[15px] text-white placeholder:text-neutral-500 focus:outline-none focus:border-white/30 transition resize-none"
-              />
-              <div className="flex items-center gap-3">
-                <label className="text-sm text-neutral-400">Accent</label>
-                <input
-                  type="color"
-                  value={color}
-                  onChange={(e) => setColor(e.target.value)}
-                  className="w-10 h-10 rounded-full border border-white/10 bg-transparent cursor-pointer"
-                />
-                <span className="text-xs text-neutral-500">{color}</span>
-              </div>
-              {warn && <p className="text-[13px] text-amber-300/80">{warn}</p>}
-            </motion.div>
-          )}
-
-          <motion.button
-            whileTap={{ scale: 0.985 }}
-            whileHover={{ scale: 1.005 }}
-            onClick={publish}
-            disabled={busy || !files.length}
-            className="w-full rounded-2xl py-4 text-[15px] font-medium text-white disabled:opacity-40 transition shadow-xl bg-[#64D2FF]"
-          >
-            {busy ? 'Settling along the horizon…' : files.length ? `Settle ${files.length} horizon share${files.length > 1 ? 's' : ''}` : 'Drop files first'}
-          </motion.button>
-
-          <AnimatePresence>
-            {results.length > 0 && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-6 space-y-2">
-                {results.map((r, i) => (
-                  <div key={i} className="glass rounded-2xl p-4">
-                    <p className="text-sm text-neutral-400 mb-1">{r.name}</p>
-                    <button onClick={() => navigate('share', r.link.split('/').pop() || '')} className="text-[#64D2FF] text-sm break-all text-left">{r.link}</button>
-                  </div>
-                ))}
+              <motion.div key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                <p className="text-xl font-medium mb-2">Drop files here</p>
+                <p className="text-sm text-neutral-500">or click to browse. Large files may feel slow — nothing is blocked.</p>
               </motion.div>
             )}
           </AnimatePresence>
         </motion.div>
+
+        {error && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center text-sm text-red-400 mb-6">{error}</motion.p>}
+
+        <AnimatePresence>
+          {results.length > 0 && (
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="space-y-5">
+              <p className="text-sm text-neutral-400 text-center">each link carries a polished Discord embed</p>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {results.map((r, i) => (
+                  <motion.div
+                    key={r.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.05, type: 'spring', stiffness: 160, damping: 20 }}
+                    className="glass rounded-2xl p-5 flex flex-col gap-3"
+                  >
+                    {r.thumb && <img src={r.thumb} alt="" className="w-full h-32 object-cover rounded-xl" />}
+                    <div>
+                      <p className="text-sm font-medium truncate">{r.name}</p>
+                      <p className="text-xs text-neutral-500">{prettySize(r.size)}</p>
+                      {r.warn && <p className="text-xs text-amber-400 mt-1">{r.warn}</p>}
+                    </div>
+                    <button
+                      onClick={() => navigator.clipboard.writeText(r.url)}
+                      className="mt-auto px-4 py-2 rounded-full text-xs font-medium text-white self-start"
+                      style={{ background: color }}
+                    >
+                      copy share link
+                    </button>
+                  </motion.div>
+                ))}
+              </div>
+              <button onClick={() => navigate('home')} className="block mx-auto mt-6 text-sm text-neutral-500 hover:text-white transition">← back home</button>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

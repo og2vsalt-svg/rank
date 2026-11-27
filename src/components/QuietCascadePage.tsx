@@ -1,139 +1,135 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Navbar from './Navbar';
-import { publishLocalFile } from '../lib/cloudShare';
+import { publishLocalFile, shareUrls } from '../lib/cloudShare';
+import { useRouter } from './Router';
+
+type Step = {
+  id: string;
+  note: string;
+  file?: File;
+  published?: { id: string; url: string; warn?: string };
+};
 
 export default function QuietCascadePage() {
-  const [files, setFiles] = useState<File[]>([]);
-  const [title, setTitle] = useState('');
-  const [caption, setCaption] = useState('');
-  const [accent, setAccent] = useState('#5AC8FA');
-  const [busy, setBusy] = useState(false);
-  const [links, setLinks] = useState<string[]>([]);
-  const [warns, setWarns] = useState<string[]>([]);
-  const [err, setErr] = useState('');
+  const { navigate } = useRouter();
+  const [title, setTitle] = useState('quiet cascade');
+  const [accent, setAccent] = useState('#BF5AF2');
+  const [steps, setSteps] = useState<Step[]>([{ id: '1', note: '' }]);
+  const [publishing, setPublishing] = useState(false);
+  const [done, setDone] = useState(false);
 
-  const onFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const list = Array.from(e.target.files || []);
-    setFiles(list);
-    setWarns(list.map(f => f.size > 40 * 1024 * 1024 ? 'Large file. May feel slow. No hard limit.' : ''));
+  const addStep = () => setSteps((s) => [...s, { id: Date.now().toString(), note: '' }]);
+
+  const updateStep = (id: string, patch: Partial<Step>) => {
+    setSteps((s) => s.map((st) => (st.id === id ? { ...st, ...patch } : st)));
   };
 
-  const shareAll = async () => {
-    if (files.length === 0) return setErr('choose at least one local file');
-    setBusy(true);
-    setErr('');
-    setLinks([]);
-    const results: string[] = [];
-    for (const file of files) {
+  const publishAll = useCallback(async () => {
+    setPublishing(true);
+    const next = [...steps];
+    for (let i = 0; i < next.length; i++) {
+      const st = next[i];
+      if (!st.note.trim() && !st.file) continue;
       try {
-        const res = await publishLocalFile(file, {
-          caption: caption.trim() || 'from the quiet cascade',
-          color: accent,
-          cardTitle: title.trim() || file.name,
-          meta: { desk: 'quietcascade' },
-        });
-        if (res.ok && res.embed) results.push(res.embed);
+        if (st.file) {
+          const pub = await publishLocalFile(st.file, {
+            caption: st.note || `Step ${i + 1} of ${title}`,
+            cardTitle: `${title} — ${i + 1}`,
+            color: accent,
+          });
+          if (pub.ok && pub.id) {
+            next[i].published = { id: pub.id, url: shareUrls(pub.id).embed, warn: pub.warn || undefined };
+          }
+        } else {
+          // text-only note as a small text file
+          const blob = new Blob([st.note], { type: 'text/plain' });
+          const file = new File([blob], `step-${i + 1}.txt`, { type: 'text/plain' });
+          const pub = await publishLocalFile(file, {
+            caption: st.note,
+            cardTitle: `${title} — ${i + 1}`,
+            color: accent,
+          });
+          if (pub.ok && pub.id) {
+            next[i].published = { id: pub.id, url: shareUrls(pub.id).embed, warn: pub.warn || undefined };
+          }
+        }
       } catch {}
     }
-    setLinks(results);
-    setBusy(false);
-  };
+    setSteps(next);
+    setPublishing(false);
+    setDone(true);
+  }, [steps, title, accent]);
 
   return (
-    <div className="mesh min-h-screen">
-      <Navbar />
-      <div className="pt-32 pb-24 px-6 max-w-2xl mx-auto">
+    <div className="min-h-screen bg-[#050506] text-[#f5f5f7] font-sans antialiased">
+      <div className="max-w-3xl mx-auto px-6 py-16">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 100, damping: 22 }}
-          className="glass rounded-[32px] p-8 shadow-2xl"
+          transition={{ type: 'spring', stiffness: 110, damping: 20 }}
+          className="text-center mb-10"
         >
-          <p className="text-[13px] font-medium tracking-wide mb-1" style={{ color: accent }}>Quiet Cascade</p>
-          <h1 className="text-[28px] font-semibold tracking-tight mb-3">Files that settle in sequence.</h1>
-          <p className="text-neutral-400 text-[14px] leading-relaxed mb-6">
-            Drop several local files. Shape one shared title, caption, and cool accent. They cascade with staggered Apple-style springs. Each becomes its own permanent Discord-ready link. Soft size warnings only. No hard limits.
-          </p>
+          <p className="text-[#BF5AF2] text-sm tracking-wide mb-3">quiet cascade</p>
+          <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight mb-4 leading-[1.05]">sequence quiet moments.</h1>
+          <p className="text-neutral-400 text-base max-w-xl mx-auto">Write notes. Optionally attach a local file to each. Publish the cascade — each step becomes its own permanent Discord-ready link. Soft warnings only.</p>
+        </motion.div>
 
-          <input
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Shared title"
-            className="w-full bg-black/20 border border-white/10 rounded-[16px] px-4 py-3 text-[15px] text-white placeholder:text-neutral-500 mb-3 focus:outline-none focus:border-white/20"
-          />
-          <textarea
-            value={caption}
-            onChange={(e) => setCaption(e.target.value)}
-            placeholder="Shared caption…"
-            rows={2}
-            className="w-full bg-black/20 border border-white/10 rounded-[16px] px-4 py-3 text-[15px] text-white placeholder:text-neutral-500 mb-4 resize-none focus:outline-none focus:border-white/20"
-          />
+        <div className="flex gap-3 mb-8 max-w-md mx-auto">
+          <input value={title} onChange={(e) => setTitle(e.target.value)} className="flex-1 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm" placeholder="cascade title" />
+          <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="w-12 h-12 rounded-xl cursor-pointer" />
+        </div>
 
-          <div className="flex items-center gap-4 mb-5">
-            <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="w-9 h-9 rounded-full cursor-pointer border-0" />
-            <label className="text-[13px] text-neutral-300 cursor-pointer hover:text-white transition">
-              {files.length ? `${files.length} file${files.length > 1 ? 's' : ''}` : 'Choose local files'}
-              <input type="file" multiple className="hidden" onChange={onFiles} />
-            </label>
-          </div>
-
-          {warns.some(Boolean) && (
-            <div className="mb-3 space-y-1">
-              {warns.filter(Boolean).map((w, i) => <p key={i} className="text-[12px] text-amber-300/90">{w}</p>)}
-            </div>
-          )}
-
+        <div className="space-y-4 mb-8">
           <AnimatePresence>
-            {files.length > 0 && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-5 space-y-2">
-                {files.map((f, i) => (
-                  <motion.div
-                    key={f.name + i}
-                    initial={{ opacity: 0, x: -12 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.05, type: 'spring', stiffness: 140, damping: 18 }}
-                    className="text-[13px] text-neutral-300 truncate"
+            {steps.map((st, i) => (
+              <motion.div
+                key={st.id}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ type: 'spring', stiffness: 140, damping: 18 }}
+                className="glass rounded-2xl p-5"
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-xs text-neutral-500">step {i + 1}</span>
+                  {st.published && <span className="text-xs text-[#30D158]">published</span>}
+                </div>
+                <textarea
+                  value={st.note}
+                  onChange={(e) => updateStep(st.id, { note: e.target.value })}
+                  placeholder="a quiet note…"
+                  className="w-full bg-transparent text-sm resize-none outline-none mb-3 min-h-[60px]"
+                />
+                <label className="text-xs text-neutral-500 cursor-pointer">
+                  {st.file ? st.file.name : 'attach a local file (optional)'}
+                  <input type="file" className="hidden" onChange={(e) => e.target.files?.[0] && updateStep(st.id, { file: e.target.files[0] })} />
+                </label>
+                {st.published && (
+                  <button
+                    onClick={() => navigator.clipboard.writeText(st.published!.url)}
+                    className="mt-3 text-xs px-3 py-1.5 rounded-full text-white"
+                    style={{ background: accent }}
                   >
-                    {f.name}
-                  </motion.div>
-                ))}
+                    copy link
+                  </button>
+                )}
               </motion.div>
-            )}
+            ))}
           </AnimatePresence>
+        </div>
 
+        <div className="flex flex-col items-center gap-4">
+          <button onClick={addStep} className="text-sm text-neutral-400 hover:text-white transition">+ add another step</button>
           <motion.button
-            whileTap={{ scale: 0.96 }}
-            whileHover={{ scale: 1.02 }}
-            onClick={shareAll}
-            disabled={busy || files.length === 0}
-            className="w-full rounded-[18px] py-3.5 text-[15px] font-medium text-white disabled:opacity-40 transition shadow-lg"
+            whileTap={{ scale: 0.97 }}
+            onClick={publishAll}
+            disabled={publishing || done}
+            className="px-8 py-3 rounded-full text-sm font-medium text-white disabled:opacity-50"
             style={{ background: accent }}
           >
-            {busy ? 'Cascading…' : 'Share cascade'}
+            {publishing ? 'publishing cascade…' : done ? 'cascade published' : 'publish cascade'}
           </motion.button>
-
-          <AnimatePresence>
-            {links.length > 0 && (
-              <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mt-5 space-y-2">
-                {links.map((l, i) => (
-                  <motion.a
-                    key={l}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: i * 0.04 }}
-                    href={l}
-                    className="block text-[13px] break-all"
-                    style={{ color: accent }}
-                  >
-                    {l}
-                  </motion.a>
-                ))}
-              </motion.div>
-            )}
-            {err && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 text-[12px] text-red-400">{err}</motion.p>}
-          </AnimatePresence>
-        </motion.div>
+          <button onClick={() => navigate('home')} className="text-sm text-neutral-500 hover:text-white">← back home</button>
+        </div>
       </div>
     </div>
   );

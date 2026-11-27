@@ -53,6 +53,9 @@ export default async function handler(req, res) {
         image = share.file_url;
       }
     }
+  } else if (page === 'velvetdrift') {
+    title = 'Velvet Drift — rankvault';
+    desc = 'Soft files in gentle drift. Drop local files with a shared title, caption, and accent. Each becomes a permanent Discord-ready link. Soft size warnings only. Apple-style springs on frosted glass.';
   } else if (page === 'prismgallery') {
     title = 'Prism Gallery — rankvault';
     desc = 'Living gallery of recent public shares. Soft size warnings only. Every link ships with polished Discord embeds. Apple-style springs on frosted glass.';

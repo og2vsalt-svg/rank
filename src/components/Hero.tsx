@@ -30,9 +30,11 @@ export default function Hero() {
           transition={{ type: 'spring', stiffness: 80, damping: 20, delay: 0.1 }}
           className="text-neutral-400 text-lg leading-relaxed max-w-lg mb-10 mx-auto"
         >
-          Locked ledgers, multi-file catalogs, time capsules, receipts, mosaics, and quiet notes. Polished Discord embeds on every link. Soft size warnings only — no hard limits. Apple-style springs on frosted glass.
+          Quiet desks for multi-file drops, sequenced notes, living galleries, and polished embeds. Soft size warnings only — no hard limits. Apple-style springs on frosted glass.
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center">
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('horizondesk')} className="px-7 py-3 rounded-full bg-[#64D2FF] text-black text-sm font-medium hover:opacity-90 transition shadow-lg">horizon desk</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietcascade')} className="px-7 py-3 rounded-full bg-[#BF5AF2] text-white text-sm font-medium hover:opacity-90 transition shadow-lg">quiet cascade</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('prismgallery')} className="px-7 py-3 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:opacity-90 transition shadow-lg">prism gallery</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('lumenboard')} className="px-7 py-3 rounded-full bg-[#FF9F0A] text-black text-sm font-medium hover:opacity-90 transition shadow-lg">lumen board</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('silkboard')} className="px-7 py-3 rounded-full bg-[#FF375F] text-white text-sm font-medium hover:opacity-90 transition shadow-lg">silk board</motion.button>

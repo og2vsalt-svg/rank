@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 
 const features = [
+  { title: 'Lumen Palette', desc: 'Drop local images. A living palette settles with Apple-style springs from the light inside. Publish each as its own permanent Discord-ready link with the colors in the caption. Soft size warnings only.' },
   { title: 'Aether Archive', desc: 'Living multi-file drop with shared title, caption, and accent. Files settle into a gallery of recent shares. Soft size warnings only. Every link ships with a polished Discord embed.' },
   { title: 'Quiet Prism', desc: 'Shape a shared title, caption, and accent, then drop multiple local files. They settle with staggered Apple-style springs and each becomes its own permanent Discord-ready link. Soft size warnings only.' },
   { title: 'Silk Board', desc: 'Drop local files onto a living board. Each settles with staggered Apple-style springs and becomes its own permanent Discord-ready link under a shared title, caption, and accent. Soft size warnings only.' },

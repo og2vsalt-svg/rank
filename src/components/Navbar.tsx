@@ -9,6 +9,8 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   const links = [
+    { to: 'lumenorbit', label: 'lumen orbit' },
+    { to: 'quietspectrum', label: 'quiet spectrum' },
     { to: 'lumenquill', label: 'lumen quill' },
     { to: 'lumenpalette', label: 'lumen palette' },
     { to: 'prismpulse', label: 'prism pulse' },

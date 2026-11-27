@@ -7,6 +7,7 @@ Drop local files. Soft size warnings only — no hard limits. Every share link s
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
 ## New desks
+- **Velvet Drift**: soft files in gentle drift. Shape a shared title, caption, and accent, then drop multiple local files. They settle with staggered Apple-style springs and each becomes its own permanent Discord-ready link. Soft size warnings only — no hard limits, no boosting. Prior desks remain untouched.
 - **Horizon Desk**: shape a quiet title, caption, and accent, then drop multiple local files. Each settles with Apple-style springs and becomes its own permanent Discord-ready link. Soft size warnings only — no hard limits, no boosting. Prior desks remain untouched.
 - **Quiet Cascade**: sequence quiet moments. Write notes and optionally attach local files. Each step publishes as its own permanent Discord-ready link under a shared title and accent. Soft size warnings only. Apple-style springs on frosted glass.
 - **Cascade Journal**: sequence quiet moments. Build a cascade of notes and optional local files. Each step publishes as its own permanent Discord-ready link under a shared title and accent. Soft size warnings only — no hard limits, no boosting. Apple-style springs on frosted glass. Prior desks remain untouched.

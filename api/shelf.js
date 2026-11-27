@@ -53,6 +53,12 @@ export default async function handler(req, res) {
         image = share.file_url;
       }
     }
+  } else if (page === 'prismnotebook') {
+    title = 'Prism Notebook — rankvault';
+    desc = 'A quiet sequence of thoughts. Add entries, optionally attach local files, then publish the whole notebook as one permanent Discord-ready markdown link. Soft size warnings only. No hard limits, no boosting. Apple-style springs on frosted glass.';
+  } else if (page === 'lumenecho') {
+    title = 'Lumen Echo — rankvault';
+    desc = 'Leave a quiet mark. Drop a local file or write a note. It settles into a living echo with Apple-style springs and becomes a permanent Discord-ready link. Soft size warnings only. No hard limits, no boosting.';
   } else if (page === 'lumenquill') {
     title = 'Lumen Quill — rankvault';
     desc = 'Compose a quiet note, optionally attach a local file, shape title, caption, and accent. Publish a permanent Discord-ready link. Soft size warnings only. No hard limits. Apple-style springs on frosted glass.';

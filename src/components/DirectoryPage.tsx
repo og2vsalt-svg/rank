@@ -4,6 +4,7 @@ import Navbar from './Navbar';
 import { useRouter } from './Router';
 
 const DESKS = [
+  { route: 'quiethorizonstudio', title: 'Quiet Horizon Studio', blurb: 'Shape a title, caption, and accent. Drop local files. Preview the living Discord embed in real time. Publish a polished permanent share. Soft size warnings only — no hard limits, no boosting. Apple-style springs on frosted glass. Prior desks remain untouched.' },
   { route: 'prismnotebook', title: 'Prism Notebook', blurb: 'A quiet sequence of thoughts. Add entries, optionally attach local files that upload to the share database, then publish the whole notebook as one permanent Discord-ready markdown link. Soft size warnings only. No hard limits, no boosting. Apple-style springs on frosted glass. Prior desks remain untouched.' },
   { route: 'lumenecho', title: 'Lumen Echo', blurb: 'Leave a quiet mark. Drop a local file or write a note. It settles into a living echo with Apple-style springs and becomes a permanent Discord-ready link. Soft size warnings only. No hard limits, no boosting. Prior desks remain untouched.' },
   { route: 'aethercanvas', title: 'Aether Canvas', blurb: 'Draw freely on a living canvas. Export as PNG and publish a permanent Discord-ready link with title, caption, and accent. Soft size warnings only. No hard limits, no boosting. Apple-style springs on frosted glass. Prior desks remain untouched.' },

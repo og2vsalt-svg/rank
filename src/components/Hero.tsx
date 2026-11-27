@@ -33,13 +33,14 @@ export default function Hero() {
           Quiet desks for multi-file drops, sequenced notes, living galleries, and polished embeds. Soft size warnings only — no hard limits. Apple-style springs on frosted glass.
         </motion.p>
         <div className="flex flex-wrap gap-3 justify-center">
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('prismnotebook')} className="px-7 py-3 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:opacity-90 transition shadow-lg">prism notebook</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('lumenecho')} className="px-7 py-3 rounded-full bg-[#AF52DE] text-white text-sm font-medium hover:opacity-90 transition shadow-lg">lumen echo</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('lumenatelier')} className="px-7 py-3 rounded-full bg-[#FF9F0A] text-black text-sm font-medium hover:opacity-90 transition shadow-lg">lumen atelier</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('lumenpalette')} className="px-7 py-3 rounded-full bg-[#0A84FF]/80 text-white text-sm font-medium hover:opacity-90 transition shadow-lg">lumen palette</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('aetherarchive')} className="px-7 py-3 rounded-full bg-[#BF5AF2] text-white text-sm font-medium hover:opacity-90 transition shadow-lg">aether archive</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietprism')} className="px-7 py-3 rounded-full bg-[#64D2FF] text-black text-sm font-medium hover:opacity-90 transition shadow-lg">quiet prism</motion.button>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('prismgallery')} className="px-7 py-3 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition">prism gallery</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quiethorizonstudio')} className="px-7 py-3 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:opacity-90 transition shadow-lg">quiet horizon studio</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('prismnotebook')} className="px-7 py-3 rounded-full bg-[#AF52DE] text-white text-sm font-medium hover:opacity-90 transition shadow-lg">prism notebook</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('lumenecho')} className="px-7 py-3 rounded-full bg-[#FF9F0A] text-black text-sm font-medium hover:opacity-90 transition shadow-lg">lumen echo</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('lumenatelier')} className="px-7 py-3 rounded-full bg-[#0A84FF]/80 text-white text-sm font-medium hover:opacity-90 transition shadow-lg">lumen atelier</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('lumenpalette')} className="px-7 py-3 rounded-full bg-[#BF5AF2] text-white text-sm font-medium hover:opacity-90 transition shadow-lg">lumen palette</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('aetherarchive')} className="px-7 py-3 rounded-full bg-[#64D2FF] text-black text-sm font-medium hover:opacity-90 transition shadow-lg">aether archive</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('quietprism')} className="px-7 py-3 rounded-full bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition">quiet prism</motion.button>
+          <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('prismgallery')} className="px-7 py-3 rounded-full bg-white/5 text-neutral-300 text-sm font-medium hover:bg-white/10 transition">prism gallery</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('centralvault')} className="px-7 py-3 rounded-full bg-white/5 text-neutral-300 text-sm font-medium hover:bg-white/10 transition">central vault</motion.button>
           <motion.button whileTap={{ scale: 0.97 }} onClick={() => navigate('directory')} className="px-6 py-2.5 rounded-full bg-white/5 text-neutral-300 text-sm font-medium hover:bg-white/10 transition">all desks</motion.button>
         </div>

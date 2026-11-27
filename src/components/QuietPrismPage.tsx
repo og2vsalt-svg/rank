@@ -1,124 +1,193 @@
-import { useState, useRef, useCallback } from 'react';
-import { motion } from 'framer-motion';
-import Navbar from './Navbar';
-import { publishLocalFile } from '../lib/cloudShare';
+import { useState, useCallback, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { publishLocalFile, shareUrls } from '../lib/cloudShare';
+import { useRouter } from './Router';
 
 export default function QuietPrismPage() {
-  const [colors, setColors] = useState(['#0A84FF', '#AF52DE', '#FF9F0A']);
+  const { navigate } = useRouter();
+  const [title, setTitle] = useState('');
   const [caption, setCaption] = useState('');
-  const [busy, setBusy] = useState(false);
-  const [result, setResult] = useState<{ link?: string; error?: string } | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [accent, setAccent] = useState('#0A84FF');
+  const [files, setFiles] = useState<File[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [results, setResults] = useState<{ url: string; warn?: string; name: string }[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const draw = useCallback(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    canvas.width = 1200;
-    canvas.height = 630;
-    const grd = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-    colors.forEach((c, i) => grd.addColorStop(i / Math.max(colors.length - 1, 1), c));
-    ctx.fillStyle = grd;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = 'rgba(255,255,255,0.08)';
-    for (let i = 0; i < 40; i++) {
-      ctx.beginPath();
-      ctx.arc(Math.random() * canvas.width, Math.random() * canvas.height, Math.random() * 3 + 1, 0, Math.PI * 2);
-      ctx.fill();
+  const onDrop = useCallback((list: FileList | null) => {
+    if (!list) return;
+    const next = Array.from(list);
+    setFiles((prev) => [...prev, ...next]);
+  }, []);
+
+  const publish = useCallback(async () => {
+    if (!files.length) {
+      setError('drop at least one local file');
+      return;
     }
-  }, [colors]);
-
-  const publish = async () => {
-    draw();
-    const canvas = canvasRef.current;
-    if (!canvas || busy) return;
-    setBusy(true);
-    setResult(null);
-    canvas.toBlob(async (blob) => {
-      if (!blob) {
-        setResult({ error: 'could not render spectrum' });
-        setBusy(false);
-        return;
+    setUploading(true);
+    setError(null);
+    setResults([]);
+    const out: { url: string; warn?: string; name: string }[] = [];
+    for (const file of files) {
+      try {
+        const pub = await publishLocalFile(file, {
+          caption: caption || title || 'shared from Quiet Prism',
+          cardTitle: title || file.name,
+          color: accent,
+        });
+        if (pub.ok && pub.id) {
+          const urls = shareUrls(pub.id);
+          out.push({
+            url: urls.embed,
+            warn: pub.warn || undefined,
+            name: file.name,
+          });
+        } else {
+          out.push({ url: '', name: file.name, warn: pub.error || 'failed' });
+        }
+      } catch (e: any) {
+        out.push({ url: '', name: file.name, warn: e?.message || 'error' });
       }
-      const file = new File([blob], 'quiet-prism.png', { type: 'image/png' });
-      const res = await publishLocalFile(file, {
-        caption: caption.trim() || 'quiet prism',
-        color: colors[0],
-        cardTitle: 'Quiet Prism',
-        meta: { desk: 'quietprism', colors },
-      });
-      setResult(res.ok ? { link: res.embed } : { error: res.error || 'publish failed' });
-      setBusy(false);
-    }, 'image/png');
-  };
+    }
+    setResults(out);
+    setUploading(false);
+    setFiles([]);
+  }, [files, title, caption, accent]);
 
   return (
-    <div className="mesh min-h-screen">
-      <Navbar />
-      <div className="pt-28 pb-24 px-5 max-w-2xl mx-auto">
+    <div className="min-h-screen bg-[#050506] text-[#f5f5f7] font-sans antialiased">
+      <div className="max-w-3xl mx-auto px-6 py-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 110, damping: 22 }}
-          className="glass rounded-[36px] p-8 md:p-12"
+          transition={{ type: 'spring', stiffness: 90, damping: 18 }}
+          className="text-center mb-12"
         >
-          <p className="text-[13px] font-medium tracking-wide mb-2 text-[#AF52DE]">Quiet Prism</p>
-          <h1 className="text-4xl font-semibold tracking-tight mb-3">Shape a spectrum.</h1>
-          <p className="text-neutral-400 text-[15.5px] leading-relaxed mb-8">
-            Pick colors. A soft spectrum unfolds into a visual image. Caption it and publish to the database with a polished Discord embed. Soft warnings only. No hard limits.
-          </p>
+          <p className="text-[#0A84FF] text-sm tracking-wide mb-3">quiet prism</p>
+          <h1 className="text-5xl sm:text-6xl font-semibold tracking-tight mb-4 leading-[1.02]">shape and share.</h1>
+          <p className="text-neutral-400 text-lg leading-relaxed">Set a shared title, caption, and accent, then drop multiple local files. They settle with staggered Apple-style springs and each becomes its own permanent Discord-ready link. Soft size warnings only — no hard limits.</p>
+        </motion.div>
 
-          <div className="flex gap-3 mb-6 flex-wrap">
-            {colors.map((c, i) => (
-              <input
-                key={i}
-                type="color"
-                value={c}
-                onChange={(e) => {
-                  const next = [...colors];
-                  next[i] = e.target.value;
-                  setColors(next);
-                }}
-                className="w-12 h-12 rounded-full cursor-pointer border-0"
-              />
-            ))}
-            {colors.length < 5 && (
-              <button
-                onClick={() => setColors([...colors, '#ffffff'])}
-                className="w-12 h-12 rounded-full bg-white/10 text-xs hover:bg-white/20"
-              >
-                +
-              </button>
-            )}
-          </div>
-
-          <canvas ref={canvasRef} className="w-full rounded-2xl mb-6 hidden" />
-
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.06, type: 'spring', stiffness: 100, damping: 20 }}
+          className="glass rounded-3xl p-8 space-y-6"
+        >
           <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="shared title"
+            className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-3.5 text-lg focus:outline-none focus:border-[#0A84FF]/50 transition"
+          />
+          <textarea
             value={caption}
             onChange={(e) => setCaption(e.target.value)}
-            placeholder="Optional caption"
-            className="w-full bg-black/30 border border-white/10 rounded-2xl px-4 py-3.5 text-[15px] text-white placeholder:text-neutral-500 mb-5 focus:outline-none focus:border-white/30 transition"
+            placeholder="shared caption"
+            rows={3}
+            className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-4 text-base leading-relaxed focus:outline-none focus:border-[#0A84FF]/50 transition resize-none"
           />
+          <div className="flex items-center gap-4">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <span className="text-sm text-neutral-400">accent</span>
+              <input
+                type="color"
+                value={accent}
+                onChange={(e) => setAccent(e.target.value)}
+                className="w-10 h-10 rounded-full border border-white/10 cursor-pointer bg-transparent"
+              />
+            </label>
+            <button
+              onClick={() => inputRef.current?.click()}
+              className="text-sm text-neutral-400 hover:text-white transition"
+            >
+              add files
+            </button>
+            <input
+              ref={inputRef}
+              type="file"
+              multiple
+              className="hidden"
+              onChange={(e) => onDrop(e.target.files)}
+            />
+          </div>
+
+          <div
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => { e.preventDefault(); onDrop(e.dataTransfer.files); }}
+            className="border border-dashed border-white/15 rounded-2xl p-8 text-center text-neutral-500 hover:border-[#0A84FF]/40 transition"
+          >
+            drop local files here
+          </div>
+
+          {files.length > 0 && (
+            <div className="space-y-2">
+              {files.map((f, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: -12 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ type: 'spring', stiffness: 120, damping: 16, delay: i * 0.04 }}
+                  className="flex justify-between items-center text-sm bg-white/[0.03] rounded-xl px-4 py-2"
+                >
+                  <span className="truncate">{f.name}</span>
+                  <span className="text-neutral-500 text-xs">{(f.size / 1024 / 1024).toFixed(1)} MB</span>
+                </motion.div>
+              ))}
+              {files.some((f) => f.size > 40 * 1024 * 1024) && (
+                <p className="text-xs text-amber-400">large drop. the browser may feel slow while it sends. nothing is blocked.</p>
+              )}
+            </div>
+          )}
 
           <motion.button
-            whileTap={{ scale: 0.98 }}
+            whileTap={{ scale: 0.97 }}
             onClick={publish}
-            disabled={busy}
-            className="w-full rounded-2xl py-4 text-[15px] font-medium text-white disabled:opacity-40 transition shadow-xl"
-            style={{ background: colors[0] }}
+            disabled={uploading || !files.length}
+            className="w-full py-3.5 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#3A9DFF] transition disabled:opacity-50"
           >
-            {busy ? 'Shaping…' : 'Publish spectrum'}
+            {uploading ? 'publishing…' : 'publish quiet prism'}
           </motion.button>
-
-          {result?.link && (
-            <p className="mt-4 text-sm">
-              <a href={result.link} target="_blank" rel="noreferrer" className="text-blue-400">{result.link}</a>
-            </p>
-          )}
-          {result?.error && <p className="mt-4 text-sm text-red-400">{result.error}</p>}
         </motion.div>
+
+        <AnimatePresence>
+          {error && (
+            <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-center text-sm text-red-400 mt-6">{error}</motion.p>
+          )}
+          {results.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-4 mt-8"
+            >
+              {results.map((r, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                  className="glass rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                >
+                  <div>
+                    <p className="font-medium">{r.name}</p>
+                    {r.warn && <p className="text-xs text-amber-400">{r.warn}</p>}
+                  </div>
+                  {r.url && (
+                    <button
+                      onClick={() => navigator.clipboard.writeText(r.url)}
+                      className="px-5 py-2 rounded-full bg-white/10 text-sm hover:bg-white/15 transition shrink-0"
+                    >
+                      copy link
+                    </button>
+                  )}
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <button onClick={() => navigate('home')} className="mt-12 text-sm text-neutral-500 hover:text-white transition block mx-auto">← back home</button>
       </div>
     </div>
   );

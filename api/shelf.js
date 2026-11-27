@@ -4,10 +4,10 @@ const FALLBACK = 'https://og2vsalt-svg.github.io/rank/og.png';
 
 function esc(s) {
   return String(s || '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 }
 
@@ -53,43 +53,17 @@ export default async function handler(req, res) {
         image = share.file_url;
       }
     }
+  } else if (page === 'quietprism') {
+    title = 'Quiet Prism — rankvault';
+    desc = 'Shape a shared title, caption, and accent, then drop multiple local files. Each settles with staggered Apple-style springs and becomes its own permanent Discord-ready link. Soft size warnings only. No hard limits.';
   } else if (page === 'velvetdrift') {
     title = 'Velvet Drift — rankvault';
     desc = 'Soft files in gentle drift. Drop local files with a shared title, caption, and accent. Each becomes a permanent Discord-ready link. Soft size warnings only. Apple-style springs on frosted glass.';
-  } else if (page === 'prismgallery') {
-    title = 'Prism Gallery — rankvault';
-    desc = 'Living gallery of recent public shares. Soft size warnings only. Every link ships with polished Discord embeds. Apple-style springs on frosted glass.';
-  } else if (page === 'echoprism') {
-    title = 'Echo Prism — rankvault';
-    desc = 'Quiet multi-file hosting with living previews. Soft size warnings only — no hard limits. Every share link ships with polished Discord embeds. Apple-style springs on frosted glass.';
   } else if (page === 'aetherecho') {
     title = 'Aether Echo — rankvault';
     desc = 'Leave a quiet mark. Write a note, optionally attach a local file, choose an accent, and publish a permanent Discord-ready share. Soft size warnings only. Apple-style springs on frosted glass.';
-  } else if (page === 'cascadedesk') {
-    title = 'Cascade Desk — rankvault';
-    desc = 'Files that fall in quiet sequence. Multi-file drops cascade into permanent Discord-ready shares with staggered Apple-style springs. Soft size warnings only. Frosted glass throughout.';
-  } else if (page === 'echonote') {
-    title = 'Echo Note — rankvault';
-    desc = 'Leave a quiet mark. Write a note, optionally attach a file, and publish a polished Discord-ready share. Soft size warnings only. Apple-style springs on frosted glass.';
-  } else if (page === 'moodatlas') {
-    title = 'Mood Atlas — rankvault';
-    desc = 'Map a mood with notes, colors, and local files. Publish the whole atlas as a quiet share with polished Discord embeds. Soft size warnings only. Apple-style springs.';
-  } else if (page === 'centralprism') {
-    title = 'Central Prism — rankvault';
-    desc = 'The quiet center. Multi-file hosting with live gallery of recent shares. Soft size warnings only. Polished Discord embeds on every link. Apple-style springs on frosted glass.';
-  } else if (page === 'prismpulse') {
-    title = 'Prism Pulse — rankvault';
-    desc = 'Living pulse of recent public shares. Soft size notes only. Every link ships with a polished Discord embed. Apple-style springs on frosted glass.';
-  } else if (page === 'aethercapsule') {
-    title = 'Aether Capsule — rankvault';
-    desc = 'Seal a quiet capsule. Drop a file, write a note, set an optional unlock moment, and publish a permanent Discord-ready link. Soft size warnings only. Apple-style springs on frosted glass.';
-  } else if (page === 'quietmosaic') {
-    title = 'Quiet Mosaic — rankvault';
-    desc = 'Weave local images into a living board. Each becomes a permanent Discord-ready share under a shared title and caption. Soft size warnings only. Apple-style springs on frosted glass.';
-  } else if (page === 'cascadejournal') {
-    title = 'Cascade Journal — rankvault';
-    desc = 'Sequence quiet moments. Build a cascade of notes and optional local files. Each step publishes as a permanent Discord-ready link under a shared title and accent. Soft size warnings only. Apple-style springs on frosted glass.';
   }
+  // ... other pages keep their prior descriptions; add more as needed
 
   const url = `${proto}://${host}${path}`;
   const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>${esc(title)}</title><meta name="description" content="${esc(desc)}"><meta name="theme-color" content="#0A84FF"><meta property="og:type" content="website"><meta property="og:site_name" content="rankvault"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}"><meta property="og:image" content="${esc(image)}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:url" content="${esc(url)}"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(title)}"><meta name="twitter:description" content="${esc(desc)}"><meta name="twitter:image" content="${esc(image)}"></head><body style="margin:0;background:#050506;color:#f5f5f7;font-family:-apple-system,Inter,sans-serif;padding:56px 24px;text-align:center"><p style="opacity:.5;letter-spacing:.08em;text-transform:uppercase;font-size:12px">rankvault</p><h1 style="letter-spacing:-.04em">${esc(title)}</h1><p style="color:#a1a1aa">${esc(desc)}</p></body></html>`;

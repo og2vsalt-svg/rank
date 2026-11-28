@@ -122,7 +122,7 @@ export default function LumenDiaryPage() {
             disabled={uploading}
             className="w-full py-3.5 rounded-full bg-[#0A84FF] text-white text-sm font-medium hover:bg-[#3A9DFF] transition disabled:opacity-50"
           >
-            {uploading ? 'sealing…' : 'seal today's entry'}
+            {uploading ? 'sealing…' : "seal today's entry"}
           </motion.button>
         </motion.div>
 

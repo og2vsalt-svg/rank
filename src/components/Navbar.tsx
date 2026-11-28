@@ -9,6 +9,7 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   const links = [
+    { to: 'appleharbor', label: 'apple harbor' },
     { to: 'horizondrift', label: 'horizon drift' },
     { to: 'quietstudio', label: 'quiet studio' },
     { to: 'horizonfocus', label: 'horizon focus' },

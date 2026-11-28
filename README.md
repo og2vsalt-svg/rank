@@ -7,6 +7,7 @@ Drop local files. Soft size warnings only — no hard limits. Every share link s
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
 ## New desks
+- **Horizon Focus**: a quiet focus timer with spring-smooth circular progress. Set any duration. When ready, write a short reflection and optionally drop a local file. Publish a permanent Discord-ready link. Soft size warnings only — no hard limits, no boosting. Prior desks remain untouched.
 - **File Harbor**: shape a Discord embed title, caption, and accent with live preview, then drop local files. They upload to the share database and become permanent Discord-ready links with staggered Apple-style springs. Soft size warnings only — no hard limits, no boosting. Prior desks remain untouched.
 - **Prism Atelier**: layer a quiet studio. Gather notes and local files into layered pieces under one title, caption, and accent. They settle with staggered Apple-style springs. Each becomes its own permanent Discord-ready link, plus a clean overview. Soft size warnings only — no hard limits, no boosting. Prior desks remain untouched.
 - **Lumen Moodboard**: shape a quiet board. Gather notes and local files under one title, caption, and accent. They settle with staggered Apple-style springs. Each becomes its own permanent Discord-ready link, plus a clean overview markdown. Soft size warnings only — no hard limits, no boosting. Prior desks remain untouched.

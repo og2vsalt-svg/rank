@@ -53,6 +53,9 @@ export default async function handler(req, res) {
         image = share.file_url;
       }
     }
+  } else if (page === 'quietstudio') {
+    title = 'Quiet Studio — rankvault';
+    desc = 'Shape a shared title, caption, and accent, then drop one or many local files. They settle with staggered Apple-style springs. Each becomes its own permanent Discord-ready link. Soft size warnings only — no hard limits, no boosting. Prior desks remain untouched.';
   } else if (page === 'silkstudio') {
     title = 'Silk Studio — rankvault';
     desc = 'A quiet studio for local files. Shape a shared title, caption, and accent, then drop one or many. They settle with staggered Apple-style springs. Each becomes its own permanent Discord-ready link. Soft size warnings only — no hard limits, no boosting. Prior desks remain untouched.';

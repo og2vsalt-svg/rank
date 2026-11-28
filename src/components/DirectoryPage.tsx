@@ -4,6 +4,7 @@ import Navbar from './Navbar';
 import { useRouter } from './Router';
 
 const DESKS = [
+  { route: 'quietstudio', title: 'Quiet Studio', blurb: 'Shape a shared title, caption, and accent, then drop one or many local files. They settle with staggered Apple-style springs. Each becomes its own permanent Discord-ready link. Soft size warnings only — no hard limits, no boosting. Prior desks remain untouched.' },
   { route: 'silkpulse', title: 'Silk Pulse', blurb: 'A living pulse of recent public shares. Soft size notes only. Every link ships with a polished Discord embed. Apple-style springs on frosted glass. Prior desks remain untouched. No boosting.' },
   { route: 'lumenexplorer', title: 'Lumen Explorer', blurb: 'Living search and filter for recent public shares from the database. Soft size notes only. Every link ships with a polished Discord embed. Apple-style staggered springs on frosted glass. Prior desks remain untouched. No boosting.' },
   { route: 'quiethorizonstudio', title: 'Quiet Horizon Studio', blurb: 'Shape a title, caption, and accent. Drop local files. Preview the living Discord embed in real time. Publish a polished permanent share. Soft size warnings only — no hard limits, no boosting. Apple-style springs on frosted glass. Prior desks remain untouched.' },

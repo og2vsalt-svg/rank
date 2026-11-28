@@ -9,6 +9,7 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   const links = [
+    { to: 'quietstudio', label: 'quiet studio' },
     { to: 'horizonfocus', label: 'horizon focus' },
     { to: 'fileharbor', label: 'file harbor' },
     { to: 'prismatelier', label: 'prism atelier' },

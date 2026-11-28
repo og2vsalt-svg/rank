@@ -7,6 +7,7 @@ Drop local files. Soft size warnings only — no hard limits. Every share link s
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
 ## New desks
+- **Silk Horizon**: shape a shared title and caption, then drop local files. They settle with staggered Apple-style springs. Each becomes its own permanent Discord-ready link. Live Discord embed preview. Soft size warnings only — no hard limits, no boosting. Prior desks remain untouched.
 - **Silk Ribbon**: shape a shared title, caption, and accent, then drop local files. They settle into a living flowing ribbon with staggered Apple-style springs. Each becomes its own permanent Discord-ready link. Soft size warnings only — no hard limits, no boosting. Prior desks remain untouched.
 - **Quiet Horizon Studio**: shape a title, caption, and accent. Drop local files. Preview the living Discord embed in real time. Publish a polished permanent share. Soft size warnings only — no hard limits, no boosting. Apple-style springs on frosted glass. Prior desks remain untouched.
 - **Silk Lumen**: soft multi-file sharing. Drop local files under one title, caption, and accent. They settle with Apple-style springs. Each becomes its own permanent Discord-ready link. Soft size warnings only — no hard limits, no boosting. Prior desks remain untouched.

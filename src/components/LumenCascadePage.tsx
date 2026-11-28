@@ -1,138 +1,231 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import Navbar from './Navbar';
+import { useState, useCallback, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useVault } from './VaultContext';
 import { publishLocalFile, shareUrls } from '../lib/cloudShare';
+import { useRouter } from './Router';
 
 export default function LumenCascadePage() {
-  const [note, setNote] = useState('');
-  const [title, setTitle] = useState('');
-  const [accent, setAccent] = useState('#0A84FF');
-  const [files, setFiles] = useState<File[]>([]);
-  const [busy, setBusy] = useState(false);
-  const [warn, setWarn] = useState('');
-  const [links, setLinks] = useState<string[]>([]);
-  const [err, setErr] = useState('');
+  const { addFiles } = useVault();
+  const { navigate } = useRouter();
+  const [dragging, setDragging] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [results, setResults] = useState<{ name: string; id: string; warn?: string; url: string; thumb?: string; size: number }[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [title, setTitle] = useState('Lumen Cascade');
+  const [caption, setCaption] = useState('Files settle in gentle cascade.');
+  const [accent, setAccent] = useState('#5AC8FA');
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const onDrop = (list: FileList | null) => {
-    const next = Array.from(list || []);
-    setFiles((prev) => [...prev, ...next].slice(0, 16));
-    const big = next.some((f) => f.size > 40 * 1024 * 1024);
-    setWarn(big ? 'some files are chunky. encoding may feel slow. no hard limit.' : '');
-  };
+  const handleFiles = useCallback(async (files: FileList | File[]) => {
+    const list = Array.from(files);
+    if (!list.length) return;
+    setUploading(true);
+    setError(null);
+    setResults([]);
+    setProgress(0);
 
-  const publish = async () => {
-    if (files.length === 0 && !note.trim()) {
-      setErr('drop a file or write a note');
-      return;
-    }
-    setBusy(true);
-    setErr('');
-    setLinks([]);
-    try {
-      const results: string[] = [];
-      const toPublish = files.length > 0 ? files : [new File([note.trim()], (title.trim() || 'cascade') + '.txt', { type: 'text/plain' })];
-      for (const file of toPublish) {
-        const res = await publishLocalFile(file, {
-          caption: note.trim() || title.trim() || 'lumen cascade',
-          cardTitle: title.trim() || file.name,
+    await addFiles(list, 'lumencascade');
+
+    const newResults: typeof results = [];
+    for (let i = 0; i < list.length; i++) {
+      const file = list[i];
+      setProgress(Math.round(((i + 0.4) / list.length) * 100));
+      let thumb: string | undefined;
+      if (file.type.startsWith('image/')) {
+        try { thumb = URL.createObjectURL(file); } catch {}
+      }
+      try {
+        const pub = await publishLocalFile(file, {
+          caption,
+          cardTitle: title || file.name,
           color: accent,
-          meta: { desk: 'lumencascade', accent, note: note.trim() },
         });
-        if (!res.ok || !res.id) {
-          setErr(res.error || 'could not publish one of the files');
-          setBusy(false);
-          return;
+        if (pub.ok && pub.id) {
+          const urls = shareUrls(pub.id);
+          newResults.push({
+            name: file.name,
+            id: pub.id,
+            warn: pub.warn || undefined,
+            url: urls.embed,
+            thumb,
+            size: file.size,
+          });
+        } else {
+          setError(pub.error || 'upload failed for one file');
         }
-        if (res.warn) setWarn(res.warn);
-        const urls = shareUrls(res.id);
-        results.push(urls.app);
+      } catch (e: any) {
+        setError(e?.message || 'upload error');
       }
-      setLinks(results);
-      if (results[0]) {
-        try { await navigator.clipboard.writeText(results[0]); } catch {}
-      }
-    } catch (e: any) {
-      setErr(e?.message || 'publish failed');
-    } finally {
-      setBusy(false);
+      setProgress(Math.round(((i + 1) / list.length) * 100));
     }
+    setResults(newResults);
+    setUploading(false);
+    setProgress(100);
+  }, [addFiles, title, caption, accent]);
+
+  const onDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragging(false);
+    if (e.dataTransfer.files) handleFiles(e.dataTransfer.files);
+  }, [handleFiles]);
+
+  const onDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragging(true);
+  }, []);
+
+  const onDragLeave = useCallback(() => setDragging(false), []);
+
+  const prettySize = (n: number) => {
+    if (n < 1024) return n + ' B';
+    if (n < 1048576) return Math.round(n / 1024) + ' KB';
+    return (n / 1048576).toFixed(1) + ' MB';
   };
 
   return (
-    <div className="mesh min-h-screen">
-      <Navbar />
-      <div className="pt-28 pb-20 px-5 max-w-2xl mx-auto">
+    <div className="min-h-screen bg-[#050506] text-[#f5f5f7] font-sans antialiased">
+      <div className="max-w-5xl mx-auto px-6 py-16">
         <motion.div
-          initial={{ opacity: 0, y: 28 }}
+          initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 100, damping: 22 }}
-          className="glass rounded-[32px] p-8"
+          transition={{ type: 'spring', stiffness: 90, damping: 18 }}
+          className="text-center mb-14"
         >
-          <p className="text-[#0A84FF] text-sm mb-2 tracking-wide" style={{ color: accent }}>lumen cascade</p>
-          <h1 className="text-3xl font-semibold mb-3 tracking-tight">a quiet cascade of shared light</h1>
-          <p className="text-neutral-400 text-sm mb-6 leading-relaxed">
-            Drop several local files or write a note. Each becomes its own share in a cascading sequence, lit with your accent. Files land in storage and the share table. Share links unfurl with polished Discord cards. Soft spring motion, frosted glass. Large files receive only a gentle warning of slowness. Prior desks remain untouched.
-          </p>
-          <input
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="optional cascade title"
-            className="w-full mb-3 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm placeholder:text-neutral-500 focus:outline-none focus:border-[#0A84FF]/50 transition"
-          />
-          <div className="flex items-center gap-3 mb-3">
-            <label className="text-xs text-neutral-500">accent</label>
+          <p className="text-[#5AC8FA] text-sm tracking-wide mb-3">lumen cascade</p>
+          <h1 className="text-5xl sm:text-6xl font-semibold tracking-tight mb-5 leading-[1.02]">files cascade.<br />each finds its light.</h1>
+          <p className="text-neutral-400 text-lg max-w-2xl mx-auto leading-relaxed">Shape the Discord embed title, caption, and accent with live preview, then drop local files. They settle in a staggered cascade with Apple-style springs and become permanent Discord-ready links. Soft size warnings only — no hard limits, no boosting. Human-crafted frosted glass.</p>
+        </motion.div>
+
+        <div className="grid md:grid-cols-2 gap-8 mb-10">
+          <motion.div
+            initial={{ opacity: 0, x: -12 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ type: 'spring', stiffness: 100, damping: 20 }}
+            className="glass rounded-3xl p-6 space-y-4"
+          >
+            <label className="block text-xs text-neutral-500">embed title</label>
             <input
-              type="color"
-              value={accent}
-              onChange={(e) => setAccent(e.target.value)}
-              className="w-10 h-10 rounded-full border border-white/20 bg-transparent cursor-pointer"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#5AC8FA]/50"
+              placeholder="Lumen Cascade"
             />
-            <span className="text-xs text-neutral-400">{accent}</span>
-          </div>
-          <textarea
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            placeholder="optional shared note..."
-            rows={3}
-            className="w-full mb-4 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-sm placeholder:text-neutral-500 focus:outline-none focus:border-[#0A84FF]/50 transition resize-none"
+            <label className="block text-xs text-neutral-500">caption</label>
+            <textarea
+              value={caption}
+              onChange={(e) => setCaption(e.target.value)}
+              rows={3}
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#5AC8FA]/50 resize-none"
+              placeholder="Files settle in gentle cascade."
+            />
+            <label className="block text-xs text-neutral-500">accent</label>
+            <div className="flex items-center gap-3">
+              <input
+                type="color"
+                value={accent}
+                onChange={(e) => setAccent(e.target.value)}
+                className="w-10 h-10 rounded-lg cursor-pointer border border-white/10"
+              />
+              <span className="text-sm text-neutral-400">{accent}</span>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, x: 12 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ type: 'spring', stiffness: 100, damping: 20, delay: 0.05 }}
+            className="flex items-center justify-center"
+          >
+            <div className="w-full max-w-md rounded-2xl overflow-hidden" style={{ background: '#2b2d31', borderLeft: `4px solid ${accent}` }}>
+              <div className="p-4">
+                <div className="text-white font-semibold text-sm mb-1 truncate">{title || 'Untitled'}</div>
+                <div className="text-[#dcddde] text-xs leading-relaxed line-clamp-3">{caption || 'No caption'}</div>
+                <div className="mt-3 text-[10px] text-[#a3a6aa]">rankvault • Discord-ready</div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+
+        <motion.div
+          onDrop={onDrop}
+          onDragOver={onDragOver}
+          onDragLeave={onDragLeave}
+          animate={{
+            scale: dragging ? 1.015 : 1,
+            borderColor: dragging ? accent : 'rgba(255,255,255,0.08)',
+          }}
+          transition={{ type: 'spring', stiffness: 260, damping: 26 }}
+          className="relative border-2 border-dashed rounded-3xl p-20 text-center bg-white/[0.025] backdrop-blur-2xl cursor-pointer mb-12"
+          onClick={() => inputRef.current?.click()}
+        >
+          <input
+            ref={inputRef}
+            type="file"
+            multiple
+            className="hidden"
+            onChange={(e) => e.target.files && handleFiles(e.target.files)}
           />
-          <label
-            className="block cursor-pointer rounded-2xl border border-dashed border-white/15 hover:border-[#0A84FF]/40 p-6 text-center transition mb-4"
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => { e.preventDefault(); onDrop(e.dataTransfer.files); }}
-          >
-            <input type="file" multiple className="hidden" onChange={(e) => onDrop(e.target.files)} />
-            <p className="text-sm text-neutral-300">
-              {files.length ? `${files.length} file${files.length > 1 ? 's' : ''} ready to cascade` : 'drop or click for local files (multiple ok)'}
-            </p>
-          </label>
-          {files.length > 0 && (
-            <ul className="text-xs text-neutral-500 mb-4 space-y-1">
-              {files.map((f, i) => (
-                <li key={i}>{f.name}</li>
-              ))}
-            </ul>
-          )}
-          {warn && <p className="text-xs text-amber-300/80 mb-3">{warn}</p>}
-          {err && <p className="text-xs text-red-400 mb-3">{err}</p>}
-          <motion.button
-            whileTap={{ scale: 0.97 }}
-            onClick={publish}
-            disabled={busy}
-            className="w-full py-3 rounded-full text-white text-sm font-medium hover:opacity-90 disabled:opacity-50 transition"
-            style={{ background: accent }}
-          >
-            {busy ? 'cascading…' : 'publish cascade'}
-          </motion.button>
-          {links.length > 0 && (
-            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mt-5 text-xs text-neutral-400 space-y-1">
-              <p>share links (first copied):</p>
-              {links.map((l, i) => (
-                <p key={i} className="break-all">{l}</p>
-              ))}
+          <AnimatePresence mode="wait">
+            {uploading ? (
+              <motion.div key="uploading" initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className="space-y-6">
+                <div className="w-20 h-20 mx-auto rounded-full border-2 border-white/20 animate-spin" style={{ borderTopColor: accent }} />
+                <p className="text-base text-neutral-300">cascading with care… {progress}%</p>
+                <div className="h-1.5 bg-white/10 rounded-full overflow-hidden max-w-sm mx-auto">
+                  <motion.div className="h-full" style={{ background: accent }} initial={{ width: 0 }} animate={{ width: `${progress}%` }} transition={{ type: 'spring', stiffness: 80, damping: 20 }} />
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                <div className="w-20 h-20 mx-auto mb-6 rounded-3xl flex items-center justify-center" style={{ background: `${accent}22`, color: accent }}>
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 16V4m0 0L8 8m4-4l4 4M4 20h16"/></svg>
+                </div>
+                <p className="text-2xl font-medium mb-2">Drop files into the cascade</p>
+                <p className="text-sm text-neutral-500">or click to browse. Large files may feel slow in the browser — nothing is blocked.</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+
+        {error && (
+          <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-center text-sm text-red-400 mb-8">{error}</motion.p>
+        )}
+
+        <AnimatePresence>
+          {results.length > 0 && (
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 100, damping: 20 }} className="space-y-6">
+              <p className="text-sm text-neutral-400">each link ships with a polished Discord embed</p>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                {results.map((r, i) => (
+                  <motion.div
+                    key={r.id}
+                    initial={{ opacity: 0, y: 24, scale: 0.96 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ delay: i * 0.06, type: 'spring', stiffness: 120, damping: 16 }}
+                    className="glass rounded-2xl p-5 flex flex-col gap-4"
+                  >
+                    {r.thumb && (
+                      <img src={r.thumb} alt="" className="w-full h-36 object-cover rounded-xl" />
+                    )}
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium truncate">{r.name}</p>
+                      <p className="text-xs text-neutral-500 mt-0.5">{prettySize(r.size)}</p>
+                      {r.warn && <p className="text-xs text-amber-400 mt-1">{r.warn}</p>}
+                    </div>
+                    <button
+                      onClick={() => navigator.clipboard.writeText(r.url)}
+                      className="mt-auto px-4 py-2.5 rounded-full text-white text-xs font-medium transition self-start"
+                      style={{ background: accent }}
+                    >
+                      copy share link
+                    </button>
+                  </motion.div>
+                ))}
+              </div>
+              <button onClick={() => navigate('home')} className="mt-8 text-sm text-neutral-500 hover:text-white transition">← back home</button>
             </motion.div>
           )}
-        </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   );

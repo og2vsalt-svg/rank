@@ -164,7 +164,7 @@ export default function LumenAtelierPage() {
           <AnimatePresence mode="wait">
             {uploading ? (
               <motion.div key="uploading" initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className="space-y-6">
-                <div className="w-20 h-20 mx-auto rounded-full border-2 border-white/20" style={{ borderTopColor: accent }} className="animate-spin" />
+                <div className="w-20 h-20 mx-auto rounded-full border-2 border-white/20 animate-spin" style={{ borderTopColor: accent }} />
                 <p className="text-base text-neutral-300">atelier settling… {progress}%</p>
                 <div className="h-1.5 bg-white/10 rounded-full overflow-hidden max-w-sm mx-auto">
                   <motion.div className="h-full" style={{ backgroundColor: accent }} initial={{ width: 0 }} animate={{ width: `${progress}%` }} transition={{ type: 'spring', stiffness: 80, damping: 20 }} />

@@ -7,6 +7,7 @@ Drop local files. Soft size warnings only — no hard limits. Every share link s
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
 ## New desks
+- **Velvet Note**: write a pure text note (or attach a local file). Shape the Discord embed title, caption, and accent with live preview, then publish. It lands in the public_shares table as a permanent Discord-ready link with professional embeds. Soft size warnings only — no hard limits, no boosting. Apple-style springs. Prior desks remain untouched.
 - **Lumen Cascade**: files cascade into place. Shape title, caption, and accent with live Discord preview, then drop one or many local files. They settle with staggered Apple-style springs. Each becomes its own permanent Discord-ready link. Soft size warnings only — no hard limits, no boosting. Prior desks remain untouched.
 - **Quiet Note**: write a pure text note (or attach a local file). It lands in the public_shares table as a permanent Discord-ready link with professional embeds. Soft size warnings only. Apple-style springs. Prior desks remain untouched.
 - **Apple Harbor**: a sleek, human-crafted harbor for local files. Shape title, caption, and accent with live Discord preview, then drop files. Each becomes a permanent Discord-ready link with Apple-style spring animations. Soft size warnings only — no hard limits, no boosting. Prior desks remain untouched.

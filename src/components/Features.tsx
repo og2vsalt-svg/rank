@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 
 const features = [
+  { title: 'Velvet Note', desc: 'Write a pure text note or attach a local file. Shape the Discord embed title, caption, and accent with live preview, then publish. It lands in the public_shares table as a permanent Discord-ready link. Soft size warnings only — no hard limits.' },
   { title: 'Quiet Note', desc: 'Write a pure text note or attach a local file. It lands in the public_shares table as a permanent Discord-ready link with professional embeds. Soft size warnings only.' },
   { title: 'Velvet Horizon', desc: 'Shape a shared title, caption, and accent, then drop one or many local files. They settle with staggered Apple-style springs. Each becomes its own permanent Discord-ready link. Soft size warnings only — no hard limits.' },
   { title: 'Lumen Constellation', desc: 'Drop local files. They settle into a living constellation with Apple-style springs and connecting light. Each becomes its own permanent Discord-ready link under a shared title and accent. Soft size warnings only — no hard limits.' },

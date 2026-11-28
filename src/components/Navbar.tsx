@@ -9,6 +9,8 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   const links = [
+    { to: 'pulsegallery', label: 'pulse gallery' },
+    { to: 'silkconstellation', label: 'silk constellation' },
     { to: 'silkhorizon', label: 'silk horizon' },
     { to: 'silklumen', label: 'silk lumen' },
     { to: 'lumenhorizon', label: 'lumen horizon' },

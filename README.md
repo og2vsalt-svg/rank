@@ -7,6 +7,7 @@ Drop local files. Soft size warnings only — no hard limits. Every share link s
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
 ## New desks
+- **Apple Harbor**: a sleek, human-crafted harbor for local files. Shape title, caption, and accent with live Discord preview, then drop files. Each becomes a permanent Discord-ready link with Apple-style spring animations. Soft size warnings only — no hard limits, no boosting. Prior desks remain untouched.
 - **Velvet Horizon**: shape a shared title, caption, and accent, then drop one or many local files. They settle with staggered Apple-style springs. Each becomes its own permanent Discord-ready link. Soft size warnings only — no hard limits, no boosting. Prior desks remain untouched.
 - **Horizon Drift**: shape a shared title, caption, and accent, then drop one or many local files. They settle into a living horizon drift with staggered Apple-style springs. Each becomes its own permanent Discord-ready link. Soft size warnings only — no hard limits, no boosting. Prior desks remain untouched.
 - **Quiet Studio**: shape a shared title, caption, and accent, then drop one or many local files. They settle with staggered Apple-style springs. Each becomes its own permanent Discord-ready link. Soft size warnings only — no hard limits, no boosting. Prior desks remain untouched.
@@ -17,4 +18,4 @@ Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted
 - **Central Vault**: the quiet center. Drop local files; each uploads to the share database and becomes a permanent Discord-ready link with polished embeds. Soft size warnings only. Apple-style springs on frosted glass.
 - **Aether Echo**: leave a quiet mark. Write a note, optionally attach a local file, choose an accent, and publish a permanent Discord-ready share.
 
-All prior desks and features remain fully intact. No boosting. Soft size warnings only.
+All prior desks and features remain fully intact. No boosting. Soft size warnings only. Duplicate className bugs in spinner elements repaired. HTML escaping fixed for Discord embeds.

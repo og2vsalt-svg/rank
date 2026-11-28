@@ -9,6 +9,7 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   const links = [
+    { to: 'lumenexplorer', label: 'lumen explorer' },
     { to: 'pulsegallery', label: 'pulse gallery' },
     { to: 'silkconstellation', label: 'silk constellation' },
     { to: 'silkhorizon', label: 'silk horizon' },

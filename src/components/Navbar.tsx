@@ -9,6 +9,7 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   const links = [
+    { to: 'prismatelier', label: 'prism atelier' },
     { to: 'lumenmoodboard', label: 'lumen moodboard' },
     { to: 'lumenthread', label: 'lumen thread' },
     { to: 'silkbundle', label: 'silk bundle' },

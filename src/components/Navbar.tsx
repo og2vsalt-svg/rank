@@ -9,6 +9,8 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   const links = [
+    { to: 'horizonatelier', label: 'horizon atelier' },
+    { to: 'lumendiary', label: 'lumen diary' },
     { to: 'silkpulse', label: 'silk pulse' },
     { to: 'lumenexplorer', label: 'lumen explorer' },
     { to: 'pulsegallery', label: 'pulse gallery' },

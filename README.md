@@ -7,6 +7,7 @@ Drop local files. Soft size warnings only — no hard limits. Every share link s
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
 ## New desks
+- **Silk Studio**: a quiet studio for local files. Shape a shared title, caption, and accent, then drop one or many. They settle with staggered Apple-style springs. Each becomes its own permanent Discord-ready link. Soft size warnings only — no hard limits, no boosting. Prior desks remain untouched.
 - **Silk Bundle**: shape a shared title, caption, and accent, then drop local files. They settle with staggered Apple-style springs. Each becomes its own permanent Discord-ready link, and a master bundle markdown is published with them all. Soft size warnings only — no hard limits, no boosting. Prior desks remain untouched.
 - **Horizon Atelier**: shape a shared title and caption, then drop local files. They settle with staggered Apple-style springs. Each becomes its own permanent Discord-ready link. Soft size warnings only — no hard limits, no boosting. Prior desks remain untouched.
 - **Lumen Diary**: a quiet page for today. Write an entry, choose a mood, optionally attach a local photo or note. It becomes a permanent Discord-ready link. Soft size warnings only. Apple-style springs on frosted glass.

@@ -7,7 +7,7 @@ function esc(s) {
     .replace(/&/g, '&')
     .replace(/</g, '<')
     .replace(/>/g, '>')
-    .replace(/\"/g, '"')
+    .replace(/"/g, '"')
     .replace(/'/g, '&#39;');
 }
 
@@ -83,6 +83,9 @@ export default async function handler(req, res) {
   } else if (page === 'aetherecho') {
     title = 'Aether Echo — rankvault';
     desc = 'Leave a quiet mark. Write a note, optionally attach a local file, choose an accent, and publish a permanent Discord-ready share. Soft size warnings only. Apple-style springs on frosted glass.';
+  } else if (page === 'appleharbor') {
+    title = 'Apple Harbor — rankvault';
+    desc = 'A sleek, human-crafted harbor for local files. Shape title, caption, and accent with live Discord preview, then drop files. Each becomes a permanent Discord-ready link with Apple-style spring animations. Soft size warnings only — no hard limits, no boosting.';
   }
   // prior page descriptions remain; new desks inherit the default or their own case
 

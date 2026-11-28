@@ -53,6 +53,9 @@ export default async function handler(req, res) {
         image = share.file_url;
       }
     }
+  } else if (page === 'lumenthread') {
+    title = 'Lumen Thread — rankvault';
+    desc = 'One thought after another. Sequential notes with optional local files. Publish the whole thread as one permanent Discord-ready markdown share; every file also gets its own polished embed link. Soft size warnings only — no hard limits, no boosting. Apple-style springs on frosted glass.';
   } else if (page === 'prismnotebook') {
     title = 'Prism Notebook — rankvault';
     desc = 'A quiet sequence of thoughts. Add entries, optionally attach local files, then publish the whole notebook as one permanent Discord-ready markdown link. Soft size warnings only. No hard limits, no boosting. Apple-style springs on frosted glass.';
@@ -75,10 +78,10 @@ export default async function handler(req, res) {
     title = 'Aether Echo — rankvault';
     desc = 'Leave a quiet mark. Write a note, optionally attach a local file, choose an accent, and publish a permanent Discord-ready share. Soft size warnings only. Apple-style springs on frosted glass.';
   }
-  // ... other pages keep their prior descriptions; add more as needed
+  // prior page descriptions remain; new desks inherit the default or their own case
 
   const url = `${proto}://${host}${path}`;
-  const html = `<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><title>${esc(title)}</title><meta name=\"description\" content=\"${esc(desc)}\"><meta name=\"theme-color\" content=\"#0A84FF\"><meta property=\"og:type\" content=\"website\"><meta property=\"og:site_name\" content=\"rankvault\"><meta property=\"og:title\" content=\"${esc(title)}\"><meta property=\"og:description\" content=\"${esc(desc)}\"><meta property=\"og:image\" content=\"${esc(image)}\"><meta property=\"og:image:width\" content=\"1200\"><meta property=\"og:image:height\" content=\"630\"><meta property=\"og:url\" content=\"${esc(url)}\"><meta name=\"twitter:card\" content=\"summary_large_image\"><meta name=\"twitter:title\" content=\"${esc(title)}\"><meta name=\"twitter:description\" content=\"${esc(desc)}\"><meta name=\"twitter:image\" content=\"${esc(image)}\"></head><body style=\"margin:0;background:#050506;color:#f5f5f7;font-family:-apple-system,Inter,sans-serif;padding:56px 24px;text-align:center\"><p style=\"opacity:.5;letter-spacing:.08em;text-transform:uppercase;font-size:12px\">rankvault</p><h1 style=\"letter-spacing:-.04em\">${esc(title)}</h1><p style=\"color:#a1a1aa\">${esc(desc)}</p></body></html>`;
+  const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>${esc(title)}</title><meta name="description" content="${esc(desc)}"><meta name="theme-color" content="#0A84FF"><meta property="og:type" content="website"><meta property="og:site_name" content="rankvault"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}"><meta property="og:image" content="${esc(image)}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:url" content="${esc(url)}"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(title)}"><meta name="twitter:description" content="${esc(desc)}"><meta name="twitter:image" content="${esc(image)}"></head><body style="margin:0;background:#050506;color:#f5f5f7;font-family:-apple-system,Inter,sans-serif;padding:56px 24px;text-align:center"><p style="opacity:.5;letter-spacing:.08em;text-transform:uppercase;font-size:12px">rankvault</p><h1 style="letter-spacing:-.04em">${esc(title)}</h1><p style="color:#a1a1aa">${esc(desc)}</p></body></html>`;
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.setHeader('Cache-Control', 'public, s-maxage=60');

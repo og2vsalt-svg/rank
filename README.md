@@ -7,6 +7,8 @@ Drop local files. Soft size warnings only — no hard limits. Every share link s
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
 ## New desks
+- **Velvet Quill**: shape a title and body, optionally attach a local file, and watch the Discord embed form in real time. Publish a permanent share. Soft size warnings only — no hard limits, no boosting. Apple-style springs on frosted glass. Prior desks remain untouched.
+- **Horizon Pulse**: a living pulse of recent public shares from the database. Filter by name, caption, or type. Soft size notes only. Every link ships with a polished Discord embed. Apple-style staggered springs on frosted glass. Prior desks remain untouched. No boosting.
 - **Silk Pulse**: a living pulse of recent public shares. Soft size notes only. Every link ships with a polished Discord embed. Apple-style springs on frosted glass. Prior desks remain untouched. No boosting.
 - **Lumen Explorer**: living search and filter for recent public shares from the database. Soft size notes only. Every link ships with a polished Discord embed. Apple-style staggered springs on frosted glass. Prior desks remain untouched. No boosting.
 - **Pulse Gallery**: living explorer of recent public shares from the database. Search and filter by type. Soft size notes only. Every link ships with a polished Discord embed. Apple-style staggered springs on frosted glass. Prior desks remain untouched.

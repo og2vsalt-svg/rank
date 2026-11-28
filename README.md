@@ -7,6 +7,7 @@ Drop local files. Soft size warnings only — no hard limits. Every share link s
 Built with Vite, React, Tailwind, Framer Motion. Apple-style springs and frosted glass throughout. Human-crafted UI.
 
 ## New desks
+- **Lumen Explorer**: living search and filter for recent public shares from the database. Soft size notes only. Every link ships with a polished Discord embed. Apple-style staggered springs on frosted glass. Prior desks remain untouched. No boosting.
 - **Pulse Gallery**: living explorer of recent public shares from the database. Search and filter by type. Soft size notes only. Every link ships with a polished Discord embed. Apple-style staggered springs on frosted glass. Prior desks remain untouched.
 - **Silk Constellation**: drop local files. They settle into a living orbit with staggered Apple-style springs. Each becomes its own permanent Discord-ready link under a shared title, caption, and accent. Soft size warnings only — no hard limits, no boosting. Prior desks remain untouched.
 - **Silk Horizon**: shape a shared title and caption, then drop local files. They settle with staggered Apple-style springs. Each becomes its own permanent Discord-ready link. Live Discord embed preview. Soft size warnings only — no hard limits, no boosting. Prior desks remain untouched.
